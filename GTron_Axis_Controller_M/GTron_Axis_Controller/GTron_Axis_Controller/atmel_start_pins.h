@@ -1,0 +1,61 @@
+/*
+ * Code generated from Atmel Start.
+ *
+ * This file will be overwritten when reconfiguring your Atmel Start project.
+ * Please copy examples or other code you want to keep to a separate file
+ * to avoid losing it when reconfiguring.
+ */
+#ifndef ATMEL_START_PINS_H_INCLUDED
+#define ATMEL_START_PINS_H_INCLUDED
+
+#include <hal_gpio.h>
+
+// SAMC21 has 9 pin functions
+
+#define GPIO_PIN_FUNCTION_A 0
+#define GPIO_PIN_FUNCTION_B 1
+#define GPIO_PIN_FUNCTION_C 2
+#define GPIO_PIN_FUNCTION_D 3
+#define GPIO_PIN_FUNCTION_E 4
+#define GPIO_PIN_FUNCTION_F 5
+#define GPIO_PIN_FUNCTION_G 6
+#define GPIO_PIN_FUNCTION_H 7
+#define GPIO_PIN_FUNCTION_I 8
+
+#define PA00 GPIO(GPIO_PORTA, 0)
+#define PA01 GPIO(GPIO_PORTA, 1)
+#define SPI0_MOSI GPIO(GPIO_PORTA, 4)
+#define SPI0_SCK GPIO(GPIO_PORTA, 5)
+#define SPI0_MISO GPIO(GPIO_PORTA, 6)
+#define nCS_4671 GPIO(GPIO_PORTA, 7)
+#define DBGLED1 GPIO(GPIO_PORTA, 9)
+#define CLK25M GPIO(GPIO_PORTA, 10)
+#define DBGLED3 GPIO(GPIO_PORTA, 14)
+#define DBGLED2 GPIO(GPIO_PORTA, 15)
+#define LINENC_DIR GPIO(GPIO_PORTA, 17)
+#define LINENC_Z GPIO(GPIO_PORTA, 18)
+#define ROTENC_COUNT GPIO(GPIO_PORTA, 19)
+#define EXT_MISO GPIO(GPIO_PORTA, 22)
+#define EXT_SCK GPIO(GPIO_PORTA, 23)
+#define EXT_MOSI GPIO(GPIO_PORTA, 25)
+#define FLASH_SPI_nCS GPIO(GPIO_PORTB, 7)
+#define EN_4671 GPIO(GPIO_PORTB, 8)
+#define RST_4671 GPIO(GPIO_PORTB, 9)
+#define SWITCH_EN GPIO(GPIO_PORTB, 10)
+#define FPGA_CDONE GPIO(GPIO_PORTB, 11)
+#define FPGA_CRESET_B GPIO(GPIO_PORTB, 12)
+#define CAN_TX GPIO(GPIO_PORTB, 14)
+#define CAN_RX GPIO(GPIO_PORTB, 15)
+#define EXT_CS GPIO(GPIO_PORTB, 20)
+#define LATCH_IN GPIO(GPIO_PORTB, 23)
+#define INTOUT GPIO(GPIO_PORTB, 30)
+#define DVC_ADDR GPIO(GPIO_PORTC, 1)
+#define PC12 GPIO(GPIO_PORTC, 12)
+#define PC15 GPIO(GPIO_PORTC, 15)
+#define ROTENC_DIR GPIO(GPIO_PORTC, 16)
+#define ROTENC_Z GPIO(GPIO_PORTC, 17)
+#define LIM_RT GPIO(GPIO_PORTC, 18)
+#define LIM_LFT GPIO(GPIO_PORTC, 20)
+#define LIM_HOME GPIO(GPIO_PORTC, 21)
+
+#endif // ATMEL_START_PINS_H_INCLUDED

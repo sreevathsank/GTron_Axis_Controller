@@ -1,0 +1,36 @@
+[0711/113142:WARNING:raw_channel_win.cc(532)] WriteFile: The pipe is being closed. (0xE8)
+[0711/113142:ERROR:ipc_channel_win.cc(512)] pipe error: 232
+[0711/113142:WARNING:channel.cc(359)] RawChannel write error
+[0806/140839:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0806/155436:ERROR:ipc_channel_win.cc(475)] pipe error: 109
+[0215/160154:ERROR:ipc_channel_win.cc(512)] pipe error: 232
+[0215/184011:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0217/095708:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0217/095710:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0217/095713:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0217/095749:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0217/095750:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0217/095750:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0217/095754:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0217/095755:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0217/095755:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0606/165342:ERROR:ipc_channel_win.cc(512)] pipe error: 232
+[0606/172829:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0606/172830:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0606/172834:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0606/172835:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0606/181453:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0606/181455:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0606/181459:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0609/162641:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0609/225818:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0609/225819:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0609/225823:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0609/225824:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0610/102003:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0724/180524:ERROR:ssl_client_socket_openssl.cc(1149)] handshake failed; returned 0, SSL error code 1, net_error -107
+[0724/180524:ERROR:ssl_client_socket_openssl.cc(1149)] handshake failed; returned 0, SSL error code 1, net_error -107
+[0724/180524:ERROR:ssl_client_socket_openssl.cc(1149)] handshake failed; returned 0, SSL error code 1, net_error -107
+[0724/180536:ERROR:ssl_client_socket_openssl.cc(1149)] handshake failed; returned 0, SSL error code 1, net_error -107
+[0724/180536:ERROR:ssl_client_socket_openssl.cc(1149)] handshake failed; returned 0, SSL error code 1, net_error -107
+[0724/180536:ERROR:ssl_client_socket_openssl.cc(1149)] handshake failed; returned 0, SSL error code 1, net_error -107
