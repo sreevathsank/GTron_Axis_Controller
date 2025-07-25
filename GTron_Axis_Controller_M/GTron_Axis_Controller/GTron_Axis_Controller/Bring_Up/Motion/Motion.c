@@ -1278,9 +1278,9 @@ void move_With_S_Ramp(float target_position, int32_t velocity, bool move_to_by)
  */
 bool camera_Trigger(void)
 {
-	gpio_set_pin_level(INTOUT, 1);
+	//gpio_set_pin_level(INTOUT, 1);
 	delay_us(1);
-	gpio_set_pin_level(INTOUT, 0);
+	//gpio_set_pin_level(INTOUT, 0);
 	
 	autofocus_variables.cam_trigger_count += 1;
 	

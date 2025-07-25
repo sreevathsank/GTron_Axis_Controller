@@ -393,13 +393,13 @@ drivers:
       eic_arch_asynch10: false
       eic_arch_asynch11: true
       eic_arch_asynch12: false
-      eic_arch_asynch13: false
-      eic_arch_asynch14: false
+      eic_arch_asynch13: true
+      eic_arch_asynch14: true
       eic_arch_asynch15: false
       eic_arch_asynch2: false
       eic_arch_asynch3: true
       eic_arch_asynch4: false
-      eic_arch_asynch5: false
+      eic_arch_asynch5: true
       eic_arch_asynch6: false
       eic_arch_asynch7: false
       eic_arch_asynch8: true
@@ -410,13 +410,13 @@ drivers:
       eic_arch_debounce_enable10: true
       eic_arch_debounce_enable11: true
       eic_arch_debounce_enable12: true
-      eic_arch_debounce_enable13: false
-      eic_arch_debounce_enable14: false
+      eic_arch_debounce_enable13: true
+      eic_arch_debounce_enable14: true
       eic_arch_debounce_enable15: false
       eic_arch_debounce_enable2: false
       eic_arch_debounce_enable3: false
       eic_arch_debounce_enable4: false
-      eic_arch_debounce_enable5: false
+      eic_arch_debounce_enable5: true
       eic_arch_debounce_enable6: false
       eic_arch_debounce_enable7: false
       eic_arch_debounce_enable8: false
@@ -426,13 +426,13 @@ drivers:
       eic_arch_enable_irq_setting10: true
       eic_arch_enable_irq_setting11: true
       eic_arch_enable_irq_setting12: true
-      eic_arch_enable_irq_setting13: false
-      eic_arch_enable_irq_setting14: false
+      eic_arch_enable_irq_setting13: true
+      eic_arch_enable_irq_setting14: true
       eic_arch_enable_irq_setting15: false
       eic_arch_enable_irq_setting2: true
       eic_arch_enable_irq_setting3: true
       eic_arch_enable_irq_setting4: false
-      eic_arch_enable_irq_setting5: false
+      eic_arch_enable_irq_setting5: true
       eic_arch_enable_irq_setting6: false
       eic_arch_enable_irq_setting7: false
       eic_arch_enable_irq_setting8: true
@@ -443,7 +443,7 @@ drivers:
       eic_arch_extinteo11: false
       eic_arch_extinteo12: false
       eic_arch_extinteo13: false
-      eic_arch_extinteo14: false
+      eic_arch_extinteo14: true
       eic_arch_extinteo15: false
       eic_arch_extinteo2: false
       eic_arch_extinteo3: false
@@ -473,20 +473,20 @@ drivers:
       eic_arch_nmiasynch: false
       eic_arch_nmifilten: false
       eic_arch_nmisense: No detection
-      eic_arch_prescaler0: Divided by 256
-      eic_arch_prescaler1: Divided by 256
+      eic_arch_prescaler0: Divided by 2
+      eic_arch_prescaler1: Divided by 2
       eic_arch_sense0: No detection
       eic_arch_sense1: No detection
       eic_arch_sense10: Rising-edge detection
       eic_arch_sense11: Falling-edge detection
       eic_arch_sense12: Rising-edge detection
-      eic_arch_sense13: No detection
-      eic_arch_sense14: No detection
+      eic_arch_sense13: Rising-edge detection
+      eic_arch_sense14: Rising-edge detection
       eic_arch_sense15: No detection
       eic_arch_sense2: No detection
       eic_arch_sense3: Rising-edge detection
       eic_arch_sense4: No detection
-      eic_arch_sense5: No detection
+      eic_arch_sense5: Rising-edge detection
       eic_arch_sense6: No detection
       eic_arch_sense7: No detection
       eic_arch_sense8: Both-edges detection
@@ -516,6 +516,13 @@ drivers:
       definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::optional_signal_definition::EIC.EXTINT.3
       name: EIC/EXTINT/3
       label: EXTINT/3
+    - identifier: EXTERNAL_IRQ_0:EXTINT/5
+      pad: PB21
+      mode: Enabled
+      configuration: null
+      definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::optional_signal_definition::EIC.EXTINT.5
+      name: EIC/EXTINT/5
+      label: EXTINT/5
     - identifier: EXTERNAL_IRQ_0:EXTINT/8
       pad: PC16
       mode: Enabled
@@ -551,6 +558,13 @@ drivers:
       definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::optional_signal_definition::EIC.EXTINT.13
       name: EIC/EXTINT/13
       label: EXTINT/13
+    - identifier: EXTERNAL_IRQ_0:EXTINT/14
+      pad: PB30
+      mode: Enabled
+      configuration: null
+      definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::optional_signal_definition::EIC.EXTINT.14
+      name: EIC/EXTINT/14
+      label: EXTINT/14
     variant: null
     clocks:
       domain_group:
@@ -1005,6 +1019,70 @@ drivers:
         configuration:
           core_gclk_selection: Generic clock generator 0
           slow_gclk_selection: Generic clock generator 3
+  TMC2209_UART:
+    user_label: TMC2209_UART
+    definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::SERCOM5::driver_config_definition::UART::Lite:USART:USART.Async
+    functionality: USART
+    api: Lite:USART:USART_Async
+    configuration:
+      baud_baud: 115200
+      baud_fp: 0
+      ctrla_cmode: Asynchronous communication
+      ctrla_dord: LSB is transmitted first
+      ctrla_enable: false
+      ctrla_form: USART frame
+      ctrla_ibon: false
+      ctrla_mode: USART with internal clock
+      ctrla_runstdby: false
+      ctrla_sampa: 7-8-9 (3-4-5 8-bit over-sampling)
+      ctrla_sampr: 16x arithmetic
+      ctrlb_chsize: 8 bits
+      ctrlb_colden: false
+      ctrlb_enc: No encoding
+      ctrlb_pmode: No parity
+      ctrlb_rxen: true
+      ctrlb_sbmode: One stop bit
+      ctrlb_sfde: false
+      ctrlb_txen: true
+      dbgctrl_dbgstop: false
+      intenset_ctsic: false
+      intenset_dre: false
+      intenset_error: false
+      intenset_rxbrk: false
+      intenset_rxc: false
+      intenset_rxs: false
+      intenset_txc: false
+      rxpl_rxpl: 0
+      usart_baud_control: true
+      usart_ctrla_control: true
+      usart_ctrlb_control: true
+      usart_dbgctrl_control: false
+      usart_intenset_control: false
+      usart_rxpl_control: false
+    optional_signals: []
+    variant:
+      specification: TXPO=0, RXPO=1, CMODE=0
+      required_signals:
+      - name: SERCOM5/PAD/0
+        pad: PB16
+        label: TX
+      - name: SERCOM5/PAD/1
+        pad: PB17
+        label: RX
+    clocks:
+      domain_group:
+        nodes:
+        - name: Core
+          input: Generic clock generator 0
+          external: false
+          external_frequency: 0
+        - name: Slow
+          input: Generic clock generator 3
+          external: false
+          external_frequency: 0
+        configuration:
+          core_gclk_selection: Generic clock generator 0
+          slow_gclk_selection: Generic clock generator 3
   TARGET_IO:
     user_label: TARGET_IO
     definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::SERCOM7::driver_config_definition::UART::HAL:Driver:USART.Sync
@@ -1024,7 +1102,7 @@ drivers:
       usart_arch_sampa: 7-8-9 (3-4-5 8-bit over-sampling)
       usart_arch_sampr: 16x arithmetic
       usart_arch_sfde: false
-      usart_baud_rate: 115200
+      usart_baud_rate: 2000000
       usart_character_size: 8 bits
       usart_parity: No parity
       usart_rx_enable: true
@@ -1240,6 +1318,12 @@ pads:
     mode: Analog
     user_label: DVC_ADDR
     configuration: null
+  IOXP_CS:
+    name: PA03
+    definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::pad::PA03
+    mode: Digital output
+    user_label: IOXP_CS
+    configuration: null
   FLASH_SPI_nCS:
     name: PB07
     definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::pad::PB07
@@ -1392,11 +1476,29 @@ pads:
     mode: Digital input
     user_label: LIM_LFT
     configuration: null
-  LIM_HOME:
+  DIAG:
     name: PC21
     definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::pad::PC21
     mode: Digital input
-    user_label: LIM_HOME
+    user_label: DIAG
+    configuration: null
+  TMC2209_UART_TX:
+    name: PB16
+    definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::pad::PB16
+    mode: Peripheral IO
+    user_label: TMC2209_UART_TX
+    configuration: null
+  TMC2209_UART_RX:
+    name: PB17
+    definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::pad::PB17
+    mode: Peripheral IO
+    user_label: TMC2209_UART_RX
+    configuration: null
+  INDEX_SEL:
+    name: PB19
+    definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::pad::PB19
+    mode: Digital output
+    user_label: INDEX_SEL
     configuration: null
   EXT_CS:
     name: PB20
@@ -1405,6 +1507,12 @@ pads:
     user_label: EXT_CS
     configuration:
       pad_initial_level: High
+  IOXP_INT:
+    name: PB21
+    definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::pad::PB21
+    mode: Digital input
+    user_label: IOXP_INT
+    configuration: null
   EXT_MISO:
     name: PA22
     definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::pad::PA22
@@ -1429,11 +1537,11 @@ pads:
     mode: Digital output
     user_label: LATCH_IN
     configuration: null
-  INTOUT:
+  INDEX:
     name: PB30
     definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::pad::PB30
-    mode: Digital output
-    user_label: INTOUT
+    mode: Digital input
+    user_label: INDEX
     configuration: null
 toolchain_options: []
 static_files: []

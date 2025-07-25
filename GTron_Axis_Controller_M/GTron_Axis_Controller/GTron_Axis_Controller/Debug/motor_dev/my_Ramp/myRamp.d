@@ -147,13 +147,14 @@ motor_dev/my_Ramp/myRamp.d motor_dev/my_Ramp/myRamp.o: \
  ../hal/include/hpl_usart_async.h ../hal/include/hpl_usart.h \
  ../hal/include/hpl_irq.h ../hal/utils/include/utils_ringbuffer.h \
  ../hal/utils/include/compiler.h ../hal/utils/include/utils_assert.h \
- ../hal/include/hal_usart_sync.h ../hal/include/hpl_usart_sync.h \
- ../hal/include/hpl_usart.h ../hal/include/hal_pwm.h \
- ../hal/include/hpl_pwm.h ../hpl/tc/hpl_tc_base.h \
- ../hal/include/hpl_timer.h ../hal/include/hal_timer.h \
- ../hal/utils/include/utils_list.h ../hal/include/hal_can_async.h \
- ../hal/include/hpl_can.h ../hal/include/hpl_can_async.h \
- ../hal/utils/include/utils.h ../stdio_start.h \
+ ../hpl/usart/usart_lite.h ../hal/include/hal_usart_sync.h \
+ ../hal/include/hpl_usart_sync.h ../hal/include/hpl_usart.h \
+ ../hal/include/hal_pwm.h ../hal/include/hpl_pwm.h \
+ ../hpl/tc/hpl_tc_base.h ../hal/include/hpl_timer.h \
+ ../hal/include/hal_timer.h ../hal/utils/include/utils_list.h \
+ ../hal/include/hal_can_async.h ../hal/include/hpl_can.h \
+ ../hal/include/hpl_can_async.h ../hal/utils/include/utils.h \
+ ../stdio_start.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\stdio.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\lib\gcc\arm-none-eabi\6.3.1\include\stdarg.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\types.h \
@@ -570,6 +571,8 @@ C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n
 ../hal/utils/include/compiler.h:
 
 ../hal/utils/include/utils_assert.h:
+
+../hpl/usart/usart_lite.h:
 
 ../hal/include/hal_usart_sync.h:
 

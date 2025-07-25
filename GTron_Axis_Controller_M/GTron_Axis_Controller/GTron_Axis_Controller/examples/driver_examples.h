@@ -22,6 +22,8 @@ void UART_0_example(void);
 
 void EXT_FLASH_SPI_example(void);
 
+void TMC2209_UART_example(void);
+
 void TARGET_IO_example(void);
 
 void PWM_0_example(void);

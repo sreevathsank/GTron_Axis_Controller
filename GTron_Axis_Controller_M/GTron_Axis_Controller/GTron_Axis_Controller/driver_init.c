@@ -96,6 +96,19 @@ void EXTERNAL_IRQ_0_init(void)
 	gpio_set_pin_function(ROTENC_COUNT, PINMUX_PA19A_EIC_EXTINT3);
 
 	// Set pin direction to input
+	gpio_set_pin_direction(IOXP_INT, GPIO_DIRECTION_IN);
+
+	gpio_set_pin_pull_mode(IOXP_INT,
+	                       // <y> Pull configuration
+	                       // <id> pad_pull_config
+	                       // <GPIO_PULL_OFF"> Off
+	                       // <GPIO_PULL_UP"> Pull-up
+	                       // <GPIO_PULL_DOWN"> Pull-down
+	                       GPIO_PULL_OFF);
+
+	gpio_set_pin_function(IOXP_INT, PINMUX_PB21A_EIC_EXTINT5);
+
+	// Set pin direction to input
 	gpio_set_pin_direction(ROTENC_DIR, GPIO_DIRECTION_IN);
 
 	gpio_set_pin_pull_mode(ROTENC_DIR,
@@ -148,9 +161,9 @@ void EXTERNAL_IRQ_0_init(void)
 	gpio_set_pin_function(LIM_LFT, PINMUX_PC20A_EIC_EXTINT12);
 
 	// Set pin direction to input
-	gpio_set_pin_direction(LIM_HOME, GPIO_DIRECTION_IN);
+	gpio_set_pin_direction(DIAG, GPIO_DIRECTION_IN);
 
-	gpio_set_pin_pull_mode(LIM_HOME,
+	gpio_set_pin_pull_mode(DIAG,
 	                       // <y> Pull configuration
 	                       // <id> pad_pull_config
 	                       // <GPIO_PULL_OFF"> Off
@@ -158,7 +171,20 @@ void EXTERNAL_IRQ_0_init(void)
 	                       // <GPIO_PULL_DOWN"> Pull-down
 	                       GPIO_PULL_OFF);
 
-	gpio_set_pin_function(LIM_HOME, PINMUX_PC21A_EIC_EXTINT13);
+	gpio_set_pin_function(DIAG, PINMUX_PC21A_EIC_EXTINT13);
+
+	// Set pin direction to input
+	gpio_set_pin_direction(INDEX, GPIO_DIRECTION_IN);
+
+	gpio_set_pin_pull_mode(INDEX,
+	                       // <y> Pull configuration
+	                       // <id> pad_pull_config
+	                       // <GPIO_PULL_OFF"> Off
+	                       // <GPIO_PULL_UP"> Pull-up
+	                       // <GPIO_PULL_DOWN"> Pull-down
+	                       GPIO_PULL_OFF);
+
+	gpio_set_pin_function(INDEX, PINMUX_PB30A_EIC_EXTINT14);
 
 	ext_irq_init();
 }
@@ -300,6 +326,33 @@ void EXT_FLASH_SPI_CLOCK_init(void)
 	hri_mclk_set_APBCMASK_SERCOM3_bit(MCLK);
 }
 
+/**
+ * \brief USART Clock initialization function
+ *
+ * Enables register interface and peripheral clock
+ */
+void TMC2209_UART_CLOCK_init()
+{
+
+	hri_gclk_write_PCHCTRL_reg(GCLK, SERCOM5_GCLK_ID_CORE, CONF_GCLK_SERCOM5_CORE_SRC | (1 << GCLK_PCHCTRL_CHEN_Pos));
+	hri_gclk_write_PCHCTRL_reg(GCLK, SERCOM5_GCLK_ID_SLOW, CONF_GCLK_SERCOM5_SLOW_SRC | (1 << GCLK_PCHCTRL_CHEN_Pos));
+
+	hri_mclk_set_APBCMASK_SERCOM5_bit(MCLK);
+}
+
+/**
+ * \brief USART pinmux initialization function
+ *
+ * Set each required pin to USART functionality
+ */
+void TMC2209_UART_PORT_init()
+{
+
+	gpio_set_pin_function(TMC2209_UART_TX, PINMUX_PB16C_SERCOM5_PAD0);
+
+	gpio_set_pin_function(TMC2209_UART_RX, PINMUX_PB17C_SERCOM5_PAD1);
+}
+
 void TARGET_IO_PORT_init(void)
 {
 
@@ -394,6 +447,20 @@ void CAN_1_init(void)
 void system_init(void)
 {
 	init_mcu();
+
+	// GPIO on PA03
+
+	gpio_set_pin_level(IOXP_CS,
+	                   // <y> Initial level
+	                   // <id> pad_initial_level
+	                   // <false"> Low
+	                   // <true"> High
+	                   false);
+
+	// Set pin direction to output
+	gpio_set_pin_direction(IOXP_CS, GPIO_DIRECTION_OUT);
+
+	gpio_set_pin_function(IOXP_CS, GPIO_PIN_FUNCTION_OFF);
 
 	// GPIO on PA07
 
@@ -536,6 +603,20 @@ void system_init(void)
 
 	gpio_set_pin_function(FPGA_CRESET_B, GPIO_PIN_FUNCTION_OFF);
 
+	// GPIO on PB19
+
+	gpio_set_pin_level(INDEX_SEL,
+	                   // <y> Initial level
+	                   // <id> pad_initial_level
+	                   // <false"> Low
+	                   // <true"> High
+	                   false);
+
+	// Set pin direction to output
+	gpio_set_pin_direction(INDEX_SEL, GPIO_DIRECTION_OUT);
+
+	gpio_set_pin_function(INDEX_SEL, GPIO_PIN_FUNCTION_OFF);
+
 	// GPIO on PB20
 
 	gpio_set_pin_level(EXT_CS,
@@ -564,20 +645,6 @@ void system_init(void)
 
 	gpio_set_pin_function(LATCH_IN, GPIO_PIN_FUNCTION_OFF);
 
-	// GPIO on PB30
-
-	gpio_set_pin_level(INTOUT,
-	                   // <y> Initial level
-	                   // <id> pad_initial_level
-	                   // <false"> Low
-	                   // <true"> High
-	                   false);
-
-	// Set pin direction to output
-	gpio_set_pin_direction(INTOUT, GPIO_DIRECTION_OUT);
-
-	gpio_set_pin_function(INTOUT, GPIO_PIN_FUNCTION_OFF);
-
 	ADC_0_init();
 
 	EXTERNAL_IRQ_0_init();
@@ -590,6 +657,10 @@ void system_init(void)
 	EXT_FLASH_SPI_CLOCK_init();
 	EXT_FLASH_SPI_init();
 	EXT_FLASH_SPI_PORT_init();
+
+	TMC2209_UART_CLOCK_init();
+	TMC2209_UART_init();
+	TMC2209_UART_PORT_init();
 
 	TARGET_IO_init();
 

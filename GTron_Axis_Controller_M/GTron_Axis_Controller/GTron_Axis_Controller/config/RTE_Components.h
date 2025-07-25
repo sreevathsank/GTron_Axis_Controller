@@ -39,7 +39,7 @@
  *
  * \acme_license_stop
  *
- * Project: Axis_Controller_Beta_V1R0
+ * Project: GTron_Axis_Controller
  * Target:  ATSAMC21N18A 
  *
  **/

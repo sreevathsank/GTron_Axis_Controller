@@ -28,6 +28,7 @@ extern "C" {
 #include <spi_lite.h>
 #include <hal_usart_async.h>
 #include <spi_lite.h>
+#include <usart_lite.h>
 
 #include <hal_usart_sync.h>
 #include <hal_pwm.h>
@@ -63,6 +64,10 @@ void UART_0_init(void);
 void   EXT_FLASH_SPI_PORT_init(void);
 void   EXT_FLASH_SPI_CLOCK_init(void);
 int8_t EXT_FLASH_SPI_init(void);
+
+void   TMC2209_UART_PORT_init(void);
+void   TMC2209_UART_CLOCK_init(void);
+int8_t TMC2209_UART_init(void);
 
 void TARGET_IO_PORT_init(void);
 void TARGET_IO_CLOCK_init(void);

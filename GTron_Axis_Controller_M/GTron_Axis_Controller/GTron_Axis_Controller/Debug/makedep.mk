@@ -102,6 +102,8 @@ hpl\spi\spi_lite.c
 
 hpl\tc\hpl_tc.c
 
+hpl\usart\usart_lite.c
+
 main.c
 
 motor_dev\my_Ramp\myRamp.c

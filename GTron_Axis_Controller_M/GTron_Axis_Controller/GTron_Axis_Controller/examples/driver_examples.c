@@ -36,6 +36,10 @@ static void button_on_PA19_pressed(void)
 {
 }
 
+static void button_on_PB21_pressed(void)
+{
+}
+
 static void button_on_PC16_pressed(void)
 {
 }
@@ -56,6 +60,10 @@ static void button_on_PC21_pressed(void)
 {
 }
 
+static void button_on_PB30_pressed(void)
+{
+}
+
 /**
  * Example of using EXTERNAL_IRQ_0
  */
@@ -65,11 +73,13 @@ void EXTERNAL_IRQ_0_example(void)
 	ext_irq_register(PIN_PA17, button_on_PA17_pressed);
 	ext_irq_register(PIN_PA18, button_on_PA18_pressed);
 	ext_irq_register(PIN_PA19, button_on_PA19_pressed);
+	ext_irq_register(PIN_PB21, button_on_PB21_pressed);
 	ext_irq_register(PIN_PC16, button_on_PC16_pressed);
 	ext_irq_register(PIN_PC17, button_on_PC17_pressed);
 	ext_irq_register(PIN_PC18, button_on_PC18_pressed);
 	ext_irq_register(PIN_PC20, button_on_PC20_pressed);
 	ext_irq_register(PIN_PC21, button_on_PC21_pressed);
+	ext_irq_register(PIN_PB30, button_on_PB30_pressed);
 }
 
 /**
@@ -119,6 +129,66 @@ static uint8_t example_EXT_FLASH_SPI[12] = "Hello World!";
 void EXT_FLASH_SPI_example(void)
 {
 	EXT_FLASH_SPI_write_block((void *)example_EXT_FLASH_SPI, 12);
+}
+
+/*
+ * \Write data to usart interface
+ *
+ * \param[in] buf Data to write to usart
+ * \param[in] length The number of bytes to write
+ *
+ * \return The number of bytes written.
+ */
+static uint32_t TMC2209_UART_write(const uint8_t *const buf, const uint16_t length)
+{
+	uint32_t offset = 0;
+
+	ASSERT(buf && length);
+
+	while (!TMC2209_UART_is_byte_sent())
+		;
+	do {
+		TMC2209_UART_write_byte(buf[offset]);
+		while (!TMC2209_UART_is_byte_sent())
+			;
+	} while (++offset < length);
+
+	return offset;
+}
+
+/*
+ * \Read data from usart interface
+ *
+ * \param[in] buf A buffer to read data to
+ * \param[in] length The size of a buffer
+ *
+ * \return The number of bytes read.
+ */
+static uint32_t TMC2209_UART_read(uint8_t *const buf, const uint16_t length)
+{
+	uint32_t offset = 0;
+
+	ASSERT(buf && length);
+
+	do {
+		while (!TMC2209_UART_is_byte_received())
+			;
+		buf[offset] = TMC2209_UART_read_byte();
+	} while (++offset < length);
+
+	return offset;
+}
+
+/**
+ * Example of using TMC2209_UART to write the data which received from the usart interface to IO.
+ */
+void TMC2209_UART_example(void)
+{
+	uint8_t data[2];
+
+	if (TMC2209_UART_read(data, sizeof(data)) == 2) {
+		TMC2209_UART_write(data, 2);
+	}
 }
 
 /**
