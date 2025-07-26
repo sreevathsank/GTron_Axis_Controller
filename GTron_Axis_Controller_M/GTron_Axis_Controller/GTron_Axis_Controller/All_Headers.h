@@ -38,5 +38,6 @@
 #include "Bring_Up/Motion/Motion.h"
 #include "Code_Dump/McuSwReset.h"
 #include "Code_Dump/tlv_flash.h"
+#include "Bring_Up/IO_Expander/spi_io_expander.h"
 
 #endif /* ALL_HEADERS_H_ */

@@ -51,6 +51,7 @@ can_union_type can_rx_frame;
 #define Z				0x03	// Z Axis.
 #define RF				0x04	// Rotary Fixture Axis. 
 #define FP				0x05	// Front Panel.
+#define LINEAR_ENC_Y	6
 /** @} */
 
 /** 
@@ -64,10 +65,6 @@ can_union_type can_rx_frame;
  * -# mot:  Motor	(9b)
  * @{ */
 #define CAN_ID(ad, cmd, typ, mot)	((ad << 25) | (cmd << 17) | (typ << 9) | (mot))
-#define GET_AD(msg_id)              ( (msg_id >> 25) & 0x0F )   // Gets the Most Significant 4 bits from the Extended CAN Message ID.
-#define GET_CMD(msg_id)             ( (msg_id >> 17) & 0xFF )
-#define GET_TYP(msg_id)             ( (msg_id >> 9) & 0xFF )
-#define GET_MOT(msg_id)             ( msg_id & 0x1FF )          // Get the Least Significant 9 bits from the Extended CAN Message ID.
 /** @} */
 
 #define AXIS_CAN_MSG_ID(axis, inst) \
@@ -91,84 +88,6 @@ can_union_type can_rx_frame;
 #define CHK_FW_PARAM						0x80
 #define WR_FW_PARAM							0x82
 #define RD_FW_PARAM							0x84
-
-/** 
- * Enums for GTron CAN Message Structure.
- **/
-typedef enum
-{
-	TOP_DEFAULT = 0,
-	TOP_REELER_MOTOR = 1,
-	TOP_GUIDE_MOTOR = 2,
-	TOP_VERITCAL_ARRESTOR_MOTOR = 3,
-	TOP_GUIDE_OPEN_LIMIT = 4,
-	TOP_GUIDE_CLOSE_LIMIT = 5,
-	TOP_REELER_ENCODER = 6,
-	TOP_GUIDE_ENCODER = 7,
-	NO_OF_AXC_TOP_PERIPHERALS
-}AxC_Top_Peripherals_t;
-
-typedef enum
-{
-	BOT_DEFAULT = 0,
-	BOT_REELER_MOTOR = 1,
-	BOT_GUIDE_MOTOR = 2,
-	BOT_VERITCAL_ARRESTOR_MOTOR = 3,
-	BOT_GUIDE_OPEN_LIMIT = 4,
-	BOT_GUIDE_CLOSE_LIMIT = 5,
-	BOT_REELER_ENCODER = 6,
-	BOT_GUIDE_ENCODER = 7,
-	NO_OF_AXC_BOT_PERIPHERALS
-}AxC_Bot_Peripherals_t;
-
-typedef enum
-{
-	AXC_INITIALIZE = 0,
-	AXC_START = 1,
-	AXC_STOP = 2,
-	AXC_ENABLE = 3,
-	AXC_DISABLE = 4,
-	AXC_VELOCITY = 5,
-	AXC_ROTATE = 6,
-	AXC_MOVE_TO = 7,
-	AXC_MOVE_BY = 8,
-	AXC_MOVE_TO_OPEN_LIMIT = 9,
-	AXC_MOVE_TO_CLOSE_LIMIT = 10,
-	AXC_MOVE_DONE = 11,
-	AXC_TEETH = 12,
-	AXC_INITIAL_POSITION = 13,
-	AXC_PRESSED = 14,
-	AXC_NOT_PRESSED = 15,
-	AXC_STATUS_CHECK = 16,
-	NO_OF_AXC_OPERAITONS
-}AxC_Operations_t;
-
-/** 
- * GTron AxC Message IDs.
- **/
-
-
-#define TOP_REELER							0x108
-#define TOP_GUIDE							0x109
-#define BOT_REELER							0x10A
-#define BOT_GUIDE							0x10B
-
-#define REPLY_TOP_REELER					0x10C
-#define REPLY_TOP_GUIDE						0x10D
-#define REPLY_BOT_REELER					0x10E
-#define REPLY_BOT_GUIDE						0x10F
-
-
-#define TOP_REELER_ID						CAN_ID(0x00, 0x00, 0x00, TOP_REELER)
-#define TOP_GUIDE_ID						CAN_ID(0x00, 0x00, 0x00, TOP_GUIDE)
-#define BOT_REELER_ID						CAN_ID(0x00, 0x00, 0x00, BOT_REELER)
-#define BOT_GUIDE_ID						CAN_ID(0x00, 0x00, 0x00, BOT_GUIDE)
-
-#define REPLY_TOP_REELER_ID					CAN_ID(0x00, 0x00, 0x00, REPLY_TOP_REELER)
-#define REPLY_TOP_GUIDE_ID					CAN_ID(0x00, 0x00, 0x00, REPLY_TOP_GUIDE)
-#define REPLY_BOT_REELER_ID					CAN_ID(0x00, 0x00, 0x00, REPLY_BOT_REELER)
-#define REPLY_BOT_GUIDE_ID					CAN_ID(0x00, 0x00, 0x00, REPLY_BOT_GUIDE)
-
 
 /** 
  * Knob Messages

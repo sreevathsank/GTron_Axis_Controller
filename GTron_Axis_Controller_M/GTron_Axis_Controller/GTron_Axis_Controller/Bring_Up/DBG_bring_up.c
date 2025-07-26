@@ -186,23 +186,24 @@ void init_UART(void)
 void check_Current_Axis_ADC(void)
 {
 	uint32_t adc_sum = 0, adc_result;
-	//delay_ms(100);
+	uint32_t adc_max = 0, adc_min = UINT32_MAX;
+	
 	for(int32_t iter = 0; iter < ADC_NUM_READINGS; iter++)
 	{
 		adc_sync_read_channel(&ADC_0, ADC_CHANNEL, adc_reading.adc_8bit, ADC_READ_LENGTH);
+		if(adc_reading.adc_16bit > adc_max)
+		{
+			adc_max = adc_reading.adc_16bit;
+		}
+		else if(adc_reading.adc_16bit < adc_min)
+		{
+			adc_min = adc_reading.adc_16bit;
+		}
 		adc_sum += adc_reading.adc_16bit;
-		//delay_us(50);
 	}
-	adc_result = (adc_sum / ADC_NUM_READINGS);
-	if((adc_result > X_AXIS_ADC_MIN) && (adc_result < X_AXIS_ADC_MAX))
-	{
-		axis_id = X_AXIS;
-	}
-	else if((adc_result > Y_AXIS_ADC_MIN) && (adc_result < Y_AXIS_ADC_MAX))
-	{
-		axis_id = Y_AXIS;
-	}
-	else if((adc_result > Z_AXIS_ADC_MIN) && (adc_result < Z_AXIS_ADC_MAX))
+	adc_result = (uint32_t)(adc_sum / ADC_NUM_READINGS);
+	PRINTF_DEBUG ? printf("\nADC Max = %ld | ADC Avg = %ld | ADC Min = %ld\n", (uint32_t)adc_max, (uint32_t)adc_result, (uint32_t)adc_min) : 0;
+	//if( (adc_result >= GTRON_AXC_ADC_MIN) && (adc_result <= GTRON_AXC_ADC_MAX) )
 	{
 		axis_id = Z_AXIS;
 	}

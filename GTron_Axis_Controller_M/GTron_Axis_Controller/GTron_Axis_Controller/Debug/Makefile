@@ -36,6 +36,7 @@ SUBDIRS :=  \
 ../Bring_Up/ \
 ../Bring_Up/CAN/ \
 ../Bring_Up/Motion/ \
+../Bring_Up/IO_Expander \
 ../config/ \
 ../Device_Startup/ \
 ../documentation/ \
@@ -89,6 +90,7 @@ C_SRCS +=  \
 ../Bring_Up/CAN/MCD_v3.c \
 ../Bring_Up/CAN/TMCL_IDE_reply.c \
 ../Bring_Up/DBG_bring_up.c \
+../Bring_Up/IO_Expander/spi_io_expander.c \
 ../Bring_Up/Motion/Motion.c \
 ../Bring_Up/spi.c \
 ../Code_Dump/ext_flash.c \
@@ -163,6 +165,7 @@ Bring_Up/CAN/IMM_CAN_Write.o \
 Bring_Up/CAN/MCD_v3.o \
 Bring_Up/CAN/TMCL_IDE_reply.o \
 Bring_Up/DBG_bring_up.o \
+Bring_Up/IO_Expander/spi_io_expander.o \
 Bring_Up/Motion/Motion.o \
 Bring_Up/spi.o \
 Code_Dump/ext_flash.o \
@@ -230,6 +233,7 @@ Bring_Up/CAN/IMM_CAN_Write.o \
 Bring_Up/CAN/MCD_v3.o \
 Bring_Up/CAN/TMCL_IDE_reply.o \
 Bring_Up/DBG_bring_up.o \
+Bring_Up/IO_Expander/spi_io_expander.o \
 Bring_Up/Motion/Motion.o \
 Bring_Up/spi.o \
 Code_Dump/ext_flash.o \
@@ -297,6 +301,7 @@ Bring_Up/CAN/IMM_CAN_Write.d \
 Bring_Up/CAN/MCD_v3.d \
 Bring_Up/CAN/TMCL_IDE_reply.d \
 Bring_Up/DBG_bring_up.d \
+Bring_Up/IO_Expander/spi_io_expander.d \
 Bring_Up/Motion/Motion.d \
 Bring_Up/spi.d \
 Code_Dump/ext_flash.d \
@@ -364,6 +369,7 @@ Bring_Up/CAN/IMM_CAN_Write.d \
 Bring_Up/CAN/MCD_v3.d \
 Bring_Up/CAN/TMCL_IDE_reply.d \
 Bring_Up/DBG_bring_up.d \
+Bring_Up/IO_Expander/spi_io_expander.d \
 Bring_Up/Motion/Motion.d \
 Bring_Up/spi.d \
 Code_Dump/ext_flash.d \
@@ -482,6 +488,13 @@ Bring_Up/CAN/TMCL_IDE_reply.o: ../Bring_Up/CAN/TMCL_IDE_reply.c
 	
 
 Bring_Up/DBG_bring_up.o: ../Bring_Up/DBG_bring_up.c
+	@echo Building file: $<
+	@echo Invoking: ARM/GNU C Compiler : 6.3.1
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\arm\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe$(QUOTE)  -x c -mthumb -D__SAMC21N18A__ -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\arm\CMSIS\5.4.0\CMSIS\Core\Include" -I"../Config" -I".." -I"../examples" -I"../hal/include" -I"../hal/utils/include" -I"../hpl/adc" -I"../hpl/can" -I"../hpl/core" -I"../hpl/divas" -I"../hpl/dmac" -I"../hpl/eic" -I"../hpl/gclk" -I"../hpl/mclk" -I"../hpl/osc32kctrl" -I"../hpl/oscctrl" -I"../hpl/pm" -I"../hpl/port" -I"../hpl/sercom" -I"../hpl/spi" -I"../hpl/tc" -I"../hpl/usart" -I"../hri" -I"../include" -I"../stdio_redirect" -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n\include"  -Og -ffunction-sections -mlong-calls -g3 -Wall -mcpu=cortex-m0plus -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+Bring_Up/IO_Expander/spi_io_expander.o: ../Bring_Up/IO_Expander/spi_io_expander.c
 	@echo Building file: $<
 	@echo Invoking: ARM/GNU C Compiler : 6.3.1
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\arm\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe$(QUOTE)  -x c -mthumb -D__SAMC21N18A__ -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\arm\CMSIS\5.4.0\CMSIS\Core\Include" -I"../Config" -I".." -I"../examples" -I"../hal/include" -I"../hal/utils/include" -I"../hpl/adc" -I"../hpl/can" -I"../hpl/core" -I"../hpl/divas" -I"../hpl/dmac" -I"../hpl/eic" -I"../hpl/gclk" -I"../hpl/mclk" -I"../hpl/osc32kctrl" -I"../hpl/oscctrl" -I"../hpl/pm" -I"../hpl/port" -I"../hpl/sercom" -I"../hpl/spi" -I"../hpl/tc" -I"../hpl/usart" -I"../hri" -I"../include" -I"../stdio_redirect" -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n\include"  -Og -ffunction-sections -mlong-calls -g3 -Wall -mcpu=cortex-m0plus -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 

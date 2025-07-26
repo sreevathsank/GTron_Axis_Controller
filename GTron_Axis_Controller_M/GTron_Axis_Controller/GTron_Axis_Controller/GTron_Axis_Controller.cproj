@@ -205,7 +205,7 @@
           <AcmeProjectActionInfo Action="File" Source="stdio_start.h" IsConfig="false" Hash="5j2k69zdoQpbzluEyr/rHQ" />
           <AcmeProjectActionInfo Action="File" Source="atmel_start.h" IsConfig="false" Hash="TNU9VszFRFbDuMJ3vToUzg" />
           <AcmeProjectActionInfo Action="File" Source="atmel_start.c" IsConfig="false" Hash="lom1/YOY9m/TDACgnyb3yA" />
-          <AcmeProjectActionInfo Action="File" Source="config/hpl_adc_config.h" IsConfig="true" Hash="9N/8P4x8C7N181+RzRDYTg" />
+          <AcmeProjectActionInfo Action="File" Source="config/hpl_adc_config.h" IsConfig="true" Hash="dqzITiKPXQEV9h5NdjJ6Rg" />
           <AcmeProjectActionInfo Action="File" Source="config/hpl_can_config.h" IsConfig="true" Hash="k9m7056l0VskAMXmrf8OEw" />
           <AcmeProjectActionInfo Action="File" Source="config/hpl_dmac_config.h" IsConfig="true" Hash="FVBa5+m2dElV1O7IF+cxMw" />
           <AcmeProjectActionInfo Action="File" Source="config/hpl_eic_config.h" IsConfig="true" Hash="xV6VK48OwccrLiDF3qm93g" />
@@ -223,7 +223,7 @@
       </AcmeProjectConfig>
     </AcmeProjectConfig>
     <avrtool>com.atmel.avrdbg.tool.atmelice</avrtool>
-    <avrtoolserialnumber>J42700054980</avrtoolserialnumber>
+    <avrtoolserialnumber>J42700000524</avrtoolserialnumber>
     <avrdeviceexpectedsignature>0x11011420</avrdeviceexpectedsignature>
     <avrtoolinterface>SWD</avrtoolinterface>
     <com_atmel_avrdbg_tool_atmelice>
@@ -234,7 +234,7 @@
         <InterfaceName>SWD</InterfaceName>
       </ToolOptions>
       <ToolType>com.atmel.avrdbg.tool.atmelice</ToolType>
-      <ToolNumber>J42700054980</ToolNumber>
+      <ToolNumber>J42700000524</ToolNumber>
       <ToolName>Atmel-ICE</ToolName>
     </com_atmel_avrdbg_tool_atmelice>
     <avrtoolinterfaceclock>2000000</avrtoolinterfaceclock>
@@ -554,6 +554,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Bring_Up\DBG_bring_up.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Bring_Up\IO_Expander\spi_io_expander.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Bring_Up\IO_Expander\spi_io_expander.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Bring_Up\Motion\Motion.c">
@@ -1173,6 +1179,7 @@
     <Folder Include="Bring_Up\" />
     <Folder Include="Bring_Up\CAN\" />
     <Folder Include="Bring_Up\Motion\" />
+    <Folder Include="Bring_Up\IO_Expander" />
     <Folder Include="config\" />
     <Folder Include="Device_Startup\" />
     <Folder Include="documentation\" />

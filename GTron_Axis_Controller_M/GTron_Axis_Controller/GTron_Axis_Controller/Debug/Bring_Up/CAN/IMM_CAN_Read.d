@@ -192,8 +192,8 @@ Bring_Up/CAN/IMM_CAN_Read.d Bring_Up/CAN/IMM_CAN_Read.o: \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\string.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\xlocale.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\string.h \
- ../Code_Dump/tlv_flash.h ../Bring_Up/CAN/TMCL_IDE_reply.h \
- ../Bring_Up/CAN/IMM_CAN.h
+ ../Code_Dump/tlv_flash.h ../Bring_Up/IO_Expander/spi_io_expander.h \
+ ../Bring_Up/CAN/TMCL_IDE_reply.h ../Bring_Up/CAN/IMM_CAN.h
 
 ../Bring_Up/CAN/IMM_CAN_Read.h:
 
@@ -712,6 +712,8 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\string.h:
 
 ../Code_Dump/tlv_flash.h:
+
+../Bring_Up/IO_Expander/spi_io_expander.h:
 
 ../Bring_Up/CAN/TMCL_IDE_reply.h:
 

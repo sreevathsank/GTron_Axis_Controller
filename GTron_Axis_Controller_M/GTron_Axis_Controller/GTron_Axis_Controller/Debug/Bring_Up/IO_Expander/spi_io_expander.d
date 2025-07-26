@@ -1,5 +1,7 @@
-Bring_Up/Motion/Motion.d Bring_Up/Motion/Motion.o: \
- ../Bring_Up/Motion/Motion.c ../Bring_Up/Motion/Motion.h ../All_Headers.h \
+Bring_Up/IO_Expander/spi_io_expander.d \
+ Bring_Up/IO_Expander/spi_io_expander.o: \
+ ../Bring_Up/IO_Expander/spi_io_expander.c \
+ ../Bring_Up/IO_Expander/spi_io_expander.h ../All_Headers.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\stdio.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\_ansi.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\newlib.h \
@@ -195,7 +197,7 @@ Bring_Up/Motion/Motion.d Bring_Up/Motion/Motion.o: \
  ../Code_Dump/ext_flash.h ../driver_init.h ../hpl/spi/spi_lite.h \
  ../Code_Dump/tlv_flash.h ../Bring_Up/IO_Expander/spi_io_expander.h
 
-../Bring_Up/Motion/Motion.h:
+../Bring_Up/IO_Expander/spi_io_expander.h:
 
 ../All_Headers.h:
 

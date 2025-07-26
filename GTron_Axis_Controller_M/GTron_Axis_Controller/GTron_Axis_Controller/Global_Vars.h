@@ -37,7 +37,10 @@ typedef enum
 	X_AXIS,
 	Y_AXIS,
 	Z_AXIS,
-	RF_AXIS
+	RF_AXIS,
+	GTRON_AXC_TOP,
+	GTRON_AXC_BOT,
+	NO_OF_AXES
 }axis_current;
 
 typedef union

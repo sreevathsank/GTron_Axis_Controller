@@ -196,7 +196,7 @@ motor_dev/my_Ramp/myRamp.d motor_dev/my_Ramp/myRamp.o: \
  ../SysTick/Systick.h ../Bring_Up/Motion/Motion.h \
  ../Code_Dump/McuSwReset.h ../Code_Dump/tlv_flash.h \
  ../Code_Dump/ext_flash.h ../driver_init.h ../hpl/spi/spi_lite.h \
- ../Code_Dump/tlv_flash.h
+ ../Code_Dump/tlv_flash.h ../Bring_Up/IO_Expander/spi_io_expander.h
 
 ../motor_dev/my_Ramp/myRamp.h:
 
@@ -723,3 +723,5 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../hpl/spi/spi_lite.h:
 
 ../Code_Dump/tlv_flash.h:
+
+../Bring_Up/IO_Expander/spi_io_expander.h:

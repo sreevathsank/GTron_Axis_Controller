@@ -67,7 +67,7 @@ drivers:
       adc_pinmux_positive: ADC AIN9 pin
       adc_prescaler: Peripheral clock divided by 128
       adc_reference: VDDANA
-      adc_resolution: 8-bit
+      adc_resolution: 12-bit
     optional_signals:
     - identifier: ADC_0:AIN/9
       pad: PC01

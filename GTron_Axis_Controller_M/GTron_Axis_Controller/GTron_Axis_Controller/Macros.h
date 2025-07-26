@@ -34,11 +34,14 @@
 
 #define Z_AXIS_ADC_MIN				164
 #define Z_AXIS_ADC_MAX				177
+
+#define GTRON_AXC_ADC_MIN			195
+#define GTRON_AXC_ADC_MAX			208
 /**********************************/	
 
 #define ADC_CHANNEL					0				// ADC Channel to read from.
-#define ADC_READ_LENGTH				1				// No. of bytes to read. 8 bit = 1 | 10 and 12 bits = 2.			
-#define ADC_NUM_READINGS			50				// No. of ADC Readings to average.
+#define ADC_READ_LENGTH				2				// No. of bytes to read. 8 bit = 1 | 10 and 12 bits = 2.			
+#define ADC_NUM_READINGS			500				// No. of ADC Readings to average.
 
 #define ADC_RAW_NUM_READINGS		1000			// No. of ADC RAW value read from TMC4671 for ADC offset calibration.
 

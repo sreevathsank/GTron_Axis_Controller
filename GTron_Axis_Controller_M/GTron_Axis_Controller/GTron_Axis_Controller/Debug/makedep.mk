@@ -16,6 +16,8 @@ Bring_Up\CAN\TMCL_IDE_reply.c
 
 Bring_Up\DBG_bring_up.c
 
+Bring_Up\IO_Expander\spi_io_expander.c
+
 Bring_Up\Motion\Motion.c
 
 Bring_Up\spi.c

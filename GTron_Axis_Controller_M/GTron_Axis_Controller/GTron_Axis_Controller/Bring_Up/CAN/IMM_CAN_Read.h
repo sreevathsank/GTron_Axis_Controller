@@ -40,5 +40,6 @@ void can_Message_Operational_v3_YAxis(uint32_t message_Id, int32_t data);
 
 void can_Message_Operational_v3_ZAxis(uint32_t message_Id, int32_t data);
 
+void can_Message_Process_GTron_Peripheral_Byte(axis_current curr_axis, uint32_t message_Id, int32_t data);
 
 #endif /* IMM_CAN_H_ */

@@ -113,7 +113,7 @@ int32_t adc_sync_read_channel(struct adc_sync_descriptor *const descr, const uin
 
 		result         = _adc_sync_read_channel_data(&descr->device, channel);
 		buffer[offset] = result;
-	if (1 < data_size) {
+		if (1 < data_size) {
 			buffer[offset + 1] = result >> 8;
 		}
 		offset += data_size;
