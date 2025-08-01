@@ -1007,20 +1007,31 @@ void can_Message_Operational_v3_ZAxis(uint32_t message_Id, int32_t data)
 			PRINTF_DEBUG && printf(" Max_Pos_Speed_Z");
 		break;
 		case RFS_START_Z:
+			if(axis_params.rotary_axis_enabled)
+			{
+				ext_irq_enable(LINENC_Z);
+				int32_t linear_enc_dir = (read_tlv_flash(tlv_ptr, LINEAR_ENCODER_DIRECTION_FLASH, tlv_traversal) == 0) ? ABN_ENC_REVERSE_DIRECTION : ABN_ENC_FORWARD_DIRECTION;
+				tmc4671_writeInt(MOTOR, TMC4671_ABN_2_DECODER_MODE, (linear_enc_dir | 256) );
+			}
 			limit_variables.homing = true;
 			velocity_limit = 0;
 			while(tmc4671_getVelocityLimit(MOTOR) != 0x00)
 			{
-				tmc4671_setVelocityLimit(MOTOR, 0);	
+				tmc4671_setVelocityLimit(MOTOR, 0);
 				PRINTF_DEBUG && printf("\nRFS Setting Velocity to 0\n");
 			}
 			delay_us(2);
 			if(limit_variables.homing == true)
 			{
 				do_homing_sequence();
+				if(axis_params.rotary_axis_enabled)
+				{
+					limit_variables.lin_enc_z_first_hit = false;
+					ext_irq_enable(LINENC_Z);
+				}
 			}
-			PRINTF_DEBUG && printf(" RFS_START_Z\n");
-	    	reply_MCD_Common(REPLY_ID_Z, Z, 0x64, RFS);
+			PRINTF_DEBUG && printf(" REF_SEARCH_Z\n");
+			reply_MCD_Common(REPLY_ID_Z, Z, 0x64, RFS);
 		break;
 		case RFS_STOP_Z:
 		{
@@ -1405,293 +1416,12 @@ void can_Message_Operational_v3_ZAxis(uint32_t message_Id, int32_t data)
 	return;
 }
 
-void can_Message_Parse_Reeler_Encoder_Operation( axis_current current_axis )
+void can_Message_Process_GTron_Message_Data()
 {
-	AxC_Operations_t operation_byte = (AxC_Operations_t)can_rx_frame.data[1];
-	if(current_axis == GTRON_AXC_TOP)
-	{
-		switch((AxC_Operations_t)operation_byte)
-		{
-			case AXC_INITIALIZE:
-			
-			break;
-			case AXC_ENABLE:
-			
-			break;
-			case AXC_DISABLE:
-			
-			break;
-			case AXC_INITIAL_POSITION:
-			
-			break;
-			default: break;
-		}
-	}
-	else if(current_axis == GTRON_AXC_BOT)
-	{
-		switch((AxC_Operations_t)operation_byte)
-		{
-			case AXC_INITIALIZE:
-			
-			break;
-			case AXC_ENABLE:
-			
-			break;
-			case AXC_DISABLE:
-			
-			break;
-			case AXC_INITIAL_POSITION:
-			
-			break;
-			default: break;
-		}
-	}
-}
-
-void can_Message_Parse_Reeler_Motor_Operation( axis_current current_axis )
-{
-	AxC_Operations_t operation_byte = (AxC_Operations_t)can_rx_frame.data[1];
-	if(current_axis == GTRON_AXC_TOP)
-	{
-		switch((AxC_Operations_t)operation_byte)
-		{
-			case AXC_INITIALIZE:
-			
-			break;
-			case AXC_START:
-			
-			break;
-			case AXC_STOP:
-			
-			break;
-			case AXC_VELOCITY:
-			
-			break;
-			case AXC_ROTATE:
-			
-			break;
-			case AXC_MOVE_TO:
-			
-			break;
-			case AXC_MOVE_BY:
-			
-			break;
-			case AXC_TEETH:
-			
-			break;
-			default: break;
-		}
-	}
-	else if(current_axis == GTRON_AXC_TOP)
-	{
-		switch((AxC_Operations_t)operation_byte)
-		{
-			case AXC_INITIALIZE:
-			
-			break;
-			case AXC_START:
-			
-			break;
-			case AXC_STOP:
-			
-			break;
-			case AXC_VELOCITY:
-			
-			break;
-			case AXC_ROTATE:
-			
-			break;
-			case AXC_MOVE_TO:
-			
-			break;
-			case AXC_MOVE_BY:
-			
-			break;
-			case AXC_TEETH:
-			
-			break;
-			default: break;
-		}
-	}
-}
-
-void can_Message_Parse_Reeler(axis_current current_axis)
-{
-	
-	if(current_axis == GTRON_AXC_TOP)
-	{
-		AxC_Top_Peripherals_t peripheral_byte = (AxC_Top_Peripherals_t)can_rx_frame.data[0];
-		switch((AxC_Top_Peripherals_t)peripheral_byte)
-		{
-			case TOP_DEFAULT: break;
-			case TOP_REELER_MOTOR: 
-				can_Message_Parse_Reeler_Motor_Operation(current_axis);
-			break;
-			case TOP_REELER_ENCODER:
-				can_Message_Parse_Reeler_Encoder_Operation(current_axis);
-			break;
-			default: break;
-		}
-	}
-	else if(current_axis == GTRON_AXC_BOT)
-	{
-		AxC_Bot_Peripherals_t peripheral_byte = (AxC_Bot_Peripherals_t)can_rx_frame.data[0];
-		switch((AxC_Bot_Peripherals_t)peripheral_byte)
-		{
-			case BOT_DEFAULT: break;
-			case BOT_REELER_MOTOR:
-				can_Message_Parse_Reeler_Motor_Operation(current_axis);
-			break;
-			case TOP_REELER_ENCODER:
-				can_Message_Parse_Reeler_Encoder_Operation(current_axis);
-			break;
-			default: break;
-		}
-	}
-	return;
-}
-
-void can_Message_Parse_Guide_Motor(axis_current current_axis, uint32_t peripheral_byte)
-{
-	if(current_axis == GTRON_AXC_TOP)
-	{
-		AxC_Top_Peripherals_t operation_byte = can_rx_frame.data[1];
-		switch(operation_byte)
-		{
-			case AXC_INITIALIZE:
-			
-			break;
-			case AXC_START:
-			
-			break;
-			case AXC_STOP:
-			
-			break;
-			case AXC_VELOCITY:
-			
-			break;
-			case AXC_MOVE_TO:
-			
-			break;
-			case AXC_MOVE_BY:
-			
-			break;
-			case AXC_STATUS_CHECK:
-				
-			break;
-			default: break;
-		}
-	}
-	else if(current_axis == GTRON_AXC_BOT)
-	{
-		AxC_Bot_Peripherals_t operation_byte = can_rx_frame.data[1];
-		switch(operation_byte)
-		{
-			case AXC_INITIALIZE:
-			
-			break;
-			case AXC_START:
-			
-			break;
-			case AXC_STOP:
-			
-			break;
-			case AXC_VELOCITY:
-			
-			break;
-			case AXC_MOVE_TO:
-			
-			break;
-			case AXC_MOVE_BY:
-			
-			break;
-			case AXC_STATUS_CHECK:
-			
-			break;
-			default: break;
-		}
-	}
-	return;
-}
-
-void can_Message_Parse_Guide_Encoder(axis_current current_axis)
-{
-	if(current_axis == GTRON_AXC_TOP)
-	{
-		
-	}
-	else if(current_axis == GTRON_AXC_BOT)
-	{
-		
-	}
-	return;
-}
-
-void can_Message_Parse_Guide(axis_current current_axis, int32_t data)
-{
-	
-	if(current_axis == GTRON_AXC_TOP)
-	{
-		AxC_Top_Peripherals_t peripheral_byte = (AxC_Top_Peripherals_t)can_rx_frame.data[0];
-		switch((AxC_Top_Peripherals_t)peripheral_byte)
-		{
-			case TOP_DEFAULT: break;
-			case TOP_GUIDE_MOTOR:
-			case TOP_VERITCAL_ARRESTOR_MOTOR:
-				
-			break;
-			case TOP_GUIDE_ENCODER:
-				
-			break;
-			default: break;
-		}
-	}
-	else if(current_axis == GTRON_AXC_BOT)
-	{
-		AxC_Bot_Peripherals_t operation_byte = (AxC_Bot_Peripherals_t)can_rx_frame.data[0];
-		switch((AxC_Top_Peripherals_t)operation_byte)
-		{
-			case BOT_DEFAULT: break;
-			case BOT_GUIDE_MOTOR:
-			case BOT_VERITCAL_ARRESTOR_MOTOR:
-			
-			break;
-			case BOT_GUIDE_ENCODER:
-			
-			break;
-			default: break;
-		}
-	}
-	return;
-}
-
-void can_Message_Process_GTron_Peripheral_Byte(axis_current curr_axis, uint32_t message_Id, int32_t data)
-{
-	if(curr_axis == GTRON_AXC_TOP)
-	{
-		switch(message_Id)
-		{
-			case TOP_REELER_ID:
-				
-			break;
-			case TOP_GUIDE_ID:
-				
-			break;
-			default: break;
-		}
-	}
-	else if(curr_axis == GTRON_AXC_BOT)
-	{
-		switch(message_Id)
-		{
-			case BOT_REELER_ID:
-				
-			break;
-			case BOT_GUIDE_ID:
-				
-			break;
-		}
-	}
+	rx_can_cmd_info.id = message_Id;
+	memcpy(rx_can_cmd_info.data, can_rx_frame.data, CAN_DATA_FIELD_LEN);
+	rx_can_cmd_info.value = decoding_CAN_Byte_Data();
+	parse_GTron_CAN_Msg_Data();
 	return;
 }
 
@@ -1724,11 +1454,11 @@ void can_Message_Decode(uint32_t message_Id, int32_t data)
 		break;
 		case GTRON_AXC_TOP:
 			PRINTF_DEBUG && printf("\nReceived by AxC_Top: %x %x %x %x Data %x %x %x %x %x", ad, cmd, typ, mot, can_rx_frame.data[0], can_rx_frame.data[1], can_rx_frame.data[2], can_rx_frame.data[3], can_rx_frame.data[4]);
-			can_Message_Process_GTron_Peripheral_Byte(axis_id, message_Id, data);
+			can_Message_Process_GTron_Message_Data();
 		break;
 		case GTRON_AXC_BOT:
 			PRINTF_DEBUG && printf("\nReceived by AxC_Bot: %x %x %x %x Data %x %x %x %x %x", ad, cmd, typ, mot, can_rx_frame.data[0], can_rx_frame.data[1], can_rx_frame.data[2], can_rx_frame.data[3], can_rx_frame.data[4]);
-			can_Message_Process_GTron_Peripheral_Byte(axis_id, message_Id, data);
+			can_Message_Process_GTron_Message_Data();
 		break;
 		default: break;
 	}

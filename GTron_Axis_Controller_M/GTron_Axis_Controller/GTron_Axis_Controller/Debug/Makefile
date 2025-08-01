@@ -37,6 +37,7 @@ SUBDIRS :=  \
 ../Bring_Up/CAN/ \
 ../Bring_Up/Motion/ \
 ../Bring_Up/IO_Expander \
+../Bring_Up/GTron_Cmd_Parser \
 ../config/ \
 ../Device_Startup/ \
 ../documentation/ \
@@ -78,7 +79,8 @@ SUBDIRS :=  \
 ../TMC-API/tmc/helpers/ \
 ../TMC-API/tmc/ic/ \
 ../TMC-API/tmc/ic/TMC4671/ \
-../TMC-API/tmc/ramp/
+../TMC-API/tmc/ramp/ \
+../tmc2209_uart/
 
 
 # Add inputs and outputs from these tool invocations to the build variables 
@@ -90,6 +92,7 @@ C_SRCS +=  \
 ../Bring_Up/CAN/MCD_v3.c \
 ../Bring_Up/CAN/TMCL_IDE_reply.c \
 ../Bring_Up/DBG_bring_up.c \
+../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.c \
 ../Bring_Up/IO_Expander/spi_io_expander.c \
 ../Bring_Up/Motion/Motion.c \
 ../Bring_Up/spi.c \
@@ -148,7 +151,9 @@ C_SRCS +=  \
 ../TMC-API/tmc/ic/TMC4671/TMC4671.c \
 ../TMC-API/tmc/ramp/LinearRamp.c \
 ../TMC-API/tmc/ramp/LinearRamp1.c \
-../TMC-API/tmc/ramp/Ramp.c
+../TMC-API/tmc/ramp/Ramp.c \
+../tmc2209_uart/TMC2209.c \
+../tmc2209_uart/TMC2209_Simple_Rotation.c
 
 
 PREPROCESSING_SRCS += 
@@ -165,6 +170,7 @@ Bring_Up/CAN/IMM_CAN_Write.o \
 Bring_Up/CAN/MCD_v3.o \
 Bring_Up/CAN/TMCL_IDE_reply.o \
 Bring_Up/DBG_bring_up.o \
+Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.o \
 Bring_Up/IO_Expander/spi_io_expander.o \
 Bring_Up/Motion/Motion.o \
 Bring_Up/spi.o \
@@ -223,7 +229,9 @@ TMC-API/tmc/helpers/Functions.o \
 TMC-API/tmc/ic/TMC4671/TMC4671.o \
 TMC-API/tmc/ramp/LinearRamp.o \
 TMC-API/tmc/ramp/LinearRamp1.o \
-TMC-API/tmc/ramp/Ramp.o
+TMC-API/tmc/ramp/Ramp.o \
+tmc2209_uart/TMC2209.o \
+tmc2209_uart/TMC2209_Simple_Rotation.o
 
 OBJS_AS_ARGS +=  \
 atmel_start.o \
@@ -233,6 +241,7 @@ Bring_Up/CAN/IMM_CAN_Write.o \
 Bring_Up/CAN/MCD_v3.o \
 Bring_Up/CAN/TMCL_IDE_reply.o \
 Bring_Up/DBG_bring_up.o \
+Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.o \
 Bring_Up/IO_Expander/spi_io_expander.o \
 Bring_Up/Motion/Motion.o \
 Bring_Up/spi.o \
@@ -291,7 +300,9 @@ TMC-API/tmc/helpers/Functions.o \
 TMC-API/tmc/ic/TMC4671/TMC4671.o \
 TMC-API/tmc/ramp/LinearRamp.o \
 TMC-API/tmc/ramp/LinearRamp1.o \
-TMC-API/tmc/ramp/Ramp.o
+TMC-API/tmc/ramp/Ramp.o \
+tmc2209_uart/TMC2209.o \
+tmc2209_uart/TMC2209_Simple_Rotation.o
 
 C_DEPS +=  \
 atmel_start.d \
@@ -301,6 +312,7 @@ Bring_Up/CAN/IMM_CAN_Write.d \
 Bring_Up/CAN/MCD_v3.d \
 Bring_Up/CAN/TMCL_IDE_reply.d \
 Bring_Up/DBG_bring_up.d \
+Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.d \
 Bring_Up/IO_Expander/spi_io_expander.d \
 Bring_Up/Motion/Motion.d \
 Bring_Up/spi.d \
@@ -359,7 +371,9 @@ TMC-API/tmc/helpers/Functions.d \
 TMC-API/tmc/ic/TMC4671/TMC4671.d \
 TMC-API/tmc/ramp/LinearRamp.d \
 TMC-API/tmc/ramp/LinearRamp1.d \
-TMC-API/tmc/ramp/Ramp.d
+TMC-API/tmc/ramp/Ramp.d \
+tmc2209_uart/TMC2209.d \
+tmc2209_uart/TMC2209_Simple_Rotation.d
 
 C_DEPS_AS_ARGS +=  \
 atmel_start.d \
@@ -369,6 +383,7 @@ Bring_Up/CAN/IMM_CAN_Write.d \
 Bring_Up/CAN/MCD_v3.d \
 Bring_Up/CAN/TMCL_IDE_reply.d \
 Bring_Up/DBG_bring_up.d \
+Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.d \
 Bring_Up/IO_Expander/spi_io_expander.d \
 Bring_Up/Motion/Motion.d \
 Bring_Up/spi.d \
@@ -427,7 +442,9 @@ TMC-API/tmc/helpers/Functions.d \
 TMC-API/tmc/ic/TMC4671/TMC4671.d \
 TMC-API/tmc/ramp/LinearRamp.d \
 TMC-API/tmc/ramp/LinearRamp1.d \
-TMC-API/tmc/ramp/Ramp.d
+TMC-API/tmc/ramp/Ramp.d \
+tmc2209_uart/TMC2209.d \
+tmc2209_uart/TMC2209_Simple_Rotation.d
 
 OUTPUT_FILE_PATH +=GTron_Axis_Controller.elf
 
@@ -488,6 +505,13 @@ Bring_Up/CAN/TMCL_IDE_reply.o: ../Bring_Up/CAN/TMCL_IDE_reply.c
 	
 
 Bring_Up/DBG_bring_up.o: ../Bring_Up/DBG_bring_up.c
+	@echo Building file: $<
+	@echo Invoking: ARM/GNU C Compiler : 6.3.1
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\arm\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe$(QUOTE)  -x c -mthumb -D__SAMC21N18A__ -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\arm\CMSIS\5.4.0\CMSIS\Core\Include" -I"../Config" -I".." -I"../examples" -I"../hal/include" -I"../hal/utils/include" -I"../hpl/adc" -I"../hpl/can" -I"../hpl/core" -I"../hpl/divas" -I"../hpl/dmac" -I"../hpl/eic" -I"../hpl/gclk" -I"../hpl/mclk" -I"../hpl/osc32kctrl" -I"../hpl/oscctrl" -I"../hpl/pm" -I"../hpl/port" -I"../hpl/sercom" -I"../hpl/spi" -I"../hpl/tc" -I"../hpl/usart" -I"../hri" -I"../include" -I"../stdio_redirect" -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n\include"  -Og -ffunction-sections -mlong-calls -g3 -Wall -mcpu=cortex-m0plus -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.o: ../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.c
 	@echo Building file: $<
 	@echo Invoking: ARM/GNU C Compiler : 6.3.1
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\arm\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe$(QUOTE)  -x c -mthumb -D__SAMC21N18A__ -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\arm\CMSIS\5.4.0\CMSIS\Core\Include" -I"../Config" -I".." -I"../examples" -I"../hal/include" -I"../hal/utils/include" -I"../hpl/adc" -I"../hpl/can" -I"../hpl/core" -I"../hpl/divas" -I"../hpl/dmac" -I"../hpl/eic" -I"../hpl/gclk" -I"../hpl/mclk" -I"../hpl/osc32kctrl" -I"../hpl/oscctrl" -I"../hpl/pm" -I"../hpl/port" -I"../hpl/sercom" -I"../hpl/spi" -I"../hpl/tc" -I"../hpl/usart" -I"../hri" -I"../include" -I"../stdio_redirect" -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n\include"  -Og -ffunction-sections -mlong-calls -g3 -Wall -mcpu=cortex-m0plus -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
@@ -901,6 +925,20 @@ TMC-API/tmc/ramp/LinearRamp1.o: ../TMC-API/tmc/ramp/LinearRamp1.c
 	
 
 TMC-API/tmc/ramp/Ramp.o: ../TMC-API/tmc/ramp/Ramp.c
+	@echo Building file: $<
+	@echo Invoking: ARM/GNU C Compiler : 6.3.1
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\arm\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe$(QUOTE)  -x c -mthumb -D__SAMC21N18A__ -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\arm\CMSIS\5.4.0\CMSIS\Core\Include" -I"../Config" -I".." -I"../examples" -I"../hal/include" -I"../hal/utils/include" -I"../hpl/adc" -I"../hpl/can" -I"../hpl/core" -I"../hpl/divas" -I"../hpl/dmac" -I"../hpl/eic" -I"../hpl/gclk" -I"../hpl/mclk" -I"../hpl/osc32kctrl" -I"../hpl/oscctrl" -I"../hpl/pm" -I"../hpl/port" -I"../hpl/sercom" -I"../hpl/spi" -I"../hpl/tc" -I"../hpl/usart" -I"../hri" -I"../include" -I"../stdio_redirect" -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n\include"  -Og -ffunction-sections -mlong-calls -g3 -Wall -mcpu=cortex-m0plus -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+tmc2209_uart/TMC2209.o: ../tmc2209_uart/TMC2209.c
+	@echo Building file: $<
+	@echo Invoking: ARM/GNU C Compiler : 6.3.1
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\arm\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe$(QUOTE)  -x c -mthumb -D__SAMC21N18A__ -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\arm\CMSIS\5.4.0\CMSIS\Core\Include" -I"../Config" -I".." -I"../examples" -I"../hal/include" -I"../hal/utils/include" -I"../hpl/adc" -I"../hpl/can" -I"../hpl/core" -I"../hpl/divas" -I"../hpl/dmac" -I"../hpl/eic" -I"../hpl/gclk" -I"../hpl/mclk" -I"../hpl/osc32kctrl" -I"../hpl/oscctrl" -I"../hpl/pm" -I"../hpl/port" -I"../hpl/sercom" -I"../hpl/spi" -I"../hpl/tc" -I"../hpl/usart" -I"../hri" -I"../include" -I"../stdio_redirect" -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n\include"  -Og -ffunction-sections -mlong-calls -g3 -Wall -mcpu=cortex-m0plus -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+tmc2209_uart/TMC2209_Simple_Rotation.o: ../tmc2209_uart/TMC2209_Simple_Rotation.c
 	@echo Building file: $<
 	@echo Invoking: ARM/GNU C Compiler : 6.3.1
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\arm\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe$(QUOTE)  -x c -mthumb -D__SAMC21N18A__ -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\arm\CMSIS\5.4.0\CMSIS\Core\Include" -I"../Config" -I".." -I"../examples" -I"../hal/include" -I"../hal/utils/include" -I"../hpl/adc" -I"../hpl/can" -I"../hpl/core" -I"../hpl/divas" -I"../hpl/dmac" -I"../hpl/eic" -I"../hpl/gclk" -I"../hpl/mclk" -I"../hpl/osc32kctrl" -I"../hpl/oscctrl" -I"../hpl/pm" -I"../hpl/port" -I"../hpl/sercom" -I"../hpl/spi" -I"../hpl/tc" -I"../hpl/usart" -I"../hri" -I"../include" -I"../stdio_redirect" -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n\include"  -Og -ffunction-sections -mlong-calls -g3 -Wall -mcpu=cortex-m0plus -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 

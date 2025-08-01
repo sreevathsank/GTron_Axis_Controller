@@ -23,7 +23,7 @@ int main(void)
 	call_All_Init_Functions();
 	switch(axis_id)
 	{
-		case Z_AXIS: PRINTF_DEBUG ? printf("\nAxC - Z Axis\n"): 0; break;
+		case X_AXIS: PRINTF_DEBUG ? printf("\nAxC - X Axis\n"): 0; break;
 		case GTRON_AXC_TOP: PRINTF_DEBUG ? printf("\nAxC - GTron TOP\n"): 0; break;
 		case GTRON_AXC_BOT: PRINTF_DEBUG ? printf("\nAxC - GTron BOTTOM\n"): 0; break;
 		default: break;
@@ -32,11 +32,20 @@ int main(void)
 	run_Open_Loop_Setup_Closed_Loop(50);
 	tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
 	
-	IOXP_Write_Byte(IOXP_REG_IODIR, 0xAB);
+	PRINTF_DEBUG && printf("\nWriting to TMC2209 GCONF register\n");
+	tmc2209_writeRegister(0x00, TMC2209_GCONF, 0x60);
 	delay_ms(100);
-	uint8_t ioxp_read_byte = 0x00;
-	IOXP_Read_Byte(IOXP_REG_IODIR, &ioxp_read_byte);
-
+	int32_t gconf_value = tmc2209_readRegister(0x00, TMC2209_GCONF);
+	PRINTF_DEBUG && printf("\nGCONF value = %ld\n", gconf_value);
+	
+	PRINTF_DEBUG && printf("\nWriting to MCP23S08 IODIR register.\n");
+	IOXP_Write_Byte(IOXP_REG_IODIR, 0xba);
+	delay_ms(10);
+	uint8_t iodir_val = 0;
+	IOXP_Read_Byte(IOXP_REG_IODIR, &iodir_val);
+	
+	PRINTF_DEBUG && printf("\nIODIR value = %x\n", iodir_val);
+	
 	/**
 	 * To make the board ready for iMM Software, set repeat_ramp to 0.
 	 * To enable homing and endurance run, initialize variable repeat_ramp value to 2.
@@ -56,10 +65,29 @@ int main(void)
 		break;
 		default: break;
 	}
-	limit_variables.homing = (repeat_ramp == 0) ? false : true;
-	if( (limit_variables.homing == true ) && (repeat_ramp > 0) )
+	if(axis_params.rotary_axis_enabled)
+	{
+		switch(axis_id)
+		{
+			case X_AXIS: PRINTF_DEBUG && printf("\nX Rotary Axis Enabled!\n"); break;
+			case Y_AXIS: PRINTF_DEBUG && printf("\nY Rotary Axis Enabled!\n"); break;
+			case Z_AXIS: PRINTF_DEBUG && printf("\nZ Rotary Axis Enabled!\n"); break;
+			case RF_AXIS: PRINTF_DEBUG && printf("\nRF Rotary Axis Enabled!\n"); break;
+			default: break;
+		}
+	}
+	// Enable Homing Flag if RF is enabled for X, Y or Z axis or repeat_ramp is greater than 0.
+	limit_variables.homing = ( (repeat_ramp > 0) || (axis_params.rotary_axis_enabled) ) ? true : false;
+	
+	// Check whether to do firmware limit based homing.
+	if( limit_variables.homing )
 	{
 		do_homing_sequence();
+		if(axis_params.rotary_axis_enabled)
+		{
+			limit_variables.lin_enc_z_first_hit = false;
+			ext_irq_enable(LINENC_Z);
+		}
 	}
 	else { limit_variables.switch_seq_flag = false; }	// No need for Switching Sequence if Homing Sequence is disabled...
 	

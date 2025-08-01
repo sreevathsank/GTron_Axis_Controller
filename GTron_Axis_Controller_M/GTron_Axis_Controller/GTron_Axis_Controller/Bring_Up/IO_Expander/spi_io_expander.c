@@ -65,6 +65,10 @@ void IOXP_Write_Byte( IOXP_REGISTERS_t reg_addr, uint8_t byte_to_wr )
 	uint8_t wr_buf[3] = { (uint8_t)IOXP_DEV_OPCODE_WR, (uint8_t)reg_addr, byte_to_wr };
 	uint8_t rd_buf[3];
 	
+	//#ifdef EXT_CS
+	//	gpio_set_pin_level(EXT_CS, HIGH);
+	//#endif
+	
 	IOXP_transfer(wr_buf, rd_buf, 3);
 	
 	PRINTF_DEBUG ? printf("\nIOXP SPI WR: Dev Opcode: 0x%x | Reg Addr: 0x%x | Byte to Write: 0x%x\n", 
@@ -87,6 +91,10 @@ void IOXP_Read_Byte( IOXP_REGISTERS_t reg_addr, uint8_t *addr_rd_data )
 	
 	uint8_t wr_buf[3] = { IOXP_DEV_OPCODE_RD, (uint8_t)reg_addr, 0x00 };
 	uint8_t rd_buf[3];
+	
+	//#ifdef EXT_CS
+	//	gpio_set_pin_level(EXT_CS, HIGH);
+	//#endif
 	
 	IOXP_transfer(wr_buf, rd_buf, 3);
 	

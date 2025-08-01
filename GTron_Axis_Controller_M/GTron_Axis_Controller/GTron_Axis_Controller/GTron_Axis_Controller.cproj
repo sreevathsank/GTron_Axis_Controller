@@ -146,7 +146,7 @@
           <AcmeProjectActionInfo Action="File" Source="stdio_redirect/stdio_io.c" IsConfig="false" Hash="Nx8PfIAymK/f5AjLql/CyQ" />
           <AcmeProjectActionInfo Action="File" Source="stdio_redirect/stdio_io.h" IsConfig="false" Hash="4X02f8UL8cjBHeGJM3BnHw" />
           <AcmeProjectActionInfo Action="File" Source="main.c" IsConfig="false" Hash="k0AH7j+BrmdFhBPzCCMptA" />
-          <AcmeProjectActionInfo Action="File" Source="driver_init.c" IsConfig="false" Hash="Dm0ZWcofdAU3tXF6P5dPSA" />
+          <AcmeProjectActionInfo Action="File" Source="driver_init.c" IsConfig="false" Hash="phnGp1tk2wocRdeJw90yGQ" />
           <AcmeProjectActionInfo Action="File" Source="driver_init.h" IsConfig="false" Hash="X8VapqptvIrmAVnICOE8Aw" />
           <AcmeProjectActionInfo Action="File" Source="atmel_start_pins.h" IsConfig="false" Hash="1hxV328Q2jvvLhG1mRJ6tA" />
           <AcmeProjectActionInfo Action="File" Source="examples/driver_examples.h" IsConfig="false" Hash="65QtJX1apX5am5TXv9Xe9Q" />
@@ -200,7 +200,7 @@
           <AcmeProjectActionInfo Action="File" Source="hpl/tc/hpl_tc.c" IsConfig="false" Hash="dOI2DdNP09xuHIeL+A0gWA" />
           <AcmeProjectActionInfo Action="File" Source="hpl/tc/hpl_tc_base.h" IsConfig="false" Hash="gjj5IyaZPy6sUReifzS1GQ" />
           <AcmeProjectActionInfo Action="File" Source="hpl/usart/usart_lite.c" IsConfig="false" Hash="ZmfFqC+kt/eHp1VSy2/0dg" />
-          <AcmeProjectActionInfo Action="File" Source="hpl/usart/usart_lite.h" IsConfig="false" Hash="HSJQY0VpYUgc2Lu7X9aOqQ" />
+          <AcmeProjectActionInfo Action="File" Source="hpl/usart/usart_lite.h" IsConfig="false" Hash="Ya5OvrNHD6a/naNYgmckMA" />
           <AcmeProjectActionInfo Action="File" Source="stdio_start.c" IsConfig="false" Hash="WtwT7ld+0j4cPDj52v3y1A" />
           <AcmeProjectActionInfo Action="File" Source="stdio_start.h" IsConfig="false" Hash="5j2k69zdoQpbzluEyr/rHQ" />
           <AcmeProjectActionInfo Action="File" Source="atmel_start.h" IsConfig="false" Hash="TNU9VszFRFbDuMJ3vToUzg" />
@@ -554,6 +554,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Bring_Up\DBG_bring_up.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Bring_Up\GTron_Cmd_Parser\gtron_can_cmd_parser.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Bring_Up\GTron_Cmd_Parser\gtron_can_cmd_parser.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Bring_Up\IO_Expander\spi_io_expander.c">
@@ -1174,12 +1180,28 @@
     <Compile Include="TMC-API\tmc\ramp\Ramp.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="tmc2209_uart\TMC2209.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tmc2209_uart\TMC2209.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tmc2209_uart\TMC2209_HW_Abstraction.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tmc2209_uart\TMC2209_Simple_Rotation.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="tmc2209_uart\TMC2209_Simple_Rotation.h">
+      <SubType>compile</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Bring_Up\" />
     <Folder Include="Bring_Up\CAN\" />
     <Folder Include="Bring_Up\Motion\" />
     <Folder Include="Bring_Up\IO_Expander" />
+    <Folder Include="Bring_Up\GTron_Cmd_Parser" />
     <Folder Include="config\" />
     <Folder Include="Device_Startup\" />
     <Folder Include="documentation\" />
@@ -1222,6 +1244,7 @@
     <Folder Include="TMC-API\tmc\ic\" />
     <Folder Include="TMC-API\tmc\ic\TMC4671\" />
     <Folder Include="TMC-API\tmc\ramp\" />
+    <Folder Include="tmc2209_uart\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Device_Startup\samc21n18a_flash.ld">

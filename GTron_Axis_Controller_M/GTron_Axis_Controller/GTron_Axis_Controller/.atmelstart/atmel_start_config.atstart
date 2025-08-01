@@ -1025,7 +1025,7 @@ drivers:
     functionality: USART
     api: Lite:USART:USART_Async
     configuration:
-      baud_baud: 115200
+      baud_baud: 9600
       baud_fp: 0
       ctrla_cmode: Asynchronous communication
       ctrla_dord: LSB is transmitted first
@@ -1057,7 +1057,7 @@ drivers:
       usart_ctrla_control: true
       usart_ctrlb_control: true
       usart_dbgctrl_control: false
-      usart_intenset_control: false
+      usart_intenset_control: true
       usart_rxpl_control: false
     optional_signals: []
     variant:
@@ -1323,7 +1323,8 @@ pads:
     definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::pad::PA03
     mode: Digital output
     user_label: IOXP_CS
-    configuration: null
+    configuration:
+      pad_initial_level: High
   FLASH_SPI_nCS:
     name: PB07
     definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::pad::PB07
@@ -1485,15 +1486,16 @@ pads:
   TMC2209_UART_TX:
     name: PB16
     definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::pad::PB16
-    mode: Peripheral IO
+    mode: Digital output
     user_label: TMC2209_UART_TX
     configuration: null
   TMC2209_UART_RX:
     name: PB17
     definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::pad::PB17
-    mode: Peripheral IO
+    mode: Digital output
     user_label: TMC2209_UART_RX
-    configuration: null
+    configuration:
+      pad_initial_level: High
   INDEX_SEL:
     name: PB19
     definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::pad::PB19

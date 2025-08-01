@@ -41,9 +41,15 @@
 
 #define ADC_CHANNEL					0				// ADC Channel to read from.
 #define ADC_READ_LENGTH				2				// No. of bytes to read. 8 bit = 1 | 10 and 12 bits = 2.			
-#define ADC_NUM_READINGS			500				// No. of ADC Readings to average.
+#define ADC_NUM_READINGS			50				// No. of ADC Readings to average.
 
 #define ADC_RAW_NUM_READINGS		1000			// No. of ADC RAW value read from TMC4671 for ADC offset calibration.
+
+/** 
+ * TMC2209 Module Addresses.
+ **/
+#define TMC2209_GUIDE_ADDR			0x00			// Hardware address of TMC2209 Guide Motor Driver.
+#define TMC2209_VERT_ARREST_ADDR	0x00			// Hardware address of TMC2209 Vertical Arrestor Motor Driver.
 
 #define MOTOR_ENC					0
 #define WHITE_TEST_RIG				0
@@ -76,7 +82,13 @@
 
 #define EULER						2.718f			// Euler's Number (e).
 
-#define MOTOR						0				// Default MotorID
+#ifndef MOTOR
+	#define MOTOR						0				// Default MotorID
+#endif
+
+#ifndef MIN_DISTANCE_RAMP
+	#define MIN_DISTANCE_RAMP		500				// If the no. of steps to move is greater than this, use ramp. Else move without ramp.
+#endif
 
 #define POSITION_LOW				0x80000001		// Min. value of the PID_POSITION register.
 #define POSITION_HIGH				0x7FFFFFFF		// Max. value of the PID_POSITION register.

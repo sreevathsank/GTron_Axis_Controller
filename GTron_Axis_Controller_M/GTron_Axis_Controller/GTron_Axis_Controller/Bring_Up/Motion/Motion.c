@@ -387,7 +387,24 @@ void do_homing_sequence( void )
 	
 	(motor_dir_rev) ? tmc4671_setAbsolutTargetPosition(MOTOR, POSITION_LOW) : tmc4671_setAbsolutTargetPosition(MOTOR, POSITION_HIGH);
 	
+	// If RF is enabled for the current axis, return from the function, else continue with limit based homing.
+	if(axis_params.rotary_axis_enabled)
+	{
+		homing_v = 0;
+		tmc4671_writeInt(MOTOR, TMC4671_MODE_RAMP_MODE_MOTION, STOPPED_MODE);
+		tmc4671_setVelocityLimit(MOTOR, ZERO_HEX);
+		
+		limit_variables.other_limit_hit = false;
+		limit_variables.left_limit_position  = 0;
+		limit_variables.right_limit_position = 0;
+		
+		tmc4671_setAbsolutTargetPosition(MOTOR, POSITION_LOW);
+		tmc4671_setModeMotion(MOTOR, POSITION_MODE);
+		return;
+	}
+	
  	limit_variables.other_limit_hit = false;
+	
 	// Check if the motor is already at a limit depending on its edge detection.
 	switch(axis_id)
 	{
@@ -397,11 +414,8 @@ void do_homing_sequence( void )
 			#if LIMIT_SWITCH_RISING
 				bool left_limit_status = gpio_get_pin_level(LIM_LFT);
 				if(motor_dir_rev)
+				
 				{
-					/*if( gpio_get_pin_level(LIM_RT) == HIGH)
-					{
-						right_limit_homing();
-					}*/
 					if( gpio_get_pin_level(LIM_LFT) == HIGH)
 					{
 						left_limit_homing();
@@ -409,36 +423,22 @@ void do_homing_sequence( void )
 				}
 				else
 				{
-					/*if( gpio_get_pin_level(LIM_RT) == HIGH) 
-					{ 
-						right_limit_homing(); 
-					}*/
 					if( gpio_get_pin_level(LIM_LFT) == HIGH) 
 					{ 
 						left_limit_homing(); 
 					}
 				}
-				/*if( gpio_get_pin_level(LIM_RT) == HIGH) { right_limit_homing(); }
-				else {  }*/
 			#elif LIMIT_SWITCH_FALLING
-				bool right_limit_status = gpio_get_pin_level(LIM_RT);
+				bool left_limit_status = gpio_get_pin_level(LIM_LFT);
 				if(motor_dir_rev)
 				{
-					/*if( gpio_get_pin_level(LIM_RT) == HIGH)
+					if( gpio_get_pin_level(LIM_LFT) == LOW)
 					{
-						right_limit_homing();
-					}*/
-					if( gpio_get_pin_level(LIM_RT) == LOW)
-					{
-						right_limit_homing();
+						left_limit_homing();
 					}
 				}
 				else
 				{
-					/*if( gpio_get_pin_level(LIM_RT) == HIGH) 
-					{ 
-						right_limit_homing(); 
-					}*/
 					if( gpio_get_pin_level(LIM_LFT) == LOW) 
 					{ 
 						left_limit_homing(); 
@@ -455,7 +455,6 @@ void do_homing_sequence( void )
 				}
 				else
 				{
-					//if( gpio_get_pin_level(LIM_LFT) == HIGH) { left_limit_homing(); }
 					if( gpio_get_pin_level(LIM_RT) == HIGH) { right_limit_homing(); }
 				}
 			#elif LIMIT_SWITCH_FALLING
@@ -465,39 +464,11 @@ void do_homing_sequence( void )
 				}
 				else
 				{
-					//if( gpio_get_pin_level(LIM_LFT) == HIGH) { left_limit_homing(); }
 					if( gpio_get_pin_level(LIM_RT) == LOW) { right_limit_homing(); }
 				}
 			#endif
 		break;
 	}
-	
-	return;
-}
-
-/** 
- * \brief Sets the Zero Position and Home Position with respect to what MACROS were enabled.
- *
- * @param void
- * @return void
- */
-void set_Home_Position_Limits(void)
-{
-	#if HOME_POSITION_HIGH
-		tmc4671_setAbsolutTargetPosition(MOTOR, limit_variables.soft_limit_high);
-		short_Acceleration_Ramp(HOMING_SEARCH_VELOCITY, 0.1);
-	#endif
-	
-	#if HOME_POSITION_MIDDLE
-		tmc4671_setAbsolutTargetPosition(MOTOR, (limit_variables.soft_limit_high / 2) );
-		//short_Acceleration_Ramp(HOMING_SEARCH_VELOCITY, 0.1);
-	#endif
-	
-	#if HOME_POSITION_ZERO
-		tmc4671_setAbsolutTargetPosition(MOTOR, limit_variables.soft_limit_low);
-		short_Acceleration_Ramp(HOMING_SEARCH_VELOCITY, 0.1);
-	#endif
-	
 	return;
 }
 
@@ -585,17 +556,6 @@ void right_limit_homing()
 				limit_variables.soft_limit_high = end_range   - SOFT_LIMIT_OFFSET_MM;
 				limit_variables.soft_limit_low  = start_range + SOFT_LIMIT_OFFSET_MM;
 			}
-			//if(limit_variables.left_limit_position > limit_variables.right_limit_position)
-			//{
-			//	limit_variables.soft_limit_high = limit_variables.left_limit_position - SOFT_LIMIT_OFFSET_MM;
-			//	limit_variables.soft_limit_low  = limit_variables.right_limit_position + SOFT_LIMIT_OFFSET_MM;
-			//
-			//}
-			//else if(limit_variables.right_limit_position > limit_variables.left_limit_position)
-			//{
-			//	limit_variables.soft_limit_high = limit_variables.right_limit_position - SOFT_LIMIT_OFFSET_MM;
-			//	limit_variables.soft_limit_low  = limit_variables.left_limit_position + SOFT_LIMIT_OFFSET_MM;
-			//}
 			PRINTF_DEBUG && printf("\nLeft Limit Pos = %ld usteps | %.2f mm\tRight Limit Pos = %ld usteps | %.2f mm\n", limit_variables.left_limit_position, (limit_variables.left_limit_position / ONE_MM),limit_variables.right_limit_position, (limit_variables.right_limit_position / ONE_MM));
 			PRINTF_DEBUG && printf("\nSoft Limit High = %ld usteps| %.2f mm\tSoft Limit Low = %ld usteps | %.2f mm\n", limit_variables.soft_limit_high, (limit_variables.soft_limit_high / ONE_MM), limit_variables.soft_limit_low, (limit_variables.soft_limit_low / ONE_MM) );
 			return;
@@ -646,9 +606,6 @@ void left_limit_homing()
 {
 	homing_v = 0;
 	#if CLOSEDLOOP
-		// Get the position of the limit/
-		//limit_variables.left_limit_position = tmc4671_getActualPosition(MOTOR);
-		
 		// Check if the other limit was already hit first.
 		if(true == limit_variables.other_limit_hit)
 		{
@@ -658,7 +615,6 @@ void left_limit_homing()
 				do_Ref_Search_Ping(); 
 			}
 			limit_variables.other_limit_hit = false;
-			//tmc4671_writeInt(MOTOR, TMC4671_MODE_RAMP_MODE_MOTION, STOPPED_MODE);
 			tmc4671_setVelocityLimit(MOTOR, ZERO_HEX);
 			delay_ms(LIMIT_DELAY);
 			
@@ -696,19 +652,6 @@ void left_limit_homing()
 				limit_variables.soft_limit_high = end_range   - SOFT_LIMIT_OFFSET_MM;
 				limit_variables.soft_limit_low  = start_range + SOFT_LIMIT_OFFSET_MM;
 			}
-			
-			//if(limit_variables.left_limit_position > limit_variables.right_limit_position)
-			//{
-			//	limit_variables.soft_limit_high = limit_variables.left_limit_position - SOFT_LIMIT_OFFSET_MM;
-			//	limit_variables.soft_limit_low  = limit_variables.right_limit_position + SOFT_LIMIT_OFFSET_MM;
-			//
-			//}
-			//else if(limit_variables.right_limit_position > limit_variables.left_limit_position)
-			//{
-			//	limit_variables.soft_limit_high = limit_variables.right_limit_position - SOFT_LIMIT_OFFSET_MM;
-			//	limit_variables.soft_limit_low  = limit_variables.left_limit_position + SOFT_LIMIT_OFFSET_MM;
-			//}
-			
 			PRINTF_DEBUG && printf("\nLeft Limit Pos = %ld usteps | %.2f mm\tRight Limit Pos = %ld usteps | %.2f mm\n", limit_variables.left_limit_position, (limit_variables.left_limit_position / ONE_MM),limit_variables.right_limit_position, (limit_variables.right_limit_position / ONE_MM));
 			PRINTF_DEBUG && printf("\nSoft Limit High = %ld usteps| %.2f mm\tSoft Limit Low = %ld usteps | %.2f mm\n", limit_variables.soft_limit_high, (limit_variables.soft_limit_high / ONE_MM), limit_variables.soft_limit_low, (limit_variables.soft_limit_low / ONE_MM) );
 			return;
@@ -717,10 +660,8 @@ void left_limit_homing()
 		else
 		{
 			limit_variables.other_limit_hit = true;
-			//tmc4671_writeInt(MOTOR, TMC4671_MODE_RAMP_MODE_MOTION, STOPPED_MODE);
 			tmc4671_setVelocityLimit(MOTOR, ZERO_HEX);
 			tmc4671_setActualPosition(MOTOR, ZERO_HEX);
-			//delay_ms(LIMIT_DELAY);
 			debounce_delay(LIMIT_DELAY);
 			limit_variables.left_limit_position  = 0;
 			limit_variables.right_limit_position = 0;
@@ -728,18 +669,15 @@ void left_limit_homing()
 			{
 				case X_AXIS:
 				case Y_AXIS:
-					//move_With_Trapezoidal_Ramp(POSITION_HIGH, axis_params.home_search_vel);
 					tmc4671_setAbsolutTargetPosition(MOTOR, POSITION_LOW);
 					tmc4671_setModeMotion(MOTOR, POSITION_MODE);
 				break;
 				case Z_AXIS:
-					//move_With_Trapezoidal_Ramp(POSITION_LOW, axis_params.home_search_vel);
 					tmc4671_setAbsolutTargetPosition(MOTOR, POSITION_HIGH);
 					tmc4671_setModeMotion(MOTOR, POSITION_MODE);
 				break;
 				default: break;
 			}
-			//set_TargetPosition(POSITION_LOW);
 			return;
 		}
 	#endif
@@ -790,23 +728,87 @@ void toggle_Limit_Led(void)
  */
 void check_Limit_Flags(void)
 {
-	if(true == limit_variables.left_limit_flag)
+	if( (axis_id == X_AXIS) || (axis_id == Y_AXIS) || (axis_id = Z_AXIS))
 	{
-		limit_variables.left_limit_flag = false;
-		gpio_set_pin_level(DBGLED1, false);
-		//printf("\nLeft Limit HIT!\n");
-		// Check for Homing Flag.
-		(limit_variables.homing == true) ? left_limit_homing() : left_limit_high();
+		if(true == limit_variables.left_limit_flag)
+		{
+			limit_variables.left_limit_flag = false;
+			gpio_set_pin_level(DBGLED1, false);
+			printf("\nLeft Limit HIT!\n");
+			// Check for Homing Flag.
+			(limit_variables.homing == true) ? left_limit_homing() : left_limit_high();
+		}
+		if(true == limit_variables.right_limit_flag)
+		{
+			limit_variables.right_limit_flag = false;
+			gpio_set_pin_level(DBGLED2, false);
+			printf("\nRight Limit HIT!\n");
+			// Check for Homing Flag.
+			(limit_variables.homing == true) ? right_limit_homing() : right_limit_high();
+		}
+		toggle_Limit_Led();	
 	}
-	if(true == limit_variables.right_limit_flag)
+	else if( (axis_id == GTRON_AXC_TOP) || (axis_id == GTRON_AXC_BOT) )
 	{
-		limit_variables.right_limit_flag = false;
-		gpio_set_pin_level(DBGLED2, false);
-		//printf("\nRight Limit HIT!\n");
-		// Check for Homing Flag.
-		(limit_variables.homing == true) ? right_limit_homing() : right_limit_high();
+		
 	}
-	toggle_Limit_Led();
+	return;
+}
+
+/** 
+ * \brief Callback function if an edge is detected in the Rotary Encoder's Z Pulse.
+ *
+ * @param void
+ * @return void
+ */
+void lin_Enc_Z_Pulse_Interrupt_Callback(void)
+{
+	if(limit_variables.lin_enc_z_first_hit)
+	{
+		tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
+		tmc4671_setVelocityLimit(MOTOR, 0);
+		tmc4671_writeInt(MOTOR, TMC4671_ABN_DECODER_COUNT, ZERO_HEX);
+		tmc4671_setActualPosition(MOTOR, ZERO_HEX);
+		tmc4671_setAbsolutTargetPosition(MOTOR, ZERO_HEX);
+		limit_variables.lin_enc_z_first_hit = false;
+		limit_variables.homing = false;
+		move_given_s_ramp = false;
+		move_given_trapezoidal_ramp = false;
+		ext_irq_disable(LINENC_Z);
+	}
+	else if(limit_variables.lin_enc_z_first_hit == false)
+	{
+		//int32_t linear_enc_dir = (read_tlv_flash(tlv_ptr, LINEAR_ENCODER_DIRECTION_FLASH, tlv_traversal) == 0) ? ABN_ENC_REVERSE_DIRECTION : ABN_ENC_FORWARD_DIRECTION;
+		//mc4671_writeInt(MOTOR, TMC4671_ABN_2_DECODER_MODE, linear_enc_dir);
+		tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
+		tmc4671_setVelocityLimit(MOTOR, 0);
+		move_given_s_ramp = false;
+		move_given_trapezoidal_ramp = false;
+		int32_t current_position = tmc4671_getActualPosition(MOTOR);
+		
+		// It might have moved beyond the Z pulse Zero position. So, bring it back to the Zero Position.
+		if(current_position > 0)
+		{
+			move_With_S_Ramp( (-current_position), 30, MOVE_BY);
+		}
+		else if(current_position < 0)
+		{
+			move_With_S_Ramp( abs(ROTATION + current_position), 30, MOVE_BY );
+		}
+		//move_With_S_Ramp(0, 60, MOVE_TO);
+		
+		limit_variables.lin_enc_z_first_hit = false;
+		limit_variables.homing = false;
+		ext_irq_disable(LINENC_Z);
+	}
+	
+	switch(axis_id)
+	{
+		case X_AXIS:  printf("\nX | Rotary Encoder Z Pulse Edge Detected\n");  break;
+		case Y_AXIS:  printf("\nY | Rotary Encoder Z Pulse Edge Detected\n");  break;
+		case Z_AXIS:  printf("\nZ | Rotary Encoder Z Pulse Edge Detected\n");  break;
+		case RF_AXIS: printf("\nRF | Rotary Encoder Z Pulse Edge Detected\n"); break;
+	}
 	return;
 }
 
@@ -886,11 +888,22 @@ void init_Enc_Cnt_Dir(void)
 
 void homing_Ramp(void)
 {
-	if(homing_v < axis_params.home_search_vel)
+	// If RF disabled for the axis, do normal homing.
+	if(!axis_params.rotary_axis_enabled)
 	{
-		homing_v += HOMING_RAMP_DELTA;
-		tmc4671_setVelocityLimit(MOTOR, homing_v);
-		//printf("\n%.2f", homing_v);
+		while(homing_v < axis_params.home_search_vel)
+		{
+			homing_v += HOMING_RAMP_DELTA;
+			tmc4671_setVelocityLimit(MOTOR, homing_v);
+		}
+	}
+	else
+	{
+		while(homing_v < (axis_params.home_search_vel) )
+		{
+			homing_v += (HOMING_RAMP_DELTA * 10);
+			tmc4671_setVelocityLimit(MOTOR, homing_v);
+		}
 	}
 	return;
 }
