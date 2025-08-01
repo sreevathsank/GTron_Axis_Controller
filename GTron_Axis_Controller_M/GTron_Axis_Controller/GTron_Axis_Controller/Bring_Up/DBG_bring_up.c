@@ -256,7 +256,6 @@ void read_Set_Parameters_From_Flash(void)
 	// Limit Edge Detection == 0/false -> falling edge | == 1/true -> Rising Edge.
 	lim_edge_detection = ( read_tlv_flash(tlv_ptr, LIMIT_EDGE_DETECTION_FLASH, tlv_traversal) == 0) ? false : true;
 	axis_params.lin_enc_res = read_tlv_flash(tlv_ptr, LINEAR_ENCODER_CPR_FLASH, tlv_traversal);
-	axis_params.rotary_axis_enabled = ( read_tlv_flash(tlv_ptr, ROTARY_AXIS_FLASH, tlv_traversal) == 0 ) ? false : true;
 	limit_variables.soft_limit_low = read_tlv_flash(tlv_ptr, START_RANGE_FLASH, tlv_traversal);
 	limit_variables.soft_limit_high = read_tlv_flash(tlv_ptr, END_RANGE_FLASH, tlv_traversal);
 	/*hri_eic_write_CONFIG_reg(EIC,
@@ -484,12 +483,9 @@ void call_All_Init_Functions(void)
 	gpio_set_pin_level(DBGLED3, 1);
 	gpio_set_pin_level(DBGLED1, 1);
 	gpio_set_pin_level(DBGLED2, 1);
-	gpio_set_pin_level(EXT_CS, HIGH);
-	gpio_set_pin_level(IOXP_CS, HIGH);
 	//SYSTICK_INIT();
 	//EXTFLASH_init();
 	init_UART();
-	TMC2209_UART_init();
 	adc_sync_enable_channel(&ADC_0, 0);
 	check_Current_Axis_ADC();
 	if(!check_4671_version_spi()) 
@@ -497,16 +493,11 @@ void call_All_Init_Functions(void)
 		PRINTF_DEBUG && printf("\n--------TMC4671 SPI Check Failed--------\n");
 		return;
 	}
-	gpio_set_pin_level(IOXP_CS, HIGH);
-	
 	if(check_passive_flash_spi())
 	{
 		PRINTF_DEBUG && printf("\n------Passive Flash SPI Check Failed-----\n");
+		//return;
 	}
-	gpio_set_pin_level(IOXP_CS, HIGH);
-	
-	PRINTF_DEBUG && printf("\nExt Flash CS -> %d | IOXP CS -> %d\n", gpio_get_pin_level(EXT_CS), gpio_get_pin_level(IOXP_CS) );
-	
 	read_Set_Parameters_From_Flash();
 	reset_Basics(MOTOR);
 	//configure_ABN(MOTOR, 2400);

@@ -71,7 +71,6 @@ typedef struct
 	double jerk_delta;
 	int32_t lin_enc_res;
 	int32_t rot_enc_res;
-	bool rotary_axis_enabled;
 }axis_parameters;
 
 typedef struct  
@@ -98,7 +97,7 @@ typedef struct
 	// S curve parameters
 	double jerk;
 	//double jerk_delta;
-	//double s_p[8];
+	double s_p[8];
 	double s_p1;
 	double s_p2;
 	double s_p3;
@@ -111,7 +110,7 @@ typedef struct
 	double s_t_j;						// Time taken in Jerk phase.
 	double s_t_v;						// Time taken in constant Velocity phase.
 	double s_t_a;						// Time taken in constant Acceleration phase.
-	//double s_t[8];
+	double s_t[8];
 	double s_t1;						// Time taken in Phase 1.
 	double s_t2;						// Time taken in Phase 2.
 	double s_t3;						// Time taken in Phase 3.
@@ -119,7 +118,7 @@ typedef struct
 	double s_t5;						// Time taken in Phase 5.
 	double s_t6;						// Time taken in Phase 6.
 	double s_t7;						// Time taken in Phase 7.
-	//double s_v[8];
+	double s_v[8];
 	double s_v1;						// Velocity at t1.
 	double s_v2;						// Velocity at t2.
 	double s_v3;						// Velocity at t3.
@@ -127,7 +126,7 @@ typedef struct
 	double s_v5;						// Velocity at t5.
 	double s_v6;						// Velocity at t6.
 	double s_v7;						// Velocity at t7.
-	//double s_a[8];
+	double s_a[8];
 	double s_a1;						// Acceleration at t1.
 	double s_a2;						// Acceleration at t2.
 	double s_a3;						// Acceleration at t3.
@@ -230,8 +229,6 @@ typedef struct
 	bool other_limit_hit;
 	bool switch_seq_flag;
 	bool homing_done;
-	bool lin_enc_z_first_hit;
-	bool lin_enc_z_second_hit;
 	
 	// Positions
 	int32_t	right_limit_position;

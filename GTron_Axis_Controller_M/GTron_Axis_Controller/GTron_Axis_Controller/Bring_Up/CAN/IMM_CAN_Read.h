@@ -17,14 +17,14 @@
 #include "Bring_Up/CAN/IMM_CAN_Message_Id.h"
 #include "Bring_Up/CAN/TMCL_IDE_reply.h"
 #include "Bring_Up/CAN/IMM_CAN.h"
-#include "Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h"
 
-#define SILENT					73
-#define STD_ID					0
-#define SENDER					1
-#define RECEIVER				0
+#define SILENT		73
+#define STD_ID		0
+#define SENDER		1
+#define RECEIVER	0
 
-#define BOARD					RECEIVER
+#define BOARD RECEIVER
+
 
 volatile int32_t value;
 

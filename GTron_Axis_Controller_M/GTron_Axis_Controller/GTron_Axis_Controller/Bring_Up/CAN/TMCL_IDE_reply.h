@@ -79,13 +79,9 @@ int32_t data;
 
 void zero_MessageID_Data();
 
-void encoding_CAN_Byte_Data(int32_t value);
-
 int32_t decoding_CAN_Byte_Data(void);
 
-void encoding_GTron_CAN_Byte_Data(uint8_t peripheral_byte, uint8_t operation_byte, int32_t value);
-
-int32_t decoding_GTon_CAN_Byte_Data( void );
+void encoding_CAN_Byte_Data(int32_t value);
 
 void reply_Version(uint32_t message_Id, int32_t data);
 

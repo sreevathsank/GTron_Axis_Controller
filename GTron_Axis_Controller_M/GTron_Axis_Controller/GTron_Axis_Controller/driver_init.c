@@ -348,27 +348,7 @@ void TMC2209_UART_CLOCK_init()
 void TMC2209_UART_PORT_init()
 {
 
-	gpio_set_pin_level(TMC2209_UART_TX,
-	                   // <y> Initial level
-	                   // <id> pad_initial_level
-	                   // <false"> Low
-	                   // <true"> High
-	                   false);
-
-	// Set pin direction to output
-	gpio_set_pin_direction(TMC2209_UART_TX, GPIO_DIRECTION_OUT);
-
 	gpio_set_pin_function(TMC2209_UART_TX, PINMUX_PB16C_SERCOM5_PAD0);
-
-	gpio_set_pin_level(TMC2209_UART_RX,
-	                   // <y> Initial level
-	                   // <id> pad_initial_level
-	                   // <false"> Low
-	                   // <true"> High
-	                   true);
-
-	// Set pin direction to output
-	gpio_set_pin_direction(TMC2209_UART_RX, GPIO_DIRECTION_OUT);
 
 	gpio_set_pin_function(TMC2209_UART_RX, PINMUX_PB17C_SERCOM5_PAD1);
 }
@@ -475,7 +455,7 @@ void system_init(void)
 	                   // <id> pad_initial_level
 	                   // <false"> Low
 	                   // <true"> High
-	                   true);
+	                   false);
 
 	// Set pin direction to output
 	gpio_set_pin_direction(IOXP_CS, GPIO_DIRECTION_OUT);
