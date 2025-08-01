@@ -62,7 +62,7 @@ extern "C" {
 // Calculate BAUD register value in UART mode
 
 #ifndef SERCOM5_BAUD_RATE
-#define SERCOM5_BAUD_RATE 65536 - ((65536 * 16.0f * 115200) / CONF_GCLK_SERCOM5_CORE_FREQUENCY)
+#define SERCOM5_BAUD_RATE 65536 - ((65536 * 16.0f * 9600) / CONF_GCLK_SERCOM5_CORE_FREQUENCY)
 #endif
 
 /**

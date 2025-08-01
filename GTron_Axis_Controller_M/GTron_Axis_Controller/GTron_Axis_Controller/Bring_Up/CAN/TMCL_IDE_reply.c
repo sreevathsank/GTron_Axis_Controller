@@ -76,6 +76,39 @@ int32_t decoding_CAN_Byte_Data(void)
 }
 
 /** 
+ * \brief Assigns each byte of a 4 byte value to the can_tx_frame's 8 byte data.
+ * 
+ * @param[in] value 
+ * @return void
+ */ 
+void encoding_GTron_CAN_Byte_Data(uint8_t peripheral_byte, uint8_t operation_byte, int32_t value)
+{
+	can_tx_frame.data[0] = (uint8_t)peripheral_byte;
+	can_tx_frame.data[1] = (uint8_t)operation_byte;
+	can_tx_frame.data[2] = (uint8_t)((value >> 24) & 0xFF);
+	can_tx_frame.data[3] = (uint8_t)((value >> 16) & 0xFF);
+	can_tx_frame.data[4] = (uint8_t)((value >> 8) & 0xFF);
+	can_tx_frame.data[5] = (uint8_t)(value & 0xFF);
+	return;
+}
+
+/** 
+ * \brief Decodes the data from the GTron CAN receive frame and returns it as a 32-bit integer.
+ *
+ * @param void
+ * @return ret_value The decoded value.
+ */
+int32_t decoding_GTon_CAN_Byte_Data(void)
+{
+	int32_t ret_value = 0;
+	ret_value |= (int32_t)(can_rx_frame.data[2] << 24);
+	ret_value |= (int32_t)(can_rx_frame.data[3] << 16);
+	ret_value |= (int32_t)(can_rx_frame.data[4] << 8);
+	ret_value |= (int32_t)can_rx_frame.data[5];
+	return ret_value;
+}
+
+/** 
  * \brief Assigns the message id and data as 0.
  *
  * @param[out] message_Id The message_Id is a 29-bit CAN identifier contains the Address, Command, Type and Motor values.

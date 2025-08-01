@@ -196,7 +196,9 @@ Code_Dump/McuSwReset.d Code_Dump/McuSwReset.o: ../Code_Dump/McuSwReset.c \
  ../Bring_Up/CAN/TMCL_IDE_reply.h ../Bring_Up/CAN/MCD_v3.h \
  ../SysTick/Systick.h ../Bring_Up/Motion/Motion.h \
  ../Code_Dump/McuSwReset.h ../Code_Dump/tlv_flash.h \
- ../Bring_Up/IO_Expander/spi_io_expander.h \
+ ../Bring_Up/IO_Expander/spi_io_expander.h ../tmc2209_uart/TMC2209.h \
+ ../tmc2209_uart/TMC2209_HW_Abstraction.h \
+ ../tmc2209_uart/TMC2209_Simple_Rotation.h ../tmc2209_uart/TMC2209.h \
  ../Bring_Up/CAN/TMCL_IDE_reply.h
 
 ../Macros.h:
@@ -730,5 +732,13 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../Code_Dump/tlv_flash.h:
 
 ../Bring_Up/IO_Expander/spi_io_expander.h:
+
+../tmc2209_uart/TMC2209.h:
+
+../tmc2209_uart/TMC2209_HW_Abstraction.h:
+
+../tmc2209_uart/TMC2209_Simple_Rotation.h:
+
+../tmc2209_uart/TMC2209.h:
 
 ../Bring_Up/CAN/TMCL_IDE_reply.h:

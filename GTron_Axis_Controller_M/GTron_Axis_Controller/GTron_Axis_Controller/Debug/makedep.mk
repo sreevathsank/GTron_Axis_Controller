@@ -16,6 +16,8 @@ Bring_Up\CAN\TMCL_IDE_reply.c
 
 Bring_Up\DBG_bring_up.c
 
+Bring_Up\GTron_Cmd_Parser\gtron_can_cmd_parser.c
+
 Bring_Up\IO_Expander\spi_io_expander.c
 
 Bring_Up\Motion\Motion.c
@@ -133,4 +135,8 @@ TMC-API\tmc\ramp\LinearRamp.c
 TMC-API\tmc\ramp\LinearRamp1.c
 
 TMC-API\tmc\ramp\Ramp.c
+
+tmc2209_uart\TMC2209.c
+
+tmc2209_uart\TMC2209_Simple_Rotation.c
 
