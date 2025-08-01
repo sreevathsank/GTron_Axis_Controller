@@ -1649,7 +1649,7 @@ void can_Message_Parse_Guide(axis_current current_axis, int32_t data)
 	else if(current_axis == GTRON_AXC_BOT)
 	{
 		AxC_Bot_Peripherals_t operation_byte = (AxC_Bot_Peripherals_t)can_rx_frame.data[0];
-		switch((AxC_Top_Peripherals_t)peripheral_byte)
+		switch((AxC_Top_Peripherals_t)operation_byte)
 		{
 			case BOT_DEFAULT: break;
 			case BOT_GUIDE_MOTOR:
@@ -1726,7 +1726,7 @@ void can_Message_Decode(uint32_t message_Id, int32_t data)
 			PRINTF_DEBUG && printf("\nReceived by AxC_Top: %x %x %x %x Data %x %x %x %x %x", ad, cmd, typ, mot, can_rx_frame.data[0], can_rx_frame.data[1], can_rx_frame.data[2], can_rx_frame.data[3], can_rx_frame.data[4]);
 			can_Message_Process_GTron_Peripheral_Byte(axis_id, message_Id, data);
 		break;
-		case GTRON_AXC_TOP:
+		case GTRON_AXC_BOT:
 			PRINTF_DEBUG && printf("\nReceived by AxC_Bot: %x %x %x %x Data %x %x %x %x %x", ad, cmd, typ, mot, can_rx_frame.data[0], can_rx_frame.data[1], can_rx_frame.data[2], can_rx_frame.data[3], can_rx_frame.data[4]);
 			can_Message_Process_GTron_Peripheral_Byte(axis_id, message_Id, data);
 		break;

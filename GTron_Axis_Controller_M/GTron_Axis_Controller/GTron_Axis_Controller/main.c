@@ -25,17 +25,17 @@ int main(void)
 	{
 		case Z_AXIS: PRINTF_DEBUG ? printf("\nAxC - Z Axis\n"): 0; break;
 		case GTRON_AXC_TOP: PRINTF_DEBUG ? printf("\nAxC - GTron TOP\n"): 0; break;
-		case GTRON_AXC_TOP: PRINTF_DEBUG ? printf("\nAxC - GTron BOTTOM\n"): 0; break;
+		case GTRON_AXC_BOT: PRINTF_DEBUG ? printf("\nAxC - GTron BOTTOM\n"): 0; break;
 		default: break;
 	}
 	led_Blink(2, 100);
 	run_Open_Loop_Setup_Closed_Loop(50);
 	tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
 	
-	//IOXP_Write_Byte(IOXP_REG_IODIR, 0xAB);
+	IOXP_Write_Byte(IOXP_REG_IODIR, 0xAB);
 	delay_ms(100);
 	uint8_t ioxp_read_byte = 0x00;
-	//IOXP_Read_Byte(IOXP_REG_IODIR, &ioxp_read_byte);
+	IOXP_Read_Byte(IOXP_REG_IODIR, &ioxp_read_byte);
 
 	/**
 	 * To make the board ready for iMM Software, set repeat_ramp to 0.
