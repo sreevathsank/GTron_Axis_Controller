@@ -49,6 +49,8 @@ typedef union
 	uint8_t adc_8bit[2];
 }adc_values;
 
+struct io_descriptor *io_tmc2209;
+
 typedef struct
 {
 	uint32_t start_voltage;
@@ -304,6 +306,13 @@ typedef struct
 
 uint32_t move_done_check_num;
 
+typedef struct  
+{
+	uint8_t limit_flags;
+	bool interrupt_raised;	
+}GTron_Limits_t;
+
+
 typedef enum
 {
 	VEL_STATE_0,
@@ -359,5 +368,7 @@ Timestamps			timestamp;
 autofocus_vars		autofocus_variables;
 Velcoity_Struct		vel_struct;
 VelocityState		velocity_state;
+
+GTron_Limits_t gtron_limits;
 
 #endif /* GLOBAL_VARS_H_ */

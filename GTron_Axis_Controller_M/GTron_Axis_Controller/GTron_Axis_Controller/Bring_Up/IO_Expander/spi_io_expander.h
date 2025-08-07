@@ -38,6 +38,13 @@ typedef enum
 
 #define IOXP_DEV_OPCODE_WR	( IOXP_NIBBLE | IOXP_DEV_ADDR | IOXP_WRITE_BIT ) 
 
+#define GUIDE_LIM_R_MSK		(1UL << 4)	// Guide Limit Right is connected to GP4 pin of MCP23S08.
+#define GUIDE_LIM_L_MSK		(1UL << 5)	// Guide Limit Left is connected to GP5 pin of MCP23S08.
+
+
+void ioxp_Interrupt_Callback( void );
+
+void ioxp_Init( void );
 
 void IOXP_Write_Byte( IOXP_REGISTERS_t reg_addr, uint8_t byte_to_wr );
 

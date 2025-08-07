@@ -32,19 +32,11 @@ int main(void)
 	run_Open_Loop_Setup_Closed_Loop(50);
 	tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
 	
-	PRINTF_DEBUG && printf("\nWriting to TMC2209 GCONF register\n");
-	tmc2209_writeRegister(0x00, TMC2209_GCONF, 0x60);
-	delay_ms(100);
-	int32_t gconf_value = tmc2209_readRegister(0x00, TMC2209_GCONF);
-	PRINTF_DEBUG && printf("\nGCONF value = %ld\n", gconf_value);
-	
-	PRINTF_DEBUG && printf("\nWriting to MCP23S08 IODIR register.\n");
-	IOXP_Write_Byte(IOXP_REG_IODIR, 0xba);
-	delay_ms(10);
-	uint8_t iodir_val = 0;
-	IOXP_Read_Byte(IOXP_REG_IODIR, &iodir_val);
-	
-	PRINTF_DEBUG && printf("\nIODIR value = %x\n", iodir_val);
+	//PRINTF_DEBUG && printf("\nWriting to TMC2209 GCONF register\n");
+	//tmc2209_writeRegister(0x00, TMC2209_GCONF, 0x60);
+	//delay_ms(100);
+	//int32_t gconf_value = tmc2209_readRegister(0x00, TMC2209_GCONF);
+	//PRINTF_DEBUG && printf("\nGCONF value = %ld\n", gconf_value);
 	
 	/**
 	 * To make the board ready for iMM Software, set repeat_ramp to 0.

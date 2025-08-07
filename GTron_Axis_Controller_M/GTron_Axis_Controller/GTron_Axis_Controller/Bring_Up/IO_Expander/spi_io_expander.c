@@ -6,6 +6,51 @@
  */ 
 #include "spi_io_expander.h"
 
+
+/** 
+ *	\brief ioxp_Interrupt_Callback - Callback function to the external interrupt raised by the MCP23S08 IO Expander.
+ *
+ *	@param void
+ *	@return void 
+ **/
+void ioxp_Interrupt_Callback( void )
+{
+	uint8_t intf_rd_data = 0x00;
+	
+	// Read the INTF register and see what pins have raised an interrupt.
+	IOXP_Read_Byte(IOXP_REG_INTF, &intf_rd_data);
+	
+	// If there was an interrupt raised...
+	if(intf_rd_data)
+	{
+		// Read the INTCAP register to get the pin states and clear the register.
+		IOXP_Read_Byte(IOXP_REG_INTCAP_RD_ONLY, &gtron_limits.limit_flags);
+		gtron_limits.interrupt_raised = true;
+	}
+	return;
+}
+
+/** 
+ *	\brief ioxp_Init - Initializes MCP23S08 IO Expander's registers.
+ *
+ *	@param void
+ *	@return void 
+ **/
+void ioxp_Init( void )
+{
+	IOXP_Write_Byte(IOXP_REG_IODIR,   0x30);	// 0b00110000. Sets the GP4 and GP5 pins as inputs.
+	IOXP_Write_Byte(IOXP_REG_GPPU,    0x00);	// 0b00000000. Pull Ups Disabled.
+	IOXP_Write_Byte(IOXP_REG_IOCON,   0x02);	// 0b00000010. INTPOL bit is set to 1 i.e., INT pin will act as Active-HIGH.
+	IOXP_Write_Byte(IOXP_REG_IPOL,    0x30);	// 0b00000000. Input Pins will reflect inverted logic value. 
+	IOXP_Write_Byte(IOXP_REG_GPINTEN, 0x30);	// 0b00110000. Enable Interrupt On Change Event for pins GP4 and GP5.
+	
+	uint8_t ioxp_rd_data = 0x00;
+	IOXP_Read_Byte(IOXP_REG_INTCAP_RD_ONLY, &ioxp_rd_data);
+	
+	PRINTF_DEBUG ? printf("\nIOXP Init Done\n"): 0;
+	return;
+}
+
 void IOXP_transfer_block(void *wr_buf, void *rd_buf, uint8_t size)
 {
 	uint8_t *w = (uint8_t *)wr_buf;
@@ -71,7 +116,7 @@ void IOXP_Write_Byte( IOXP_REGISTERS_t reg_addr, uint8_t byte_to_wr )
 	
 	IOXP_transfer(wr_buf, rd_buf, 3);
 	
-	PRINTF_DEBUG ? printf("\nIOXP SPI WR: Dev Opcode: 0x%x | Reg Addr: 0x%x | Byte to Write: 0x%x\n", 
+	//PRINTF_DEBUG ? printf("\nIOXP SPI WR: Dev Opcode: 0x%x | Reg Addr: 0x%x | Byte to Write: 0x%x\n", \
 							wr_buf[0], wr_buf[1], wr_buf[2]): 0;
 	
 	return;	
@@ -100,8 +145,8 @@ void IOXP_Read_Byte( IOXP_REGISTERS_t reg_addr, uint8_t *addr_rd_data )
 	
 	*addr_rd_data = rd_buf[2];
 	
-	PRINTF_DEBUG ? printf("\nIOXP SPI RD: Dev Opcode: 0x%x | Reg Addr: 0x%x | Read Byte: 0x%x 0x%x 0x%x\n",
-							wr_buf[0], wr_buf[1], rd_buf[0], rd_buf[1], rd_buf[2]): 0;
+	//PRINTF_DEBUG ? printf("\nIOXP SPI RD: Dev Opcode: 0x%x | Reg Addr: 0x%x | Read Byte: 0x%x\n", \
+							wr_buf[0], wr_buf[1], rd_buf[2]): 0;
 	
 	return;
 }

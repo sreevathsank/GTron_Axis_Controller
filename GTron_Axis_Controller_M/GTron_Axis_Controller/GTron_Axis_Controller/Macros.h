@@ -66,7 +66,19 @@
  */
 #define MOVE_TO						true			
 #define MOVE_BY						false			
-/**/
+
+/**
+ * GTron Limit Flag Masks
+**/
+#define GUIDE_R_LIM_BIT				4
+#define GUIDE_L_LIM_BIT				5
+#define VARREST_R_LIM_BIT			6
+#define VARREST_L_LIM_BIT			7
+
+#define MSK_GUIDE_R_LIM(val)		( (val >> GUIDE_R_LIM_BIT) & 1 )
+#define MSK_GUIDE_L_LIM(val)		( (val >> GUIDE_L_LIM_BIT) & 1 )
+#define MSK_VARREST_R_LIM(val)		( (val >> VARREST_R_LIM_BIT) & 1 )
+#define MSK_VARREST_L_LIM(val)		( (val >> VARREST_L_LIM_BIT) & 1 )
 
 #define HOMING_RAMP_DELTA			0.025f			// The Acceleration delta for increasing velocity for homing sequence.
 
@@ -177,28 +189,28 @@
 #define ABN_ENC_FORWARD_DIRECTION   0x00000000		// Encoder counting direction is forward.
 
 // For Velocity Mode
-#define VELOCITY_0				0				// 0 RPM.
-#define VELOCITY_1				2				// 2 RPM.
-#define VELOCITY_2				5				// 10 RPM.
-#define VELOCITY_3				20				// 25 RPM.
-#define VELOCITY_4				50				// 50 RPM.
-#define VELOCITY_5				75				// 80 RPM.
-#define VELOCITY_6				100				// 100 RPM.
-#define VELOCITY_7				200				// 200 RPM.
-#define VELOCITY_8				300				// 300 RPM.
-#define VELOCITY_9				400				// 400 RPM.
-#define VELOCITY_10				500				// 500 RPM.
+#define VELOCITY_0					0				// 0 RPM.
+#define VELOCITY_1					2				// 2 RPM.
+#define VELOCITY_2					5				// 10 RPM.
+#define VELOCITY_3					20				// 25 RPM.
+#define VELOCITY_4					50				// 50 RPM.
+#define VELOCITY_5					75				// 80 RPM.
+#define VELOCITY_6					100				// 100 RPM.
+#define VELOCITY_7					200				// 200 RPM.
+#define VELOCITY_8					300				// 300 RPM.
+#define VELOCITY_9					400				// 400 RPM.
+#define VELOCITY_10					500				// 500 RPM.
 
-#define VELOCITY_neg_1			-2				// -2 RPM.
-#define VELOCITY_neg_2			-5				// -10 RPM.
-#define VELOCITY_neg_3			-20				// -25 RPM.
-#define VELOCITY_neg_4			-50				// -50 RPM.
-#define VELOCITY_neg_5			-75				// -80 RPM.
-#define VELOCITY_neg_6			-100			// -100 RPM.
-#define VELOCITY_neg_7			-200			// -200 RPM.
-#define VELOCITY_neg_8			-300			// -300 RPM.
-#define VELOCITY_neg_9			-400			// -400 RPM.
-#define VELOCITY_neg_10			-500			// -500 RPM.
+#define VELOCITY_neg_1				-2				// -2 RPM.
+#define VELOCITY_neg_2				-5				// -10 RPM.
+#define VELOCITY_neg_3				-20				// -25 RPM.
+#define VELOCITY_neg_4				-50				// -50 RPM.
+#define VELOCITY_neg_5				-75				// -80 RPM.
+#define VELOCITY_neg_6				-100			// -100 RPM.
+#define VELOCITY_neg_7				-200			// -200 RPM.
+#define VELOCITY_neg_8				-300			// -300 RPM.
+#define VELOCITY_neg_9				-400			// -400 RPM.
+#define VELOCITY_neg_10				-500			// -500 RPM.
 
 //     in hpl_eic_config.h                                               
 #if LIMIT_SWITCH_RISING

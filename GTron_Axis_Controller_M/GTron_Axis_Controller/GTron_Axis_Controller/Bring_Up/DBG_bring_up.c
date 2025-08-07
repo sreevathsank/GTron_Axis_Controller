@@ -179,6 +179,20 @@ void init_UART(void)
 	usart_async_enable(&UART_0);
 }
 
+void tx_TMC2209_UART_cb( void )
+{
+	return;
+}
+
+void init_TMC2209_UART( void )
+{
+	//struct io_descriptor *io_tmc2209;
+
+	
+	return;
+}
+
+
 /** 
  * \brief Gets n no. of ADC values, averages them and finds out the Axis based on the value range
  *
@@ -352,7 +366,11 @@ bool check_4671_version_spi(void)
 	delay_ms(10);
 	tmc4671_writeInt(MOTOR, TMC4671_CHIPINFO_ADDR, ZERO_HEX);
 	delay_ms(1);
-    return (VERSION_4671 == tmc4671_readInt(MOTOR, TMC4671_CHIPINFO_DATA));
+	
+	bool ret_val = VERSION_4671 == tmc4671_readInt(MOTOR, TMC4671_CHIPINFO_DATA);
+	ret_val ? PRINTF_DEBUG ? printf("\nSPI Comms with TMC4671 is successful\n"): 0
+			: 0;
+    return ret_val;
 }
 
 bool check_passive_flash_spi(void)
@@ -366,6 +384,7 @@ bool check_passive_flash_spi(void)
 	if( EXTFLASH_open() )
 	{
 		PRINTF_DEBUG && printf("\nExt Flash ID Check Pass\n");
+		ioxp_Init();
 		return 0; // Success.
 	}
 	return 1; // Failure.
@@ -489,7 +508,9 @@ void call_All_Init_Functions(void)
 	//SYSTICK_INIT();
 	//EXTFLASH_init();
 	init_UART();
-	TMC2209_UART_init();
+	init_TMC2209_UART();
+	//TMC2209_UART_init();
+	//TMC2209_UART_enable();
 	adc_sync_enable_channel(&ADC_0, 0);
 	check_Current_Axis_ADC();
 	if(!check_4671_version_spi()) 

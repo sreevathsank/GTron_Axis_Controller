@@ -57,7 +57,7 @@ static void reeler_Stop_Motor( void )
 	tmc4671_setVelocityLimit(MOTOR, 0);
 	tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
 	move_given_trapezoidal_ramp = false;
-	move_given_s_ramp = false;
+	move_given_s_ramp = false; 
 	check_move_done = false;
 	homing_v = 0;
 	timer_stop(&TIMER_0);
@@ -125,7 +125,7 @@ void parse_GTron_CAN_Msg_Data( void )
 	}	
 	
 	// Check if the current node and message id received are for the current node.
-	if( ((rack_id == TOP_RACK) && (axis_id == GTRON_AXC_TOP)) || \
+	if( ((rack_id == TOP_RACK) ))//&& (axis_id == GTRON_AXC_TOP)) || \
 	    ((rack_id == BOT_RACK) && (axis_id == GTRON_AXC_BOT)) )
 	{
 		switch(rx_can_cmd_info.data[PERIPHERAL_BYTE_IDX])

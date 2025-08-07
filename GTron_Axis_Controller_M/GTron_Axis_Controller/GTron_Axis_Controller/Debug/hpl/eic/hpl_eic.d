@@ -113,7 +113,7 @@ hpl/eic/hpl_eic.d hpl/eic/hpl_eic.o: ../hpl/eic/hpl_eic.c \
  ../hri/hri_systemcontrol_c21n.h ../hri/hri_systick_c21n.h \
  ../hri/hri_tc_c21n.h ../hri/hri_tcc_c21n.h ../hri/hri_tsens_c21n.h \
  ../hri/hri_wdt_c21n.h ../hal/utils/include/err_codes.h \
- ../Config/hpl_eic_config.h ../Macros.h ../hal/include/hpl_ext_irq.h \
+ ../Config/hpl_eic_config.h ../hal/include/hpl_ext_irq.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\string.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\_ansi.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\newlib.h \
@@ -404,8 +404,6 @@ C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n
 ../hal/utils/include/err_codes.h:
 
 ../Config/hpl_eic_config.h:
-
-../Macros.h:
 
 ../hal/include/hpl_ext_irq.h:
 

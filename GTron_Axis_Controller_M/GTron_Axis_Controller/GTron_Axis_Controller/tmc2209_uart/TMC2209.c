@@ -133,12 +133,10 @@ uint32_t tmc2209_UART_write(const uint8_t *const buf, const uint16_t length)
 
 	ASSERT(buf && length);
 
-	while (TMC2209_UART_is_byte_sent())
-		;
+	//while (TMC2209_UART_is_byte_sent());
 	do {
-		TMC2209_UART_write_byte(buf[offset]);
-		while (TMC2209_UART_is_byte_sent())
-			;
+		//TMC2209_UART_write_byte(buf[offset]);
+		//while (TMC2209_UART_is_byte_sent());
 	} while (++offset < length);
 
 	return offset;
@@ -159,9 +157,8 @@ uint32_t tmc2209_UART_read(uint8_t *const buf, const uint16_t length)
 	ASSERT(buf && length);
 
 	do {
-		while (TMC2209_UART_is_byte_received())
-			;
-		buf[offset] = TMC2209_UART_read_byte();
+		//while (TMC2209_UART_is_byte_received());
+		//io_read(io_tmc2209, &buf, length);
 	} while (++offset < length);
 
 	return offset;

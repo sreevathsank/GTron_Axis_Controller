@@ -164,11 +164,12 @@ Bring_Up/CAN/MCD_v3.d Bring_Up/CAN/MCD_v3.o: ../Bring_Up/CAN/MCD_v3.c \
  ../hal/include/hal_timer.h ../hal/utils/include/utils_list.h \
  ../hal/include/hal_can_async.h ../hal/include/hpl_can.h \
  ../hal/include/hpl_can_async.h ../hal/utils/include/utils.h \
- ../Bring_Up/DBG_bring_up.h ../TMC-API/tmc/ic/TMC4671/TMC4671.h \
- ../TMC-API/tmc/helpers/API_Header.h ../TMC-API/tmc/helpers/Config.h \
- ../TMC-API/tmc/helpers/Constants.h ../TMC-API/tmc/helpers/Types.h \
- ../TMC-API/tmc/helpers/Macros.h ../TMC-API/tmc/helpers/Bits.h \
- ../TMC-API/tmc/helpers/CRC.h ../TMC-API/tmc/helpers/RegisterAccess.h \
+ ../Bring_Up/DBG_bring_up.h ../Bring_Up/IO_Expander/spi_io_expander.h \
+ ../TMC-API/tmc/ic/TMC4671/TMC4671.h ../TMC-API/tmc/helpers/API_Header.h \
+ ../TMC-API/tmc/helpers/Config.h ../TMC-API/tmc/helpers/Constants.h \
+ ../TMC-API/tmc/helpers/Types.h ../TMC-API/tmc/helpers/Macros.h \
+ ../TMC-API/tmc/helpers/Bits.h ../TMC-API/tmc/helpers/CRC.h \
+ ../TMC-API/tmc/helpers/RegisterAccess.h \
  ../TMC-API/tmc/ic/TMC4671/TMC4671_Register.h \
  ../TMC-API/tmc/ic/TMC4671/TMC4671_Constants.h \
  ../TMC-API/tmc/helpers/Constants.h \
@@ -195,7 +196,8 @@ Bring_Up/CAN/MCD_v3.d Bring_Up/CAN/MCD_v3.o: ../Bring_Up/CAN/MCD_v3.c \
  ../Code_Dump/ext_flash.h ../driver_init.h ../hpl/spi/spi_lite.h \
  ../Code_Dump/tlv_flash.h ../Bring_Up/IO_Expander/spi_io_expander.h \
  ../tmc2209_uart/TMC2209.h ../tmc2209_uart/TMC2209_HW_Abstraction.h \
- ../tmc2209_uart/TMC2209_Simple_Rotation.h ../tmc2209_uart/TMC2209.h
+ ../tmc2209_uart/TMC2209_Simple_Rotation.h ../tmc2209_uart/TMC2209.h \
+ ../tmc2209_uart/TMC2209_Motion.h
 
 ../Bring_Up/CAN/MCD_v3.h:
 
@@ -625,6 +627,8 @@ C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n
 
 ../Bring_Up/DBG_bring_up.h:
 
+../Bring_Up/IO_Expander/spi_io_expander.h:
+
 ../TMC-API/tmc/ic/TMC4671/TMC4671.h:
 
 ../TMC-API/tmc/helpers/API_Header.h:
@@ -732,3 +736,5 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../tmc2209_uart/TMC2209_Simple_Rotation.h:
 
 ../tmc2209_uart/TMC2209.h:
+
+../tmc2209_uart/TMC2209_Motion.h:

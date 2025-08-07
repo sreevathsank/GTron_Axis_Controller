@@ -191,12 +191,13 @@ Bring_Up/DBG_bring_up.d Bring_Up/DBG_bring_up.o: \
  ../Bring_Up/CAN/IMM_CAN_Write.h ../Global_Vars.h \
  ../Bring_Up/CAN/TMCL_IDE_reply.h ../Bring_Up/CAN/MCD_v3.h \
  ../SysTick/Systick.h ../Bring_Up/Motion/Motion.h \
- ../Code_Dump/McuSwReset.h ../Code_Dump/tlv_flash.h \
- ../Code_Dump/ext_flash.h ../driver_init.h ../hpl/spi/spi_lite.h \
- ../Code_Dump/tlv_flash.h ../Bring_Up/IO_Expander/spi_io_expander.h \
- ../tmc2209_uart/TMC2209.h ../tmc2209_uart/TMC2209_HW_Abstraction.h \
+ ../Bring_Up/IO_Expander/spi_io_expander.h ../Code_Dump/McuSwReset.h \
+ ../Code_Dump/tlv_flash.h ../Code_Dump/ext_flash.h ../driver_init.h \
+ ../hpl/spi/spi_lite.h ../Code_Dump/tlv_flash.h \
+ ../Bring_Up/IO_Expander/spi_io_expander.h ../tmc2209_uart/TMC2209.h \
+ ../tmc2209_uart/TMC2209_HW_Abstraction.h \
  ../tmc2209_uart/TMC2209_Simple_Rotation.h ../tmc2209_uart/TMC2209.h \
- ../Code_Dump/tlv_flash.h
+ ../tmc2209_uart/TMC2209_Motion.h ../Code_Dump/tlv_flash.h
 
 ../Bring_Up/DBG_bring_up.h:
 
@@ -712,6 +713,8 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 
 ../Bring_Up/Motion/Motion.h:
 
+../Bring_Up/IO_Expander/spi_io_expander.h:
+
 ../Code_Dump/McuSwReset.h:
 
 ../Code_Dump/tlv_flash.h:
@@ -733,5 +736,7 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../tmc2209_uart/TMC2209_Simple_Rotation.h:
 
 ../tmc2209_uart/TMC2209.h:
+
+../tmc2209_uart/TMC2209_Motion.h:
 
 ../Code_Dump/tlv_flash.h:

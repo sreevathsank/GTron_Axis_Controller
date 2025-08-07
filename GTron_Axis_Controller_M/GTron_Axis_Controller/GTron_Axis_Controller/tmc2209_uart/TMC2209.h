@@ -18,8 +18,9 @@ extern "C" {
 #include <string.h>
 #include "TMC2209_HW_Abstraction.h"
 #include "TMC2209_Simple_Rotation.h"
+#include "All_Headers.h"
 //#include "hal_usart_async.h"
-#include "usart_lite.h"
+//#include "usart_lite.h"
 #include "driver_init.h"
 
 /*******************************************************************************

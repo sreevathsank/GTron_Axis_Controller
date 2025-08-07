@@ -11,6 +11,7 @@
 
 
 #include "All_Headers.h"
+#include "Bring_Up/IO_Expander/spi_io_expander.h"
 #include "Bring_Up/CAN/IMM_CAN_Message_Id.h"
 
 void init_PosMode(uint8_t motor);

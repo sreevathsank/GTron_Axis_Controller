@@ -178,6 +178,7 @@ motor_dev/my_Ramp/myRamp.d motor_dev/my_Ramp/myRamp.o: \
  ../All_Headers.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\lib\gcc\arm-none-eabi\6.3.1\include\stdint-gcc.h \
  ../Macros.h ../Bring_Up/DBG_bring_up.h \
+ ../Bring_Up/IO_Expander/spi_io_expander.h \
  ../TMC-API/tmc/ic/TMC4671/TMC4671.h \
  ../TMC-API/tmc/ic/TMC4671/TMC4671_Register.h \
  ../TMC-API/tmc/ic/TMC4671/TMC4671_Constants.h \
@@ -198,7 +199,8 @@ motor_dev/my_Ramp/myRamp.d motor_dev/my_Ramp/myRamp.o: \
  ../Code_Dump/ext_flash.h ../driver_init.h ../hpl/spi/spi_lite.h \
  ../Code_Dump/tlv_flash.h ../Bring_Up/IO_Expander/spi_io_expander.h \
  ../tmc2209_uart/TMC2209.h ../tmc2209_uart/TMC2209_HW_Abstraction.h \
- ../tmc2209_uart/TMC2209_Simple_Rotation.h ../tmc2209_uart/TMC2209.h
+ ../tmc2209_uart/TMC2209_Simple_Rotation.h ../tmc2209_uart/TMC2209.h \
+ ../tmc2209_uart/TMC2209_Motion.h
 
 ../motor_dev/my_Ramp/myRamp.h:
 
@@ -666,6 +668,8 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\lib\gc
 
 ../Bring_Up/DBG_bring_up.h:
 
+../Bring_Up/IO_Expander/spi_io_expander.h:
+
 ../TMC-API/tmc/ic/TMC4671/TMC4671.h:
 
 ../TMC-API/tmc/ic/TMC4671/TMC4671_Register.h:
@@ -735,3 +739,5 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../tmc2209_uart/TMC2209_Simple_Rotation.h:
 
 ../tmc2209_uart/TMC2209.h:
+
+../tmc2209_uart/TMC2209_Motion.h:

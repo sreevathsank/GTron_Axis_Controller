@@ -167,6 +167,7 @@ main.d main.o: .././main.c ../atmel_start.h ../driver_init.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\lib\gcc\arm-none-eabi\6.3.1\include\float.h \
  .././Macros.h .././atmel_start_pins.h .././driver_init.h \
  .././Bring_Up/DBG_bring_up.h ../All_Headers.h \
+ ../Bring_Up/IO_Expander/spi_io_expander.h \
  .././TMC-API/tmc/ic/TMC4671/TMC4671.h \
  ../TMC-API/tmc/helpers/API_Header.h ../TMC-API/tmc/helpers/Config.h \
  ../TMC-API/tmc/helpers/Constants.h ../TMC-API/tmc/helpers/Types.h \
@@ -197,7 +198,8 @@ main.d main.o: .././main.c ../atmel_start.h ../driver_init.h \
  .././Code_Dump/ext_flash.h ../driver_init.h ../hpl/spi/spi_lite.h \
  .././Code_Dump/tlv_flash.h .././Bring_Up/IO_Expander/spi_io_expander.h \
  .././tmc2209_uart/TMC2209.h .././tmc2209_uart/TMC2209_HW_Abstraction.h \
- .././tmc2209_uart/TMC2209_Simple_Rotation.h .././tmc2209_uart/TMC2209.h
+ .././tmc2209_uart/TMC2209_Simple_Rotation.h .././tmc2209_uart/TMC2209.h \
+ .././tmc2209_uart/TMC2209_Motion.h
 
 ../atmel_start.h:
 
@@ -637,6 +639,8 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\lib\gc
 
 ../All_Headers.h:
 
+../Bring_Up/IO_Expander/spi_io_expander.h:
+
 .././TMC-API/tmc/ic/TMC4671/TMC4671.h:
 
 ../TMC-API/tmc/helpers/API_Header.h:
@@ -740,3 +744,5 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 .././tmc2209_uart/TMC2209_Simple_Rotation.h:
 
 .././tmc2209_uart/TMC2209.h:
+
+.././tmc2209_uart/TMC2209_Motion.h:

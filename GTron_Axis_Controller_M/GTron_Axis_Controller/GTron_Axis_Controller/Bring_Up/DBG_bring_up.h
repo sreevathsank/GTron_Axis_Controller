@@ -10,6 +10,7 @@
 #define DBG_BRING_UP_H_
 
 #include "All_Headers.h"
+#include "Bring_Up/IO_Expander/spi_io_expander.h"
 
 #define VERSION_4671 0x34363731
 

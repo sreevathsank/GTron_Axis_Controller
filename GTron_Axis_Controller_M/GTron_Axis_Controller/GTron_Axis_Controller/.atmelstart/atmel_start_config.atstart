@@ -403,7 +403,7 @@ drivers:
       eic_arch_asynch6: false
       eic_arch_asynch7: false
       eic_arch_asynch8: true
-      eic_arch_asynch9: false
+      eic_arch_asynch9: true
       eic_arch_cksel: Clocked by GCLK
       eic_arch_debounce_enable0: false
       eic_arch_debounce_enable1: false
@@ -420,7 +420,7 @@ drivers:
       eic_arch_debounce_enable6: false
       eic_arch_debounce_enable7: false
       eic_arch_debounce_enable8: false
-      eic_arch_debounce_enable9: false
+      eic_arch_debounce_enable9: true
       eic_arch_enable_irq_setting0: false
       eic_arch_enable_irq_setting1: true
       eic_arch_enable_irq_setting10: true
@@ -436,7 +436,7 @@ drivers:
       eic_arch_enable_irq_setting6: false
       eic_arch_enable_irq_setting7: false
       eic_arch_enable_irq_setting8: true
-      eic_arch_enable_irq_setting9: false
+      eic_arch_enable_irq_setting9: true
       eic_arch_extinteo0: false
       eic_arch_extinteo1: false
       eic_arch_extinteo10: false
@@ -490,7 +490,7 @@ drivers:
       eic_arch_sense6: No detection
       eic_arch_sense7: No detection
       eic_arch_sense8: Both-edges detection
-      eic_arch_sense9: No detection
+      eic_arch_sense9: Rising-edge detection
       eic_arch_states0: '7'
       eic_arch_states1: '7'
       eic_arch_tickon: The sampling rate is the prescaled clock
@@ -1057,7 +1057,7 @@ drivers:
       usart_ctrla_control: true
       usart_ctrlb_control: true
       usart_dbgctrl_control: false
-      usart_intenset_control: true
+      usart_intenset_control: false
       usart_rxpl_control: false
     optional_signals: []
     variant:
@@ -1486,16 +1486,15 @@ pads:
   TMC2209_UART_TX:
     name: PB16
     definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::pad::PB16
-    mode: Digital output
+    mode: Peripheral IO
     user_label: TMC2209_UART_TX
     configuration: null
-  TMC2209_UART_RX:
+  PB17:
     name: PB17
     definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::pad::PB17
-    mode: Digital output
-    user_label: TMC2209_UART_RX
-    configuration:
-      pad_initial_level: High
+    mode: Peripheral IO
+    user_label: PB17
+    configuration: null
   INDEX_SEL:
     name: PB19
     definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::pad::PB19

@@ -2,8 +2,6 @@
 #ifndef HPL_EIC_CONFIG_H
 #define HPL_EIC_CONFIG_H
 
-#include "Macros.h"
-
 // <<< Use Configuration Wizard in Context Menu >>>
 
 // <h> Basic Settings
@@ -310,7 +308,7 @@
 // <e> Interrupt 5 Settings
 // <id> eic_arch_enable_irq_setting5
 #ifndef CONF_EIC_ENABLE_IRQ_SETTING5
-#define CONF_EIC_ENABLE_IRQ_SETTING5 0
+#define CONF_EIC_ENABLE_IRQ_SETTING5 1
 #endif
 
 // <q> External Interrupt 5 Filter Enable
@@ -324,7 +322,7 @@
 // <i> Indicates whether the external interrupt 5 debounce is enabled or not
 // <id> eic_arch_debounce_enable5
 #ifndef CONF_EIC_DEBOUNCE_ENABLE5
-#define CONF_EIC_DEBOUNCE_ENABLE5 0
+#define CONF_EIC_DEBOUNCE_ENABLE5 1
 #endif
 
 // <q> External Interrupt 5 Event Output Enable
@@ -344,14 +342,14 @@
 // <i> This defines input sense trigger
 // <id> eic_arch_sense5
 #ifndef CONF_EIC_SENSE5
-#define CONF_EIC_SENSE5 EIC_NMICTRL_NMISENSE_NONE_Val
+#define CONF_EIC_SENSE5 EIC_NMICTRL_NMISENSE_RISE_Val
 #endif
 
 // <q> External Interrupt 5 Asynchronous Edge Detection Mode
 // <i> Indicates the external interrupt 5 detection mode operated synchronously or asynchronousl
 // <id> eic_arch_asynch5
 #ifndef CONF_EIC_ASYNCH5
-#define CONF_EIC_ASYNCH5 0
+#define CONF_EIC_ASYNCH5 1
 #endif
 
 // </e>
@@ -506,7 +504,7 @@
 // <e> Interrupt 9 Settings
 // <id> eic_arch_enable_irq_setting9
 #ifndef CONF_EIC_ENABLE_IRQ_SETTING9
-#define CONF_EIC_ENABLE_IRQ_SETTING9 0
+#define CONF_EIC_ENABLE_IRQ_SETTING9 1
 #endif
 
 // <q> External Interrupt 9 Filter Enable
@@ -520,7 +518,7 @@
 // <i> Indicates whether the external interrupt 9 debounce is enabled or not
 // <id> eic_arch_debounce_enable9
 #ifndef CONF_EIC_DEBOUNCE_ENABLE9
-#define CONF_EIC_DEBOUNCE_ENABLE9 0
+#define CONF_EIC_DEBOUNCE_ENABLE9 1
 #endif
 
 // <q> External Interrupt 9 Event Output Enable
@@ -540,14 +538,14 @@
 // <i> This defines input sense trigger
 // <id> eic_arch_sense9
 #ifndef CONF_EIC_SENSE9
-#define CONF_EIC_SENSE9 EIC_NMICTRL_NMISENSE_NONE_Val
+#define CONF_EIC_SENSE9 EIC_NMICTRL_NMISENSE_RISE_Val
 #endif
 
 // <q> External Interrupt 9 Asynchronous Edge Detection Mode
 // <i> Indicates the external interrupt 9 detection mode operated synchronously or asynchronousl
 // <id> eic_arch_asynch9
 #ifndef CONF_EIC_ASYNCH9
-#define CONF_EIC_ASYNCH9 0
+#define CONF_EIC_ASYNCH9 1
 #endif
 
 // </e>
@@ -589,12 +587,7 @@
 // <i> This defines input sense trigger
 // <id> eic_arch_sense10
 #ifndef CONF_EIC_SENSE10
-	#if LIMIT_SWITCH_RISING
-		#define CONF_EIC_SENSE10 EIC_NMICTRL_NMISENSE_RISE_Val		// For LIM_RT.
-	#elif LIMIT_SWITCH_FALLING
-		#define CONF_EIC_SENSE10 EIC_NMICTRL_NMISENSE_FALL_Val		// For LIM_RT.
-	#endif
-//#define CONF_EIC_SENSE10 EIC_NMICTRL_NMISENSE_RISE_Val
+#define CONF_EIC_SENSE10 EIC_NMICTRL_NMISENSE_RISE_Val
 #endif
 
 // <q> External Interrupt 10 Asynchronous Edge Detection Mode
@@ -692,14 +685,7 @@
 // <i> This defines input sense trigger
 // <id> eic_arch_sense12
 #ifndef CONF_EIC_SENSE12
-	#if LIMIT_SWITCH_RISING
-		#define CONF_EIC_SENSE12 EIC_NMICTRL_NMISENSE_RISE_Val		// For LIM_LFT.
-	#elif LIMIT_SWITCH_FALLING
-		#define CONF_EIC_SENSE12 EIC_NMICTRL_NMISENSE_FALL_Val		// For LIM_LFT.
-	#else
-		#define CONF_EIC_SENSE12 EIC_NMICTRL_NMISENSE_RISE_Val
-	#endif
-//#define CONF_EIC_SENSE12 EIC_NMICTRL_NMISENSE_RISE_Val
+#define CONF_EIC_SENSE12 EIC_NMICTRL_NMISENSE_RISE_Val
 #endif
 
 // <q> External Interrupt 12 Asynchronous Edge Detection Mode
@@ -714,7 +700,7 @@
 // <e> Interrupt 13 Settings
 // <id> eic_arch_enable_irq_setting13
 #ifndef CONF_EIC_ENABLE_IRQ_SETTING13
-#define CONF_EIC_ENABLE_IRQ_SETTING13 0
+#define CONF_EIC_ENABLE_IRQ_SETTING13 1
 #endif
 
 // <q> External Interrupt 13 Filter Enable
@@ -728,7 +714,7 @@
 // <i> Indicates whether the external interrupt 13 debounce is enabled or not
 // <id> eic_arch_debounce_enable13
 #ifndef CONF_EIC_DEBOUNCE_ENABLE13
-#define CONF_EIC_DEBOUNCE_ENABLE13 0
+#define CONF_EIC_DEBOUNCE_ENABLE13 1
 #endif
 
 // <q> External Interrupt 13 Event Output Enable
@@ -748,14 +734,14 @@
 // <i> This defines input sense trigger
 // <id> eic_arch_sense13
 #ifndef CONF_EIC_SENSE13
-#define CONF_EIC_SENSE13 EIC_NMICTRL_NMISENSE_NONE_Val
+#define CONF_EIC_SENSE13 EIC_NMICTRL_NMISENSE_RISE_Val
 #endif
 
 // <q> External Interrupt 13 Asynchronous Edge Detection Mode
 // <i> Indicates the external interrupt 13 detection mode operated synchronously or asynchronousl
 // <id> eic_arch_asynch13
 #ifndef CONF_EIC_ASYNCH13
-#define CONF_EIC_ASYNCH13 0
+#define CONF_EIC_ASYNCH13 1
 #endif
 
 // </e>
@@ -763,7 +749,7 @@
 // <e> Interrupt 14 Settings
 // <id> eic_arch_enable_irq_setting14
 #ifndef CONF_EIC_ENABLE_IRQ_SETTING14
-#define CONF_EIC_ENABLE_IRQ_SETTING14 0
+#define CONF_EIC_ENABLE_IRQ_SETTING14 1
 #endif
 
 // <q> External Interrupt 14 Filter Enable
@@ -777,14 +763,14 @@
 // <i> Indicates whether the external interrupt 14 debounce is enabled or not
 // <id> eic_arch_debounce_enable14
 #ifndef CONF_EIC_DEBOUNCE_ENABLE14
-#define CONF_EIC_DEBOUNCE_ENABLE14 0
+#define CONF_EIC_DEBOUNCE_ENABLE14 1
 #endif
 
 // <q> External Interrupt 14 Event Output Enable
 // <i> Indicates whether the external interrupt 14 event output is enabled or not
 // <id> eic_arch_extinteo14
 #ifndef CONF_EIC_EXTINTEO14
-#define CONF_EIC_EXTINTEO14 0
+#define CONF_EIC_EXTINTEO14 1
 #endif
 
 // <y> Input 14 Sense Configuration
@@ -797,14 +783,14 @@
 // <i> This defines input sense trigger
 // <id> eic_arch_sense14
 #ifndef CONF_EIC_SENSE14
-#define CONF_EIC_SENSE14 EIC_NMICTRL_NMISENSE_NONE_Val
+#define CONF_EIC_SENSE14 EIC_NMICTRL_NMISENSE_RISE_Val
 #endif
 
 // <q> External Interrupt 14 Asynchronous Edge Detection Mode
 // <i> Indicates the external interrupt 14 detection mode operated synchronously or asynchronousl
 // <id> eic_arch_asynch14
 #ifndef CONF_EIC_ASYNCH14
-#define CONF_EIC_ASYNCH14 0
+#define CONF_EIC_ASYNCH14 1
 #endif
 
 // </e>
@@ -874,7 +860,7 @@
 
 // <id> eic_arch_prescaler0
 #ifndef CONF_EIC_DPRESCALER0
-#define CONF_EIC_DPRESCALER0 EIC_DPRESCALER_PRESCALER0(0x7)
+#define CONF_EIC_DPRESCALER0 EIC_DPRESCALER_PRESCALER0(0x0)
 #endif
 
 // <o> Low frequency samples
@@ -905,7 +891,7 @@
 
 // <id> eic_arch_prescaler1
 #ifndef CONF_EIC_DPRESCALER1
-#define CONF_EIC_DPRESCALER1 EIC_DPRESCALER_PRESCALER1(0x7)
+#define CONF_EIC_DPRESCALER1 EIC_DPRESCALER_PRESCALER1(0x0)
 #endif
 
 // <o> Low frequency samples
@@ -921,17 +907,9 @@
 // </h>
 
 #define CONFIG_EIC_EXTINT_MAP                                                                                          \
-	{1, PIN_PA17}, {2, PIN_PA18}, {3, PIN_PA19}, {8, PIN_PC16}, {9, PIN_PC17}, {10, PIN_PC18}, {11, PIN_PC19},         \
-	    {12, PIN_PC20},
+	{1, PIN_PA17}, {2, PIN_PA18}, {3, PIN_PA19}, {5, PIN_PB21}, {8, PIN_PC16}, {9, PIN_PC17}, {10, PIN_PC18},          \
+	    {12, PIN_PC20}, {13, PIN_PC21}, {14, PIN_PB30},
 
 // <<< end of configuration section >>>
-
-#if LIMIT_SWITCH_RISING
-#define CONF_EIC_SENSE10 EIC_NMICTRL_NMISENSE_RISE_Val		// For LIM_RT.
-#define CONF_EIC_SENSE12 EIC_NMICTRL_NMISENSE_RISE_Val		// For LIM_LFT.
-#elif LIMIT_SWITCH_FALLING
-#define CONF_EIC_SENSE10 EIC_NMICTRL_NMISENSE_FALL_Val		// For LIM_RT.
-#define CONF_EIC_SENSE12 EIC_NMICTRL_NMISENSE_FALL_Val		// For LIM_LFT.
-#endif
 
 #endif // HPL_EIC_CONFIG_H

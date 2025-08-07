@@ -170,6 +170,7 @@ Code_Dump/tlv_flash.d Code_Dump/tlv_flash.o: ../Code_Dump/tlv_flash.c \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\math.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\lib\gcc\arm-none-eabi\6.3.1\include\float.h \
  ../Macros.h ../driver_init.h ../Bring_Up/DBG_bring_up.h \
+ ../Bring_Up/IO_Expander/spi_io_expander.h \
  ../TMC-API/tmc/ic/TMC4671/TMC4671.h ../TMC-API/tmc/helpers/API_Header.h \
  ../TMC-API/tmc/helpers/Config.h ../TMC-API/tmc/helpers/Constants.h \
  ../TMC-API/tmc/helpers/Types.h ../TMC-API/tmc/helpers/Macros.h \
@@ -197,7 +198,8 @@ Code_Dump/tlv_flash.d Code_Dump/tlv_flash.o: ../Code_Dump/tlv_flash.c \
  ../Code_Dump/McuSwReset.h ../Code_Dump/tlv_flash.h \
  ../Bring_Up/IO_Expander/spi_io_expander.h ../tmc2209_uart/TMC2209.h \
  ../tmc2209_uart/TMC2209_HW_Abstraction.h \
- ../tmc2209_uart/TMC2209_Simple_Rotation.h ../tmc2209_uart/TMC2209.h
+ ../tmc2209_uart/TMC2209_Simple_Rotation.h ../tmc2209_uart/TMC2209.h \
+ ../tmc2209_uart/TMC2209_Motion.h
 
 ../Code_Dump/tlv_flash.h:
 
@@ -639,6 +641,8 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\lib\gc
 
 ../Bring_Up/DBG_bring_up.h:
 
+../Bring_Up/IO_Expander/spi_io_expander.h:
+
 ../TMC-API/tmc/ic/TMC4671/TMC4671.h:
 
 ../TMC-API/tmc/helpers/API_Header.h:
@@ -732,3 +736,5 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../tmc2209_uart/TMC2209_Simple_Rotation.h:
 
 ../tmc2209_uart/TMC2209.h:
+
+../tmc2209_uart/TMC2209_Motion.h:

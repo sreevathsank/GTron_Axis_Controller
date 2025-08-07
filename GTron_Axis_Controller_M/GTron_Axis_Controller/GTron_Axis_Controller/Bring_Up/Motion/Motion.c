@@ -728,7 +728,7 @@ void toggle_Limit_Led(void)
  */
 void check_Limit_Flags(void)
 {
-	if( (axis_id == X_AXIS) || (axis_id == Y_AXIS) || (axis_id = Z_AXIS))
+	if( /*(axis_id == X_AXIS) ||*/ (axis_id == Y_AXIS) || (axis_id == Z_AXIS))
 	{
 		if(true == limit_variables.left_limit_flag)
 		{
@@ -748,9 +748,29 @@ void check_Limit_Flags(void)
 		}
 		toggle_Limit_Led();	
 	}
-	else if( (axis_id == GTRON_AXC_TOP) || (axis_id == GTRON_AXC_BOT) )
+	else if( ( (axis_id == GTRON_AXC_TOP) || (axis_id == GTRON_AXC_BOT) || (axis_id == X_AXIS) ) && gtron_limits.interrupt_raised)
 	{
+		gtron_limits.interrupt_raised = false;
 		
+		for(int8_t i = 7; i >= 0; i--) { PRINTF_DEBUG ? printf(" Bit %d = %d | ", i, (gtron_limits.limit_flags >> i) & 1 ): 0; }
+		PRINTF_DEBUG ? printf("\n"): 0;
+		
+		if( MSK_GUIDE_R_LIM(gtron_limits.limit_flags) )
+		{
+			PRINTF_DEBUG ? printf("\nGuide Right Limit is Hit!\n"): 0;
+		}
+		else if( MSK_GUIDE_L_LIM(gtron_limits.limit_flags) )
+		{
+			PRINTF_DEBUG ? printf("\nGuide Left Limit is Hit!\n"): 0;
+		}
+		else if( MSK_VARREST_R_LIM(gtron_limits.limit_flags) )
+		{
+			PRINTF_DEBUG ? printf("\nVertical Arrestor Right Limit is Hit!\n"): 0;
+		}
+		else if( MSK_VARREST_L_LIM(gtron_limits.limit_flags) )
+		{
+			PRINTF_DEBUG ? printf("\nVertical Arrestor Left Limit is Hit!\n"): 0;
+		}
 	}
 	return;
 }
@@ -761,7 +781,7 @@ void check_Limit_Flags(void)
  * @param void
  * @return void
  */
-void lin_Enc_Z_Pulse_Interrupt_Callback(void)
+void rot_Enc_Z_Pulse_Interrupt_Callback(void)
 {
 	if(limit_variables.lin_enc_z_first_hit)
 	{
@@ -864,6 +884,8 @@ void init_ext_irq_limits(void)
 {
 	ext_irq_register(LIM_LFT, left_Limit_Interrupt_Callback);
 	ext_irq_register(LIM_RT, right_Limit_Interrupt_Callback);
+	ext_irq_register(ROTENC_Z, rot_Enc_Z_Pulse_Interrupt_Callback);
+	ext_irq_register(IOXP_INT, ioxp_Interrupt_Callback);
 	return;
 }
 

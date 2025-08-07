@@ -23,8 +23,29 @@ tmc2209_uart/TMC2209.d tmc2209_uart/TMC2209.o: ../tmc2209_uart/TMC2209.c \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\xlocale.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\string.h \
  ../tmc2209_uart/TMC2209_HW_Abstraction.h \
- ../tmc2209_uart/TMC2209_Simple_Rotation.h ../hpl/usart/usart_lite.h \
- ../hal/utils/include/compiler.h ../hal/utils/include/parts.h \
+ ../tmc2209_uart/TMC2209_Simple_Rotation.h ../All_Headers.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\stdio.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\lib\gcc\arm-none-eabi\6.3.1\include\stdarg.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\types.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\machine\endian.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\machine\_endian.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\select.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\_sigset.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\_timeval.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\timespec.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\_timespec.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\_pthreadtypes.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\machine\types.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\stdio.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\stdlib.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\machine\stdlib.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\alloca.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\lib\gcc\arm-none-eabi\6.3.1\include\stdint-gcc.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\math.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\lib\gcc\arm-none-eabi\6.3.1\include\float.h \
+ ../Macros.h ../atmel_start_pins.h ../hal/include/hal_gpio.h \
+ ../hal/include/hpl_gpio.h ../hal/utils/include/compiler.h \
+ ../hal/utils/include/parts.h \
  C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n\include/samc21.h \
  C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n\include/samc21n18a.h \
  C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\arm\CMSIS\5.4.0\CMSIS\Core\Include/core_cm0plus.h \
@@ -128,27 +149,55 @@ tmc2209_uart/TMC2209.d tmc2209_uart/TMC2209.o: ../tmc2209_uart/TMC2209.c \
  ../hri/hri_systemcontrol_c21n.h ../hri/hri_systick_c21n.h \
  ../hri/hri_tc_c21n.h ../hri/hri_tcc_c21n.h ../hri/hri_tsens_c21n.h \
  ../hri/hri_wdt_c21n.h ../hal/utils/include/err_codes.h \
- ../Config/peripheral_clk_config.h ../driver_init.h ../atmel_start_pins.h \
- ../hal/include/hal_gpio.h ../hal/include/hpl_gpio.h \
  ../hpl/port/hpl_gpio_base.h ../hal/utils/include/utils_assert.h \
- ../Config/hpl_port_config.h ../hal/include/hal_delay.h \
+ ../Config/hpl_port_config.h ../driver_init.h ../hal/include/hal_delay.h \
  ../hal/include/hpl_irq.h ../hal/include/hpl_reset.h \
  ../hal/include/hpl_sleep.h ../hal/include/hal_init.h \
  ../hal/include/hpl_init.h ../hal/include/hal_io.h \
  ../hal/include/hal_sleep.h ../hal/include/hal_adc_sync.h \
  ../hal/include/hpl_adc_sync.h ../hal/include/hpl_missing_features.h \
  ../hal/include/hal_ext_irq.h ../hal/include/hpl_ext_irq.h \
- ../hpl/spi/spi_lite.h ../hal/include/hal_usart_async.h \
- ../hal/include/hal_io.h ../hal/include/hpl_usart_async.h \
- ../hal/include/hpl_usart.h ../hal/include/hpl_irq.h \
- ../hal/utils/include/utils_ringbuffer.h ../hal/utils/include/compiler.h \
- ../hal/utils/include/utils_assert.h ../hal/include/hal_usart_sync.h \
+ ../hpl/spi/spi_lite.h ../Config/peripheral_clk_config.h \
+ ../hal/include/hal_usart_async.h ../hal/include/hal_io.h \
+ ../hal/include/hpl_usart_async.h ../hal/include/hpl_usart.h \
+ ../hal/include/hpl_irq.h ../hal/utils/include/utils_ringbuffer.h \
+ ../hal/utils/include/compiler.h ../hal/utils/include/utils_assert.h \
+ ../hpl/usart/usart_lite.h ../hal/include/hal_usart_sync.h \
  ../hal/include/hpl_usart_sync.h ../hal/include/hpl_usart.h \
  ../hal/include/hal_pwm.h ../hal/include/hpl_pwm.h \
  ../hpl/tc/hpl_tc_base.h ../hal/include/hpl_timer.h \
  ../hal/include/hal_timer.h ../hal/utils/include/utils_list.h \
  ../hal/include/hal_can_async.h ../hal/include/hpl_can.h \
- ../hal/include/hpl_can_async.h ../hal/utils/include/utils.h
+ ../hal/include/hpl_can_async.h ../hal/utils/include/utils.h \
+ ../Bring_Up/DBG_bring_up.h ../Bring_Up/IO_Expander/spi_io_expander.h \
+ ../TMC-API/tmc/ic/TMC4671/TMC4671.h ../TMC-API/tmc/helpers/API_Header.h \
+ ../TMC-API/tmc/helpers/Config.h ../TMC-API/tmc/helpers/Constants.h \
+ ../TMC-API/tmc/helpers/Types.h ../TMC-API/tmc/helpers/Macros.h \
+ ../TMC-API/tmc/helpers/Bits.h ../TMC-API/tmc/helpers/CRC.h \
+ ../TMC-API/tmc/helpers/RegisterAccess.h \
+ ../TMC-API/tmc/ic/TMC4671/TMC4671_Register.h \
+ ../TMC-API/tmc/ic/TMC4671/TMC4671_Constants.h \
+ ../TMC-API/tmc/helpers/Constants.h \
+ ../TMC-API/tmc/ic/TMC4671/TMC4671_Fields.h ../Bring_Up/CAN/IMM_CAN.h \
+ ../atmel_start.h ../stdio_start.h ../stdio_redirect/stdio_io.h \
+ ../hpl/can/hpl_can_base.h ../Config/hpl_can_config.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\inttypes.h \
+ ../Global_Vars.h ../Bring_Up/CAN/IMM_CAN_Message_Id.h \
+ ../Bring_Up/CAN/IMM_CAN_Read.h ../Bring_Up/CAN/IMM_CAN_Message_Id.h \
+ ../motor_dev/my_Ramp/myRamp.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\fastmath.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\machine\fastmath.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\newlib-nano\newlib.h \
+ ../TMC-API/tmc/ramp/LinearRamp1.h ../TMC-API/tmc/ramp/Ramp.h \
+ ../TMC-API/tmc/ramp/LinearRamp1.h ../TMC-API/tmc/helpers/Functions.h \
+ ../TMC-API/tmc/helpers/API_Header.h ../Bring_Up/CAN/IMM_CAN_Read.h \
+ ../Bring_Up/CAN/IMM_CAN_Write.h ../Global_Vars.h \
+ ../Bring_Up/CAN/TMCL_IDE_reply.h ../Bring_Up/CAN/MCD_v3.h \
+ ../SysTick/Systick.h ../Bring_Up/Motion/Motion.h \
+ ../Code_Dump/McuSwReset.h ../Code_Dump/tlv_flash.h \
+ ../Code_Dump/ext_flash.h ../driver_init.h ../hpl/spi/spi_lite.h \
+ ../Code_Dump/tlv_flash.h ../Bring_Up/IO_Expander/spi_io_expander.h \
+ ../tmc2209_uart/TMC2209.h ../tmc2209_uart/TMC2209_Motion.h
 
 ../tmc2209_uart/TMC2209.h:
 
@@ -200,7 +249,53 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 
 ../tmc2209_uart/TMC2209_Simple_Rotation.h:
 
-../hpl/usart/usart_lite.h:
+../All_Headers.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\stdio.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\lib\gcc\arm-none-eabi\6.3.1\include\stdarg.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\types.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\machine\endian.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\machine\_endian.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\select.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\_sigset.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\_timeval.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\timespec.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\_timespec.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\_pthreadtypes.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\machine\types.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\stdio.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\stdlib.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\machine\stdlib.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\alloca.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\lib\gcc\arm-none-eabi\6.3.1\include\stdint-gcc.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\math.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\lib\gcc\arm-none-eabi\6.3.1\include\float.h:
+
+../Macros.h:
+
+../atmel_start_pins.h:
+
+../hal/include/hal_gpio.h:
+
+../hal/include/hpl_gpio.h:
 
 ../hal/utils/include/compiler.h:
 
@@ -458,21 +553,13 @@ C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n
 
 ../hal/utils/include/err_codes.h:
 
-../Config/peripheral_clk_config.h:
-
-../driver_init.h:
-
-../atmel_start_pins.h:
-
-../hal/include/hal_gpio.h:
-
-../hal/include/hpl_gpio.h:
-
 ../hpl/port/hpl_gpio_base.h:
 
 ../hal/utils/include/utils_assert.h:
 
 ../Config/hpl_port_config.h:
+
+../driver_init.h:
 
 ../hal/include/hal_delay.h:
 
@@ -502,6 +589,8 @@ C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n
 
 ../hpl/spi/spi_lite.h:
 
+../Config/peripheral_clk_config.h:
+
 ../hal/include/hal_usart_async.h:
 
 ../hal/include/hal_io.h:
@@ -517,6 +606,8 @@ C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n
 ../hal/utils/include/compiler.h:
 
 ../hal/utils/include/utils_assert.h:
+
+../hpl/usart/usart_lite.h:
 
 ../hal/include/hal_usart_sync.h:
 
@@ -543,3 +634,105 @@ C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n
 ../hal/include/hpl_can_async.h:
 
 ../hal/utils/include/utils.h:
+
+../Bring_Up/DBG_bring_up.h:
+
+../Bring_Up/IO_Expander/spi_io_expander.h:
+
+../TMC-API/tmc/ic/TMC4671/TMC4671.h:
+
+../TMC-API/tmc/helpers/API_Header.h:
+
+../TMC-API/tmc/helpers/Config.h:
+
+../TMC-API/tmc/helpers/Constants.h:
+
+../TMC-API/tmc/helpers/Types.h:
+
+../TMC-API/tmc/helpers/Macros.h:
+
+../TMC-API/tmc/helpers/Bits.h:
+
+../TMC-API/tmc/helpers/CRC.h:
+
+../TMC-API/tmc/helpers/RegisterAccess.h:
+
+../TMC-API/tmc/ic/TMC4671/TMC4671_Register.h:
+
+../TMC-API/tmc/ic/TMC4671/TMC4671_Constants.h:
+
+../TMC-API/tmc/helpers/Constants.h:
+
+../TMC-API/tmc/ic/TMC4671/TMC4671_Fields.h:
+
+../Bring_Up/CAN/IMM_CAN.h:
+
+../atmel_start.h:
+
+../stdio_start.h:
+
+../stdio_redirect/stdio_io.h:
+
+../hpl/can/hpl_can_base.h:
+
+../Config/hpl_can_config.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\inttypes.h:
+
+../Global_Vars.h:
+
+../Bring_Up/CAN/IMM_CAN_Message_Id.h:
+
+../Bring_Up/CAN/IMM_CAN_Read.h:
+
+../Bring_Up/CAN/IMM_CAN_Message_Id.h:
+
+../motor_dev/my_Ramp/myRamp.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\fastmath.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\machine\fastmath.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\newlib-nano\newlib.h:
+
+../TMC-API/tmc/ramp/LinearRamp1.h:
+
+../TMC-API/tmc/ramp/Ramp.h:
+
+../TMC-API/tmc/ramp/LinearRamp1.h:
+
+../TMC-API/tmc/helpers/Functions.h:
+
+../TMC-API/tmc/helpers/API_Header.h:
+
+../Bring_Up/CAN/IMM_CAN_Read.h:
+
+../Bring_Up/CAN/IMM_CAN_Write.h:
+
+../Global_Vars.h:
+
+../Bring_Up/CAN/TMCL_IDE_reply.h:
+
+../Bring_Up/CAN/MCD_v3.h:
+
+../SysTick/Systick.h:
+
+../Bring_Up/Motion/Motion.h:
+
+../Code_Dump/McuSwReset.h:
+
+../Code_Dump/tlv_flash.h:
+
+../Code_Dump/ext_flash.h:
+
+../driver_init.h:
+
+../hpl/spi/spi_lite.h:
+
+../Code_Dump/tlv_flash.h:
+
+../Bring_Up/IO_Expander/spi_io_expander.h:
+
+../tmc2209_uart/TMC2209.h:
+
+../tmc2209_uart/TMC2209_Motion.h:
