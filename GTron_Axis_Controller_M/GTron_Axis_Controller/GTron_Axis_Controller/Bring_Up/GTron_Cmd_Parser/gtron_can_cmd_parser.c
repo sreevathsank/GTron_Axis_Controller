@@ -27,8 +27,11 @@ static void reeler_Move(int32_t target_position, bool move_to_by)
 	else
 	{
 		tmc4671_setVelocityLimit(MOTOR, reeler_info.velocity_limit);
-		tmc4671_setAbsolutTargetPosition(MOTOR, target_position);
+		(move_to_by == MOVE_TO) ? tmc4671_setAbsolutTargetPosition(MOTOR, target_position) \
+								: tmc4671_setRelativeTargetPosition(MOTOR, target_position);
 	}
+	(move_to_by == MOVE_TO) ? PRINTF_DEBUG ? printf("\nReeler Move To %ld steps\n", target_position): 0 \
+	: PRINTF_DEBUG ? printf("\nReeler Move By %ld steps\n", target_position): 0;
 	return;
 }
 
@@ -36,12 +39,14 @@ static void reeler_Set_Velocity(int32_t reeler_target_velocity)
 {
 	reeler_info.velocity_limit = reeler_target_velocity;
 	tmc4671_setVelocityLimit(MOTOR, reeler_info.velocity_limit);
+	PRINTF_DEBUG ? printf("\nReeler Set Velocity %ld rpm\n", reeler_info.velocity_limit): 0;
 	return;
 }
 
 static void reeler_Set_Teeth(uint32_t trig_step_size)
 {
 	reeler_info.trigger_step_size = trig_step_size;
+	PRINTF_DEBUG ? printf("\nReeler Set Teeth Number or Trigger Step Size as %ld\n", reeler_info.trigger_step_size): 0;
 	return;
 }
 
@@ -49,19 +54,35 @@ static void reeler_Set_Initial_Position(int32_t reeler_initial_position)
 {
 	reeler_info.initial_position = reeler_initial_position;
 	reeler_Move(reeler_info.initial_position, MOVE_TO);
+	PRINTF_DEBUG ? printf("\nReeler Set Initial Position to %ld steps\n", reeler_info.initial_position): 0;
+	return;
+}
+
+static void reeler_Start_Motor( void )
+{
+	tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
+	vel_struct.flags.reeler_rotate = true;
+	vel_struct.flags.sag_enabled = true;
+	timer_start(&VEL_TIMER);
+	//tmc4671_setVelocityTarget(MOTOR, reeler_info.velocity_limit);
+	PRINTF_DEBUG ? printf("\nReeler Start Motor with Velocity %ld rpm\n", reeler_info.velocity_limit): 0;
 	return;
 }
 
 static void reeler_Stop_Motor( void )
 {
 	tmc4671_setVelocityLimit(MOTOR, 0);
+	tmc4671_setVelocityTarget(MOTOR, 0);
 	tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
 	move_given_trapezoidal_ramp = false;
 	move_given_s_ramp = false; 
 	check_move_done = false;
+	vel_struct.flags.reeler_rotate = false;
+	vel_struct.flags.sag_enabled = false;
 	homing_v = 0;
 	timer_stop(&TIMER_0);
 	reeler_info.current_position = tmc4671_getActualPosition(MOTOR);
+	PRINTF_DEBUG ? printf("\nReeler Stop Motor\n"): 0;
 	return;
 }
 
@@ -120,13 +141,20 @@ void parse_GTron_CAN_Msg_Data( void )
 	uint8_t rack_id;
 	switch(rx_can_cmd_info.id)
 	{
-		case CAN_TOP_RACK_ID: rack_id = TOP_RACK; break;
-		case CAN_BOT_RACK_ID: rack_id = BOT_RACK; break;
+		case CAN_TOP_RACK_ID: 
+			rack_id = TOP_RACK; 
+			PRINTF_DEBUG ? printf("\nTOP Rack Message ID Rxcvd\n"): 0;
+		break;
+		case CAN_BOT_RACK_ID: 
+			rack_id = BOT_RACK; 
+			PRINTF_DEBUG ? printf("\nBOTTOM Rack Message ID Rxcvd\n"): 0;
+		break;
 	}	
 	
 	// Check if the current node and message id received are for the current node.
-	if( ((rack_id == TOP_RACK) ))//&& (axis_id == GTRON_AXC_TOP)) || \
+	//if( ((rack_id == TOP_RACK) && (axis_id == GTRON_AXC_TOP)) || \
 	    ((rack_id == BOT_RACK) && (axis_id == GTRON_AXC_BOT)) )
+	if( (X_AXIS == axis_id) && (TOP_RACK == rack_id) )
 	{
 		switch(rx_can_cmd_info.data[PERIPHERAL_BYTE_IDX])
 		{
@@ -134,75 +162,38 @@ void parse_GTron_CAN_Msg_Data( void )
 			case REELER_MOTOR:
 				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
 				{
-					case AXC_STOP:
-						reeler_Stop_Motor();
-					break;
-					case AXC_VELOCITY:
-						reeler_Set_Velocity((int32_t)rx_can_cmd_info.value);
-					break;
-					case AXC_ROTATE:
-						reeler_Move((int32_t)rx_can_cmd_info.value, MOVE_TO);
-					break;
-					case AXC_MOVE_TO:
-						reeler_Move((int32_t)rx_can_cmd_info.value, MOVE_TO);
-					break;
-					case AXC_MOVE_BY:
-						reeler_Move((int32_t)rx_can_cmd_info.value, MOVE_BY);
-					break;
-					case AXC_TEETH:
-						reeler_Set_Teeth((uint32_t)rx_can_cmd_info.value);
-					break;
-					case AXC_INITIAL_POSITION:
-						reeler_Set_Initial_Position((int32_t)rx_can_cmd_info.value);
-					break;
+					case AXC_START:				reeler_Start_Motor();											break;
+					case AXC_STOP:				reeler_Stop_Motor();											break;
+					case AXC_VELOCITY:			reeler_Set_Velocity((int32_t)rx_can_cmd_info.value);			break;
+					case AXC_ROTATE:			reeler_Move((int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
+					case AXC_MOVE_TO:			reeler_Move((int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
+					case AXC_MOVE_BY:			reeler_Move((int32_t)rx_can_cmd_info.value, MOVE_BY);			break;
+					case AXC_TEETH:				reeler_Set_Teeth((uint32_t)rx_can_cmd_info.value);				break;
+					case AXC_INITIAL_POSITION:	reeler_Set_Initial_Position((int32_t)rx_can_cmd_info.value);	break;
 					default: break;
 				}
 			break;
 			case GUIDE_MOTOR:
 				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
 				{
-					case AXC_STOP:
-						guide_VArrestor_Stop_Motor(GUIDE);
-					break;
-					case AXC_VELOCITY:
-						guide_VArrestor_Set_Velocity(GUIDE, (int32_t)rx_can_cmd_info.value);
-					break;
-					case AXC_ROTATE:
-						guide_VArrestor_Move(GUIDE, (int32_t)rx_can_cmd_info.value, MOVE_TO);
-					break;
-					case AXC_MOVE_TO:
-						guide_VArrestor_Move(GUIDE, (int32_t)rx_can_cmd_info.value, MOVE_TO);
-					break;
-					case AXC_MOVE_BY:
-						guide_VArrestor_Move(GUIDE, (int32_t)rx_can_cmd_info.value, MOVE_BY);
-					break;
-					case AXC_INITIAL_POSITION:
-						guide_VArrestor_Set_Initial_Position(GUIDE, (int32_t)rx_can_cmd_info.value);
-					break;
+					case AXC_STOP:				guide_VArrestor_Stop_Motor(GUIDE);												break;
+					case AXC_VELOCITY:			guide_VArrestor_Set_Velocity(GUIDE, (int32_t)rx_can_cmd_info.value);			break;
+					case AXC_ROTATE:			guide_VArrestor_Move(GUIDE, (int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
+					case AXC_MOVE_TO:			guide_VArrestor_Move(GUIDE, (int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
+					case AXC_MOVE_BY:			guide_VArrestor_Move(GUIDE, (int32_t)rx_can_cmd_info.value, MOVE_BY);			break;
+					case AXC_INITIAL_POSITION:	guide_VArrestor_Set_Initial_Position(GUIDE, (int32_t)rx_can_cmd_info.value);	break;
 					default: break;
 				}
 			break;
 			case VERITCAL_ARRESTOR_MOTOR:
 				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
 				{
-					case AXC_STOP:
-						guide_VArrestor_Stop_Motor(VARRESTOR);
-					break;
-					case AXC_VELOCITY:
-						guide_VArrestor_Set_Velocity(VARRESTOR, (int32_t)rx_can_cmd_info.value);
-					break;
-					case AXC_ROTATE:
-						guide_VArrestor_Move(VARRESTOR, (int32_t)rx_can_cmd_info.value, MOVE_TO);
-					break;
-					case AXC_MOVE_TO:
-						guide_VArrestor_Move(VARRESTOR, (int32_t)rx_can_cmd_info.value, MOVE_TO);
-					break;
-					case AXC_MOVE_BY:
-						guide_VArrestor_Move(VARRESTOR, (int32_t)rx_can_cmd_info.value, MOVE_BY);
-					break;
-					case AXC_INITIAL_POSITION:
-						guide_VArrestor_Set_Initial_Position(VARRESTOR, (int32_t)rx_can_cmd_info.value);
-					break;
+					case AXC_STOP:			   guide_VArrestor_Stop_Motor(VARRESTOR);											break;
+					case AXC_VELOCITY:		   guide_VArrestor_Set_Velocity(VARRESTOR, (int32_t)rx_can_cmd_info.value);			break;
+					case AXC_ROTATE:		   guide_VArrestor_Move(VARRESTOR, (int32_t)rx_can_cmd_info.value, MOVE_TO);		break;
+					case AXC_MOVE_TO:		   guide_VArrestor_Move(VARRESTOR, (int32_t)rx_can_cmd_info.value, MOVE_TO);		break;
+					case AXC_MOVE_BY:		   guide_VArrestor_Move(VARRESTOR, (int32_t)rx_can_cmd_info.value, MOVE_BY);		break;
+					case AXC_INITIAL_POSITION: guide_VArrestor_Set_Initial_Position(VARRESTOR, (int32_t)rx_can_cmd_info.value); break;
 					default: break;
 				}
 			break;

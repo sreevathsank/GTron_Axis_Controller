@@ -1252,8 +1252,8 @@ drivers:
       can_dbtp_dtseg1: 11
       can_dbtp_dtseg2: 4
       can_dbtp_tdc: false
-      can_gfc_anfe: Reject
-      can_gfc_anfs: Reject
+      can_gfc_anfe: Accept in Rx FIFO 0
+      can_gfc_anfs: Accept in Rx FIFO 0
       can_gfc_rrfe: Filter remote frames with 29-bit standard IDs
       can_gfc_rrfs: Filter remote frames with 11-bit standard IDs
       can_ie_bo: false

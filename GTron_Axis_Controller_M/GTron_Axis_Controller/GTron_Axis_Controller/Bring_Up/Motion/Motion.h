@@ -13,6 +13,7 @@
 #include "All_Headers.h"
 #include "Bring_Up/IO_Expander/spi_io_expander.h"
 #include "Bring_Up/CAN/IMM_CAN_Message_Id.h"
+#include "Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h"
 
 void init_PosMode(uint8_t motor);
 
@@ -40,9 +41,9 @@ void stop_Motor_Mad(void);
 
 void check_For_Move_Done(void);
 
-void run_Velocity_Mode(void);
+void run_Velocity_Ramp(void);
 
-void run_Velocity_Mode(void);
+void run_Velocity_Ramp(void);
 
 void left_limit_homing(void);
 

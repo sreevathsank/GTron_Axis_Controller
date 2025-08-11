@@ -477,8 +477,8 @@ void left_limit_high()
 	tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
 	tmc4671_setVelocityLimit(MOTOR, 0);
 	tmc4671_setVelocityTarget(MOTOR, 0);
-	vel_struct.test_enabled = false;
-	vel_struct.knob_enabled = false;
+	//vel_struct.test_enabled = false;
+	vel_struct.flags.reeler_rotate = false;
 	return;
 }
 
@@ -494,8 +494,8 @@ void right_limit_high()
 	tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
 	tmc4671_setVelocityLimit(MOTOR, 0);
 	tmc4671_setVelocityTarget(MOTOR, 0);
-	vel_struct.test_enabled = false;
-	vel_struct.knob_enabled = false;
+	//vel_struct.test_enabled = false;
+	vel_struct.flags.reeler_rotate = false;
 	return;
 }
 
@@ -730,21 +730,21 @@ void check_Limit_Flags(void)
 {
 	if( /*(axis_id == X_AXIS) ||*/ (axis_id == Y_AXIS) || (axis_id == Z_AXIS))
 	{
-		if(true == limit_variables.left_limit_flag)
+		if(1 == limit_variables.flags.left_limit_flag)
 		{
-			limit_variables.left_limit_flag = false;
+			limit_variables.flags.left_limit_flag = 0;
 			gpio_set_pin_level(DBGLED1, false);
 			printf("\nLeft Limit HIT!\n");
 			// Check for Homing Flag.
-			(limit_variables.homing == true) ? left_limit_homing() : left_limit_high();
+			(limit_variables.flags.homing == 1) ? left_limit_homing() : left_limit_high();
 		}
-		if(true == limit_variables.right_limit_flag)
+		if(1 == limit_variables.flags.right_limit_flag)
 		{
-			limit_variables.right_limit_flag = false;
+			limit_variables.flags.right_limit_flag = 0;
 			gpio_set_pin_level(DBGLED2, false);
 			printf("\nRight Limit HIT!\n");
 			// Check for Homing Flag.
-			(limit_variables.homing == true) ? right_limit_homing() : right_limit_high();
+			(limit_variables.homing == 1) ? right_limit_homing() : right_limit_high();
 		}
 		toggle_Limit_Led();	
 	}
@@ -783,43 +783,32 @@ void check_Limit_Flags(void)
  */
 void rot_Enc_Z_Pulse_Interrupt_Callback(void)
 {
-	if(limit_variables.lin_enc_z_first_hit)
+	if(limit_variables.rot_enc_z_first_hit)
 	{
 		tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
 		tmc4671_setVelocityLimit(MOTOR, 0);
 		tmc4671_writeInt(MOTOR, TMC4671_ABN_DECODER_COUNT, ZERO_HEX);
 		tmc4671_setActualPosition(MOTOR, ZERO_HEX);
 		tmc4671_setAbsolutTargetPosition(MOTOR, ZERO_HEX);
-		limit_variables.lin_enc_z_first_hit = false;
+		limit_variables.rot_enc_z_first_hit = false;
 		limit_variables.homing = false;
 		move_given_s_ramp = false;
 		move_given_trapezoidal_ramp = false;
-		ext_irq_disable(LINENC_Z);
+		ext_irq_disable(ROTENC_Z);
 	}
-	else if(limit_variables.lin_enc_z_first_hit == false)
+	else if(limit_variables.rot_enc_z_first_hit == false)
 	{
-		//int32_t linear_enc_dir = (read_tlv_flash(tlv_ptr, LINEAR_ENCODER_DIRECTION_FLASH, tlv_traversal) == 0) ? ABN_ENC_REVERSE_DIRECTION : ABN_ENC_FORWARD_DIRECTION;
-		//mc4671_writeInt(MOTOR, TMC4671_ABN_2_DECODER_MODE, linear_enc_dir);
 		tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
 		tmc4671_setVelocityLimit(MOTOR, 0);
 		move_given_s_ramp = false;
 		move_given_trapezoidal_ramp = false;
 		int32_t current_position = tmc4671_getActualPosition(MOTOR);
 		
-		// It might have moved beyond the Z pulse Zero position. So, bring it back to the Zero Position.
-		if(current_position > 0)
-		{
-			move_With_S_Ramp( (-current_position), 30, MOVE_BY);
-		}
-		else if(current_position < 0)
-		{
-			move_With_S_Ramp( abs(ROTATION + current_position), 30, MOVE_BY );
-		}
-		//move_With_S_Ramp(0, 60, MOVE_TO);
+		move_With_S_Ramp(0, 30, MOVE_TO);
 		
-		limit_variables.lin_enc_z_first_hit = false;
+		limit_variables.rot_enc_z_first_hit = false;
 		limit_variables.homing = false;
-		ext_irq_disable(LINENC_Z);
+		ext_irq_disable(ROTENC_Z);
 	}
 	
 	switch(axis_id)
@@ -840,11 +829,10 @@ void rot_Enc_Z_Pulse_Interrupt_Callback(void)
  */
 void left_Limit_Interrupt_Callback(void)
 {
-	limit_variables.left_limit_flag = true;
+	limit_variables.flags.left_limit_flag = 1;
 	tmc4671_setVelocityLimit(MOTOR, 0);
 	tmc4671_setVelocityTarget(MOTOR, 0);
-	vel_struct.knob_enabled = false;
-	if(!limit_variables.homing) { vel_struct.test_enabled = true; }
+	vel_struct.flags.reeler_rotate = false;
 	tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
 	
 	printf("\nLeft Limit HIT!\n");
@@ -861,11 +849,10 @@ void left_Limit_Interrupt_Callback(void)
  */
 void right_Limit_Interrupt_Callback(void)
 {
-	limit_variables.right_limit_flag = true;
+	limit_variables.flags.right_limit_flag = 1;
 	tmc4671_setVelocityLimit(MOTOR, 0);
 	tmc4671_setVelocityTarget(MOTOR, 0);
-	vel_struct.knob_enabled = false;
-	if(!limit_variables.homing) { vel_struct.test_enabled = true; }
+	vel_struct.flags.reeler_rotate = false;
 	tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
 	
 	printf("\nRight Limit HIT!\n");
@@ -1415,7 +1402,7 @@ void check_For_Move_Done(void)
 			autofocus_variables.temp_t_pos = 0;
 			autofocus_variables.temp_t_vel = 0;
 		}
-		if(vel_struct.knob_enabled)
+		if(vel_struct.flags.reeler_rotate)
 		{
 			// Set Motor Mode to Velocity Mode.
 			tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
@@ -1487,193 +1474,69 @@ void check_Motor_Movement(void)
 }
 
 /** 
- * \brief Runs the motor in velocity mode
+ * \brief Generates a simple linear slope for the Velocity Target in Velocity Mode.
  *
  * @param	void
  * @return	void
  */
-void run_Velocity_Mode(void)
+void run_Velocity_Ramp(void)
 {
-	static float tvel = 0;	// Target Velocity to be set.
-	int32_t modeMotion = tmc4671_getModeMotion(MOTOR);
-	if( (!limit_variables.homing) && (modeMotion == VELOCITY_MODE) )
+	static float vel = 0;	// Velocity to be set.
+	static bool ramping = false;
+	
+	vel_struct.flags.reeler_vel_timer = false;
+	
+	// Check for the NULL pointer.
+	if(!p_reeler_info) { return; }
+		
+	int32_t current_velocity = tmc4671_getVelocityTarget(MOTOR);
+	int32_t target_velocity = p_reeler_info->velocity_limit;
+	
+	// Check if the Motor's current Mode Motion is in Velocity Mode or not.
+	int32_t mode_motion = tmc4671_getModeMotion(MOTOR);
+	if(mode_motion != VELOCITY_MODE)
 	{
-		// Check if the motor has crossed any of the softlimits.
-		int32_t curr_pos = tmc4671_getActualPosition(MOTOR);
-		bool inside_soft_limit = false;
-		if(motor_dir_rev)
-		{
-			if( (curr_pos < limit_variables.soft_limit_high) && (vel_struct.direction == true) )
-			{
-				//printf("\nsoft_limit high | direction = true\n");
-				inside_soft_limit = true;
-				vel_struct.vel_state = VEL_STATE_0;
-			}
-			else if( (curr_pos > limit_variables.soft_limit_low) && (vel_struct.direction == false) )
-			{
-				//printf("\nsoft_limit low | direction = false\n");
-				inside_soft_limit = true;
-				vel_struct.vel_state = VEL_STATE_0;
-			}
-			if( (curr_pos > limit_variables.soft_limit_low) && (curr_pos < limit_variables.soft_limit_high) )
-			{
-				inside_soft_limit = false;
-			}	
-		}
-		else
-		{
-			if( (curr_pos > limit_variables.soft_limit_high) && (vel_struct.direction == true) )
-			{
-				printf("\nsoft_limit high | direction = true\n");
-				inside_soft_limit = true;
-				vel_struct.vel_state = VEL_STATE_0;
-			}
-			else if( (curr_pos < limit_variables.soft_limit_low) && (vel_struct.direction == false) )
-			{
-				printf("\nsoft_limit low | direction = false\n");
-				inside_soft_limit = true;
-				vel_struct.vel_state = VEL_STATE_0;
-			}
-			if( (curr_pos > limit_variables.soft_limit_low) && (curr_pos < limit_variables.soft_limit_high) )
-			{
-				inside_soft_limit = false;
-			}
-		}
+		tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
+	}
+	if(!ramping)
+	{
+		vel = current_velocity;
 		
-		// To send Linear Encoder value if X or Y axis or Rotary Encoder for Z axis.
-		if(vel_struct.position_send)
-		{
-			vel_struct.position_send = false;
-			int32_t z_actual_pos, z_rot_enc_pos;
-			int32_t xy_actual_pos, xy_enc_modulo, xy_enc_count;
-			//int32_t linear_enc_res = read_tlv_flash(tlv_ptr, LINEAR_ENCODER_CPR_FLASH, tlv_traversal);
-			switch(axis_id)
-			{
-				case X_AXIS:
-				case Y_AXIS:
-				{
-					// Read and Send the Linear Encoder value on the CAN bus.
-					message_Id = (axis_id == Y_AXIS) ? CAN_ID(REPLY_ID_Y, Y, 0x64, LIN_ENC_READ) : CAN_ID(REPLY_ID_X, X, 0x64, LIN_ENC_READ);
-					xy_actual_pos = (int32_t) (motor_dir_rev) ? (int32_t) (~tmc4671_getActualPosition(MOTOR) + 1) : (int32_t) tmc4671_getActualPosition(MOTOR);
-					xy_enc_modulo = (int32_t) tmc4671_readInt(MOTOR, TMC4671_ABN_2_DECODER_COUNT);
-					xy_enc_count = (int32_t) ( (floor(xy_actual_pos / ROTATION) * axis_params.lin_enc_res) + xy_enc_modulo );
-					
-					// If the difference between the previous linear encoder count and the current is less than 
-					// 100 counts, don't send the encoder value.
-					if( abs(vel_struct.prev_lin_enc_val - xy_enc_count) < 100 )
-					{
-						break;
-					}
-					encoding_CAN_Byte_Data(xy_enc_count);
-					can_Write(message_Id, xy_enc_count);
-					//printf("\ncurr_pos = %ld | abn2dec = %ld | lin_enc_count = %ld | pos_mm = %.4f mm | %.4f mm", xy_actual_pos, xy_enc_modulo, xy_enc_count, \
-					(xy_actual_pos / ONE_MM), (xy_enc_count / 2048.03) );
-					PRINTF_DEBUG && printf("\nad %x  cmd %x  typ %x mot %x Data %x %x %x %x %x", ad, cmd, typ ,mot,can_tx_frame.data[0], can_tx_frame.data[1], can_tx_frame.data[2], can_tx_frame.data[3], can_rx_frame.data[4]);
-					(axis_id == X_AXIS) ? PRINTF_DEBUG && printf(" LINEAR_ENC_READ_X | VELOCITY KNOB MODE\n") \
-										: PRINTF_DEBUG && printf(" LINEAR_ENC_READ_Y | VELOCITY KNOB MODE\n");
-					vel_struct.prev_lin_enc_val = xy_enc_count;
-					break;
-				}
-				case Z_AXIS:
-				{
-					message_Id = CAN_ID(REPLY_ID_Z, Z, 0x64, LIN_ENC_READ);
-					z_actual_pos  = (int32_t) tmc4671_getActualPosition(MOTOR);
-					
-					int32_t div_factor = (ROTATION / axis_params.rot_enc_res);
-					z_rot_enc_pos = (int32_t) floor( z_actual_pos / div_factor );
-					
-					// If the difference between the previous linear encoder count and the current is less than
-					// 100 counts, don't send the encoder value.
-					if( abs(vel_struct.prev_lin_enc_val - z_rot_enc_pos) < 100 )
-					{
-						break;
-					}
-					encoding_CAN_Byte_Data(z_rot_enc_pos);
-					can_Write(message_Id, z_rot_enc_pos);
-					//printf("\nactual pos = %ld | rot_enc_value = %ld | pos_mm = %.4f mm | rot_enc_pos_mm = %.4f mm\n", z_actual_pos, z_rot_enc_pos, \
-					(z_actual_pos / ONE_MM), (z_rot_enc_pos / (axis_params.rot_enc_res / PITCH_MM) ) );
-					PRINTF_DEBUG && printf("\nad %x  cmd %x  typ %x mot %x Data %x %x %x %x %x", ad, cmd, typ ,mot,can_tx_frame.data[0], can_tx_frame.data[1], can_tx_frame.data[2], can_tx_frame.data[3], can_rx_frame.data[4]);
-					PRINTF_DEBUG && printf(" ROT_ENC_READ_Z | VELOCITY KNOB MODE\n");
-					vel_struct.prev_lin_enc_val = z_rot_enc_pos;
-					break;
-				}
-				default: break;
-			}
-		}
+		// This is the velocity limit threshold that cannot be crossed in Position Mode as well as Velocity Mode.
+		tmc4671_setVelocityLimit(MOTOR, axis_params.endurance_vel);
 		
-		// Set the Motor Motion Mode to Velocity Mode.
-		if(tmc4671_getModeMotion(MOTOR) != VELOCITY_MODE) { tmc4671_setModeMotion(MOTOR, VELOCITY_MODE); }
-		
-		// Set the velocity limit to the highest with knob.
-		// This limit is what actual velocity of the motor follows regardless of Motor Motion Mode.
-		tmc4671_setVelocityLimit(MOTOR, VELOCITY_10);
-		
-		// Set target velocity according to the velocity state given.
-		int32_t target_vel = tmc4671_getVelocityTarget(MOTOR);
-		switch(vel_struct.vel_state)
+		ramping = true;
+	}
+	
+	// Return from the current function if the current motor velocity is equal to the Target Velocity.
+	if(current_velocity == target_velocity)
+	{
+		ramping = false;
+		timer_stop(&VEL_TIMER);
+		return;
+	}
+	
+	// Check if the current motor velocity is greater than or less than the Target Velocity.
+	bool is_greater = (current_velocity > target_velocity);
+	
+	// Depending on the boolean is_greater, increase or decrease the value of vel.
+	
+	if(is_greater)
+	{
+		if(vel > target_velocity)
 		{
-			case VEL_STATE_0 : target_vel = VELOCITY_0 ; break;
-			case VEL_STATE_1 : target_vel = VELOCITY_1 ; break;
-			case VEL_STATE_2 : target_vel = VELOCITY_2 ; break;
-			case VEL_STATE_3 : target_vel = VELOCITY_3 ; break;
-			case VEL_STATE_4 : target_vel = VELOCITY_4 ; break;
-			case VEL_STATE_5 : target_vel = VELOCITY_5 ; break;
-			case VEL_STATE_6 : target_vel = VELOCITY_6 ; break;
-			case VEL_STATE_7 : target_vel = VELOCITY_7 ; break;
-			case VEL_STATE_8 : target_vel = VELOCITY_8 ; break;
-			case VEL_STATE_9 : target_vel = VELOCITY_9 ; break;
-			case VEL_STATE_10: target_vel = VELOCITY_10; break;
-			
-			case VEL_STATE_neg_1 : target_vel = VELOCITY_neg_1 ; break;
-			case VEL_STATE_neg_2 : target_vel = VELOCITY_neg_2 ; break;
-			case VEL_STATE_neg_3 : target_vel = VELOCITY_neg_3 ; break;
-			case VEL_STATE_neg_4 : target_vel = VELOCITY_neg_4 ; break;
-			case VEL_STATE_neg_5 : target_vel = VELOCITY_neg_5 ; break;
-			case VEL_STATE_neg_6 : target_vel = VELOCITY_neg_6 ; break;
-			case VEL_STATE_neg_7 : target_vel = VELOCITY_neg_7 ; break;
-			case VEL_STATE_neg_8 : target_vel = VELOCITY_neg_8 ; break;
-			case VEL_STATE_neg_9 : target_vel = VELOCITY_neg_9 ; break;
-			case VEL_STATE_neg_10: target_vel = VELOCITY_neg_10; break;
-			
-			default: break;
-		}
-		
-		// Check if current motor velocity is greater or less than the target velocity of the state.
-		int32_t curr_tvel = tmc4671_getVelocityTarget(MOTOR); 
-		bool is_greater = (curr_tvel > target_vel) ? true : false;
-		if(curr_tvel == target_vel)
-		{
-			vel_struct.vel_state = VEL_STATE_IDLE;
-			return;
-		}
-		if(is_greater)
-		{
-			if(inside_soft_limit && (vel_struct.vel_state == VEL_STATE_0) )
-			{
-				tvel -= (VELOCITY_RAMP_DELTA * 60); 
-			}
-			else
-			{
-				tvel -= VELOCITY_RAMP_DELTA;	// Slope \.	
-			}
-			tmc4671_setVelocityTarget(MOTOR, tvel);
-			//vel_struct.vel_state = (tvel <= target_vel) ? VEL_STATE_IDLE : VEL_STATE_10;
-			if(tvel <= target_vel) { vel_struct.vel_state = VEL_STATE_IDLE; }
-		}
-		else
-		{
-			if(inside_soft_limit && (vel_struct.vel_state == VEL_STATE_0) )
-			{
-				tvel += (VELOCITY_RAMP_DELTA * 60);
-			}
-			else
-			{
-				tvel += VELOCITY_RAMP_DELTA;	// Slope /.	
-			}
-			tmc4671_setVelocityTarget(MOTOR, tvel);
-			//vel_struct.vel_state = (tvel >= target_vel) ? VEL_STATE_IDLE : VEL_STATE_10;
-			if(tvel >= target_vel) { vel_struct.vel_state = VEL_STATE_IDLE; }
+			vel -= axis_params.acceleration_delta;
 		}
 	}
+	else 
+	{
+		if(vel < target_velocity)
+		{
+			vel += axis_params.acceleration_delta;
+		}	
+	}
+					   
+	tmc4671_setVelocityTarget(MOTOR, (int32_t)vel);
+	
 	return;
 }

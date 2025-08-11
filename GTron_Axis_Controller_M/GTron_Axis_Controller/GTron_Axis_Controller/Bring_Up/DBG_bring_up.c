@@ -102,7 +102,7 @@ void timer_ramp_cb(void)
 
 void vel_timer_cb(void)
 {
-	vel_struct.position_send = true;
+	vel_struct.flags.reeler_vel_timer = true;
 	//printf("\nVEL_TIMER\n");
 	return;
 }
@@ -286,7 +286,7 @@ void read_Set_Parameters_From_Flash(void)
 							| 0);
 	*/
 	// PI parameters for X, Y and Z axes.
-	switch(axis_id)
+	switch((axis_current)axis_id)
 	{
 		case X_AXIS:
 			axis_params.start_voltage		= 1000;
@@ -348,6 +348,7 @@ void read_Set_Parameters_From_Flash(void)
 			axis_params.jerk				= read_tlv_flash(tlv_ptr, ENDURANCE_JERK_FLASH, tlv_traversal);//5000;//8000;
 			axis_params.jerk_delta			= (axis_params.jerk * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS) * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS));//(axis_params.jerk * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS) * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS));
 		break;
+		default: break;
 	}
 	//PRINTF_DEBUG && printf("\naccel delta =%.4f | jerk delta = %.4f\n", axis_params.acceleration_delta, axis_params.jerk_delta);
 	return;
@@ -473,8 +474,8 @@ void define_All_Global_Variables(void)
 	autofocus_variables.change_comp_cnt = false;
 	
 	// Velocity Knob mode variables.
-	vel_struct.test_enabled  = false;
-	vel_struct.position_send = false;
+	//vel_struct.test_enabled  = false;
+	//vel_struct.position_send = false;
 	vel_struct.vel_state	 = VEL_STATE_0;
 	
 	can_tx_frame.data_64bit = 0;

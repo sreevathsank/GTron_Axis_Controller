@@ -15,6 +15,9 @@
 #define PERIPHERAL_BYTE_IDX		0
 #define OPERATION_BYTE_IDX		1
 
+#define POSITION_MOVE_FLAG		0
+#define VELOCITY_MOVE_FLAG		1
+
 typedef enum
 {
 	GUIDE = 1,
@@ -43,7 +46,10 @@ typedef struct
 	int32_t current_position;
 	int32_t initial_position;
 	int32_t trigger_step_size;
+	uint32_t flags;
 }Reeler_Info_t;
+
+extern Reeler_Info_t *p_reeler_info;
 
 extern Can_Cmd_Info_t rx_can_cmd_info;
 

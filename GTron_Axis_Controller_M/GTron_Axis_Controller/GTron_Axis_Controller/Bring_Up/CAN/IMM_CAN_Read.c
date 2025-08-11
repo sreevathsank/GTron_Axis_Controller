@@ -329,19 +329,19 @@ void can_Message_Operational_v3_XAxis(uint32_t message_Id, int32_t data)
 			vel_struct.vel_state = VEL_STATE_0;
 			if(knob_dis_enable)
 			{
-				vel_struct.knob_enabled = true;
+				vel_struct.flags.reeler_rotate = true;
 				tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
 				timer_start(&VEL_TIMER);
-				vel_struct.prev_lin_enc_val = 0;
+				//vel_struct.prev_lin_enc_val = 0;
 			}
 			else
 			{
-				vel_struct.knob_enabled = false;
+				vel_struct.flags.reeler_rotate = false;
 				timer_stop(&VEL_TIMER);
 				tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
 				tmc4671_setAbsolutTargetPosition(MOTOR, tmc4671_getActualPosition(MOTOR) );
 				tmc4671_setModeMotion(MOTOR, POSITION_MODE);
-				vel_struct.prev_lin_enc_val = 0;
+				//vel_struct.prev_lin_enc_val = 0;
 			}
 			PRINTF_DEBUG && printf(" KNOB_MODE_X | %d\n", knob_dis_enable);
 		break;
@@ -349,13 +349,13 @@ void can_Message_Operational_v3_XAxis(uint32_t message_Id, int32_t data)
 			value = decoding_CAN_Byte_Data();
 			uint8_t velocity_x		= can_rx_frame.data[0];
 			uint8_t vel_direction	= can_rx_frame.data[1];
-			vel_struct.direction = (vel_direction == 1) ? true : false;
+			vel_struct.flags.direction = (vel_direction == 1) ? true : false;
 			
 			#if LIMIT_SWITCH_RISING
 				// If Left Limit hit, don't move if the given velocity is anti clockwise.( -ve velocity)
 				// If Right Limit hit, don't move if the given velocity is clockwise.(+ve velocity)
-				if( ( gpio_get_pin_level(LIM_LFT) == HIGH ) && ( vel_struct.direction == false ) || \
-				    ( gpio_get_pin_level(LIM_RT)  == HIGH ) && ( vel_struct.direction == true ) ) 
+				if( ( gpio_get_pin_level(LIM_LFT) == HIGH ) && ( vel_struct.flags.direction == false ) || \
+				    ( gpio_get_pin_level(LIM_RT)  == HIGH ) && ( vel_struct.flags.direction == true ) ) 
 				{
 					PRINTF_DEBUG && printf("\n#-----Can't move beyond the Limit! Vel Mode-----#\n"); 
 					return;
@@ -364,8 +364,8 @@ void can_Message_Operational_v3_XAxis(uint32_t message_Id, int32_t data)
 			#elif LIMIT_SWITCH_FALLING
 				// If Left Limit hit, don't move if the given velocity is anti clockwise.( -ve velocity)
 				// If Right Limit hit, don't move if the given velocity is clockwise.(+ve velocity)
-				if( ( gpio_get_pin_level(LIM_LFT) == LOW ) && ( vel_struct.direction == true ) || \
-				    ( gpio_get_pin_level(LIM_RT)  == LOW ) && ( vel_struct.direction == false ) ) 
+				if( ( gpio_get_pin_level(LIM_LFT) == LOW ) && ( vel_struct.flags.direction == true ) || \
+				    ( gpio_get_pin_level(LIM_RT)  == LOW ) && ( vel_struct.flags.direction == false ) ) 
 				{ 
 					PRINTF_DEBUG && printf("\n#-----Can't move beyond the Limit! Vel Mode-----#\n"); 
 					return;
@@ -374,7 +374,7 @@ void can_Message_Operational_v3_XAxis(uint32_t message_Id, int32_t data)
 			#endif
 			
 			// Check the direction to set the state as positive velocity or negative velocity.
-			if(vel_struct.direction)
+			if(vel_struct.flags.direction)
 			{
 				switch(velocity_x)
 				{
@@ -730,19 +730,19 @@ void can_Message_Operational_v3_YAxis(uint32_t message_Id, int32_t data)
 			vel_struct.vel_state = VEL_STATE_0;
 			if(knob_dis_enable)
 			{
-				vel_struct.knob_enabled = true;
+				vel_struct.flags.reeler_rotate = true;
 				tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
 				timer_start(&VEL_TIMER);
-				vel_struct.prev_lin_enc_val = 0;
+				//vel_struct.prev_lin_enc_val = 0;
 			}
 			else
 			{
-				vel_struct.knob_enabled = false;
+				vel_struct.flags.reeler_rotate = false;
 				timer_stop(&VEL_TIMER);
 				tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
 				tmc4671_setAbsolutTargetPosition(MOTOR, tmc4671_getActualPosition(MOTOR) );
 				tmc4671_setModeMotion(MOTOR, POSITION_MODE);
-				vel_struct.prev_lin_enc_val = 0;
+				//vel_struct.prev_lin_enc_val = 0;
 			}
 			PRINTF_DEBUG && printf(" KNOB_MODE_Y | %d\n", knob_dis_enable);
 		break;
@@ -750,7 +750,7 @@ void can_Message_Operational_v3_YAxis(uint32_t message_Id, int32_t data)
 			value = decoding_CAN_Byte_Data();
 			uint8_t velocity_x		= can_rx_frame.data[0];
 			uint8_t vel_direction	= can_rx_frame.data[1];
-			vel_struct.direction = (vel_direction == 1) ? true : false;
+			vel_struct.flags.direction = (vel_direction == 1) ? true : false;
 			
 			#if LIMIT_SWITCH_RISING
 				// If Left Limit hit, don't move if the given velocity is anti clockwise.( -ve velocity)
@@ -765,8 +765,8 @@ void can_Message_Operational_v3_YAxis(uint32_t message_Id, int32_t data)
 			#elif LIMIT_SWITCH_FALLING
 				// If Left Limit hit, don't move if the given velocity is anti clockwise.( -ve velocity)
 				// If Right Limit hit, don't move if the given velocity is clockwise.(+ve velocity)
-				if( ( gpio_get_pin_level(LIM_LFT) == LOW ) && ( vel_struct.direction == false ) || \
-				( gpio_get_pin_level(LIM_RT)  == LOW ) && ( vel_struct.direction == true ) )
+				if( ( gpio_get_pin_level(LIM_LFT) == LOW ) && ( vel_struct.flags.direction == false ) || \
+				( gpio_get_pin_level(LIM_RT)  == LOW ) && ( vel_struct.flags.direction == true ) )
 				{
 					PRINTF_DEBUG && printf("\n#-----Can't move beyond the Limit! Vel Mode-----#\n");
 					return;
@@ -775,7 +775,7 @@ void can_Message_Operational_v3_YAxis(uint32_t message_Id, int32_t data)
 			#endif
 			
 			// Check the direction to set the state as positive velocity or negative velocity.
-			if(vel_struct.direction)
+			if(vel_struct.flags.direction)
 			{
 				switch(velocity_x)
 				{
@@ -811,7 +811,7 @@ void can_Message_Operational_v3_YAxis(uint32_t message_Id, int32_t data)
 					default: break;
 				}
 			}
-			PRINTF_DEBUG && printf(" KNOB_MOVEMENT_Y SPEED = %d | Direction = %d\n", velocity_x, vel_struct.direction);
+			PRINTF_DEBUG && printf(" KNOB_MOVEMENT_Y SPEED = %d | Direction = %d\n", velocity_x, vel_struct.flags.direction);
 		break;
 		case CAN_KNOB_AXIS_CHANGE_Y:
 		
@@ -1026,7 +1026,7 @@ void can_Message_Operational_v3_ZAxis(uint32_t message_Id, int32_t data)
 				do_homing_sequence();
 				if(axis_params.rotary_axis_enabled)
 				{
-					limit_variables.lin_enc_z_first_hit = false;
+					limit_variables.rot_enc_z_first_hit = false;
 					ext_irq_enable(LINENC_Z);
 				}
 			}
@@ -1227,19 +1227,19 @@ void can_Message_Operational_v3_ZAxis(uint32_t message_Id, int32_t data)
 			vel_struct.vel_state = VEL_STATE_0;
 			if(knob_dis_enable)
 			{
-				vel_struct.knob_enabled = true;
+				vel_struct.flags.reeler_rotate = true;
 				tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
 				timer_start(&VEL_TIMER);
-				vel_struct.prev_lin_enc_val = 0;
+				//vel_struct.prev_lin_enc_val = 0;
 			}
 			else
 			{
-				vel_struct.knob_enabled = false;
+				vel_struct.flags.reeler_rotate = false;
 				timer_stop(&VEL_TIMER);
 				tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
 				tmc4671_setAbsolutTargetPosition(MOTOR, tmc4671_getActualPosition(MOTOR) );
 				tmc4671_setModeMotion(MOTOR, POSITION_MODE);
-				vel_struct.prev_lin_enc_val = 0;
+				//vel_struct.prev_lin_enc_val = 0;
 			}
 			PRINTF_DEBUG && printf(" KNOB_MODE_Z | %d\n", knob_dis_enable);
 		break;
@@ -1247,13 +1247,13 @@ void can_Message_Operational_v3_ZAxis(uint32_t message_Id, int32_t data)
 			value = decoding_CAN_Byte_Data();
 			uint8_t velocity_x		= can_rx_frame.data[0];
 			uint8_t vel_direction	= can_rx_frame.data[1];
-			vel_struct.direction = (vel_direction == 1) ? true : false;
+			vel_struct.flags.direction = (vel_direction == 1) ? true : false;
 			
 			#if LIMIT_SWITCH_RISING
 			// If Left Limit hit, don't move if the given velocity is anti clockwise.( -ve velocity)
 			// If Right Limit hit, don't move if the given velocity is clockwise.(+ve velocity)
-			if( ( gpio_get_pin_level(LIM_LFT) == HIGH ) && ( vel_struct.direction == false ) || \
-			( gpio_get_pin_level(LIM_RT)  == HIGH ) && ( vel_struct.direction == true ) )
+			if( ( gpio_get_pin_level(LIM_LFT) == HIGH ) && ( vel_struct.flags.direction == false ) || \
+			( gpio_get_pin_level(LIM_RT)  == HIGH ) && ( vel_struct.flags.direction == true ) )
 			{
 				PRINTF_DEBUG && printf("\n#-----Can't move beyond the Limit! Vel Mode-----#\n");
 				return;
@@ -1262,8 +1262,8 @@ void can_Message_Operational_v3_ZAxis(uint32_t message_Id, int32_t data)
 			#elif LIMIT_SWITCH_FALLING
 			// If Left Limit hit, don't move if the given velocity is anti clockwise.( -ve velocity)
 			// If Right Limit hit, don't move if the given velocity is clockwise.(+ve velocity)
-			if( ( gpio_get_pin_level(LIM_LFT) == LOW ) && ( vel_struct.direction == false ) || \
-			( gpio_get_pin_level(LIM_RT)  == LOW ) && ( vel_struct.direction == true ) )
+			if( ( gpio_get_pin_level(LIM_LFT) == LOW ) && ( vel_struct.flags.direction == false ) || \
+			( gpio_get_pin_level(LIM_RT)  == LOW ) && ( vel_struct.flags.direction == true ) )
 			{
 				PRINTF_DEBUG && printf("\n#-----Can't move beyond the Limit! Vel Mode-----#\n");
 				return;
@@ -1272,7 +1272,7 @@ void can_Message_Operational_v3_ZAxis(uint32_t message_Id, int32_t data)
 			#endif
 			
 			// Check the direction to set the state as positive velocity or negative velocity.
-			if(vel_struct.direction)
+			if(vel_struct.flags.direction)
 			{
 				switch(velocity_x)
 				{
@@ -1308,7 +1308,7 @@ void can_Message_Operational_v3_ZAxis(uint32_t message_Id, int32_t data)
 					default: break;
 				}
 			}
-			PRINTF_DEBUG && printf(" KNOB_MOVEMENT_Y SPEED = %d | Direction = %d\n", velocity_x, vel_struct.direction);
+			PRINTF_DEBUG && printf(" KNOB_MOVEMENT_Y SPEED = %d | Direction = %d\n", velocity_x, vel_struct.flags.direction);
 		break;
 		case CAN_KNOB_AXIS_CHANGE_Z:
 		
@@ -1420,7 +1420,8 @@ void can_Message_Process_GTron_Message_Data()
 {
 	rx_can_cmd_info.id = message_Id;
 	memcpy(rx_can_cmd_info.data, can_rx_frame.data, CAN_DATA_FIELD_LEN);
-	rx_can_cmd_info.value = decoding_CAN_Byte_Data();
+	rx_can_cmd_info.value = decoding_GTon_CAN_Byte_Data();
+	PRINTF_DEBUG ? printf("\nCAN Data Field = 0x%x or %ld\n", rx_can_cmd_info.value, rx_can_cmd_info.value): 0;
 	parse_GTron_CAN_Msg_Data();
 	return;
 }
@@ -1441,8 +1442,10 @@ void can_Message_Decode(uint32_t message_Id, int32_t data)
 	switch(axis_id)
 	{
 		case X_AXIS:
-			PRINTF_DEBUG && printf("\nReceived by X: %x %x %x %x Data %x %x %x %x %x", ad, cmd, typ, mot, can_rx_frame.data[0], can_rx_frame.data[1], can_rx_frame.data[2], can_rx_frame.data[3], can_rx_frame.data[4]);
-			can_Message_Operational_v3_XAxis(message_Id, data); 
+			//PRINTF_DEBUG && printf("\nReceived by X: %x %x %x %x Data %x %x %x %x %x", ad, cmd, typ, mot, can_rx_frame.data[0], can_rx_frame.data[1], can_rx_frame.data[2], can_rx_frame.data[3], can_rx_frame.data[4]);
+			
+			//can_Message_Operational_v3_XAxis(message_Id, data); 
+			can_Message_Process_GTron_Message_Data();
 		break;
 		case Y_AXIS: 
 			PRINTF_DEBUG && printf("\nReceived by Y: %x %x %x %x Data %x %x %x %x %x", ad, cmd, typ, mot, can_rx_frame.data[0], can_rx_frame.data[1], can_rx_frame.data[2], can_rx_frame.data[3], can_rx_frame.data[4]);

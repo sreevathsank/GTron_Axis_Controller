@@ -222,6 +222,21 @@ uint32_t current_time, prev_time;
 typedef struct 
 {
 	// Flags
+	struct
+	{
+		uint16_t left_limit_flag		: 1;		// Bit Field 0
+		uint16_t right_limit_flag		: 1;		// Bit Field 1
+		uint16_t homing					: 1;		// Bit Field 2
+		uint16_t hit_limit_left			: 1;		// Bit Field 3
+		uint16_t hit_limit_right		: 1;		// Bit Field 4
+		uint16_t loop					: 1;		// Bit Field 5
+		uint16_t first_limit_hit		: 1;		// Bit Field 6
+		uint16_t other_limit_hit		: 1;		// Bit Field 7
+		uint16_t switch_seq_flag		: 1;		// Bit Field 8
+		uint16_t homing_done			: 1;		// Bit Field 9
+		uint16_t rot_enc_z_first_hit	: 1;		// Bit Field 10
+		uint16_t lin_enc_z_second_hit	: 1;		// Bit Field 11 
+	}flags;
 	bool left_limit_flag;
 	bool right_limit_flag;
 	bool homing;
@@ -232,7 +247,7 @@ typedef struct
 	bool other_limit_hit;
 	bool switch_seq_flag;
 	bool homing_done;
-	bool lin_enc_z_first_hit;
+	bool rot_enc_z_first_hit;
 	bool lin_enc_z_second_hit;
 	
 	// Positions
@@ -341,12 +356,16 @@ typedef enum
 
 typedef struct  
 {
-	bool knob_enabled;
-	bool test_enabled;
-	bool position_send;
-	bool direction;			// True -> Clockwise | False -> Anti Clockwise.
+	struct
+	{
+		uint8_t reeler_rotate		: 1;
+		uint8_t reeler_vel_timer	: 1;
+		uint8_t sag_enabled			: 1;
+		uint8_t	reeler_move			: 1;
+		uint8_t reeler_move_timer	: 1;
+		uint8_t direction			: 1;
+	}flags;
 	int32_t vel_state;
-	int32_t prev_lin_enc_val;
 }Velcoity_Struct;
 
 int32_t current_position;

@@ -80,6 +80,7 @@
 #define MSK_VARREST_R_LIM(val)		( (val >> VARREST_R_LIM_BIT) & 1 )
 #define MSK_VARREST_L_LIM(val)		( (val >> VARREST_L_LIM_BIT) & 1 )
 
+
 #define HOMING_RAMP_DELTA			0.025f			// The Acceleration delta for increasing velocity for homing sequence.
 
 #define VELOCITY_RAMP_DELTA			0.2f			// The Acceleration delta for increasing velocity during velocity mode.
@@ -109,7 +110,7 @@
 
 #define RAMP_INTERVAL_MS			1				// Interval for timer to raise the interrupt. Used for Ramp Generation.
 
-#define VEL_INTERVAL_MS				250				// Interval for timer used to send motor position via CAN during Knob Mode. 
+#define VEL_INTERVAL_MS				1				// Interval for timer used to send motor position via CAN during Knob Mode. 
 
 #define ONE_MS_IN_SECONDS			0.001f			// 1 millisecond in seconds.				
 

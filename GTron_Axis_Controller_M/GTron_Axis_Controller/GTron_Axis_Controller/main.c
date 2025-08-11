@@ -77,11 +77,12 @@ int main(void)
 		do_homing_sequence();
 		if(axis_params.rotary_axis_enabled)
 		{
-			limit_variables.lin_enc_z_first_hit = false;
-			ext_irq_enable(LINENC_Z);
+			limit_variables.rot_enc_z_first_hit = false;
+			ext_irq_enable(ROTENC_Z);
 		}
 	}
 	else { limit_variables.switch_seq_flag = false; }	// No need for Switching Sequence if Homing Sequence is disabled...
+	do_Ref_Search_Ping();
 	
 	/* Replace with your application code */
 	for ever
@@ -91,9 +92,10 @@ int main(void)
 		if(limit_variables.homing)		{ homing_Ramp();			}
 		if(check_move_done)				{ check_For_Move_Done();    }
 		if(move_given_s_ramp)			{ run_S_ramp();				}
-		if( (repeat_ramp != 2) && (vel_struct.knob_enabled || vel_struct.test_enabled) )
+		if( (repeat_ramp != 2) && vel_struct.flags.reeler_rotate \
+			&& vel_struct.flags.reeler_vel_timer && vel_struct.flags.sag_enabled)
 		{
-			run_Velocity_Mode();
+			run_Velocity_Ramp();
 		}
 	}
 	return 0;
