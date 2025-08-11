@@ -145,7 +145,7 @@ void IOXP_Read_Byte( IOXP_REGISTERS_t reg_addr, uint8_t *addr_rd_data )
 	
 	*addr_rd_data = rd_buf[2];
 	
-	//PRINTF_DEBUG ? printf("\nIOXP SPI RD: Dev Opcode: 0x%x | Reg Addr: 0x%x | Read Byte: 0x%x\n", \
+	PRINTF_DEBUG ? printf("\nIOXP SPI RD: Dev Opcode: 0x%x | Reg Addr: 0x%x | Read Byte: 0x%x\n", \
 							wr_buf[0], wr_buf[1], rd_buf[2]): 0;
 	
 	return;

@@ -132,7 +132,37 @@ static void guide_VArrestor_Stop_Motor(Guide_or_VArrestor_t guide_varrestor)
 
 static void guide_Limits_Status_Check(uint8_t limit)
 {
-	
+	uint8_t limit_reg_value = 0;
+	switch(limit)
+	{
+		case GUIDE_OPEN_LIMIT:
+			IOXP_Read_Byte(IOXP_REG_GPIO, &limit_reg_value);
+			if( (limit_reg_value >> GUIDE_R_LIM_BIT & 1) )
+			{
+				// CAN Message Reply.
+				PRINTF_DEBUG ? printf("\nGuide Open Right Limit is HIT!\n"): 0;
+			}
+			else
+			{
+				// CAN Message Reply.
+				PRINTF_DEBUG ? printf("\nGuide Open Right Limit is not HIT!\n"): 0;
+			}
+		break;
+		case GUIDE_CLOSE_LIMIT:
+			IOXP_Read_Byte(IOXP_REG_GPIO, &limit_reg_value);
+			if( (limit_reg_value >> GUIDE_L_LIM_BIT & 1) )
+			{
+				// CAN Message Reply.
+				PRINTF_DEBUG ? printf("\nGuide Close Left Limit is HIT!\n"): 0;
+			}
+			else
+			{
+				// CAN Message Reply.
+				PRINTF_DEBUG ? printf("\nGuide Close Left Limit is not HIT!\n"): 0;
+			}
+		break;
+		default: break;
+	}
 	return;	
 }
 
@@ -206,9 +236,7 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_DISABLE:
 					
 					break;
-					case AXC_STATUS_CHECK:
-						guide_Limits_Status_Check(rx_can_cmd_info.data[PERIPHERAL_BYTE_IDX]);
-					break;
+					case AXC_STATUS_CHECK: guide_Limits_Status_Check(rx_can_cmd_info.data[PERIPHERAL_BYTE_IDX]); break;
 					default: break;
 				}
 			break;
@@ -221,9 +249,7 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_DISABLE:
 					
 					break;
-					case AXC_STATUS_CHECK:
-						guide_Limits_Status_Check(rx_can_cmd_info.data[PERIPHERAL_BYTE_IDX]);
-					break;
+					case AXC_STATUS_CHECK: guide_Limits_Status_Check(rx_can_cmd_info.data[PERIPHERAL_BYTE_IDX]); break;
 					default: break;
 				}
 			break;
