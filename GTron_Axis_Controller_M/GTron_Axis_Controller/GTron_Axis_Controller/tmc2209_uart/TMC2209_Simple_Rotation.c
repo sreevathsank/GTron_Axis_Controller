@@ -16,16 +16,17 @@ void initAllMotors(uint16_t icID)
 {
     tmc2209_writeRegister(icID, TMC2209_GCONF, 0x00000060);         // DEC 64.
     
-    /*tmc2209_writeRegister(icID, TMC2209_TPOWERDOWN, 0x00000014);    // DEC 20.
+    tmc2209_writeRegister(icID, TMC2209_TPOWERDOWN, 0x00000014);    // DEC 20.
     
     tmc2209_writeRegister(icID, TMC2209_IHOLD_IRUN, 0x00071703);    // DEC 464643.
     
     tmc2209_writeRegister(icID, TMC2209_CHOPCONF, 0x10000053);      // DEC 268435539.
     
     tmc2209_writeRegister(icID, TMC2209_PWMCONF, 0xC10D0024);       // DEC 3238854692.
-	*/
+	
     
 	// Generate step pulse (S/D) externally via the connected microcontroller.
+	tmc2209_writeRegister(icID, TMC2209_VACTUAL, 0x00001F40);
 
     return;
 }

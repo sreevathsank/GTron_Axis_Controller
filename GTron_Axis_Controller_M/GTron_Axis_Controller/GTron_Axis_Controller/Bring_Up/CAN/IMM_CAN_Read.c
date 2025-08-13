@@ -241,7 +241,7 @@ void can_Message_Operational_v3_XAxis(uint32_t message_Id, int32_t data)
 			                move_With_S_Ramp(value, velocity_limit, MOVE_TO);
 			encoding_CAN_Byte_Data(value);
 			reply_MCD_Common(REPLY_ID_X, X, 0x64, MVP);
-			PRINTF_DEBUG && printf(" | X Move To | %ld steps or %.2f mm\n", value, (value / ONE_MM) );
+			PRINTF_DEBUG && printf(" | X Move To | %ld steps or %.2f mm\n", value, (value / TMC4671_ONE_MM_STEPS) );
 		break;
 		case MOVE_BY_X:
 			check_move_done = true;
@@ -250,7 +250,7 @@ void can_Message_Operational_v3_XAxis(uint32_t message_Id, int32_t data)
 			                move_With_S_Ramp(value, velocity_limit, MOVE_BY);
 			encoding_CAN_Byte_Data(value);
 			reply_MCD_Common(REPLY_ID_X, X, 0x64, MVP);
-			PRINTF_DEBUG && printf(" | X Move By | %ld steps or %.2f mm\n", value, (value / ONE_MM) );
+			PRINTF_DEBUG && printf(" | X Move By | %ld steps or %.2f mm\n", value, (value / TMC4671_ONE_MM_STEPS) );
 		break;
 		case STOP_MOTION_X:
 			tmc4671_setVelocityLimit(MOTOR, 0);
@@ -302,12 +302,12 @@ void can_Message_Operational_v3_XAxis(uint32_t message_Id, int32_t data)
 			uint32_t x_linear_enc_res =  read_tlv_flash(tlv_ptr, LINEAR_ENCODER_CPR_FLASH, tlv_traversal);
 			x_actual_pos = (motor_dir_rev) ? (int32_t) (~tmc4671_getActualPosition(MOTOR) + 1) : (int32_t) tmc4671_getActualPosition(MOTOR);
 			x_enc_modulo = (int32_t) tmc4671_readInt(MOTOR, TMC4671_ABN_2_DECODER_COUNT);
-			x_enc_count = (int32_t) ( (floor(x_actual_pos / ROTATION) * x_linear_enc_res) + x_enc_modulo );
+			x_enc_count = (int32_t) ( (floor(x_actual_pos / TMC4671_ROTATION) * x_linear_enc_res) + x_enc_modulo );
 			encoding_CAN_Byte_Data(x_enc_count);
 			//itoa( x_enc_count , can_tx_frame.data, DEC );
 			can_Write(message_Id, x_enc_count);
 			PRINTF_DEBUG && printf("\nad %x  cmd %x  typ %x mot %x Data %x %x %x %x %x", ad, cmd, typ ,mot,can_tx_frame.data[0], can_tx_frame.data[1], can_tx_frame.data[2], can_tx_frame.data[3], can_rx_frame.data[4]);
-			PRINTF_DEBUG && printf(" LINEAR_ENC_READ_X | %ld usteps | %.2f mm\n", x_enc_count, (x_enc_count / (x_linear_enc_res / PITCH_MM)) );
+			PRINTF_DEBUG && printf(" LINEAR_ENC_READ_X | %ld usteps | %.2f mm\n", x_enc_count, (x_enc_count / (x_linear_enc_res / IMM_PITCH_MM)) );
 		break;
 		case RT_LIM_SW_CHECK_X: {
 			// Right Limit Switch Status reply for Homing (Diagnostic Tool).
@@ -425,7 +425,7 @@ void can_Message_Operational_v3_XAxis(uint32_t message_Id, int32_t data)
 			
 			encoding_CAN_Byte_Data(lim_to_lim_dist);
 			can_Write(message_Id, lim_to_lim_dist);
-			PRINTF_DEBUG && printf("\nLimit to Limit Distance - X | %.2f mm | %ld usteps\n", (lim_to_lim_dist / ONE_MM), lim_to_lim_dist);
+			PRINTF_DEBUG && printf("\nLimit to Limit Distance - X | %.2f mm | %ld usteps\n", (lim_to_lim_dist / TMC4671_ONE_MM_STEPS), lim_to_lim_dist);
 			break;
 		}
 		case START_RANGE_X:
@@ -435,7 +435,7 @@ void can_Message_Operational_v3_XAxis(uint32_t message_Id, int32_t data)
 			limit_variables.soft_limit_low = start_range + SOFT_LIMIT_OFFSET_MM;
 			encoding_CAN_Byte_Data(limit_variables.soft_limit_low);
 			can_Write(message_Id, limit_variables.soft_limit_low);
-			PRINTF_DEBUG && printf("\nStart Range - X | %.2f mm | %ld usteps\n", (start_range / ONE_MM), start_range);
+			PRINTF_DEBUG && printf("\nStart Range - X | %.2f mm | %ld usteps\n", (start_range / TMC4671_ONE_MM_STEPS), start_range);
 			break;
 		}
 		case END_RANGE_X:
@@ -445,7 +445,7 @@ void can_Message_Operational_v3_XAxis(uint32_t message_Id, int32_t data)
 			limit_variables.soft_limit_high = end_range - SOFT_LIMIT_OFFSET_MM;
 			encoding_CAN_Byte_Data(limit_variables.soft_limit_high);
 			can_Write(message_Id, limit_variables.soft_limit_high);
-			PRINTF_DEBUG && printf("\nEnd Range - X | %.2f mm | %ld usteps\n", (end_range / ONE_MM), end_range);
+			PRINTF_DEBUG && printf("\nEnd Range - X | %.2f mm | %ld usteps\n", (end_range / TMC4671_ONE_MM_STEPS), end_range);
 			break;
 		}
 		default:
@@ -634,7 +634,7 @@ void can_Message_Operational_v3_YAxis(uint32_t message_Id, int32_t data)
 							move_With_S_Ramp(value, velocity_limit, MOVE_TO);
 			encoding_CAN_Byte_Data(value);
 			reply_MCD_Common(REPLY_ID_Y, Y, 0x64, MVP);
-			PRINTF_DEBUG && printf(" | Y Move To | %ld steps or %.2f mm\n", value, (value / ONE_MM) );
+			PRINTF_DEBUG && printf(" | Y Move To | %ld steps or %.2f mm\n", value, (value / TMC4671_ONE_MM_STEPS) );
 		break;
 		case MOVE_BY_Y:
 			check_move_done = true;
@@ -643,7 +643,7 @@ void can_Message_Operational_v3_YAxis(uint32_t message_Id, int32_t data)
 							move_With_S_Ramp(value, velocity_limit, MOVE_BY);
 			encoding_CAN_Byte_Data(value);
 			reply_MCD_Common(REPLY_ID_Y, Y, 0x64, MVP);
-			PRINTF_DEBUG && printf(" | Y Move By | %ld steps or %.2f mm\n", value, (value / ONE_MM) );
+			PRINTF_DEBUG && printf(" | Y Move By | %ld steps or %.2f mm\n", value, (value / TMC4671_ONE_MM_STEPS) );
 		break;
 		case STOP_MOTION_Y:
 			tmc4671_setVelocityLimit(MOTOR, 0);
@@ -695,12 +695,12 @@ void can_Message_Operational_v3_YAxis(uint32_t message_Id, int32_t data)
 			uint32_t y_linear_enc_res = (uint32_t) read_tlv_flash(tlv_ptr, LINEAR_ENCODER_CPR_FLASH, tlv_traversal);
 			y_actual_pos = (motor_dir_rev) ? (int32_t) (~tmc4671_getActualPosition(MOTOR) + 1) : (int32_t) tmc4671_getActualPosition(MOTOR);
 			y_enc_modulo = (int32_t) tmc4671_readInt(MOTOR, TMC4671_ABN_2_DECODER_COUNT);
-			y_enc_count = (int32_t) ( (floor(y_actual_pos / ROTATION) * y_linear_enc_res) + y_enc_modulo );
+			y_enc_count = (int32_t) ( (floor(y_actual_pos / TMC4671_ROTATION) * y_linear_enc_res) + y_enc_modulo );
 			encoding_CAN_Byte_Data(y_enc_count);
 			//itoa( x_enc_count , can_tx_frame.data, DEC );
 			can_Write(message_Id, y_enc_count);
 			PRINTF_DEBUG && printf("\nad %x  cmd %x  typ %x mot %x Data %x %x %x %x %x", ad, cmd, typ ,mot,can_tx_frame.data[0], can_tx_frame.data[1], can_tx_frame.data[2], can_tx_frame.data[3], can_rx_frame.data[4]);
-			PRINTF_DEBUG && printf(" LINEAR_ENC_READ_Y | %ld usteps | %.2f mm\n", y_enc_count, (y_enc_count / (y_linear_enc_res / PITCH_MM)) );
+			PRINTF_DEBUG && printf(" LINEAR_ENC_READ_Y | %ld usteps | %.2f mm\n", y_enc_count, (y_enc_count / (y_linear_enc_res / IMM_PITCH_MM)) );
 		break;
 		case RT_LIM_SW_CHECK_Y: {
 			// Right Limit Switch Status reply for Homing (Diagnostic Tool).
@@ -827,7 +827,7 @@ void can_Message_Operational_v3_YAxis(uint32_t message_Id, int32_t data)
 			
 			encoding_CAN_Byte_Data(lim_to_lim_dist);
 			can_Write(message_Id, lim_to_lim_dist);
-			PRINTF_DEBUG && printf("\nLimit to Limit Distance - Y | %.2f mm | %ld usteps\n", (lim_to_lim_dist / ONE_MM), lim_to_lim_dist);
+			PRINTF_DEBUG && printf("\nLimit to Limit Distance - Y | %.2f mm | %ld usteps\n", (lim_to_lim_dist / TMC4671_ONE_MM_STEPS), lim_to_lim_dist);
 			break;
 		}
 		case START_RANGE_Y:
@@ -837,7 +837,7 @@ void can_Message_Operational_v3_YAxis(uint32_t message_Id, int32_t data)
 			limit_variables.soft_limit_low = start_range + SOFT_LIMIT_OFFSET_MM;
 			encoding_CAN_Byte_Data(limit_variables.soft_limit_low);
 			can_Write(message_Id, limit_variables.soft_limit_low);
-			PRINTF_DEBUG && printf("\nStart Range - Y | %.2f mm | %ld usteps\n", (start_range / ONE_MM), start_range);
+			PRINTF_DEBUG && printf("\nStart Range - Y | %.2f mm | %ld usteps\n", (start_range / TMC4671_ONE_MM_STEPS), start_range);
 			break;
 		}
 		case END_RANGE_Y:
@@ -847,7 +847,7 @@ void can_Message_Operational_v3_YAxis(uint32_t message_Id, int32_t data)
 			limit_variables.soft_limit_high = end_range - SOFT_LIMIT_OFFSET_MM;
 			encoding_CAN_Byte_Data(limit_variables.soft_limit_high);
 			can_Write(message_Id, limit_variables.soft_limit_high);
-			PRINTF_DEBUG && printf("\nEnd Range - Y | %.2f mm | %ld usteps\n", (end_range / ONE_MM), end_range);
+			PRINTF_DEBUG && printf("\nEnd Range - Y | %.2f mm | %ld usteps\n", (end_range / TMC4671_ONE_MM_STEPS), end_range);
 			break;
 		}
 		default:
@@ -1057,9 +1057,9 @@ void can_Message_Operational_v3_ZAxis(uint32_t message_Id, int32_t data)
 			{	// Check if Step_Size != Start_Point.
 				if( autofocus_variables.change_comp_cnt )
 				{
-					int32_t diff_mm = (int32_t) MOVE_MM(15);	// Distance used to determine if we need to do 2 different movements or not.
+					int32_t diff_mm = (int32_t) TMC4671_MOVE_MM(15);	// Distance used to determine if we need to do 2 different movements or not.
 					int32_t pos_diff = abs( autofocus_variables.af_table[0] - tmc4671_getActualPosition(MOTOR) );	
-					int32_t how_close_to_range_mm = (int32_t) MOVE_MM(2);
+					int32_t how_close_to_range_mm = (int32_t) TMC4671_MOVE_MM(2);
 					if(pos_diff > diff_mm)	
 					{
 						autofocus_variables.temp_t_pos = value;
@@ -1073,7 +1073,7 @@ void can_Message_Operational_v3_ZAxis(uint32_t message_Id, int32_t data)
 			(motor_dir_rev) ? move_With_S_Ramp( (~(int32_t)value) + 1, velocity_limit, MOVE_TO) : \
 							  move_With_S_Ramp(value, velocity_limit, MOVE_TO);
 			reply_MCD_Common(REPLY_ID_Z, Z, 0x64, MVP);
-			PRINTF_DEBUG && printf(" | Z Move To | %ld steps or %.2f mm\n", value, (value / ONE_MM) );
+			PRINTF_DEBUG && printf(" | Z Move To | %ld steps or %.2f mm\n", value, (value / TMC4671_ONE_MM_STEPS) );
 		break;
 		case MOVE_BY_Z:
 			check_move_done = true;
@@ -1082,7 +1082,7 @@ void can_Message_Operational_v3_ZAxis(uint32_t message_Id, int32_t data)
 							move_With_S_Ramp(value, velocity_limit, MOVE_BY);
 			encoding_CAN_Byte_Data(value);
 			reply_MCD_Common(REPLY_ID_Z, Z, 0x64, MVP);
-			PRINTF_DEBUG && printf(" | Z Move By | %ld steps or %.2f mm\n", value, (value / ONE_MM) );
+			PRINTF_DEBUG && printf(" | Z Move By | %ld steps or %.2f mm\n", value, (value / TMC4671_ONE_MM_STEPS) );
 		break;
 		case STOP_MOTION_Z:
 			tmc4671_setVelocityLimit(MOTOR, 0);
@@ -1125,7 +1125,7 @@ void can_Message_Operational_v3_ZAxis(uint32_t message_Id, int32_t data)
 		case AF_STARTPOINT:
 			autofocus_variables.combined = (int64_t)can_rx_frame.data_64bit;
 			int32_t rot_enc_res = read_tlv_flash(tlv_ptr, ROTARY_ENCODER_PPR_FLASH, tlv_traversal);
-			int32_t enc_mul_factor = (ROTATION / rot_enc_res);
+			int32_t enc_mul_factor = (TMC4671_ROTATION / rot_enc_res);
 			autofocus_variables.gQDECstepSizeCount = (int32_t) enc_mul_factor * abs(autofocus_variables.combined >> 32);
 			autofocus_variables.sign_check = (int32_t) enc_mul_factor * (autofocus_variables.combined & 0xFFFFFFFF);
 			autofocus_variables.startPointAF = (int) enc_mul_factor * abs(autofocus_variables.combined & 0xFFFFFFFF);
@@ -1138,8 +1138,8 @@ void can_Message_Operational_v3_ZAxis(uint32_t message_Id, int32_t data)
 			autofocus_variables.starting_position = tmc4671_getActualPosition(MOTOR);
 			
 			PRINTF_DEBUG && printf("\ngQDECstepSizeCount: %ld count(or)%ld steps(or)%.4f mm\tstartpoint: %ld count(or)%ld steps(or)%.4f mm", autofocus_variables.gQDECstepSizeCount / ENC_MUL_FACTOR,\
-							autofocus_variables.gQDECstepSizeCount, autofocus_variables.gQDECstepSizeCount / ONE_MM,autofocus_variables.startPointAF / ENC_MUL_FACTOR, \
-							autofocus_variables.startPointAF, autofocus_variables.startPointAF / ONE_MM);
+							autofocus_variables.gQDECstepSizeCount, autofocus_variables.gQDECstepSizeCount / TMC4671_ONE_MM_STEPS,autofocus_variables.startPointAF / ENC_MUL_FACTOR, \
+							autofocus_variables.startPointAF, autofocus_variables.startPointAF / TMC4671_ONE_MM_STEPS);
 			
 			PRINTF_DEBUG && printf("\n Sign Check = %ld steps(or) %ld enc count", autofocus_variables.sign_check, \
 								    autofocus_variables.sign_check / ENC_MUL_FACTOR);
@@ -1156,8 +1156,8 @@ void can_Message_Operational_v3_ZAxis(uint32_t message_Id, int32_t data)
 				camera_Trigger();
 				
 				int32_t current_pos = tmc4671_getActualPosition(MOTOR);
-				PRINTF_DEBUG && printf("\n idx = %ld\tcurrent Pos = %.4f mm(or)%ld steps\taf_table = %.4f mm(or)%ld steps\n", 0, current_pos / ONE_MM, current_pos, \
-								autofocus_variables.startPointAF / ONE_MM, autofocus_variables.startPointAF);
+				PRINTF_DEBUG && printf("\n idx = %ld\tcurrent Pos = %.4f mm(or)%ld steps\taf_table = %.4f mm(or)%ld steps\n", 0, current_pos / TMC4671_ONE_MM_STEPS, current_pos, \
+								autofocus_variables.startPointAF / TMC4671_ONE_MM_STEPS, autofocus_variables.startPointAF);
 				
 				autofocus_variables.change_comp_cnt = false;
 			}
@@ -1167,7 +1167,7 @@ void can_Message_Operational_v3_ZAxis(uint32_t message_Id, int32_t data)
 			}
 			autofocus_variables.af_table[0] = autofocus_variables.starting_position + autofocus_variables.sign_check;
 			
-			PRINTF_DEBUG && printf("\naf_table[%ld] = %.4f mm(or)%ld steps", 0, autofocus_variables.af_table[0] / ONE_MM, \
+			PRINTF_DEBUG && printf("\naf_table[%ld] = %.4f mm(or)%ld steps", 0, autofocus_variables.af_table[0] / TMC4671_ONE_MM_STEPS, \
 			                autofocus_variables.af_table[0]);
 										
 			// Check if startPointAF is negative
@@ -1178,7 +1178,7 @@ void can_Message_Operational_v3_ZAxis(uint32_t message_Id, int32_t data)
 					autofocus_variables.af_table[i] = autofocus_variables.af_table[i - 1] - \
 													  autofocus_variables.gQDECstepSizeCount;
 					
-					PRINTF_DEBUG && printf("\naf_table[%ld] = %.2f mm (or)%ld steps", i, autofocus_variables.af_table[i] / ONE_MM, \
+					PRINTF_DEBUG && printf("\naf_table[%ld] = %.2f mm (or)%ld steps", i, autofocus_variables.af_table[i] / TMC4671_ONE_MM_STEPS, \
 								    autofocus_variables.af_table[i]);
 				}
 				PRINTF_DEBUG && printf("  | AF_STARTPOINT_Z (-)spAF \n");
@@ -1190,7 +1190,7 @@ void can_Message_Operational_v3_ZAxis(uint32_t message_Id, int32_t data)
 					autofocus_variables.af_table[i] = autofocus_variables.af_table[i - 1] + \	
 													  autofocus_variables.gQDECstepSizeCount;
 												  
-					PRINTF_DEBUG && printf("\naf_table[%ld] = %.2f mm (or)%ld steps", i, autofocus_variables.af_table[i] / ONE_MM, \
+					PRINTF_DEBUG && printf("\naf_table[%ld] = %.2f mm (or)%ld steps", i, autofocus_variables.af_table[i] / TMC4671_ONE_MM_STEPS, \
 					                autofocus_variables.af_table[i]);
 				}
 				PRINTF_DEBUG && printf("  | AF_STARTPOINT_Z (+)spAF\n");
@@ -1324,7 +1324,7 @@ void can_Message_Operational_v3_ZAxis(uint32_t message_Id, int32_t data)
 			
 			encoding_CAN_Byte_Data(lim_to_lim_dist);
 			can_Write(message_Id, lim_to_lim_dist);
-			PRINTF_DEBUG && printf("\nLimit to Limit Distance - Z | %.2f mm | %ld usteps\n", (lim_to_lim_dist / ONE_MM), lim_to_lim_dist);
+			PRINTF_DEBUG && printf("\nLimit to Limit Distance - Z | %.2f mm | %ld usteps\n", (lim_to_lim_dist / TMC4671_ONE_MM_STEPS), lim_to_lim_dist);
 			break;
 		}
 		case START_RANGE_Z:
@@ -1334,7 +1334,7 @@ void can_Message_Operational_v3_ZAxis(uint32_t message_Id, int32_t data)
 			limit_variables.soft_limit_low = start_range + SOFT_LIMIT_OFFSET_MM;
 			encoding_CAN_Byte_Data(limit_variables.soft_limit_low);
 			can_Write(message_Id, limit_variables.soft_limit_low);
-			PRINTF_DEBUG && printf("\nStart Range - Z | %.2f mm | %ld usteps\n", (start_range / ONE_MM), start_range);
+			PRINTF_DEBUG && printf("\nStart Range - Z | %.2f mm | %ld usteps\n", (start_range / TMC4671_ONE_MM_STEPS), start_range);
 			break;
 		}
 		case END_RANGE_Z:
@@ -1344,7 +1344,7 @@ void can_Message_Operational_v3_ZAxis(uint32_t message_Id, int32_t data)
 			limit_variables.soft_limit_high = end_range - SOFT_LIMIT_OFFSET_MM;
 			encoding_CAN_Byte_Data(limit_variables.soft_limit_high);
 			can_Write(message_Id, limit_variables.soft_limit_high);
-			PRINTF_DEBUG && printf("\nEnd Range - Z | %.2f mm | %ld usteps\n", (end_range / ONE_MM), end_range);
+			PRINTF_DEBUG && printf("\nEnd Range - Z | %.2f mm | %ld usteps\n", (end_range / TMC4671_ONE_MM_STEPS), end_range);
 			break;
 		}
 		default:
@@ -1445,7 +1445,7 @@ void can_Message_Decode(uint32_t message_Id, int32_t data)
 			//PRINTF_DEBUG && printf("\nReceived by X: %x %x %x %x Data %x %x %x %x %x", ad, cmd, typ, mot, can_rx_frame.data[0], can_rx_frame.data[1], can_rx_frame.data[2], can_rx_frame.data[3], can_rx_frame.data[4]);
 			
 			//can_Message_Operational_v3_XAxis(message_Id, data); 
-			can_Message_Process_GTron_Message_Data();
+			//can_Message_Process_GTron_Message_Data();
 		break;
 		case Y_AXIS: 
 			PRINTF_DEBUG && printf("\nReceived by Y: %x %x %x %x Data %x %x %x %x %x", ad, cmd, typ, mot, can_rx_frame.data[0], can_rx_frame.data[1], can_rx_frame.data[2], can_rx_frame.data[3], can_rx_frame.data[4]);
@@ -1465,6 +1465,5 @@ void can_Message_Decode(uint32_t message_Id, int32_t data)
 		break;
 		default: break;
 	}
-	//CAN_Code_Dump_Msgs(message_Id, data);
 	return;
 }

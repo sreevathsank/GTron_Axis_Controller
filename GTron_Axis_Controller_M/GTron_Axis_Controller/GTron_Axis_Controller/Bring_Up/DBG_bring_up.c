@@ -61,32 +61,6 @@ void led_Blink(uint32_t iteration, uint32_t time_taken)
 	gpio_set_pin_level(DBGLED3, 1);
 }
 
-
-//The io descriptor for UART
-// struct io_descriptor *io;
-// void init_UART(void)
-// {
-// 	usart_sync_get_io_descriptor(&TARGET_IO, &io);
-// 	usart_sync_enable(&TARGET_IO);
-// 	printf("\n-----UART works!-----\n");
-// 	//io_write(io, (uint8_t *)"Hello World!", 12);
-// }
-
-/** 
- * \brief Toggles Debug LED 1 depending on the state of the Enable 4671 pin.
- *
- * @param void.
- * @return void.
- */
-void enablePin_Led_Check(void)
-{
-	//int32_t enable_state;
-	gpio_set_pin_level(EN_4671, 1);
-	gpio_set_pin_level(DBGLED1, gpio_get_pin_level(EN_4671));
-	delay_ms(5000);
-	gpio_set_pin_level(EN_4671, 0);
-}
-
 /** 
  * \brief Sets the timer_flag to 1 whenever this callback function is called by the timer interrupt. This flag is used by the ramp generation algorithm.
  *
@@ -103,7 +77,6 @@ void timer_ramp_cb(void)
 void vel_timer_cb(void)
 {
 	vel_struct.flags.reeler_vel_timer = true;
-	//printf("\nVEL_TIMER\n");
 	return;
 }
 
@@ -179,20 +152,6 @@ void init_UART(void)
 	usart_async_enable(&UART_0);
 }
 
-void tx_TMC2209_UART_cb( void )
-{
-	return;
-}
-
-void init_TMC2209_UART( void )
-{
-	//struct io_descriptor *io_tmc2209;
-
-	
-	return;
-}
-
-
 /** 
  * \brief Gets n no. of ADC values, averages them and finds out the Axis based on the value range
  *
@@ -217,9 +176,10 @@ void check_Current_Axis_ADC(void)
 	}
 	adc_result = (uint32_t)(adc_sum / ADC_NUM_READINGS);
 	PRINTF_DEBUG ? printf("\nADC Max = %ld | ADC Avg = %ld | ADC Min = %ld\n", (uint32_t)adc_max, (uint32_t)adc_result, (uint32_t)adc_min) : 0;
+	
 	//if( (adc_result >= GTRON_AXC_ADC_MIN) && (adc_result <= GTRON_AXC_ADC_MAX) )
 	{
-		axis_id = X_AXIS;
+		axis_id = GTRON_AXC_TOP;
 	}
 	return;
 }
@@ -273,18 +233,7 @@ void read_Set_Parameters_From_Flash(void)
 	axis_params.rotary_axis_enabled = ( read_tlv_flash(tlv_ptr, ROTARY_AXIS_FLASH, tlv_traversal) == 0 ) ? false : true;
 	limit_variables.soft_limit_low = read_tlv_flash(tlv_ptr, START_RANGE_FLASH, tlv_traversal);
 	limit_variables.soft_limit_high = read_tlv_flash(tlv_ptr, END_RANGE_FLASH, tlv_traversal);
-	/*hri_eic_write_CONFIG_reg(EIC,
-							1,
-							(CONF_EIC_FILTEN8 << EIC_CONFIG_FILTEN0_Pos) | EIC_CONFIG_SENSE0(CONF_EIC_SENSE8)
-							| (CONF_EIC_FILTEN9 << EIC_CONFIG_FILTEN1_Pos) | EIC_CONFIG_SENSE1(CONF_EIC_SENSE9)
-							| (CONF_EIC_FILTEN10 << EIC_CONFIG_FILTEN2_Pos) | EIC_CONFIG_SENSE2(CONF_EIC_SENSE10)
-							| (CONF_EIC_FILTEN11 << EIC_CONFIG_FILTEN3_Pos) | EIC_CONFIG_SENSE3(CONF_EIC_SENSE11)
-							| (CONF_EIC_FILTEN12 << EIC_CONFIG_FILTEN4_Pos) | EIC_CONFIG_SENSE4(CONF_EIC_SENSE12)
-							| (CONF_EIC_FILTEN13 << EIC_CONFIG_FILTEN5_Pos) | EIC_CONFIG_SENSE5(CONF_EIC_SENSE13)
-							| (CONF_EIC_FILTEN14 << EIC_CONFIG_FILTEN6_Pos) | EIC_CONFIG_SENSE6(CONF_EIC_SENSE14)
-							| (CONF_EIC_FILTEN15 << EIC_CONFIG_FILTEN7_Pos) | EIC_CONFIG_SENSE7(CONF_EIC_SENSE15)
-							| 0);
-	*/
+
 	// PI parameters for X, Y and Z axes.
 	switch((axis_current)axis_id)
 	{
@@ -348,6 +297,26 @@ void read_Set_Parameters_From_Flash(void)
 			axis_params.jerk				= read_tlv_flash(tlv_ptr, ENDURANCE_JERK_FLASH, tlv_traversal);//5000;//8000;
 			axis_params.jerk_delta			= (axis_params.jerk * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS) * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS));//(axis_params.jerk * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS) * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS));
 		break;
+		case GTRON_AXC_TOP:
+			axis_params.start_voltage		= 1000;
+			axis_params.align_delay			= read_tlv_flash(tlv_ptr, ENCODER_ALIGN_DELAY_MS_FLASH, tlv_traversal);//250;
+			axis_params.torque_flux_limit	= read_tlv_flash(tlv_ptr, CURRENT_LIMIT_mA_FLASH, tlv_traversal);//1800;
+			axis_params.torque_i			= read_tlv_flash(tlv_ptr, TORQUE_I_FLASH, tlv_traversal);//20000; //3850;
+			axis_params.torque_p			= read_tlv_flash(tlv_ptr, TORQUE_P_FLASH , tlv_traversal);//8000;  //3078;
+			axis_params.flux_i				= read_tlv_flash(tlv_ptr, FLUX_I_FLASH, tlv_traversal);//20000; //3850;
+			axis_params.flux_p				= read_tlv_flash(tlv_ptr, FLUX_P_FLASH, tlv_traversal);//8000;  //3078;
+			axis_params.velocity_i			= read_tlv_flash(tlv_ptr, VELOCITY_I_FLASH, tlv_traversal);//5000;  //300;
+			axis_params.velocity_p			= read_tlv_flash(tlv_ptr, VELOCITY_P_FLASH, tlv_traversal);//2500;  //1000;
+			axis_params.position_i			= read_tlv_flash(tlv_ptr, POSITION_I_FLASH, tlv_traversal);//0;
+			axis_params.position_p			= read_tlv_flash(tlv_ptr, POSITION_P_FLASH, tlv_traversal);//2000;	 //500;
+			axis_params.home_search_vel		= read_tlv_flash(tlv_ptr, HOMING_VELOCITY_FLASH, tlv_traversal);//160;
+			axis_params.home_switch_vel		= (axis_params.home_search_vel / 10);
+			axis_params.endurance_vel		= read_tlv_flash(tlv_ptr, ENDURACE_VELOCTIY_FLASH, tlv_traversal);////1000;
+			axis_params.acceleration		= read_tlv_flash(tlv_ptr, ENDURANCE_ACCELERATION_FLASH, tlv_traversal);//5000;
+			axis_params.acceleration_delta	= (axis_params.acceleration * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS));
+			axis_params.jerk				= read_tlv_flash(tlv_ptr, ENDURANCE_JERK_FLASH, tlv_traversal);//5000;
+			axis_params.jerk_delta			= (axis_params.jerk * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS) * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS));
+		break;
 		default: break;
 	}
 	//PRINTF_DEBUG && printf("\naccel delta =%.4f | jerk delta = %.4f\n", axis_params.acceleration_delta, axis_params.jerk_delta);
@@ -378,9 +347,10 @@ bool check_passive_flash_spi(void)
 {
 	EXT_FLASH_SPI_init();
 	EXT_FLASH_SPI_enable();
-	//hri_sercomspi_set_CTRLA_ENABLE_bit(SERCOM3);
 	delay_ms(10);
-	//EXTFLASH_erase(PARAM_FIRST_MEM_LOC, FLASH_ERASE_SECTOR_SIZE);
+	#if ERASE_PASSIVE_FLASH
+		EXTFLASH_erase(PARAM_FIRST_MEM_LOC, FLASH_ERASE_SECTOR_SIZE);
+	#endif
 	// Check the Flash Manufacture and Device ID.
 	if( EXTFLASH_open() )
 	{
@@ -491,15 +461,13 @@ void define_All_Global_Variables(void)
  * @return void
  */
 void call_All_Init_Functions(void)
-{
-	
+{	
 	// PWM_0 is clk source for TMC4671. Produces 25MHz.
 	pwm_set_parameters(&PWM_0, 1, 1);
 	pwm_enable(&PWM_0);
 
-	// PWM_1 is clk source for FPGA. Produces 12.5MHz.
-	//pwm_set_parameters(&PWM_1, 1, 1);
-	//pwm_enable(&PWM_1);
+	reset_TMC4671();
+	gpio_set_pin_level(EN_4671, LOW);
 	
 	gpio_set_pin_level(DBGLED3, 1);
 	gpio_set_pin_level(DBGLED1, 1);
@@ -509,9 +477,8 @@ void call_All_Init_Functions(void)
 	//SYSTICK_INIT();
 	//EXTFLASH_init();
 	init_UART();
-	init_TMC2209_UART();
-	//TMC2209_UART_init();
-	//TMC2209_UART_enable();
+	TMC2209_UART_init();
+	TMC2209_UART_enable();
 	adc_sync_enable_channel(&ADC_0, 0);
 	check_Current_Axis_ADC();
 	if(!check_4671_version_spi()) 
@@ -542,14 +509,6 @@ void call_All_Init_Functions(void)
 	init_ext_irq_limits();
 	//init_Enc_Cnt_Dir();
 	return;
-}
-
-void print_uart(const uint8_t *const str_output)
-{
-	size_t str_length = strlen(str_output);
-	//delay_us(100);
-	//for(str_length = 0; *str_output != '\0'; str_length ++);
-	io_write(&UART_0, (uint8_t *)"on\n", 3);
 }
 
 /** 
@@ -594,6 +553,10 @@ void run_Open_Loop_Setup_Closed_Loop(uint32_t time_taken)
 		case Z_AXIS:
 			PRINTF_DEBUG ? printf("\nZ Axis Rotary Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_PPR)):0;
 			PRINTF_DEBUG && printf("\nZ Axis Rotary Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE));
+		break;
+		case GTRON_AXC_TOP:
+			PRINTF_DEBUG ? printf("\nX Axis Rotary Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_PPR)):0;
+			PRINTF_DEBUG && printf("\nX Axis Rotary Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE));
 		break;
 		default: break;
 	}

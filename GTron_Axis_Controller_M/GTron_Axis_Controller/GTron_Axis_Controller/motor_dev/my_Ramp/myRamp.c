@@ -435,9 +435,9 @@ void conversion_of_values(rampParams *r_Params)
 {
 	double temp_vel, temp_accel, temp_jerk;
 	
-	temp_vel					= (r_Params->target_Velocity / MINUTES) * ROTATION;
-	temp_accel					= (r_Params->accelerations / MINUTES) * ROTATION;
-	temp_jerk					= (r_Params->jerk / MINUTES) * ROTATION;
+	temp_vel					= (r_Params->target_Velocity / MINUTES) * TMC4671_ROTATION;
+	temp_accel					= (r_Params->accelerations / MINUTES) * TMC4671_ROTATION;
+	temp_jerk					= (r_Params->jerk / MINUTES) * TMC4671_ROTATION;
 	r_Params->target_Velocity	= temp_vel;
 	r_Params->accelerations		= temp_accel;
 	r_Params->jerk				= temp_jerk;
@@ -701,12 +701,12 @@ void calculate_S_Ramp_Parameters(rampParams *r_Params)
 	r_Params->jerk				= axis_params.jerk;
 	r_Params->distance_total	= abs(r_Params->target_Position - r_Params->initial_Position);
 	//r_Params->target_Velocity	= 30;
-	r_Params->dist_mm			= r_Params->distance_total / ONE_MM;
+	r_Params->dist_mm			= r_Params->distance_total / TMC4671_ONE_MM_STEPS;
 	adjust_S_Velocity();
 	conversion_of_values(&rParams);
-	PRINTF_DEBUG && printf("\nTotal Distance = %.2f steps or %.2f mm\n", r_Params->distance_total, (r_Params->distance_total / ONE_MM) );
-	PRINTF_DEBUG && printf("\nInitial Position = %.2f steps or %.2f mm\n", r_Params->initial_Position, (r_Params->initial_Position / ONE_MM) );
-	PRINTF_DEBUG && printf("\nTarget Position = %.2f steps or %.2f mm\n", r_Params->target_Position, (r_Params->target_Position / ONE_MM) );
+	PRINTF_DEBUG && printf("\nTotal Distance = %.2f steps or %.2f mm\n", r_Params->distance_total, (r_Params->distance_total / TMC4671_ONE_MM_STEPS) );
+	PRINTF_DEBUG && printf("\nInitial Position = %.2f steps or %.2f mm\n", r_Params->initial_Position, (r_Params->initial_Position / TMC4671_ONE_MM_STEPS) );
+	PRINTF_DEBUG && printf("\nTarget Position = %.2f steps or %.2f mm\n", r_Params->target_Position, (r_Params->target_Position / TMC4671_ONE_MM_STEPS) );
 	PRINTF_DEBUG && printf("\nTarget Velocity = %.2f pps or %.2f rpm\n", r_Params->target_Velocity, (convert_PPS_To_RPM(r_Params->target_Velocity)) );
 	PRINTF_DEBUG && printf("\nAcceleration = %.2f pps/s or %.2f rpm/s\n", r_Params->accelerations, (convert_PPS_To_RPM(r_Params->accelerations)) );
 	PRINTF_DEBUG && printf("\nJerk = %.2f pps/s/s or %.2f rpm/s/s\n", r_Params->jerk, (convert_PPS_To_RPM(r_Params->jerk)) );

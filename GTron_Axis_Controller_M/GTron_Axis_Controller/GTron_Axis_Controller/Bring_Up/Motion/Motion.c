@@ -202,6 +202,10 @@ void align_Rotor_ABNEnc(uint8_t motor, uint16_t startVoltage)
 			tmc4671_writeInt(motor, TMC4671_ABN_DECODER_PPR, axis_params.rot_enc_res);		// 0x2000 -> 8192 | 0x4000 -> 16384	// For v3 Table.
 			tmc4671_writeInt(motor, TMC4671_ABN_DECODER_MODE, rot_enc_dir);		// Spring Setup -> Reverse | Proto1 9030 -> Reverse | Proto2 9010 -> Forward | Proto3 9010 -> Forward | Prod 1 9010 -> 
 		break;
+		case GTRON_AXC_TOP:
+			tmc4671_writeInt(MOTOR, TMC4671_ABN_DECODER_MODE, rot_enc_dir);		// For v3 Table. v5 -> forward. | Proto1 -> Reverse |
+			tmc4671_writeInt(motor, TMC4671_ABN_DECODER_PPR, axis_params.rot_enc_res);		// 0x2000 -> 8192 | 0x4000 -> 16384	// For v3 Table.
+		break;
 		default: break;
 	}
 	//After the rotor has aligned this will set the ABN_DECODER_COUNT to 0 so there is a defined 0-position
@@ -235,133 +239,6 @@ void open_loop_fb(void)
 	//gpio_set_pin_level(EN, 1);
 	return;
 }
-
-/** 
- * \brief Stops the Motor and puts it into STOPPED_MODE if it exceed the Velocity Limit by 100rpm.
- *
- * @param void
- * @return void
- */
-void stop_Motor_Mad(void)
-{
-	if(abs(tmc4671_getActualVelocity(MOTOR)) > velocity_limit + 50)
-	{
-		//tmc4671_writeInt(MOTOR, TMC4671_MODE_RAMP_MODE_MOTION, STOPPED_MODE);
-		tmc4671_setVelocityLimit(MOTOR, velocity_limit);
-		timer_stop(&TIMER_0);
-		//gpio_toggle_pin_level(DBGLED3);
-		PRINTF_DEBUG && printf("\nStopped Motor Due to Abnormal Behavior\n");
-	}
-	if(abs(tmc4671_getVelocityLimit(MOTOR)) > 1000)
-	{
-		tmc4671_setVelocityLimit(MOTOR, axis_params.home_search_vel);
-	}
-	return;
-}
-
-// Needs review.
-void wait_For_Move_Done(void)
-{	
-	// Check if Difference of Actual and Target Position is within the Position Window.
-	//while( abs(get_ErrorPosition()) > POSITION_WINDOW_X );
-	// Reply CAN message in Ping command for Move Done.
-	return;
-}
-
-/** 
- * \brief Checks if the current position of the motor has crossed the soft limit or not.
- *
- * @param void
- * @return void
- */
-void check_Soft_Limits(void)
-{
-	int32_t current_position = get_RampPosition();
-	int32_t target_position = get_TargetPosition();
-	bool ok_to_move = false;
-	
-	// If target position is within the soft limits range, ok to move the motor.
-	if( (target_position > limit_variables.soft_limit_low) | (target_position < limit_variables.soft_limit_high) )
-	{
-		ok_to_move = true;
-	}
-	
-	// Check for Soft Limits only after homing is done and soft limits are defined.
-	if( (limit_variables.soft_limit_low != 0) | (limit_variables.soft_limit_high != 0) )
-	{	// Check if the current position of the motor is within the Soft Limit Range.
-		if( (current_position < limit_variables.soft_limit_low) | (current_position > limit_variables.soft_limit_high) )
-		{	
-			if(ok_to_move)
-			{
-				ok_to_move = false;
-				short_Acceleration_Ramp(axis_params.home_search_vel, 0.1);
-				
-			}
-			else
-			{
-				set_RampVelocity(0);
-				// Check where the motor is, and set the TargetPosition to that soft limit so if it moves, we move it right back to the limit.
-				(current_position < limit_variables.soft_limit_low) ? (set_TargetPosition(limit_variables.soft_limit_low)) : (set_TargetPosition(limit_variables.soft_limit_high));
-			}
-		}	
-	}
-	return;
-}
-
-/** 
- * \brief Creates a deceleration ramp for the Motor in Closed Loop Position Mode. Set Target Position before calling this function.
- *
- * @param[in] velocity_limit Target Velocity of the ramp.
- * @param[in] velocity_delta
- * @return void 
- */
- void short_Deceleration_Ramp(double_t velocity_delta)
- {
-	 double_t velocity_temporary = get_RampVelocity();
-	 //timer_start(&TIMER_0);
-	 while( abs(get_RampVelocity()) > 0 )
-	 {
-		velocity_temporary -= velocity_delta;	// Decel Ramp
-		set_TargetVelocity(velocity_temporary);
-		if( get_RampVelocity() == 0 )
-		{
-			return;
-		}
-	 }
- }
-
-/** 
- * \brief Creates an acceleration/deceleration ramp for the Motor in Closed Loop Position Mode. Set Target Position before calling this function.
- *
- * @param[in] velocity_limit Target Velocity of the ramp.
- * @param[in] velocity_delta 
- * @return void
- */
- void short_Acceleration_Ramp(int32_t velocity_limit, double_t velocity_delta)
- {
-	 double_t velocity_temporary = get_RampVelocity();
-	 bool loop_done = false;
-	 //timer_start(&TIMER_0);
-	 while( (abs(get_RampVelocity()) < velocity_limit) )//| (get_ErrorPosition() > PID_POSITION_WINDOW))
-	 {
-		velocity_temporary += velocity_delta;	// Accel Ramp
-		// Check if vel_temp has exceeded vel_lim. If it has, set VELOCITY_LIMIT to vel_lim, else set it to vel_temp.
-		(velocity_temporary > velocity_limit) ? set_TargetVelocity(velocity_limit) : set_TargetVelocity(velocity_temporary);
-		loop_done = true;
-	 }
-	 if( (get_RampVelocity() != velocity_limit) & (loop_done == true) )
-	 {
-		 loop_done = false;
-		 set_TargetVelocity(velocity_limit);
-	 }
-	 if( abs(get_RampVelocity()) > (velocity_limit + 100) )
-	 {
-		 tmc4671_writeInt(MOTOR, TMC4671_MODE_RAMP_MODE_MOTION, STOPPED_MODE);
-		 set_RampVelocity(0);
-		 gpio_toggle_pin_level(DBGLED3);
-	 }
- 	return; 
- }
 
 /** 
  * \brief Does the Switching Sequence to find the exact position of the Home Limit.
@@ -405,70 +282,6 @@ void do_homing_sequence( void )
 	
  	limit_variables.other_limit_hit = false;
 	
-	// Check if the motor is already at a limit depending on its edge detection.
-	switch(axis_id)
-	{
-		case X_AXIS:
-		case Y_AXIS:
-		{
-			#if LIMIT_SWITCH_RISING
-				bool left_limit_status = gpio_get_pin_level(LIM_LFT);
-				if(motor_dir_rev)
-				
-				{
-					if( gpio_get_pin_level(LIM_LFT) == HIGH)
-					{
-						left_limit_homing();
-					}
-				}
-				else
-				{
-					if( gpio_get_pin_level(LIM_LFT) == HIGH) 
-					{ 
-						left_limit_homing(); 
-					}
-				}
-			#elif LIMIT_SWITCH_FALLING
-				bool left_limit_status = gpio_get_pin_level(LIM_LFT);
-				if(motor_dir_rev)
-				{
-					if( gpio_get_pin_level(LIM_LFT) == LOW)
-					{
-						left_limit_homing();
-					}
-				}
-				else
-				{
-					if( gpio_get_pin_level(LIM_LFT) == LOW) 
-					{ 
-						left_limit_homing(); 
-					}
-				}
-			#endif
-			break;
-		}
-		case Z_AXIS:
-			#if LIMIT_SWITCH_RISING
-				if(motor_dir_rev)
-				{
-					if( gpio_get_pin_level(LIM_RT) == HIGH) { right_limit_homing(); }
-				}
-				else
-				{
-					if( gpio_get_pin_level(LIM_RT) == HIGH) { right_limit_homing(); }
-				}
-			#elif LIMIT_SWITCH_FALLING
-				if(motor_dir_rev)
-				{
-					if( gpio_get_pin_level(LIM_RT) == LOW) { right_limit_homing(); }
-				}
-				else
-				{
-					if( gpio_get_pin_level(LIM_RT) == LOW) { right_limit_homing(); }
-				}
-			#endif
-		break;
-	}
 	return;
 }
 
@@ -541,8 +354,8 @@ void right_limit_homing()
 			if(axis_id == X_AXIS) { do_Ref_Search_Ping(); }
 			
 			// Setting SoftLimits.
-			int32_t start_range = ( read_tlv_flash(tlv_ptr, START_RANGE_FLASH, tlv_traversal) * ONE_MM);
-			int32_t end_range = ( read_tlv_flash(tlv_ptr, END_RANGE_FLASH, tlv_traversal) * ONE_MM);
+			int32_t start_range = ( read_tlv_flash(tlv_ptr, START_RANGE_FLASH, tlv_traversal) * TMC4671_ONE_MM_STEPS);
+			int32_t end_range = ( read_tlv_flash(tlv_ptr, END_RANGE_FLASH, tlv_traversal) * TMC4671_ONE_MM_STEPS);
 			if(motor_dir_rev)
 			{
 				start_range = ( (~(int32_t)start_range) + 1);
@@ -556,8 +369,8 @@ void right_limit_homing()
 				limit_variables.soft_limit_high = end_range   - SOFT_LIMIT_OFFSET_MM;
 				limit_variables.soft_limit_low  = start_range + SOFT_LIMIT_OFFSET_MM;
 			}
-			PRINTF_DEBUG && printf("\nLeft Limit Pos = %ld usteps | %.2f mm\tRight Limit Pos = %ld usteps | %.2f mm\n", limit_variables.left_limit_position, (limit_variables.left_limit_position / ONE_MM),limit_variables.right_limit_position, (limit_variables.right_limit_position / ONE_MM));
-			PRINTF_DEBUG && printf("\nSoft Limit High = %ld usteps| %.2f mm\tSoft Limit Low = %ld usteps | %.2f mm\n", limit_variables.soft_limit_high, (limit_variables.soft_limit_high / ONE_MM), limit_variables.soft_limit_low, (limit_variables.soft_limit_low / ONE_MM) );
+			PRINTF_DEBUG && printf("\nLeft Limit Pos = %ld usteps | %.2f mm\tRight Limit Pos = %ld usteps | %.2f mm\n", limit_variables.left_limit_position, (limit_variables.left_limit_position / TMC4671_ONE_MM_STEPS),limit_variables.right_limit_position, (limit_variables.right_limit_position / TMC4671_ONE_MM_STEPS));
+			PRINTF_DEBUG && printf("\nSoft Limit High = %ld usteps| %.2f mm\tSoft Limit Low = %ld usteps | %.2f mm\n", limit_variables.soft_limit_high, (limit_variables.soft_limit_high / TMC4671_ONE_MM_STEPS), limit_variables.soft_limit_low, (limit_variables.soft_limit_low / TMC4671_ONE_MM_STEPS) );
 			return;
 		}
 		else
@@ -637,8 +450,8 @@ void left_limit_homing()
 				s_curve_phase = DO_REPEAT;
 			}
 			// Setting SoftLimits.
-			int32_t start_range = ( read_tlv_flash(tlv_ptr, START_RANGE_FLASH, tlv_traversal) * ONE_MM);
-			int32_t end_range = ( read_tlv_flash(tlv_ptr, END_RANGE_FLASH, tlv_traversal) * ONE_MM);
+			int32_t start_range = ( read_tlv_flash(tlv_ptr, START_RANGE_FLASH, tlv_traversal) * TMC4671_ONE_MM_STEPS);
+			int32_t end_range = ( read_tlv_flash(tlv_ptr, END_RANGE_FLASH, tlv_traversal) * TMC4671_ONE_MM_STEPS);
 			if(motor_dir_rev)
 			{
 				start_range = ( (~(int32_t)start_range) + 1);
@@ -652,8 +465,8 @@ void left_limit_homing()
 				limit_variables.soft_limit_high = end_range   - SOFT_LIMIT_OFFSET_MM;
 				limit_variables.soft_limit_low  = start_range + SOFT_LIMIT_OFFSET_MM;
 			}
-			PRINTF_DEBUG && printf("\nLeft Limit Pos = %ld usteps | %.2f mm\tRight Limit Pos = %ld usteps | %.2f mm\n", limit_variables.left_limit_position, (limit_variables.left_limit_position / ONE_MM),limit_variables.right_limit_position, (limit_variables.right_limit_position / ONE_MM));
-			PRINTF_DEBUG && printf("\nSoft Limit High = %ld usteps| %.2f mm\tSoft Limit Low = %ld usteps | %.2f mm\n", limit_variables.soft_limit_high, (limit_variables.soft_limit_high / ONE_MM), limit_variables.soft_limit_low, (limit_variables.soft_limit_low / ONE_MM) );
+			PRINTF_DEBUG && printf("\nLeft Limit Pos = %ld usteps | %.2f mm\tRight Limit Pos = %ld usteps | %.2f mm\n", limit_variables.left_limit_position, (limit_variables.left_limit_position / TMC4671_ONE_MM_STEPS),limit_variables.right_limit_position, (limit_variables.right_limit_position / TMC4671_ONE_MM_STEPS));
+			PRINTF_DEBUG && printf("\nSoft Limit High = %ld usteps| %.2f mm\tSoft Limit Low = %ld usteps | %.2f mm\n", limit_variables.soft_limit_high, (limit_variables.soft_limit_high / TMC4671_ONE_MM_STEPS), limit_variables.soft_limit_low, (limit_variables.soft_limit_low / TMC4671_ONE_MM_STEPS) );
 			return;
 		}
 		// If this limit is getting hit the first.
@@ -728,27 +541,7 @@ void toggle_Limit_Led(void)
  */
 void check_Limit_Flags(void)
 {
-	if( /*(axis_id == X_AXIS) ||*/ (axis_id == Y_AXIS) || (axis_id == Z_AXIS))
-	{
-		if(1 == limit_variables.flags.left_limit_flag)
-		{
-			limit_variables.flags.left_limit_flag = 0;
-			gpio_set_pin_level(DBGLED1, false);
-			printf("\nLeft Limit HIT!\n");
-			// Check for Homing Flag.
-			(limit_variables.flags.homing == 1) ? left_limit_homing() : left_limit_high();
-		}
-		if(1 == limit_variables.flags.right_limit_flag)
-		{
-			limit_variables.flags.right_limit_flag = 0;
-			gpio_set_pin_level(DBGLED2, false);
-			printf("\nRight Limit HIT!\n");
-			// Check for Homing Flag.
-			(limit_variables.homing == 1) ? right_limit_homing() : right_limit_high();
-		}
-		toggle_Limit_Led();	
-	}
-	else if( ( (axis_id == GTRON_AXC_TOP) || (axis_id == GTRON_AXC_BOT) || (axis_id == X_AXIS) ) && gtron_limits.interrupt_raised)
+	if( ( (axis_id == GTRON_AXC_TOP) || (axis_id == GTRON_AXC_BOT) || (axis_id == X_AXIS) ) && gtron_limits.interrupt_raised)
 	{
 		gtron_limits.interrupt_raised = false;
 		
@@ -869,8 +662,8 @@ void right_Limit_Interrupt_Callback(void)
  */
 void init_ext_irq_limits(void)
 {
-	ext_irq_register(LIM_LFT, left_Limit_Interrupt_Callback);
-	ext_irq_register(LIM_RT, right_Limit_Interrupt_Callback);
+	//ext_irq_register(LIM_LFT, left_Limit_Interrupt_Callback);
+	//ext_irq_register(LIM_RT, right_Limit_Interrupt_Callback);
 	ext_irq_register(ROTENC_Z, rot_Enc_Z_Pulse_Interrupt_Callback);
 	ext_irq_register(IOXP_INT, ioxp_Interrupt_Callback);
 	return;
@@ -897,22 +690,10 @@ void init_Enc_Cnt_Dir(void)
 
 void homing_Ramp(void)
 {
-	// If RF disabled for the axis, do normal homing.
-	if(!axis_params.rotary_axis_enabled)
+	if(homing_v < (axis_params.home_search_vel) )
 	{
-		while(homing_v < axis_params.home_search_vel)
-		{
-			homing_v += HOMING_RAMP_DELTA;
-			tmc4671_setVelocityLimit(MOTOR, homing_v);
-		}
-	}
-	else
-	{
-		while(homing_v < (axis_params.home_search_vel) )
-		{
-			homing_v += (HOMING_RAMP_DELTA * 10);
-			tmc4671_setVelocityLimit(MOTOR, homing_v);
-		}
+		homing_v += (HOMING_RAMP_DELTA * 10);
+		tmc4671_setVelocityLimit(MOTOR, homing_v);
 	}
 	return;
 }
@@ -989,7 +770,7 @@ void run_Trapezoidal_Ramp(void)
 					case 1:
 						delay_ms(500);
 						velocity_limit = axis_params.endurance_vel;
-						move_With_Trapezoidal_Ramp(MOVE_MM(2), velocity_limit);
+						move_With_Trapezoidal_Ramp(TMC4671_MOVE_MM(2), velocity_limit);
 						repeat_ramp = 2;
 					break;
 					case 2:
@@ -997,9 +778,9 @@ void run_Trapezoidal_Ramp(void)
 						velocity_limit = axis_params.endurance_vel;
 						switch(axis_id)
 						{
-							case X_AXIS: move_With_Trapezoidal_Ramp(MOVE_MM(145), velocity_limit); break;
-							case Y_AXIS: move_With_Trapezoidal_Ramp(MOVE_MM(145), velocity_limit); break;
-							case Z_AXIS: move_With_Trapezoidal_Ramp(MOVE_MM(70), velocity_limit); break;
+							case X_AXIS: move_With_Trapezoidal_Ramp(TMC4671_MOVE_MM(145), velocity_limit); break;
+							case Y_AXIS: move_With_Trapezoidal_Ramp(TMC4671_MOVE_MM(145), velocity_limit); break;
+							case Z_AXIS: move_With_Trapezoidal_Ramp(TMC4671_MOVE_MM(70), velocity_limit); break;
 							default: break;
 						}
 						repeat_ramp = 1;
@@ -1199,8 +980,8 @@ void run_S_ramp(void)
 					case 1:
 						delay_ms(ENDURANCE_MOVE_DELAY_MS);
 						velocity_limit = axis_params.endurance_vel;
-						(motor_dir_rev) ? move_With_S_Ramp( (~(int32_t)MOVE_MM(1)) + 1, velocity_limit, MOVE_TO) : \
-										move_With_S_Ramp(MOVE_MM(1), velocity_limit, MOVE_TO);
+						(motor_dir_rev) ? move_With_S_Ramp( (~(int32_t)TMC4671_MOVE_MM(1)) + 1, velocity_limit, MOVE_TO) : \
+										move_With_S_Ramp(TMC4671_MOVE_MM(1), velocity_limit, MOVE_TO);
 						repeat_ramp = 2;
 					break;
 					case 2:
@@ -1210,27 +991,27 @@ void run_S_ramp(void)
 						{	// Target Position is set to (max stroke length - 1mm).
 							#if V3_TABLE
 								case X_AXIS: 
-									(motor_dir_rev) ? move_With_S_Ramp( (~(int32_t)(limit_variables.other_limit_position - MOVE_MM(3))) + 1, velocity_limit, MOVE_TO) : \
-													move_With_S_Ramp((limit_variables.other_limit_position - MOVE_MM(3)), velocity_limit, MOVE_TO);	 
+									(motor_dir_rev) ? move_With_S_Ramp( (~(int32_t)(limit_variables.other_limit_position - TMC4671_MOVE_MM(3))) + 1, velocity_limit, MOVE_TO) : \
+													move_With_S_Ramp((limit_variables.other_limit_position - TMC4671_MOVE_MM(3)), velocity_limit, MOVE_TO);	 
 								break;
 								case Y_AXIS: 
-									(motor_dir_rev) ? move_With_S_Ramp( (~(int32_t)(limit_variables.other_limit_position - MOVE_MM(3))) + 1, velocity_limit, MOVE_TO) : \
-													move_With_S_Ramp((limit_variables.other_limit_position - MOVE_MM(3)), velocity_limit, MOVE_BY);
+									(motor_dir_rev) ? move_With_S_Ramp( (~(int32_t)(limit_variables.other_limit_position - TMC4671_MOVE_MM(3))) + 1, velocity_limit, MOVE_TO) : \
+													move_With_S_Ramp((limit_variables.other_limit_position - TMC4671_MOVE_MM(3)), velocity_limit, MOVE_BY);
 								break;
 							#else
 								case X_AXIS: 
-									(motor_dir_rev) ? move_With_S_Ramp( (~(int32_t)(limit_variables.other_limit_position - MOVE_MM(5))) + 1, velocity_limit, MOVE_TO) : \
-													move_With_S_Ramp((limit_variables.other_limit_position - MOVE_MM(5)), velocity_limit, MOVE_BY);
+									(motor_dir_rev) ? move_With_S_Ramp( (~(int32_t)(limit_variables.other_limit_position - TMC4671_MOVE_MM(5))) + 1, velocity_limit, MOVE_TO) : \
+													move_With_S_Ramp((limit_variables.other_limit_position - TMC4671_MOVE_MM(5)), velocity_limit, MOVE_BY);
 								break;
 								case Y_AXIS: 
-									(motor_dir_rev) ? move_With_S_Ramp( (~(int32_t)(limit_variables.other_limit_position - MOVE_MM(10))) + 1, velocity_limit, MOVE_TO) : \
-													move_With_S_Ramp((limit_variables.other_limit_position - MOVE_MM(10)), velocity_limit, MOVE_BY);
+									(motor_dir_rev) ? move_With_S_Ramp( (~(int32_t)(limit_variables.other_limit_position - TMC4671_MOVE_MM(10))) + 1, velocity_limit, MOVE_TO) : \
+													move_With_S_Ramp((limit_variables.other_limit_position - TMC4671_MOVE_MM(10)), velocity_limit, MOVE_BY);
 								break;
 							#endif
 							case Z_AXIS: 
 								//move_With_S_Ramp(MOVE_MM(60), velocity_limit, MOVE_TO); 
-								(motor_dir_rev) ? move_With_S_Ramp( (~(int32_t)(limit_variables.other_limit_position - MOVE_MM(5))) + 1, velocity_limit, MOVE_TO) : \
-								move_With_S_Ramp((limit_variables.other_limit_position - MOVE_MM(5)), velocity_limit, MOVE_BY);
+								(motor_dir_rev) ? move_With_S_Ramp( (~(int32_t)(limit_variables.other_limit_position - TMC4671_MOVE_MM(5))) + 1, velocity_limit, MOVE_TO) : \
+								move_With_S_Ramp((limit_variables.other_limit_position - TMC4671_MOVE_MM(5)), velocity_limit, MOVE_BY);
 							break;
 							default: break;
 						}
@@ -1309,44 +1090,14 @@ bool camera_Trigger(void)
 	return 0;
 }
 
-// 0D 03 80 8A 00 00 00 01 1B
 /** 
  * \brief Sends a move done CAN signal to software if the motor position is within the Position Window.
- *	-# During AutoFocus, Sends camera trigger interrupt to System Controller.
  *
  * @param void
  * @return void
  */
 void check_For_Move_Done(void)
 {
-	// For AutoFocus.
-	int32_t current_pos;
-	current_pos = tmc4671_getActualPosition(MOTOR);
-	if((autofocus_variables.both_received == true) && (idx < AUTOFOCUS_INDEX_LENGTH) )
-	{
-		if(autofocus_variables.sign_check < 0)
-		{
-			if(current_pos <= autofocus_variables.af_table[idx])
-			{
-				camera_Trigger();
-				PRINTF_DEBUG && printf(" in -ve ");
-				idx += 1;
-				
-				PRINTF_DEBUG && printf("\n idx = %ld\tcurrent Pos = %ld steps(or)%.4f mm\taf_table = %ld\n", idx, current_pos, (current_pos / ONE_MM), autofocus_variables.af_table[idx-1]);
-			}
-			//else { //PRINTF_DEBUG && printf("\n !<= %d", current_pos); }
-		}
-		else if(autofocus_variables.sign_check > 0)
-		{
-			if(current_pos >= autofocus_variables.af_table[idx])
-			{
-				camera_Trigger();
-				idx += 1;
-				PRINTF_DEBUG && printf("\n idx = %ld\tcurrent Pos = %ld steps(or)%.4f mm\taf_table = %ld\n", idx, current_pos, (current_pos / ONE_MM), autofocus_variables.af_table[idx-1]);
-			}
-			//else { //PRINTF_DEBUG && printf("\n !>= %d", current_pos); }
-		}
-	}
 	// For Move Done.
 	if( (abs(tmc4671_getErrorPosition(MOTOR)) <= PID_POSITION_WINDOW) )
 	{
@@ -1355,62 +1106,21 @@ void check_For_Move_Done(void)
 	if( move_done_check_num >= NO_OF_MOVE_DONE_CHECK )
 	{
 		move_done_check_num = 0;
-		if( autofocus_variables.temp_move_change == false )
+		move_done_check_num = 0;
+		stop_error_position = tmc4671_getErrorPosition(MOTOR);
+		check_move_done = false;
+		move_given_s_ramp = false;
+		move_given_trapezoidal_ramp = false;
+		autofocus_variables.both_received = false;
+		if(repeat_ramp == 2)
 		{
-			move_done_check_num = 0;
-			stop_error_position = tmc4671_getErrorPosition(MOTOR);
-			check_move_done = false;
-			if( autofocus_variables.change_comp_cnt )
-			{
-				int32_t prev_idx_pos_diff = abs( tmc4671_getActualPosition(MOTOR) - autofocus_variables.af_table[idx - 1] );
-				if(prev_idx_pos_diff > 1032)	// 1032 steps = 0.1mm.
-				{
-					//camera_Trigger();
-				}
-				autofocus_variables.change_comp_cnt = false;
-			}
-			
-			// Check if in Auto-Focus state.
-			if(autofocus_variables.both_received)
-			{
-				autofocus_variables.change_comp_cnt = false;
-				PRINTF_DEBUG && printf("\nCAMERA_TRIGGER_COUNT = %ld\n", autofocus_variables.cam_trigger_count);
-				autofocus_variables.cam_trigger_count = 0;
-				autofocus_variables.both_received = false;
-				PRINTF_DEBUG && printf("\nboth_rxd false | Not in AF Mode\n");
-				//idx = 0;
-			}
-			move_given_s_ramp = false;
-			move_given_trapezoidal_ramp = false;
-			autofocus_variables.both_received = false;
-			if(repeat_ramp == 2)
-			{
-				ramp_State = DO_NOTHING;
-				timer_start(&TIMER_0);
-				//move_given_trapezoidal_ramp = true;
-				move_given_s_ramp = true;
-			}
-			else { timer_stop(&TIMER_0); }
-			move_Done();
-			idx = 0;
+			ramp_State = DO_NOTHING;
+			timer_start(&TIMER_0);
+			//move_given_trapezoidal_ramp = true;
+			move_given_s_ramp = true;
 		}
-		if( (autofocus_variables.temp_move_change) && (autofocus_variables.temp_t_vel != 0) )
-		{
-			autofocus_variables.temp_move_change = false;
-			(motor_dir_rev) ? move_With_S_Ramp( (~(int32_t)autofocus_variables.temp_t_pos) + 1, autofocus_variables.temp_t_vel, MOVE_TO) : \
-			move_With_S_Ramp(autofocus_variables.temp_t_pos, autofocus_variables.temp_t_vel, MOVE_TO);
-			autofocus_variables.temp_t_pos = 0;
-			autofocus_variables.temp_t_vel = 0;
-		}
-		if(vel_struct.flags.reeler_rotate)
-		{
-			// Set Motor Mode to Velocity Mode.
-			tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
-			
-			// Start the Velocity Timer.
-			timer_start(&VEL_TIMER);
-		}
-		
+		else { timer_stop(&TIMER_0); }
+		reeler_Move_Done();
 	}
 	return;
 }
@@ -1450,7 +1160,7 @@ void check_Motor_Movement(void)
 		else { timer_stop(&TIMER_0); }
 		//if(limit_variables.homing == true)
 		{
-			move_Done();
+			reeler_Move_Done();
 		}		// Move Done CAN Message.
 	}
 	

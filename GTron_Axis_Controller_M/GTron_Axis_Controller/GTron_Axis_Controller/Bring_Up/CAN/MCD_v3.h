@@ -17,7 +17,7 @@ void do_4671_Ping(void);
 
 void do_Move_Done_Ping(void);
 
-void move_Done(void);
+void reeler_Move_Done(void);
 
 void do_Ref_Search_Ping(void);
 

@@ -23,6 +23,8 @@
 
 #define MOT_DIR_REV					false			// Motor Direction Reversed?
 
+#define ERASE_PASSIVE_FLASH			false			// Set this to erase the memory of passive flash.
+
 /**********************************
  * ADC value ranges for each axis.*
  **********************************/
@@ -87,68 +89,89 @@
 
 #define ONE_BY_SIX					( 1.0f / 6.0f )	
 
-													// One Rotation = 65,536steps = 6.35mm in Z-Axis.
-#define ONE_MM						10320.63f		// No. of steps required to move the Z-Axis Motor for a distance of 1mm.
-#define PITCH_MM					6.35f			// Linear Distance traveled in the lead screw for 1 motor mechanical rotation in mm.
-#define MOVE_MM(mm)					(ONE_MM * (mm))	// Distance mm to steps conversion. MOVE_MM(2) means 2mm or 20641.26 steps.
-#define MINUTES						60.0f			// No. of seconds in a minute.
+/************************************************************************/
+/* Generic Motor based Macros                                           */
+/************************************************************************/
+#define IMM_PITCH_MM				6.35f									// Linear Distance traveled in the lead screw for 1 motor mechanical rotation in mm.
+#define GUIDE_PITCH_MM				3.00f									// Linear Distance traveled in the lead screw for 1 guide motor mechanical rotation in MM.
+#define PITCH_DEGREE				360.00f									// 1 motor mechanical rotation in degree.
 
-#define EULER						2.718f			// Euler's Number (e).
+/************************************************************************/
+/* TMC4671 Motor based Macros                                           */
+/************************************************************************/
+#define TMC4671_ROTATION			65536.00f								// No. of steps in one full rotation for the TMC4671 Motor Driver. uint16 MAX value.
+																			// One Rotation = 65536 steps = 6.35mm in iMM Axis.
+#define TMC4671_ONE_MM_STEPS		10320.63f								// No. of steps required to move the iMM Axis Motor for a distance of 1mm. (65536 steps / 6.35 mm)
+#define TMC4671_MOVE_MM(mm)			(TMC4671_ONE_MM_STEPS * (mm))			// Distance mm to steps conversion. MOVE_MM(2) means 2mm or 20641.26 steps.
+
+#define ONE_DEG_STEPS				(TMC4671_ROTATION / PITCH_DEGREE)		// 1 degree in motor steps. 1 degree approx.= 182.044 steps.
+#define TMC4671_MOVE_DEG(deg)		(ONE_DEG_STEPS * (deg))					// Degree to motor steps conversion.
+
+/************************************************************************/
+/* TMC2209 Motor based Macros                                           */
+/************************************************************************/
+#define TMC2209_ROTATION			51200.00f								// No. of steps in one full rotation for the TMC2209 Motor Driver. 200 Full Steps * 250 Micro Steps = 51200 MicroSteps.
+
+#define TMC2209_ONE_MM_STEPS		(TMC2209_ROTATION / GUIDE_PITCH_MM)		// 17066.6667 steps per MM.
+
+#define TMC2209_MOVE_MM(mm)			(TMC2209_ONE_MM_STEPS * mm)				// MM to TMC2209 motor steps conversion.
+
+
+
+#define MINUTES						60.0f				// No. of seconds in a minute.
+
+#define EULER						2.718f				// Euler's Number (e).
 
 #ifndef MOTOR
 	#define MOTOR						0				// Default MotorID
 #endif
 
 #ifndef MIN_DISTANCE_RAMP
-	#define MIN_DISTANCE_RAMP		500				// If the no. of steps to move is greater than this, use ramp. Else move without ramp.
+	#define MIN_DISTANCE_RAMP		500					// If the no. of steps to move is greater than this, use ramp. Else move without ramp.
 #endif
 
-#define POSITION_LOW				0x80000001		// Min. value of the PID_POSITION register.
-#define POSITION_HIGH				0x7FFFFFFF		// Max. value of the PID_POSITION register.
+#define POSITION_LOW				0x80000001			// Min. value of the PID_POSITION register.
+#define POSITION_HIGH				0x7FFFFFFF			// Max. value of the PID_POSITION register.
 
-#define ROTATION					65536			// No. of steps in one full rotation (360 degrees) of the stepper motor.
+#define RAMP_INTERVAL_MS			1					// Interval for timer to raise the interrupt. Used for Ramp Generation.
 
-#define RAMP_INTERVAL_MS			1				// Interval for timer to raise the interrupt. Used for Ramp Generation.
+#define VEL_INTERVAL_MS				1					// Interval for timer used to send motor position via CAN during Knob Mode. 
 
-#define VEL_INTERVAL_MS				1				// Interval for timer used to send motor position via CAN during Knob Mode. 
+#define ONE_MS_IN_SECONDS			0.001f				// 1 millisecond in seconds.				
 
-#define ONE_MS_IN_SECONDS			0.001f			// 1 millisecond in seconds.				
+#define LIMIT_DELAY					250					// Delay(ms) given after a limit is hit.
 
-#define LIMIT_DELAY					250				// Delay(ms) given after a limit is hit.
+#define ENDURANCE_MOVE_DELAY_MS		0					// Delay(ms) before giving next position to move to during firmware endurance run.
 
-#define ENDURANCE_MOVE_DELAY_MS		0				// Delay(ms) before giving next position to move to during firmware endurance run.
+#define VELOCITY_TEST_DELAY_MS		20					// Delay(ms) between every state change. Only for testing velocity mode.
 
-#define VELOCITY_TEST_DELAY_MS		20				// Delay(ms) between every state change. Only for testing velocity mode.
+#define SOFT_LIMIT_OFFSET_MM		TMC4671_MOVE_MM(2)	// By how much distance should the soft limit to be from the hard limit in mm.
 
-#define HOMING_SWITCH_POSITION		MOVE_MM(1)		// Distance Moved by the Motor during Homing Switching Sequence. Limit-> |-------| <-Switch_Pos.
+#define AUTOFOCUS_INDEX_LENGTH		30					// Size of the array to store the camera trigger positions during AutoFocus.
 
-#define SOFT_LIMIT_OFFSET_MM		MOVE_MM(2)		// By how much distance should the soft limit to be from the hard limit in mm.
-
-#define AUTOFOCUS_INDEX_LENGTH		30				// Size of the array to store the camera trigger positions during AutoFocus.
-
-#define LIMIT_SWITCH_RISING			0				// If Limit Switch LED is ON by default, enable this.
-#define LIMIT_SWITCH_FALLING		1				// If Limit Switch LED is OFF by default, enable this.
+#define LIMIT_SWITCH_RISING			0					// If Limit Switch LED is ON by default, enable this.
+#define LIMIT_SWITCH_FALLING		1					// If Limit Switch LED is OFF by default, enable this.
 
 #if V3_TABLE
-	#define LIN_ENC_RES				6350			// The resolution or PPR of the Linear Encoder. v3 table -> 6350, v5 table -> 13005 // For v3 Table.
+	#define LIN_ENC_RES				6350				// The resolution or PPR of the Linear Encoder. v3 table -> 6350, v5 table -> 13005 // For v3 Table.
 #else
-	#define LIN_ENC_RES				13005			// The resolution or PPR of the Linear Encoder. v3 table -> 6350, v5 table -> 13005 // For v3 Table.
+	#define LIN_ENC_RES				13005				// The resolution or PPR of the Linear Encoder. v3 table -> 6350, v5 table -> 13005 // For v3 Table.
 #endif
 
 #if V3_TABLE
-	#define ROT_ENC_RES				0x00004000		// Rotary Encoder Pulses per Rotation (PPR) or Resolution | 0x00004000 -> 16384 counts.
+	#define ROT_ENC_RES				0x00004000			// Rotary Encoder Pulses per Rotation (PPR) or Resolution | 0x00004000 -> 16384 counts.
 #else
-	#define ROT_ENC_RES				0x00002000		// Rotary Encoder Pulses per Rotation (PPR) or Resolution | 0x00002000 -> 8192 counts.
+	#define ROT_ENC_RES				0x00002000			// Rotary Encoder Pulses per Rotation (PPR) or Resolution | 0x00002000 -> 8192 counts.
 #endif
 
 
-#define BROADCOM_ENCODER			1				// Encoder with resolution 8192.
-#define AMT_ENCODER					0				// Encoder with resolution 16384.
+#define BROADCOM_ENCODER			1					// Encoder with resolution 8192.
+#define AMT_ENCODER					0					// Encoder with resolution 16384.
 
-#if BROADCOM_ENCODER								// This check to assign value for
-	#define ENC_MUL_FACTOR			8				// ENC_MUL_FACTOR (Encoder Multiplication Factor)
-#elif AMT_ENCODER									// (65536 / 8192 ) = 8
-	#define ENC_MUL_FACTOR			4				// (65536 / 16384) = 4
+#if BROADCOM_ENCODER									// This check to assign value for
+	#define ENC_MUL_FACTOR			8					// ENC_MUL_FACTOR (Encoder Multiplication Factor)
+#elif AMT_ENCODER										// (65536 / 8192 ) = 8
+	#define ENC_MUL_FACTOR			4					// (65536 / 16384) = 4
 #endif
 
 #define HOME_POSITION_HIGH			0
@@ -158,8 +181,8 @@
 #define HIGH						true
 #define LOW							false
 
-#define DEC							10				// Decimal notation.
-#define HEX							16				// Hexadecimal notation.
+#define DEC							10					// Decimal notation.
+#define HEX							16					// Hexadecimal notation.
 
 #define ZERO_HEX					0x00000000
 
@@ -180,38 +203,38 @@
 
 #define UD_EXT						3202
 
-#define PID_POSITION_WINDOW			12				//Error Window for Move Done Signal.
+#define PID_POSITION_WINDOW			12					//Error Window for Move Done Signal.
 
 #define STOP_VELOCITY				100
 
 #define PID_POSITION_ERROR			0x00000003
 
-#define ABN_ENC_REVERSE_DIRECTION   0x00001000		// Encoder counting direction is reverse.
-#define ABN_ENC_FORWARD_DIRECTION   0x00000000		// Encoder counting direction is forward.
+#define ABN_ENC_REVERSE_DIRECTION   0x00001000			// Encoder counting direction is reverse.
+#define ABN_ENC_FORWARD_DIRECTION   0x00000000			// Encoder counting direction is forward.
 
 // For Velocity Mode
-#define VELOCITY_0					0				// 0 RPM.
-#define VELOCITY_1					2				// 2 RPM.
-#define VELOCITY_2					5				// 10 RPM.
-#define VELOCITY_3					20				// 25 RPM.
-#define VELOCITY_4					50				// 50 RPM.
-#define VELOCITY_5					75				// 80 RPM.
-#define VELOCITY_6					100				// 100 RPM.
-#define VELOCITY_7					200				// 200 RPM.
-#define VELOCITY_8					300				// 300 RPM.
-#define VELOCITY_9					400				// 400 RPM.
-#define VELOCITY_10					500				// 500 RPM.
+#define VELOCITY_0					0					// 0 RPM.
+#define VELOCITY_1					2					// 2 RPM.
+#define VELOCITY_2					5					// 10 RPM.
+#define VELOCITY_3					20					// 25 RPM.
+#define VELOCITY_4					50					// 50 RPM.
+#define VELOCITY_5					75					// 80 RPM.
+#define VELOCITY_6					100					// 100 RPM.
+#define VELOCITY_7					200					// 200 RPM.
+#define VELOCITY_8					300					// 300 RPM.
+#define VELOCITY_9					400					// 400 RPM.
+#define VELOCITY_10					500					// 500 RPM.
 
-#define VELOCITY_neg_1				-2				// -2 RPM.
-#define VELOCITY_neg_2				-5				// -10 RPM.
-#define VELOCITY_neg_3				-20				// -25 RPM.
-#define VELOCITY_neg_4				-50				// -50 RPM.
-#define VELOCITY_neg_5				-75				// -80 RPM.
-#define VELOCITY_neg_6				-100			// -100 RPM.
-#define VELOCITY_neg_7				-200			// -200 RPM.
-#define VELOCITY_neg_8				-300			// -300 RPM.
-#define VELOCITY_neg_9				-400			// -400 RPM.
-#define VELOCITY_neg_10				-500			// -500 RPM.
+#define VELOCITY_neg_1				-2					// -2 RPM.
+#define VELOCITY_neg_2				-5					// -10 RPM.
+#define VELOCITY_neg_3				-20					// -25 RPM.
+#define VELOCITY_neg_4				-50					// -50 RPM.
+#define VELOCITY_neg_5				-75					// -80 RPM.
+#define VELOCITY_neg_6				-100				// -100 RPM.
+#define VELOCITY_neg_7				-200				// -200 RPM.
+#define VELOCITY_neg_8				-300				// -300 RPM.
+#define VELOCITY_neg_9				-400				// -400 RPM.
+#define VELOCITY_neg_10				-500				// -500 RPM.
 
 //     in hpl_eic_config.h                                               
 #if LIMIT_SWITCH_RISING

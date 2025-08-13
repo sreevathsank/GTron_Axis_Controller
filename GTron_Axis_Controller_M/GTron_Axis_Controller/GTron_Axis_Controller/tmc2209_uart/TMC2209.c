@@ -133,10 +133,10 @@ uint32_t tmc2209_UART_write(const uint8_t *const buf, const uint16_t length)
 
 	ASSERT(buf && length);
 
-	//while (TMC2209_UART_is_byte_sent());
+	while (!TMC2209_UART_is_byte_sent());
 	do {
-		//TMC2209_UART_write_byte(buf[offset]);
-		//while (TMC2209_UART_is_byte_sent());
+		TMC2209_UART_write_byte(buf[offset]);
+		while (!TMC2209_UART_is_byte_sent());
 	} while (++offset < length);
 
 	return offset;
@@ -157,8 +157,8 @@ uint32_t tmc2209_UART_read(uint8_t *const buf, const uint16_t length)
 	ASSERT(buf && length);
 
 	do {
-		//while (TMC2209_UART_is_byte_received());
-		//io_read(io_tmc2209, &buf, length);
+		while (!TMC2209_UART_is_byte_received());
+		buf[offset] = TMC2209_UART_read_byte();
 	} while (++offset < length);
 
 	return offset;
@@ -211,7 +211,7 @@ int32_t readRegisterUART(uint16_t icID, uint8_t address)
 	data[3] = CRC8(data, 3);
 	tmc2209_UART_write(&data[3], 1);
 	
-	// Reding the 4 bytes written to clear the Rx buffer.
+	// Reading the 4 bytes written to clear the Rx buffer.
 	(void)tmc2209_UART_read(&data, 4);
 	
 	//io_write(&UART.io, &data[3], 1);

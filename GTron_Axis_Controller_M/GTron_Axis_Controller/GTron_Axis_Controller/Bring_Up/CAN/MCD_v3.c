@@ -14,12 +14,12 @@
 
 double convert_PPS_To_RPM(double value)
 {
-	return (double)( (value * MINUTES) / ROTATION);		// needs review.
+	return (double)( (value * MINUTES) / TMC4671_ROTATION);		// needs review.
 }
 
 double_t convert_RPM_To_PPS(double_t value)
 {
-	return ( (value * ROTATION) / MINUTES);		// needs review.
+	return ( (value * TMC4671_ROTATION) / MINUTES);		// needs review.
 }
 
 /** 
@@ -73,21 +73,17 @@ void do_Move_Done_Ping(void)
 	return;
 }
 
-void move_Done(void)
+void reeler_Move_Done(void)
 {
-	switch(axis_id) 
-	{
-		case X_AXIS: message_Id = CAN_ID(REPLY_ID_X, X, 0x80, 0x8A); break;
-		case Y_AXIS: message_Id = CAN_ID(REPLY_ID_Y, Y, 0x80, 0x8A); break;
-		case Z_AXIS: message_Id = CAN_ID(REPLY_ID_Z, Z, 0x80, 0x8A); break;
-	}
-	//message_Id = CAN_ID(ad, cmd, typ, mot);
-	encoding_CAN_Byte_Data(0x01);
-	can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
+	if(axis_id == GTRON_AXC_TOP) { message_Id = CAN_REPLY_TOP_RACK_ID; }
+	else if(axis_id == GTRON_AXC_BOT) { message_Id = CAN_REPLY_BOT_RACK_ID; }
+	can_tx_frame.data[0] = REELER_MOTOR;
+	can_tx_frame.data[1] = AXC_MOVE_DONE;
+	for(int32_t i = 2; i < 8; i++) { can_tx_frame.data[i] = 0x00; }
 	can_Write(message_Id, data);
 	PRINTF_DEBUG && printf("\nad %x  cmd %x  typ %x mot %x Data %x %x %x %x %x", ad, cmd, typ ,mot, can_tx_frame.data[0], can_tx_frame.data[1], can_tx_frame.data[2], can_tx_frame.data[3], can_rx_frame.data[4]);
 	int32_t current_position = tmc4671_getActualPosition(MOTOR);
-	PRINTF_DEBUG && printf(" | Move Done | current position = %ld steps or %.2f mm\n", current_position, (current_position / MOVE_MM(1)) );
+	PRINTF_DEBUG && printf(" | Reeler Move Done | current position = %ld steps or %.2f mm\n", current_position, (current_position / TMC4671_MOVE_MM(1)) );
 	check_move_done = false;
 	
 	return;

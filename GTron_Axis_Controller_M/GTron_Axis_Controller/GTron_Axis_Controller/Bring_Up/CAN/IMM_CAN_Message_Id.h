@@ -105,6 +105,7 @@ typedef enum
 	GUIDE_CLOSE_LIMIT = 5,
 	REELER_ENCODER = 6,
 	GUIDE_ENCODER = 7,
+	SAG_SENSOR = 8,
 	NO_OF_AXC_PERIPHERALS
 }AxC_Peripherals_t;
 
@@ -127,6 +128,7 @@ typedef enum
 	AXC_PRESSED = 14,
 	AXC_NOT_PRESSED = 15,
 	AXC_STATUS_CHECK = 16,
+	AXC_HOMING = 17,
 	NO_OF_AXC_OPERAITONS
 }AxC_Operations_t;
 
@@ -144,7 +146,7 @@ typedef enum
 #define CAN_TOP_RACK_ID							CAN_ID(0x00, 0x00, 0x00, CAN_TOP_RACK)
 #define CAN_BOT_RACK_ID							CAN_ID(0x00, 0x00, 0x00, CAN_BOT_RACK)
 														 
-#define CAN_REPLY_TOP_GUIDE_ID					CAN_ID(0x00, 0x00, 0x00, CAN_REPLY_TOP_RACK)
+#define CAN_REPLY_TOP_RACK_ID					CAN_ID(0x00, 0x00, 0x00, CAN_REPLY_TOP_RACK)
 #define CAN_REPLY_BOT_RACK_ID					CAN_ID(0x00, 0x00, 0x00, CAN_REPLY_BOT_RACK)
 
 /** 
@@ -342,12 +344,6 @@ typedef enum
 #define LINEAR_ENC_DISABLE_Z			CAN_ID(Z, LIN_ENC_DISABLE, 0, MOTOR)
 #define LINEAR_ENC_CLEAR_Z				CAN_ID(Z, LIN_ENC_CLEAR, 0, MOTOR)
 #define	LINEAR_ENC_READ_Z				CAN_ID(Z, LIN_ENC_READ, 0, MOTOR)
-
-/** 
- * \name Autofocus
- *
- */
-//#define AUTOFOCUS_Z						CAN_ID()
 
 /** 
  * \name TMCL Direct Mode Messages 
