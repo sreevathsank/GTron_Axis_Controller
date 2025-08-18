@@ -34,7 +34,7 @@ bool check_passive_flash_spi(void);
 
 void timer_ramp_cb(void);
 
-void init_timer_ramp(void);
+void init_timers(void);
 
 void can_Rx_Cb(void);
 

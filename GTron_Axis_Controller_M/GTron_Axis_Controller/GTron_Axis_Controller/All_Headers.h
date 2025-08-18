@@ -41,5 +41,6 @@
 #include "Bring_Up/IO_Expander/spi_io_expander.h"
 #include "tmc2209_uart/TMC2209.h"
 #include "tmc2209_uart/TMC2209_Motion.h"
+#include "tmc2209_uart/Step_Counter.h"
 
 #endif /* ALL_HEADERS_H_ */

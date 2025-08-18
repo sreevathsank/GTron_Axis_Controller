@@ -37,7 +37,10 @@ extern "C" {
 #include <hpl_tc_base.h>
 #include <hal_timer.h>
 #include <hpl_tc_base.h>
+#include <tcc_lite.h>
 #include <hal_can_async.h>
+
+#include <hal_evsys.h>
 
 extern struct adc_sync_descriptor    ADC_0;
 extern struct usart_async_descriptor UART_0;
@@ -76,6 +79,10 @@ void TARGET_IO_init(void);
 void PWM_0_PORT_init(void);
 void PWM_0_CLOCK_init(void);
 void PWM_0_init(void);
+
+void GUIDE_STEP_COUNTER_CLOCK_init(void);
+
+int8_t GUIDE_STEP_COUNTER_init(void);
 
 /**
  * \brief Perform system initialization, initialize pins and clocks for

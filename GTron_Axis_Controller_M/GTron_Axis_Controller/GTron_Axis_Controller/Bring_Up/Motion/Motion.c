@@ -541,20 +541,39 @@ void toggle_Limit_Led(void)
  */
 void check_Limit_Flags(void)
 {
-	if( ( (axis_id == GTRON_AXC_TOP) || (axis_id == GTRON_AXC_BOT) || (axis_id == X_AXIS) ) && gtron_limits.interrupt_raised)
+	if( ( (axis_id == GTRON_AXC_TOP) || (axis_id == GTRON_AXC_BOT) ) && gtron_limits.interrupt_raised )
 	{
 		gtron_limits.interrupt_raised = false;
 		
 		for(int8_t i = 7; i >= 0; i--) { PRINTF_DEBUG ? printf(" Bit %d = %d | ", i, (gtron_limits.limit_flags >> i) & 1 ): 0; }
+			
 		PRINTF_DEBUG ? printf("\n"): 0;
-		
-		if( MSK_GUIDE_R_LIM(gtron_limits.limit_flags) )
+		if( MSK_GUIDE_R_LIM(gtron_limits.limit_flags) )	// Guide Right Open Limit.
 		{
-			PRINTF_DEBUG ? printf("\nGuide Right Limit is Hit!\n"): 0;
+			if(p_guide_info->flags.move_to_open_lim)
+			{
+				p_guide_info->flags.move_to_open_lim = false;
+				tmc2209_set_velocity(TMC2209_GUIDE_ADDR, 0x00000000, GUIDE_STEP_COUNTER);
+				
+				// Write to the Guide Step Counter TCC Counter Register as 0.
+				counter_Write_Count_Val(GUIDE_STEP_COUNTER, 0);
+				p_guide_info->right_open_lim_pos = counter_Read_Count_Val(GUIDE_STEP_COUNTER);	
+				PRINTF_DEBUG ? printf("\nMove to Open Limit Done. Setting Current Position as %ld...\n", p_guide_info->right_open_lim_pos): 0;
+			}
+			PRINTF_DEBUG ? printf("\nGuide Right Open Limit is Hit!\n"): 0;
 		}
-		else if( MSK_GUIDE_L_LIM(gtron_limits.limit_flags) )
+		else if( MSK_GUIDE_L_LIM(gtron_limits.limit_flags) )	// Guide Left Close Limit.
 		{
-			PRINTF_DEBUG ? printf("\nGuide Left Limit is Hit!\n"): 0;
+			if(p_guide_info->flags.move_to_close_lim)
+			{
+				p_guide_info->flags.move_to_close_lim = false;
+				tmc2209_set_velocity(TMC2209_GUIDE_ADDR, 0x00000000, GUIDE_STEP_COUNTER);
+				
+				// Get the current position as the stroke length of the Guide setup.
+				p_guide_info->left_close_lim_pos = counter_Read_Count_Val(GUIDE_STEP_COUNTER);
+				PRINTF_DEBUG ? printf("\nMove to Close Limit Done. Setting Current Position as %ld...\n", p_guide_info->left_close_lim_pos): 0;
+			}
+			PRINTF_DEBUG ? printf("\nGuide Left Close Limit is Hit!\n"): 0;
 		}
 		else if( MSK_VARREST_R_LIM(gtron_limits.limit_flags) )
 		{
@@ -602,6 +621,7 @@ void rot_Enc_Z_Pulse_Interrupt_Callback(void)
 		limit_variables.rot_enc_z_first_hit = false;
 		limit_variables.homing = false;
 		ext_irq_disable(ROTENC_Z);
+		PRINTF_DEBUG ? printf("\nReeler Homing Done\n"): 0;
 	}
 	
 	switch(axis_id)
@@ -666,6 +686,7 @@ void init_ext_irq_limits(void)
 	//ext_irq_register(LIM_RT, right_Limit_Interrupt_Callback);
 	ext_irq_register(ROTENC_Z, rot_Enc_Z_Pulse_Interrupt_Callback);
 	ext_irq_register(IOXP_INT, ioxp_Interrupt_Callback);
+	ext_irq_register(INDEX, index_Interrupt_Callback);
 	return;
 }
 
@@ -1193,6 +1214,7 @@ void run_Velocity_Ramp(void)
 {
 	static float vel = 0;	// Velocity to be set.
 	static bool ramping = false;
+	static int32_t prev_trig_pos = 0;
 	
 	vel_struct.flags.reeler_vel_timer = false;
 	
@@ -1201,17 +1223,23 @@ void run_Velocity_Ramp(void)
 		
 	int32_t current_velocity = tmc4671_getVelocityTarget(MOTOR);
 	int32_t target_velocity = p_reeler_info->velocity_limit;
-	
+
 	// Check if the Motor's current Mode Motion is in Velocity Mode or not.
 	int32_t mode_motion = tmc4671_getModeMotion(MOTOR);
 	if(mode_motion != VELOCITY_MODE)
 	{
 		tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
 	}
+	if( (abs(prev_trig_pos - tmc4671_getActualPosition(MOTOR)) >= p_reeler_info->trigger_step_size) && (p_reeler_info->trigger_step_size != 0) )
+	{
+		gpio_set_pin_level(REELER_INT, HIGH);
+		delay_us(1);
+		gpio_set_pin_level(REELER_INT, LOW);
+	}
 	if(!ramping)
 	{
 		vel = current_velocity;
-		
+		prev_trig_pos = tmc4671_getActualPosition(MOTOR);
 		// This is the velocity limit threshold that cannot be crossed in Position Mode as well as Velocity Mode.
 		tmc4671_setVelocityLimit(MOTOR, axis_params.endurance_vel);
 		

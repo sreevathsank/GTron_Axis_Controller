@@ -14,7 +14,7 @@
  */
 void initAllMotors(uint16_t icID)
 {
-    tmc2209_writeRegister(icID, TMC2209_GCONF, 0x00000060);         // DEC 64.
+    tmc2209_writeRegister(icID, TMC2209_GCONF, 0x00000060);         // DEC 104.
     
     tmc2209_writeRegister(icID, TMC2209_TPOWERDOWN, 0x00000014);    // DEC 20.
     
@@ -24,11 +24,43 @@ void initAllMotors(uint16_t icID)
     
     tmc2209_writeRegister(icID, TMC2209_PWMCONF, 0xC10D0024);       // DEC 3238854692.
 	
-    
-	// Generate step pulse (S/D) externally via the connected microcontroller.
-	tmc2209_writeRegister(icID, TMC2209_VACTUAL, 0x00001F40);
-
+	guide_step_counter_value = 0;
+	
+	PRINTF_DEBUG ? printf("\nTMC2209 Init Done for Guide Motor.\n"): 0;
+	
+	//GUIDE_STEP_COUNTER_CLOCK_init();
+	//(void)GUIDE_STEP_COUNTER_init();
+	
+	gpio_set_pin_level(INDEX_SEL, LOW);
+	
+	//counter_Clear_Count_Val(GUIDE_STEP_COUNTER);
+	counter_Write_Count_Val(GUIDE_STEP_COUNTER, 0x00000001);
+	
+	PRINTF_DEBUG ? printf("\nGuide Index Step Count = %ld\n", counter_Read_Count_Val(GUIDE_STEP_COUNTER) ): 0;
+	
     return;
+}
+
+void move_guide_motor( void )
+{
+	uint32_t count_reg = 0;
+	for(int32_t i = 0; i < 5; i++)
+	{
+		delay_ms(500);
+		count_reg = counter_Read_Count_Val(GUIDE_STEP_COUNTER);
+		PRINTF_DEBUG ? printf("\nCount Val = %ld\n", count_reg): 0;
+		//tmc2209_writeRegister(0x00, TMC2209_VACTUAL,  0x000003E8);
+		tmc2209_set_velocity(0x00, 0x000003E8, GUIDE_STEP_COUNTER);
+		
+		delay_ms(500);
+		count_reg = counter_Read_Count_Val(GUIDE_STEP_COUNTER);
+		PRINTF_DEBUG ? printf("\nCount Val = %ld\n", count_reg): 0;
+		//tmc2209_writeRegister(0x00, TMC2209_VACTUAL,  0xFFFFFC18);
+		tmc2209_set_velocity(0x00, 0xFFFFFC18, GUIDE_STEP_COUNTER);
+		//tmc2209_set_velocity(0x00, 0x00000000, GUIDE_STEP_COUNTER);
+	}
+	tmc2209_set_velocity(0x00, 0, GUIDE_STEP_COUNTER);
+	return;
 }
 
 void read_Init_Registers(uint16_t icID)

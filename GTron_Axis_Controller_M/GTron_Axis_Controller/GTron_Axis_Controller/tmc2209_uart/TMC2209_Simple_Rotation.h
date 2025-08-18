@@ -15,6 +15,7 @@ extern "C" {
 
 #include "TMC2209.h"
 
+void move_guide_motor( void );
 void initAllMotors(uint16_t icID);
 void read_Init_Registers(uint16_t icID);
 

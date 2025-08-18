@@ -16,14 +16,14 @@
 // <i> The event action will be triggered on any incoming event if PORT A Input Event 0 configuration is enabled
 // <id> porta_input_event_enable_0
 #ifndef CONF_PORTA_EVCTRL_PORTEI_0
-#define CONF_PORTA_EVCTRL_PORTEI_0 0x0
+#define CONF_PORTA_EVCTRL_PORTEI_0 0x1
 #endif
 
 // <o> PORTA Event 0 Pin Identifier <0x00-0x1F>
 // <i> These bits define the I/O pin from port A on which the event action will be performed
 // <id> porta_event_pin_identifier_0
 #ifndef CONF_PORTA_EVCTRL_PID_0
-#define CONF_PORTA_EVCTRL_PID_0 0x0
+#define CONF_PORTA_EVCTRL_PID_0 0xe
 #endif
 
 // <o> PORTA Event 0 Action

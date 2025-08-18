@@ -47,10 +47,10 @@ int main(void)
 	{
 		switch(axis_id)
 		{
-			case X_AXIS: PRINTF_DEBUG && printf("\nX Rotary Axis Enabled!\n"); break;
-			case Y_AXIS: PRINTF_DEBUG && printf("\nY Rotary Axis Enabled!\n"); break;
-			case Z_AXIS: PRINTF_DEBUG && printf("\nZ Rotary Axis Enabled!\n"); break;
-			case RF_AXIS: PRINTF_DEBUG && printf("\nRF Rotary Axis Enabled!\n"); break;
+			case X_AXIS: PRINTF_DEBUG ? printf("\nX Rotary Axis Enabled!\n"): 0; break;
+			case Y_AXIS: PRINTF_DEBUG ? printf("\nY Rotary Axis Enabled!\n"): 0; break;
+			case Z_AXIS: PRINTF_DEBUG ? printf("\nZ Rotary Axis Enabled!\n"): 0; break;
+			case RF_AXIS: PRINTF_DEBUG ? printf("\nRF Rotary Axis Enabled!\n"): 0; break;
 			case GTRON_AXC_TOP: PRINTF_DEBUG ? printf("\nReeler Rotary Axis Enabled!\n"): 0; break;
 			case GTRON_AXC_BOT: PRINTF_DEBUG ? printf("\nReeler Rotary Axis Enabled!\n"): 0; break;
 			default: break;
@@ -60,16 +60,8 @@ int main(void)
 	limit_variables.homing = ( (repeat_ramp > 0) || (axis_params.rotary_axis_enabled) ) ? true : false;
 	
 	// TMC2209 UART Check.
-	initAllMotors(0x00);
-	for(int32_t i = 0; i < 10; i++)
-	{
-		delay_ms(500);
-		tmc2209_writeRegister(0x00, TMC2209_VACTUAL,  0xFFFFE0C0);
-		delay_ms(500);
-		tmc2209_writeRegister(0x00, TMC2209_VACTUAL,  0x00001F40);	
-	}
-	
-	tmc2209_writeRegister(0x00, TMC2209_VACTUAL,  0x00000000);
+	initAllMotors(TMC2209_GUIDE_ADDR);
+	move_guide_motor();
 	// Check whether to do firmware limit based homing.
 	if( limit_variables.homing )
 	{
@@ -82,11 +74,6 @@ int main(void)
 	}
 	else { limit_variables.switch_seq_flag = false; }	// No need for Switching Sequence if Homing Sequence is disabled...
 	
-	//PRINTF_DEBUG ? printf("\nWriting to TMC2209 GCONF register\n"): 0;
-	//tmc2209_writeRegister(0x00, TMC2209_GCONF, 0x60);
-	//delay_ms(100);
-	//int32_t gconf_val = tmc2209_readRegister(0x00, TMC2209_GCONF);
-	//PRINTF_DEBUG ? printf("\nGCONF VALUE = %ld\n", gconf_val): 0;
 	
 	/* Replace with your application code */
 	for ever
@@ -98,9 +85,7 @@ int main(void)
 		if(move_given_s_ramp)			{ run_S_ramp();				}
 		if( (repeat_ramp != 2) && vel_struct.flags.reeler_rotate \
 			&& vel_struct.flags.reeler_vel_timer && vel_struct.flags.sag_enabled)
-		{
-			run_Velocity_Ramp();
-		}
+		{ run_Velocity_Ramp(); }
 	}
 	return 0;
 }

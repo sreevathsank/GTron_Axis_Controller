@@ -763,7 +763,7 @@
 // <i> Indicates whether the external interrupt 14 debounce is enabled or not
 // <id> eic_arch_debounce_enable14
 #ifndef CONF_EIC_DEBOUNCE_ENABLE14
-#define CONF_EIC_DEBOUNCE_ENABLE14 1
+#define CONF_EIC_DEBOUNCE_ENABLE14 0
 #endif
 
 // <q> External Interrupt 14 Event Output Enable
@@ -790,7 +790,7 @@
 // <i> Indicates the external interrupt 14 detection mode operated synchronously or asynchronousl
 // <id> eic_arch_asynch14
 #ifndef CONF_EIC_ASYNCH14
-#define CONF_EIC_ASYNCH14 1
+#define CONF_EIC_ASYNCH14 0
 #endif
 
 // </e>

@@ -424,6 +424,12 @@ static void TIMER_0_init(void)
 	timer_init(&TIMER_0, TC4, _tc_get_timer());
 }
 
+void GUIDE_STEP_COUNTER_CLOCK_init(void)
+{
+	hri_mclk_set_APBCMASK_TCC0_bit(MCLK);
+	hri_gclk_write_PCHCTRL_reg(GCLK, TCC0_GCLK_ID, CONF_GCLK_TCC0_SRC | (1 << GCLK_PCHCTRL_CHEN_Pos));
+}
+
 void CAN_1_PORT_init(void)
 {
 
@@ -442,6 +448,15 @@ void CAN_1_init(void)
 	hri_gclk_write_PCHCTRL_reg(GCLK, CAN1_GCLK_ID, CONF_GCLK_CAN1_SRC | (1 << GCLK_PCHCTRL_CHEN_Pos));
 	can_async_init(&CAN_1, CAN1);
 	CAN_1_PORT_init();
+}
+
+void EVENT_SYSTEM_0_init(void)
+{
+	hri_gclk_write_PCHCTRL_reg(GCLK, EVSYS_GCLK_ID_0, CONF_GCLK_EVSYS_CHANNEL_0_SRC | (1 << GCLK_PCHCTRL_CHEN_Pos));
+
+	hri_mclk_set_APBCMASK_EVSYS_bit(MCLK);
+
+	event_system_init();
 }
 
 void system_init(void)
@@ -633,7 +648,7 @@ void system_init(void)
 
 	// GPIO on PB23
 
-	gpio_set_pin_level(LATCH_IN,
+	gpio_set_pin_level(REELER_INT,
 	                   // <y> Initial level
 	                   // <id> pad_initial_level
 	                   // <false"> Low
@@ -641,9 +656,9 @@ void system_init(void)
 	                   false);
 
 	// Set pin direction to output
-	gpio_set_pin_direction(LATCH_IN, GPIO_DIRECTION_OUT);
+	gpio_set_pin_direction(REELER_INT, GPIO_DIRECTION_OUT);
 
-	gpio_set_pin_function(LATCH_IN, GPIO_PIN_FUNCTION_OFF);
+	gpio_set_pin_function(REELER_INT, GPIO_PIN_FUNCTION_OFF);
 
 	ADC_0_init();
 
@@ -668,5 +683,10 @@ void system_init(void)
 
 	VEL_TIMER_init();
 	TIMER_0_init();
+	GUIDE_STEP_COUNTER_CLOCK_init();
+
+	GUIDE_STEP_COUNTER_init();
 	CAN_1_init();
+
+	EVENT_SYSTEM_0_init();
 }

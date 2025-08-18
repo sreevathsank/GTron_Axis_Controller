@@ -7,6 +7,9 @@
 
 #include "Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h"
 
+Guide_Info_t guide_info;
+Guide_Info_t *p_guide_info = &guide_info;
+
 Reeler_Info_t reeler_info;
 Reeler_Info_t *p_reeler_info = &reeler_info;
 
@@ -17,6 +20,30 @@ uint8_t rack_id;
 /************************************************************************/
 /* Reeler Functions                                                     */
 /************************************************************************/
+
+/** 
+ * \brief reeler_Home - Homes the Reeler Motor with Rotary Encoder Z pulse as Zero Reference Position.
+ *
+ * @param	void 
+ *
+ * @return	void
+ **/
+static void reeler_Home( void )
+{
+	limit_variables.homing = true;
+	// Check whether to do firmware limit based homing.
+	if( limit_variables.homing )
+	{
+		if(axis_params.rotary_axis_enabled)
+		{
+			limit_variables.rot_enc_z_first_hit = false;
+			ext_irq_enable(ROTENC_Z);
+		}
+		do_homing_sequence();
+	}
+	PRINTF_DEBUG ? printf("\nReeler Homing Cmd Rxcvd\n"): 0;
+	return;
+}
 
 /** 
  * \brief reeler_Move - Moves the Reeler Motor to the given Position.
@@ -131,24 +158,6 @@ static void reeler_Stop_Motor( void )
 	return;
 }
 
-/** 
- * \brief
- *
- * @param
- *
- * @return
- **/
-static void reeler_Home_Motor( void )
-{
-	if(axis_params.rotary_axis_enabled)
-	{
-		limit_variables.rot_enc_z_first_hit = false;
-		ext_irq_enable(ROTENC_Z);
-		do_homing_sequence();
-	}
-	return;
-}
-
 /************************************************************************/
 /* Guide Vertical Arrestor Functions                                    */
 /************************************************************************/
@@ -162,7 +171,6 @@ static void reeler_Home_Motor( void )
  **/
 static void guide_VArrestor_Move(Guide_or_VArrestor_t guide_varrestor, int32_t target_position, bool move_to_by)
 {
-	
 	return;
 }
 
@@ -175,7 +183,9 @@ static void guide_VArrestor_Move(Guide_or_VArrestor_t guide_varrestor, int32_t t
  **/
 static void guide_Move_To_Open_Limit( void )
 {
-	
+	tmc2209_set_velocity(TMC2209_GUIDE_ADDR, 0xFFFFF060, GUIDE_STEP_COUNTER);
+	guide_info.flags.move_to_open_lim = true;
+	PRINTF_DEBUG ? printf("\nGuide Move To Open Limit Cmd Rxcvd\n"): 0;
 	return;
 }
 
@@ -188,7 +198,9 @@ static void guide_Move_To_Open_Limit( void )
  **/
 static void guide_Move_To_Close_Limit( void )
 {
-	
+	tmc2209_set_velocity(TMC2209_GUIDE_ADDR, 0x00000FA0, GUIDE_STEP_COUNTER);
+	guide_info.flags.move_to_close_lim = true;
+	PRINTF_DEBUG ? printf("\nGuide Move to Close Limit Cmd Rxcvd\n"): 0;
 	return;
 }
 
@@ -227,6 +239,21 @@ static void guide_VArrestor_Set_Initial_Position(Guide_or_VArrestor_t guide_varr
  **/
 static void guide_VArrestor_Stop_Motor(Guide_or_VArrestor_t guide_varrestor)
 {
+	switch(guide_varrestor)
+	{
+		case GUIDE:
+			tmc2209_set_velocity(TMC2209_GUIDE_ADDR, 0x00000000, GUIDE_STEP_COUNTER);
+			guide_info.flags.homing = 0;
+			guide_info.flags.move_given = 0;
+			guide_info.flags.move_to_open_lim = 0;
+			guide_info.flags.move_to_close_lim = 0;
+			PRINTF_DEBUG ? printf("\nGuide Motor Stop\n"): 0;
+		break;
+		
+		case VARRESTOR:
+		default:
+		break;
+	}
 	
 	return;
 }
@@ -337,20 +364,23 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_MOVE_BY:			reeler_Move((int32_t)rx_can_cmd_info.value, MOVE_BY);			break;
 					case AXC_TEETH:				reeler_Set_Teeth((uint32_t)rx_can_cmd_info.value);				break;
 					case AXC_INITIAL_POSITION:	reeler_Set_Initial_Position((int32_t)rx_can_cmd_info.value);	break;
-					default: break;
+					case AXC_HOMING:			reeler_Home();													break;
+					default: PRINTF_DEBUG ? printf("\nReeler Motor Invalid Operation Rxcvd\n"): 0;				break;
 				}
 			break;
 			case GUIDE_MOTOR:
 				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
 				{
-					case AXC_STOP:				guide_VArrestor_Stop_Motor(GUIDE);												break;
-					case AXC_VELOCITY:			guide_VArrestor_Set_Velocity(GUIDE, (int32_t)rx_can_cmd_info.value);			break;
-					case AXC_ROTATE:			guide_VArrestor_Move(GUIDE, (int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
-					case AXC_MOVE_TO:			guide_VArrestor_Move(GUIDE, (int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
-					case AXC_MOVE_BY:			guide_VArrestor_Move(GUIDE, (int32_t)rx_can_cmd_info.value, MOVE_BY);			break;
-					case AXC_INITIAL_POSITION:	guide_VArrestor_Set_Initial_Position(GUIDE, (int32_t)rx_can_cmd_info.value);	break;
-					case AXC_STATUS_CHECK:		guide_Limits_Status_Check();													break;
-					default: break;
+					case AXC_STOP:					guide_VArrestor_Stop_Motor(GUIDE);												break;
+					case AXC_VELOCITY:				guide_VArrestor_Set_Velocity(GUIDE, (int32_t)rx_can_cmd_info.value);			break;
+					case AXC_ROTATE:				guide_VArrestor_Move(GUIDE, (int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
+					case AXC_MOVE_TO:				guide_VArrestor_Move(GUIDE, (int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
+					case AXC_MOVE_BY:				guide_VArrestor_Move(GUIDE, (int32_t)rx_can_cmd_info.value, MOVE_BY);			break;
+					case AXC_MOVE_TO_OPEN_LIMIT:	guide_Move_To_Open_Limit();														break;
+					case AXC_MOVE_TO_CLOSE_LIMIT:	guide_Move_To_Close_Limit();													break;
+					case AXC_INITIAL_POSITION:		guide_VArrestor_Set_Initial_Position(GUIDE, (int32_t)rx_can_cmd_info.value);	break;
+					case AXC_STATUS_CHECK:			guide_Limits_Status_Check();													break;
+					default: PRINTF_DEBUG ? printf("\nGuide Motor Invalid Operation Rxcvd\n"): 0;								break;
 				}
 			break;
 			case VERITCAL_ARRESTOR_MOTOR:
@@ -362,7 +392,7 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_MOVE_TO:		   guide_VArrestor_Move(VARRESTOR, (int32_t)rx_can_cmd_info.value, MOVE_TO);		break;
 					case AXC_MOVE_BY:		   guide_VArrestor_Move(VARRESTOR, (int32_t)rx_can_cmd_info.value, MOVE_BY);		break;
 					case AXC_INITIAL_POSITION: guide_VArrestor_Set_Initial_Position(VARRESTOR, (int32_t)rx_can_cmd_info.value); break;
-					default: break;
+					default: PRINTF_DEBUG ? printf("\nVert Arrestor Motor Invalid Operation Rxcvd\n"): 0;						break;
 				}
 			break;
 			case GUIDE_OPEN_LIMIT:
@@ -371,7 +401,7 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_ENABLE: break;
 					case AXC_DISABLE: break;
 					case AXC_STATUS_CHECK: break;
-					default: break;
+					default: PRINTF_DEBUG ? printf("\nGuide Open Limit Invalid Operation Rxcvd\n"): 0;					break;
 				}
 			break;
 			case GUIDE_CLOSE_LIMIT:
@@ -380,7 +410,7 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_ENABLE: break;
 					case AXC_DISABLE: break;
 					case AXC_STATUS_CHECK: break;
-					default: break;
+					default: PRINTF_DEBUG ? printf("\nGuide Close Limit Invalid Operation Rxcvd\n"): 0;					break;
 				}
 			break;
 			case REELER_ENCODER:
@@ -391,7 +421,7 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_STOP: break;
 					case AXC_ENABLE: break;
 					case AXC_DISABLE: break;
-					default: break;
+					default: PRINTF_DEBUG ? printf("\nReeler Encoder Invalid Operation Rxcvd\n"): 0;					break;
 				}
 			break;
 			case GUIDE_ENCODER:
@@ -402,7 +432,7 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_STOP: break;
 					case AXC_ENABLE: break;
 					case AXC_DISABLE: break;
-					default: break;
+					default: PRINTF_DEBUG ? printf("\nGuide Encoder Invalid Operation Rxcvd\n"): 0;					break;
 				}
 			break;
 			case SAG_SENSOR:
@@ -410,7 +440,7 @@ void parse_GTron_CAN_Msg_Data( void )
 				{
 					case AXC_START: vel_struct.flags.sag_enabled = true;  break;
 					case AXC_STOP:  vel_struct.flags.sag_enabled = false; break;
-					default: break;
+					default: PRINTF_DEBUG ? printf("\nSag Sensor Invalid Operation Rxcvd\n"): 0;					break;
 				}
 			default: break;
 		}

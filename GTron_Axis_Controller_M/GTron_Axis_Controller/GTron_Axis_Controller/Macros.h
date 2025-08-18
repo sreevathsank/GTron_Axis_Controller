@@ -116,6 +116,14 @@
 
 #define TMC2209_MOVE_MM(mm)			(TMC2209_ONE_MM_STEPS * mm)				// MM to TMC2209 motor steps conversion.
 
+/************************************************************************/
+/*TMC2209 Timer Counters for Step Counting Macros                       */
+/************************************************************************/
+#define GUIDE_STEP_COUNTER			TCC0									// The hardware address of the Timer Peripheral used to count the Guide Motor steps output from TMC2209.
+
+//#define VARREST_STEP_COUNTER
+
+
 
 
 #define MINUTES						60.0f				// No. of seconds in a minute.

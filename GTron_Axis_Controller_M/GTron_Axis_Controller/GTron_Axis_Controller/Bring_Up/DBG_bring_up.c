@@ -16,6 +16,7 @@
 
 struct timer_task ramp_timer_struct;
 struct timer_task vel_timer_struct;
+struct timer_task guide_idx_counter_timer_struct;
 
 void debounce_delay(uint32_t time_taken)
 {
@@ -86,7 +87,7 @@ void vel_timer_cb(void)
  * @param void
  * @return void
  */
-void init_timer_ramp(void)
+void init_timers(void)
 {
 	// Init the timer used for ramp generation.
 	ramp_timer_struct.interval = RAMP_INTERVAL_MS;
@@ -99,6 +100,8 @@ void init_timer_ramp(void)
 	vel_timer_struct.cb			= vel_timer_cb;
 	vel_timer_struct.mode		= TIMER_TASK_REPEAT;
 	timer_add_task(&VEL_TIMER, &vel_timer_struct);
+	
+	
 }
 
 /** 
@@ -465,6 +468,8 @@ void call_All_Init_Functions(void)
 	// PWM_0 is clk source for TMC4671. Produces 25MHz.
 	pwm_set_parameters(&PWM_0, 1, 1);
 	pwm_enable(&PWM_0);
+	
+	//GUIDE_STEP_COUNTER_init();
 
 	reset_TMC4671();
 	gpio_set_pin_level(EN_4671, LOW);
@@ -502,7 +507,7 @@ void call_All_Init_Functions(void)
 	init_Basics(MOTOR);
 	init_PosMode(MOTOR);
 	read_4671_ADC_Raw();
-	init_timer_ramp();
+	init_timers();
 	
 	//timer_start(&TIMER_0);
 	can_Init();

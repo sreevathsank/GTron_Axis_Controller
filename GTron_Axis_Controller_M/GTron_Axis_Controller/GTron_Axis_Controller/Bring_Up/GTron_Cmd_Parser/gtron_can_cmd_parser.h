@@ -15,8 +15,14 @@
 #define PERIPHERAL_BYTE_IDX		0
 #define OPERATION_BYTE_IDX		1
 
-#define POSITION_MOVE_FLAG		0
-#define VELOCITY_MOVE_FLAG		1
+#define REELER_POS_MV_FLAG		0
+#define REELER_VEL_MV_FLAG		1
+
+/************************************************************************/
+/* Guide Flag Bit Fields                                                */
+/************************************************************************/
+#define GUIDE_HOMING_FLAG		0
+#define GUIDE_MOVE_FLAG			1
 
 typedef enum
 {
@@ -48,6 +54,25 @@ typedef struct
 	int32_t trigger_step_size;
 	uint32_t flags;
 }Reeler_Info_t;
+
+typedef struct 
+{
+	int32_t target_velocity;
+	int32_t current_velocity;
+	int32_t target_posiiton;
+	int32_t current_position;
+	int32_t right_open_lim_pos;
+	int32_t left_close_lim_pos;
+	struct 
+	{
+		uint32_t homing				: 1;		// 1
+		uint32_t move_to_open_lim	: 1;		// 2
+		uint32_t move_to_close_lim	: 1;		// 3
+		uint32_t move_given			: 1;		// 4	
+	}flags;
+}Guide_Info_t;
+
+extern Guide_Info_t *p_guide_info;
 
 extern Reeler_Info_t *p_reeler_info;
 

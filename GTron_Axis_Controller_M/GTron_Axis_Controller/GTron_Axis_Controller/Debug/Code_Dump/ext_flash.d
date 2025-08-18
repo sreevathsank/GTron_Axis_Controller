@@ -159,9 +159,10 @@ Code_Dump/ext_flash.d Code_Dump/ext_flash.o: ../Code_Dump/ext_flash.c \
  ../hal/include/hal_pwm.h ../hal/include/hpl_pwm.h \
  ../hpl/tc/hpl_tc_base.h ../hal/include/hpl_timer.h \
  ../hal/include/hal_timer.h ../hal/utils/include/utils_list.h \
- ../hal/include/hal_can_async.h ../hal/include/hpl_can.h \
- ../hal/include/hpl_can_async.h ../hal/utils/include/utils.h \
- ../hpl/spi/spi_lite.h \
+ ../hpl/tcc/tcc_lite.h ../hal/include/hal_can_async.h \
+ ../hal/include/hpl_can.h ../hal/include/hpl_can_async.h \
+ ../hal/utils/include/utils.h ../hal/include/hal_evsys.h \
+ ../hal/include/hpl_evsys.h ../hpl/spi/spi_lite.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\string.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\xlocale.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\string.h \
@@ -200,7 +201,7 @@ Code_Dump/ext_flash.d Code_Dump/ext_flash.o: ../Code_Dump/ext_flash.c \
  ../Bring_Up/IO_Expander/spi_io_expander.h ../tmc2209_uart/TMC2209.h \
  ../tmc2209_uart/TMC2209_HW_Abstraction.h \
  ../tmc2209_uart/TMC2209_Simple_Rotation.h ../tmc2209_uart/TMC2209.h \
- ../tmc2209_uart/TMC2209_Motion.h
+ ../tmc2209_uart/TMC2209_Motion.h ../tmc2209_uart/Step_Counter.h
 
 ../Code_Dump/ext_flash.h:
 
@@ -610,6 +611,8 @@ C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n
 
 ../hal/utils/include/utils_list.h:
 
+../hpl/tcc/tcc_lite.h:
+
 ../hal/include/hal_can_async.h:
 
 ../hal/include/hpl_can.h:
@@ -617,6 +620,10 @@ C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n
 ../hal/include/hpl_can_async.h:
 
 ../hal/utils/include/utils.h:
+
+../hal/include/hal_evsys.h:
+
+../hal/include/hpl_evsys.h:
 
 ../hpl/spi/spi_lite.h:
 
@@ -743,3 +750,5 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../tmc2209_uart/TMC2209.h:
 
 ../tmc2209_uart/TMC2209_Motion.h:
+
+../tmc2209_uart/Step_Counter.h:

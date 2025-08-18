@@ -133,9 +133,10 @@ SysTick/Systick.d SysTick/Systick.o: ../SysTick/Systick.c \
  ../hal/include/hal_pwm.h ../hal/include/hpl_pwm.h \
  ../hpl/tc/hpl_tc_base.h ../hal/include/hpl_timer.h \
  ../hal/include/hal_timer.h ../hal/utils/include/utils_list.h \
- ../hal/include/hal_can_async.h ../hal/include/hpl_can.h \
- ../hal/include/hpl_can_async.h ../hal/utils/include/utils.h \
- ../stdio_start.h \
+ ../hpl/tcc/tcc_lite.h ../hal/include/hal_can_async.h \
+ ../hal/include/hpl_can.h ../hal/include/hpl_can_async.h \
+ ../hal/utils/include/utils.h ../hal/include/hal_evsys.h \
+ ../hal/include/hpl_evsys.h ../stdio_start.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\stdio.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\_ansi.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\newlib.h \
@@ -519,6 +520,8 @@ C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n
 
 ../hal/utils/include/utils_list.h:
 
+../hpl/tcc/tcc_lite.h:
+
 ../hal/include/hal_can_async.h:
 
 ../hal/include/hpl_can.h:
@@ -526,6 +529,10 @@ C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n
 ../hal/include/hpl_can_async.h:
 
 ../hal/utils/include/utils.h:
+
+../hal/include/hal_evsys.h:
+
+../hal/include/hpl_evsys.h:
 
 ../stdio_start.h:
 

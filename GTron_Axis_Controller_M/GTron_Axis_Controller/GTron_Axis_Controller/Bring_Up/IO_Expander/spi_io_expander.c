@@ -25,6 +25,11 @@ void ioxp_Interrupt_Callback( void )
 	{
 		// Read the INTCAP register to get the pin states and clear the register.
 		IOXP_Read_Byte(IOXP_REG_INTCAP_RD_ONLY, &gtron_limits.limit_flags);
+		if( MSK_GUIDE_R_LIM(gtron_limits.limit_flags) || MSK_GUIDE_L_LIM(gtron_limits.limit_flags) )
+		{
+			tmc2209_set_velocity(0x00, 0x00000000, GUIDE_STEP_COUNTER);
+			PRINTF_DEBUG ? printf("\nGuide Limit Hit, Setting Guide Motor Velocity to 0...\n"): 0;
+		}
 		gtron_limits.interrupt_raised = true;
 	}
 	return;

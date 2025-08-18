@@ -205,23 +205,12 @@ int32_t readRegisterUART(uint16_t icID, uint8_t address)
 	
 	data[2] = address;
 	tmc2209_UART_write(&data[2], 1);
-	//io_write(&UART.io, &data[2], 1);
-	//while(usart_async_get_status(&UART.io, &uart_status) != ERR_NONE);
-	
+
 	data[3] = CRC8(data, 3);
 	tmc2209_UART_write(&data[3], 1);
 	
 	// Reading the 4 bytes written to clear the Rx buffer.
 	(void)tmc2209_UART_read(&data, 4);
-	
-	//io_write(&UART.io, &data[3], 1);
-	//while(usart_async_get_status(&UART.io, &uart_status) != ERR_NONE);
-	
-	//usart_async_flush_rx_buffer(&UART);
-
-	//if (!tmc2209_readWriteUART(icID, &data[0], 4, 8))
-	    //return 0;
-	//SERCOM6_USART_Write(&data[0], 4);
 	
 	memset(&data, 0x00, sizeof(data));
 	tmc2209_read_flag = true;
@@ -266,7 +255,7 @@ void writeRegisterUART(uint16_t icID, uint8_t address, int32_t value)
     data[0] = 0x05;
 	tmc2209_UART_write(&data[0], 1);
     
-    data[1] = icID;//(uint8_t)tmc2209_getNodeAddress(icID); //targetAddressUart;
+    data[1] = icID;							//targetAddressUart;
 	tmc2209_UART_write(&data[1], 1);
 	
 	data[2] = address | TMC_WRITE_BIT;
@@ -286,9 +275,6 @@ void writeRegisterUART(uint16_t icID, uint8_t address, int32_t value)
 	
 	data[7] = CRC8(data, 7);
 	tmc2209_UART_write(&data[7], 1);
-	
-	//tmc2209_readWriteUART(icID, &data[0], 8, 0);
-	//SERCOM6_USART_Write(&data, 8);
 	
 	//Cache the registers with write-only access
 	tmc2209_cache(icID, TMC2209_CACHE_WRITE, address, &value);
