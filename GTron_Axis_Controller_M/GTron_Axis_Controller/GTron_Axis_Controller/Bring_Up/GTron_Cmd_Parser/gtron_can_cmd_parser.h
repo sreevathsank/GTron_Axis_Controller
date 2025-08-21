@@ -32,11 +32,14 @@ typedef enum
 
 typedef enum
 {
-	TOP_RACK	= 0,
-	BOT_RACK	= 1,
-	MOTOR_ID	= 2,
-	ENCODER		= 3,
-	LIMIT		= 4
+	TOP_RACK		= 0,
+	BOT_RACK		= 1,
+	MOTOR_ID		= 2,
+	ENCODER			= 3,
+	LIMIT			= 4,
+	TOP_SAG_REELER	= 5,
+	BOT_SAG_REELER	= 6,
+	NO_OF_RACK_ITEMS
 }Rack_Enum_t;
 
 typedef struct

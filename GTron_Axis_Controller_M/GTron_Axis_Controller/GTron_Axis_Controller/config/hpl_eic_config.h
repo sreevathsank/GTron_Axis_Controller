@@ -770,7 +770,7 @@
 // <i> Indicates whether the external interrupt 14 event output is enabled or not
 // <id> eic_arch_extinteo14
 #ifndef CONF_EIC_EXTINTEO14
-#define CONF_EIC_EXTINTEO14 1
+#define CONF_EIC_EXTINTEO14 0
 #endif
 
 // <y> Input 14 Sense Configuration
@@ -790,7 +790,7 @@
 // <i> Indicates the external interrupt 14 detection mode operated synchronously or asynchronousl
 // <id> eic_arch_asynch14
 #ifndef CONF_EIC_ASYNCH14
-#define CONF_EIC_ASYNCH14 0
+#define CONF_EIC_ASYNCH14 1
 #endif
 
 // </e>

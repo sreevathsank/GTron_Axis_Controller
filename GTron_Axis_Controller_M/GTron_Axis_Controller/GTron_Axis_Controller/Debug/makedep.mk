@@ -48,8 +48,6 @@ hal\src\hal_can_async.c
 
 hal\src\hal_delay.c
 
-hal\src\hal_evsys.c
-
 hal\src\hal_ext_irq.c
 
 hal\src\hal_gpio.c
@@ -92,8 +90,6 @@ hpl\dmac\hpl_dmac.c
 
 hpl\eic\hpl_eic.c
 
-hpl\evsys\hpl_evsys.c
-
 hpl\gclk\hpl_gclk.c
 
 hpl\mclk\hpl_mclk.c
@@ -107,8 +103,6 @@ hpl\pm\hpl_pm.c
 hpl\sercom\hpl_sercom.c
 
 hpl\spi\spi_lite.c
-
-hpl\tcc\tcc_lite.c
 
 hpl\tc\hpl_tc.c
 

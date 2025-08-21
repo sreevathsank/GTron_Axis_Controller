@@ -127,9 +127,10 @@ static void reeler_Start_Motor( void )
 {
 	tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
 	vel_struct.flags.reeler_rotate = true;
-	vel_struct.flags.sag_enabled = true;
-	timer_start(&VEL_TIMER);
-	//tmc4671_setVelocityTarget(MOTOR, reeler_info.velocity_limit);
+	if(vel_struct.flags.sag_enabled & vel_struct.flags.reeler_rotate)
+	{
+		timer_start(&VEL_TIMER);
+	}
 	PRINTF_DEBUG ? printf("\nReeler Start Motor with Velocity %ld rpm\n", reeler_info.velocity_limit): 0;
 	return;
 }
@@ -150,9 +151,12 @@ static void reeler_Stop_Motor( void )
 	move_given_s_ramp = false; 
 	check_move_done = false;
 	vel_struct.flags.reeler_rotate = false;
-	vel_struct.flags.sag_enabled = false;
+	//vel_struct.flags.sag_enabled = false;
 	homing_v = 0;
-	timer_stop(&TIMER_0);
+	if(!vel_struct.flags.sag_enabled & !vel_struct.flags.reeler_rotate)
+	{
+		timer_stop(&VEL_TIMER);
+	}
 	reeler_info.current_position = tmc4671_getActualPosition(MOTOR);
 	PRINTF_DEBUG ? printf("\nReeler Stop Motor\n"): 0;
 	return;
@@ -183,7 +187,7 @@ static void guide_VArrestor_Move(Guide_or_VArrestor_t guide_varrestor, int32_t t
  **/
 static void guide_Move_To_Open_Limit( void )
 {
-	tmc2209_set_velocity(TMC2209_GUIDE_ADDR, 0xFFFFF060, GUIDE_STEP_COUNTER);
+	tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_VACTUAL, 0xFFFFF060);
 	guide_info.flags.move_to_open_lim = true;
 	PRINTF_DEBUG ? printf("\nGuide Move To Open Limit Cmd Rxcvd\n"): 0;
 	return;
@@ -198,7 +202,7 @@ static void guide_Move_To_Open_Limit( void )
  **/
 static void guide_Move_To_Close_Limit( void )
 {
-	tmc2209_set_velocity(TMC2209_GUIDE_ADDR, 0x00000FA0, GUIDE_STEP_COUNTER);
+	tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_VACTUAL, 0x00000FA0);
 	guide_info.flags.move_to_close_lim = true;
 	PRINTF_DEBUG ? printf("\nGuide Move to Close Limit Cmd Rxcvd\n"): 0;
 	return;
@@ -242,7 +246,8 @@ static void guide_VArrestor_Stop_Motor(Guide_or_VArrestor_t guide_varrestor)
 	switch(guide_varrestor)
 	{
 		case GUIDE:
-			tmc2209_set_velocity(TMC2209_GUIDE_ADDR, 0x00000000, GUIDE_STEP_COUNTER);
+			//tmc2209_set_velocity(TMC2209_GUIDE_ADDR, 0x00000000, GUIDE_STEP_COUNTER);
+			tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_VACTUAL, 0x00000000);
 			guide_info.flags.homing = 0;
 			guide_info.flags.move_given = 0;
 			guide_info.flags.move_to_open_lim = 0;
@@ -343,6 +348,56 @@ void parse_GTron_CAN_Msg_Data( void )
 			rack_id = BOT_RACK; 
 			PRINTF_DEBUG ? printf("\nBOTTOM Rack Message ID Rxcvd\n"): 0;
 		break;
+		case CAN_TOP_SAG_REELER_ID:
+			rack_id = TOP_RACK;
+			PRINTF_DEBUG ? printf("\nTOP Sag Reeler Message ID Rxcvd\n"): 0;
+			switch(rx_can_cmd_info.data[0])
+			{
+				case 1:
+				vel_struct.flags.sag_enabled = true;
+				if(vel_struct.flags.sag_enabled & vel_struct.flags.reeler_rotate)
+				{
+					timer_start(&VEL_TIMER);
+				}
+				PRINTF_DEBUG ? printf("\nSag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Rotate.\n"): 0;
+				break;
+				case 0:
+				vel_struct.flags.sag_enabled = false;
+				if(!vel_struct.flags.sag_enabled & !vel_struct.flags.reeler_rotate)
+				{
+					timer_stop(&VEL_TIMER);
+				}
+				tmc4671_setVelocityTarget(MOTOR, 0);
+				PRINTF_DEBUG ? printf("\nSag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Stop.\n"): 0;
+				break;
+				default: PRINTF_DEBUG ? printf("\nSag Sensor Invalid Operation Rxcvd\n"): 0;					break;
+			}
+		break;
+		case CAN_BOT_SAG_REELER_ID:
+			rack_id = BOT_RACK;
+			PRINTF_DEBUG ? printf("\nBOTTOM Sag Reeler Message ID Rxcvd\n"): 0;
+			switch(rx_can_cmd_info.data[0])
+			{
+				case 1:
+				vel_struct.flags.sag_enabled = true;
+				if(vel_struct.flags.sag_enabled & vel_struct.flags.reeler_rotate)
+				{
+					timer_start(&VEL_TIMER);
+				}
+				PRINTF_DEBUG ? printf("\nSag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Rotate.\n"): 0;
+				break;
+				case 0:
+				vel_struct.flags.sag_enabled = false;
+				if(!vel_struct.flags.sag_enabled & !vel_struct.flags.reeler_rotate)
+				{
+					timer_stop(&VEL_TIMER);
+				}
+				tmc4671_setVelocityTarget(MOTOR, 0);
+				PRINTF_DEBUG ? printf("\nSag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Stop.\n"): 0;
+				break;
+				default: PRINTF_DEBUG ? printf("\nSag Sensor Invalid Operation Rxcvd\n"): 0;					break;
+			}
+		break;
 	}	
 	
 	// Check if the current node and message id received are for the current node.
@@ -435,15 +490,9 @@ void parse_GTron_CAN_Msg_Data( void )
 					default: PRINTF_DEBUG ? printf("\nGuide Encoder Invalid Operation Rxcvd\n"): 0;					break;
 				}
 			break;
-			case SAG_SENSOR:
-				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
-				{
-					case AXC_START: vel_struct.flags.sag_enabled = true;  break;
-					case AXC_STOP:  vel_struct.flags.sag_enabled = false; break;
-					default: PRINTF_DEBUG ? printf("\nSag Sensor Invalid Operation Rxcvd\n"): 0;					break;
-				}
 			default: break;
 		}
+		
 	}
 	return;
 }

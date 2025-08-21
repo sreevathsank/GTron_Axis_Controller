@@ -32,15 +32,9 @@ int main(void)
 	repeat_ramp = read_tlv_flash(tlv_ptr, REPEAT_RAMP_FLASH, tlv_traversal);
 	switch(repeat_ramp)
 	{
-		case 0:
-			PRINTF_DEBUG && printf("\nrepeat_ramp = 0 | No Endurance Run | No Homing\n");
-		break;
-		case 2:
-			PRINTF_DEBUG && printf("\nrepeat_ramp = 2 | Endurance Run | Homing\n");
-		break;
-		case 4:
-			PRINTF_DEBUG && printf("\nrepeat_ramp = 4 | No Endurance Run | Homing\n");
-		break;
+		case 0: PRINTF_DEBUG && printf("\nrepeat_ramp = 0 | No Endurance Run | No Homing\n");	break;
+		case 2: PRINTF_DEBUG && printf("\nrepeat_ramp = 2 | Endurance Run | Homing\n");			break;
+		case 4: PRINTF_DEBUG && printf("\nrepeat_ramp = 4 | No Endurance Run | Homing\n");		break;
 		default: break;
 	}
 	if(axis_params.rotary_axis_enabled)
@@ -59,9 +53,6 @@ int main(void)
 	// Enable Homing Flag if RF is enabled for X, Y or Z axis or repeat_ramp is greater than 0.
 	limit_variables.homing = ( (repeat_ramp > 0) || (axis_params.rotary_axis_enabled) ) ? true : false;
 	
-	// TMC2209 UART Check.
-	initAllMotors(TMC2209_GUIDE_ADDR);
-	move_guide_motor();
 	// Check whether to do firmware limit based homing.
 	if( limit_variables.homing )
 	{
@@ -73,7 +64,6 @@ int main(void)
 		do_homing_sequence();
 	}
 	else { limit_variables.switch_seq_flag = false; }	// No need for Switching Sequence if Homing Sequence is disabled...
-	
 	
 	/* Replace with your application code */
 	for ever

@@ -52,7 +52,6 @@
       <files>
         <file category="doc" condition="ARMCC, GCC, IAR" name="hal/documentation/adc_sync.rst"/>
         <file category="doc" condition="ARMCC, GCC, IAR" name="hal/documentation/can_async.rst"/>
-        <file category="doc" condition="ARMCC, GCC, IAR" name="hal/documentation/evsys.rst"/>
         <file category="doc" condition="ARMCC, GCC, IAR" name="hal/documentation/ext_irq.rst"/>
         <file category="doc" condition="ARMCC, GCC, IAR" name="hal/documentation/pwm.rst"/>
         <file category="doc" condition="ARMCC, GCC, IAR" name="hal/documentation/timer.rst"/>
@@ -61,7 +60,6 @@
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hal_atomic.h"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hal_can_async.h"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hal_delay.h"/>
-        <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hal_evsys.h"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hal_ext_irq.h"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hal_gpio.h"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hal_init.h"/>
@@ -74,7 +72,6 @@
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hpl_delay.h"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hpl_div.h"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hpl_dma.h"/>
-        <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hpl_evsys.h"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hpl_ext_irq.h"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hpl_gpio.h"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hpl_i2c_m_async.h"/>
@@ -91,7 +88,6 @@
         <file category="source" condition="ARMCC, GCC, IAR" name="hal/src/hal_atomic.c"/>
         <file category="source" condition="ARMCC, GCC, IAR" name="hal/src/hal_can_async.c"/>
         <file category="source" condition="ARMCC, GCC, IAR" name="hal/src/hal_delay.c"/>
-        <file category="source" condition="ARMCC, GCC, IAR" name="hal/src/hal_evsys.c"/>
         <file category="source" condition="ARMCC, GCC, IAR" name="hal/src/hal_gpio.c"/>
         <file category="source" condition="ARMCC, GCC, IAR" name="hal/src/hal_init.c"/>
         <file category="source" condition="ARMCC, GCC, IAR" name="hal/src/hal_io.c"/>
@@ -113,7 +109,6 @@
         <file category="source" condition="GCC" name="hal/utils/src/utils_syscalls.c"/>
         <file category="source" condition="ARMCC, GCC, IAR" name="hpl/divas/hpl_divas.c"/>
         <file category="doc" condition="ARMCC, GCC, IAR" name="hpl/doc_lite/spi.rst"/>
-        <file category="doc" condition="ARMCC, GCC, IAR" name="hpl/doc_lite/tcc.rst"/>
         <file category="doc" condition="ARMCC, GCC, IAR" name="hpl/doc_lite/usart.rst"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hri/hri_ac_c21n.h"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hri/hri_adc_c21n.h"/>
@@ -199,7 +194,6 @@
         <file category="source" condition="ARMCC, GCC, IAR" name="hpl/core/hpl_init.c"/>
         <file category="source" condition="ARMCC, GCC, IAR" name="hpl/dmac/hpl_dmac.c"/>
         <file category="source" condition="ARMCC, GCC, IAR" name="hpl/eic/hpl_eic.c"/>
-        <file category="source" condition="ARMCC, GCC, IAR" name="hpl/evsys/hpl_evsys.c"/>
         <file category="source" condition="ARMCC, GCC, IAR" name="hpl/gclk/hpl_gclk.c"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hpl/gclk/hpl_gclk_base.h"/>
         <file category="source" condition="ARMCC, GCC, IAR" name="hpl/mclk/hpl_mclk.c"/>
@@ -213,8 +207,6 @@
         <file category="header" condition="ARMCC, GCC, IAR" name="hpl/spi/spi_lite.h"/>
         <file category="source" condition="ARMCC, GCC, IAR" name="hpl/tc/hpl_tc.c"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hpl/tc/hpl_tc_base.h"/>
-        <file category="source" condition="ARMCC, GCC, IAR" name="hpl/tcc/tcc_lite.c"/>
-        <file category="header" condition="ARMCC, GCC, IAR" name="hpl/tcc/tcc_lite.h"/>
         <file category="source" condition="ARMCC, GCC, IAR" name="hpl/usart/usart_lite.c"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hpl/usart/usart_lite.h"/>
         <file category="source" condition="ARMCC, GCC, IAR" name="stdio_start.c"/>
@@ -225,7 +217,6 @@
         <file attr="config" category="header" condition="ARMCC, GCC, IAR" name="config/hpl_can_config.h"/>
         <file attr="config" category="header" condition="ARMCC, GCC, IAR" name="config/hpl_dmac_config.h"/>
         <file attr="config" category="header" condition="ARMCC, GCC, IAR" name="config/hpl_eic_config.h"/>
-        <file attr="config" category="header" condition="ARMCC, GCC, IAR" name="config/hpl_evsys_config.h"/>
         <file attr="config" category="header" condition="ARMCC, GCC, IAR" name="config/hpl_gclk_config.h"/>
         <file attr="config" category="header" condition="ARMCC, GCC, IAR" name="config/hpl_mclk_config.h"/>
         <file attr="config" category="header" condition="ARMCC, GCC, IAR" name="config/hpl_osc32kctrl_config.h"/>
@@ -246,7 +237,6 @@
         <file category="include" condition="ARMCC, GCC, IAR" name="hpl/divas"/>
         <file category="include" condition="ARMCC, GCC, IAR" name="hpl/dmac"/>
         <file category="include" condition="ARMCC, GCC, IAR" name="hpl/eic"/>
-        <file category="include" condition="ARMCC, GCC, IAR" name="hpl/evsys"/>
         <file category="include" condition="ARMCC, GCC, IAR" name="hpl/gclk"/>
         <file category="include" condition="ARMCC, GCC, IAR" name="hpl/mclk"/>
         <file category="include" condition="ARMCC, GCC, IAR" name="hpl/osc32kctrl"/>
@@ -256,7 +246,6 @@
         <file category="include" condition="ARMCC, GCC, IAR" name="hpl/sercom"/>
         <file category="include" condition="ARMCC, GCC, IAR" name="hpl/spi"/>
         <file category="include" condition="ARMCC, GCC, IAR" name="hpl/tc"/>
-        <file category="include" condition="ARMCC, GCC, IAR" name="hpl/tcc"/>
         <file category="include" condition="ARMCC, GCC, IAR" name="hpl/usart"/>
         <file category="include" condition="ARMCC, GCC, IAR" name="hri"/>
         <file category="include" condition="ARMCC, GCC, IAR" name="include"/>

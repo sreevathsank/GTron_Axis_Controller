@@ -553,11 +553,11 @@ void check_Limit_Flags(void)
 			if(p_guide_info->flags.move_to_open_lim)
 			{
 				p_guide_info->flags.move_to_open_lim = false;
-				tmc2209_set_velocity(TMC2209_GUIDE_ADDR, 0x00000000, GUIDE_STEP_COUNTER);
+				tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_VACTUAL, 0x00000000);
 				
 				// Write to the Guide Step Counter TCC Counter Register as 0.
-				counter_Write_Count_Val(GUIDE_STEP_COUNTER, 0);
-				p_guide_info->right_open_lim_pos = counter_Read_Count_Val(GUIDE_STEP_COUNTER);	
+				//counter_Write_Count_Val(GUIDE_STEP_COUNTER, 0);
+				//p_guide_info->right_open_lim_pos = counter_Read_Count_Val(GUIDE_STEP_COUNTER);	
 				PRINTF_DEBUG ? printf("\nMove to Open Limit Done. Setting Current Position as %ld...\n", p_guide_info->right_open_lim_pos): 0;
 			}
 			PRINTF_DEBUG ? printf("\nGuide Right Open Limit is Hit!\n"): 0;
@@ -567,10 +567,10 @@ void check_Limit_Flags(void)
 			if(p_guide_info->flags.move_to_close_lim)
 			{
 				p_guide_info->flags.move_to_close_lim = false;
-				tmc2209_set_velocity(TMC2209_GUIDE_ADDR, 0x00000000, GUIDE_STEP_COUNTER);
+				tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_VACTUAL, 0x00000000);
 				
 				// Get the current position as the stroke length of the Guide setup.
-				p_guide_info->left_close_lim_pos = counter_Read_Count_Val(GUIDE_STEP_COUNTER);
+				//p_guide_info->left_close_lim_pos = counter_Read_Count_Val(GUIDE_STEP_COUNTER);
 				PRINTF_DEBUG ? printf("\nMove to Close Limit Done. Setting Current Position as %ld...\n", p_guide_info->left_close_lim_pos): 0;
 			}
 			PRINTF_DEBUG ? printf("\nGuide Left Close Limit is Hit!\n"): 0;
@@ -711,11 +711,12 @@ void init_Enc_Cnt_Dir(void)
 
 void homing_Ramp(void)
 {
-	if(homing_v < (axis_params.home_search_vel) )
-	{
-		homing_v += (HOMING_RAMP_DELTA * 10);
-		tmc4671_setVelocityLimit(MOTOR, homing_v);
-	}
+	//if(homing_v < (axis_params.home_search_vel) )
+	//{
+	//	homing_v += (HOMING_RAMP_DELTA * 10);
+	//	tmc4671_setVelocityLimit(MOTOR, homing_v);
+	//}
+	tmc4671_setVelocityLimit(MOTOR, axis_params.home_search_vel);
 	return;
 }
 
@@ -1141,7 +1142,7 @@ void check_For_Move_Done(void)
 			move_given_s_ramp = true;
 		}
 		else { timer_stop(&TIMER_0); }
-		reeler_Move_Done();
+		//reeler_Move_Done();
 	}
 	return;
 }
@@ -1230,6 +1231,8 @@ void run_Velocity_Ramp(void)
 	{
 		tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
 	}
+	
+	// For Encoder based Triggering.
 	if( (abs(prev_trig_pos - tmc4671_getActualPosition(MOTOR)) >= p_reeler_info->trigger_step_size) && (p_reeler_info->trigger_step_size != 0) )
 	{
 		gpio_set_pin_level(REELER_INT, HIGH);

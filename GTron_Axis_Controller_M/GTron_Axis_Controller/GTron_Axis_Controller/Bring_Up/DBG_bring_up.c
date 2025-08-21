@@ -507,6 +507,7 @@ void call_All_Init_Functions(void)
 	init_Basics(MOTOR);
 	init_PosMode(MOTOR);
 	read_4671_ADC_Raw();
+	initAllMotors(TMC2209_GUIDE_ADDR);
 	init_timers();
 	
 	//timer_start(&TIMER_0);

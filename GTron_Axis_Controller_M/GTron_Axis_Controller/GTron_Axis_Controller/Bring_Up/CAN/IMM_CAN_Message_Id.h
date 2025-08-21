@@ -137,17 +137,14 @@ typedef enum
  **/
 
 
-#define CAN_TOP_RACK							0x108
-#define CAN_BOT_RACK							0x109
+#define CAN_TOP_RACK_ID							0x108
+#define CAN_BOT_RACK_ID							0x109
 
-#define CAN_REPLY_TOP_RACK						0x10A
-#define CAN_REPLY_BOT_RACK						0x10B
+#define CAN_REPLY_TOP_RACK_ID					0x10A
+#define CAN_REPLY_BOT_RACK_ID					0x10B
 
-#define CAN_TOP_RACK_ID							CAN_ID(0x00, 0x00, 0x00, CAN_TOP_RACK)
-#define CAN_BOT_RACK_ID							CAN_ID(0x00, 0x00, 0x00, CAN_BOT_RACK)
-														 
-#define CAN_REPLY_TOP_RACK_ID					CAN_ID(0x00, 0x00, 0x00, CAN_REPLY_TOP_RACK)
-#define CAN_REPLY_BOT_RACK_ID					CAN_ID(0x00, 0x00, 0x00, CAN_REPLY_BOT_RACK)
+#define CAN_TOP_SAG_REELER_ID					0x10C
+#define CAN_BOT_SAG_REELER_ID					0x10D
 
 /** 
  * Knob Messages

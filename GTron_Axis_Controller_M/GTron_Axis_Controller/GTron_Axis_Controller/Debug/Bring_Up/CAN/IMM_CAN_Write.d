@@ -164,11 +164,9 @@ Bring_Up/CAN/IMM_CAN_Write.d Bring_Up/CAN/IMM_CAN_Write.o: \
  ../hal/include/hal_pwm.h ../hal/include/hpl_pwm.h \
  ../hpl/tc/hpl_tc_base.h ../hal/include/hpl_timer.h \
  ../hal/include/hal_timer.h ../hal/utils/include/utils_list.h \
- ../hpl/tcc/tcc_lite.h ../hal/include/hal_can_async.h \
- ../hal/include/hpl_can.h ../hal/include/hpl_can_async.h \
- ../hal/utils/include/utils.h ../hal/include/hal_evsys.h \
- ../hal/include/hpl_evsys.h ../Bring_Up/DBG_bring_up.h \
- ../Bring_Up/IO_Expander/spi_io_expander.h \
+ ../hal/include/hal_can_async.h ../hal/include/hpl_can.h \
+ ../hal/include/hpl_can_async.h ../hal/utils/include/utils.h \
+ ../Bring_Up/DBG_bring_up.h ../Bring_Up/IO_Expander/spi_io_expander.h \
  ../TMC-API/tmc/ic/TMC4671/TMC4671.h ../TMC-API/tmc/helpers/API_Header.h \
  ../TMC-API/tmc/helpers/Config.h ../TMC-API/tmc/helpers/Constants.h \
  ../TMC-API/tmc/helpers/Types.h ../TMC-API/tmc/helpers/Macros.h \
@@ -623,8 +621,6 @@ C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n
 
 ../hal/utils/include/utils_list.h:
 
-../hpl/tcc/tcc_lite.h:
-
 ../hal/include/hal_can_async.h:
 
 ../hal/include/hpl_can.h:
@@ -632,10 +628,6 @@ C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n
 ../hal/include/hpl_can_async.h:
 
 ../hal/utils/include/utils.h:
-
-../hal/include/hal_evsys.h:
-
-../hal/include/hpl_evsys.h:
 
 ../Bring_Up/DBG_bring_up.h:
 
