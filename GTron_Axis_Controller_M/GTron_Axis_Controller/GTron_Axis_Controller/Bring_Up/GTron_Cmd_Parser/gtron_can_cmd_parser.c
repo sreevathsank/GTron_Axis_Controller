@@ -7,11 +7,14 @@
 
 #include "Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h"
 
-Guide_Info_t guide_info;
-Guide_Info_t *p_guide_info = &guide_info;
+Motor_Info_t guide_info;
+Motor_Info_t *p_guide_info = &guide_info;
 
-Reeler_Info_t reeler_info;
-Reeler_Info_t *p_reeler_info = &reeler_info;
+Motor_Info_t reeler_info;
+Motor_Info_t *p_reeler_info = &reeler_info;
+
+Motor_Info_t varrest_info;
+Motor_Info_t *p_varrest_info = &varrest_info;
 
 Can_Cmd_Info_t rx_can_cmd_info;
 
@@ -58,12 +61,12 @@ static void reeler_Move(int32_t target_position, bool move_to_by)
 	check_move_done = true;
 	if( (abs(tmc4671_getActualPosition(MOTOR) - target_position) > MIN_DISTANCE_RAMP ) )
 	{
-		(move_to_by == MOVE_TO) ? move_With_S_Ramp(target_position, reeler_info.velocity_limit, MOVE_TO) \
-								: move_With_S_Ramp(target_position, reeler_info.velocity_limit, MOVE_BY);	
+		(move_to_by == MOVE_TO) ? move_With_S_Ramp(target_position, reeler_info.velocity.limit, MOVE_TO) \
+								: move_With_S_Ramp(target_position, reeler_info.velocity.limit, MOVE_BY);	
 	}
 	else
 	{
-		tmc4671_setVelocityLimit(MOTOR, reeler_info.velocity_limit);
+		tmc4671_setVelocityLimit(MOTOR, reeler_info.velocity.limit);
 		(move_to_by == MOVE_TO) ? tmc4671_setAbsolutTargetPosition(MOTOR, target_position) \
 								: tmc4671_setRelativeTargetPosition(MOTOR, target_position);
 	}
@@ -81,9 +84,9 @@ static void reeler_Move(int32_t target_position, bool move_to_by)
  **/
 static void reeler_Set_Velocity(int32_t reeler_target_velocity)
 {
-	reeler_info.velocity_limit = reeler_target_velocity;
-	tmc4671_setVelocityLimit(MOTOR, reeler_info.velocity_limit);
-	PRINTF_DEBUG ? printf("\nReeler Set Velocity %ld rpm\n", reeler_info.velocity_limit): 0;
+	reeler_info.velocity.limit = reeler_target_velocity;
+	tmc4671_setVelocityLimit(MOTOR, reeler_info.velocity.limit);
+	PRINTF_DEBUG ? printf("\nReeler Set Velocity %ld rpm\n", reeler_info.velocity.limit): 0;
 	return;
 }
 
@@ -96,8 +99,8 @@ static void reeler_Set_Velocity(int32_t reeler_target_velocity)
  **/
 static void reeler_Set_Teeth(uint32_t trig_step_size)
 {
-	reeler_info.trigger_step_size = trig_step_size;
-	PRINTF_DEBUG ? printf("\nReeler Set Teeth Number or Trigger Step Size as %ld\n", reeler_info.trigger_step_size): 0;
+	reeler_info.position.trig_step_size = trig_step_size;
+	PRINTF_DEBUG ? printf("\nReeler Set Teeth Number or Trigger Step Size as %ld\n", reeler_info.position.trig_step_size ): 0;
 	return;
 }
 
@@ -110,9 +113,9 @@ static void reeler_Set_Teeth(uint32_t trig_step_size)
  **/
 static void reeler_Set_Initial_Position(int32_t reeler_initial_position)
 {
-	reeler_info.initial_position = reeler_initial_position;
-	reeler_Move(reeler_info.initial_position, MOVE_TO);
-	PRINTF_DEBUG ? printf("\nReeler Set Initial Position to %ld steps\n", reeler_info.initial_position): 0;
+	reeler_info.position.initial = reeler_initial_position;
+	reeler_Move(reeler_info.position.initial, MOVE_TO);
+	PRINTF_DEBUG ? printf("\nReeler Set Initial Position to %ld steps\n", reeler_info.position.initial): 0;
 	return;
 }
 
@@ -126,12 +129,12 @@ static void reeler_Set_Initial_Position(int32_t reeler_initial_position)
 static void reeler_Start_Motor( void )
 {
 	tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
-	vel_struct.flags.reeler_rotate = true;
-	if(vel_struct.flags.sag_enabled & vel_struct.flags.reeler_rotate)
+	reeler_info.flags.rotate_vel_mode = true;
+	if(reeler_info.flags.sag_enabled & reeler_info.flags.rotate_vel_mode)
 	{
 		timer_start(&VEL_TIMER);
 	}
-	PRINTF_DEBUG ? printf("\nReeler Start Motor with Velocity %ld rpm\n", reeler_info.velocity_limit): 0;
+	PRINTF_DEBUG ? printf("\nReeler Start Motor with Velocity %ld rpm\n", reeler_info.velocity.limit): 0;
 	return;
 }
 
@@ -150,14 +153,14 @@ static void reeler_Stop_Motor( void )
 	move_given_trapezoidal_ramp = false;
 	move_given_s_ramp = false; 
 	check_move_done = false;
-	vel_struct.flags.reeler_rotate = false;
+	reeler_info.flags.rotate_vel_mode = false;
 	//vel_struct.flags.sag_enabled = false;
 	homing_v = 0;
-	if(!vel_struct.flags.sag_enabled & !vel_struct.flags.reeler_rotate)
+	if(!reeler_info.flags.sag_enabled & !reeler_info.flags.rotate_vel_mode)
 	{
 		timer_stop(&VEL_TIMER);
 	}
-	reeler_info.current_position = tmc4671_getActualPosition(MOTOR);
+	reeler_info.position.current = tmc4671_getActualPosition(MOTOR);
 	PRINTF_DEBUG ? printf("\nReeler Stop Motor\n"): 0;
 	return;
 }
@@ -175,6 +178,34 @@ static void reeler_Stop_Motor( void )
  **/
 static void guide_VArrestor_Move(Guide_or_VArrestor_t guide_varrestor, int32_t target_position, bool move_to_by)
 {
+	p_guide_info->flags.move_given = true;
+	p_guide_info->position.current = p_guide_info->step_tracker.total_steps;
+	
+	if(move_to_by == MOVE_TO) { p_guide_info->position.target = target_position; }					// Absolute Move.
+															   
+	// Check if the target position is greater or less than the current position.
+	if(target_position > p_guide_info->position.current)
+	{
+		if(move_to_by == MOVE_BY)  
+		{ p_guide_info->position.target = p_guide_info->position.current + target_position; }
+			
+		tmc2209_set_velocity(TMC2209_GUIDE_ADDR, p_guide_info, p_guide_info->velocity.target);
+		PRINTF_DEBUG ? printf("\nMove To: Current Pos = %ld | Target Pos = %ld | Velocity = %ld ustep/s\n", \
+								p_guide_info->position.current, target_position, p_guide_info->velocity.target): 0;
+	}
+	else if(target_position < p_guide_info->position.current)
+	{
+		if(move_to_by == MOVE_BY)
+		{ p_guide_info->position.target = p_guide_info->position.current - target_position; }
+			
+		tmc2209_set_velocity(TMC2209_GUIDE_ADDR, p_guide_info, (-p_guide_info->velocity.target) );
+		PRINTF_DEBUG ? printf("\nMove To: Current Pos = %ld | Target Pos = %ld | Velocity = %ld ustep/s\n", \
+								p_guide_info->position.current, target_position, (-p_guide_info->velocity.target) ): 0;
+	}
+	else
+	{
+		PRINTF_DEBUG ? printf("\nTarget Position is same as Current Position. Not Moving...\n"): 0;
+	}
 	return;
 }
 
@@ -217,7 +248,8 @@ static void guide_Move_To_Close_Limit( void )
  **/
 static void guide_VArrestor_Set_Velocity(Guide_or_VArrestor_t guide_varrestor, int32_t target_velocity)
 {
-	
+	p_guide_info->velocity.target = target_velocity;
+	PRINTF_DEBUG ? printf("\nGuide Varrest Velocity Set to %ld usteps/sec\n", p_guide_info->velocity.target): 0;
 	return;
 }
 
@@ -354,16 +386,16 @@ void parse_GTron_CAN_Msg_Data( void )
 			switch(rx_can_cmd_info.data[0])
 			{
 				case 1:
-				vel_struct.flags.sag_enabled = true;
-				if(vel_struct.flags.sag_enabled & vel_struct.flags.reeler_rotate)
+				reeler_info.flags.sag_enabled = true;
+				if(reeler_info.flags.sag_enabled & reeler_info.flags.rotate_vel_mode)
 				{
 					timer_start(&VEL_TIMER);
 				}
 				PRINTF_DEBUG ? printf("\nSag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Rotate.\n"): 0;
 				break;
 				case 0:
-				vel_struct.flags.sag_enabled = false;
-				if(!vel_struct.flags.sag_enabled & !vel_struct.flags.reeler_rotate)
+				reeler_info.flags.sag_enabled = false;
+				if(!reeler_info.flags.sag_enabled & !reeler_info.flags.rotate_vel_mode)
 				{
 					timer_stop(&VEL_TIMER);
 				}
@@ -379,16 +411,16 @@ void parse_GTron_CAN_Msg_Data( void )
 			switch(rx_can_cmd_info.data[0])
 			{
 				case 1:
-				vel_struct.flags.sag_enabled = true;
-				if(vel_struct.flags.sag_enabled & vel_struct.flags.reeler_rotate)
+				reeler_info.flags.sag_enabled = true;
+				if(reeler_info.flags.sag_enabled & reeler_info.flags.rotate_vel_mode)
 				{
 					timer_start(&VEL_TIMER);
 				}
 				PRINTF_DEBUG ? printf("\nSag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Rotate.\n"): 0;
 				break;
 				case 0:
-				vel_struct.flags.sag_enabled = false;
-				if(!vel_struct.flags.sag_enabled & !vel_struct.flags.reeler_rotate)
+				reeler_info.flags.sag_enabled = false;
+				if(!reeler_info.flags.sag_enabled & !reeler_info.flags.rotate_vel_mode)
 				{
 					timer_stop(&VEL_TIMER);
 				}

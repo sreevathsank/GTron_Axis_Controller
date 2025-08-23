@@ -21,6 +21,8 @@
 #include <stdbool.h>
 #include <math.h>
 #include <float.h>
+//#include <assert.h>
+
 #include "Macros.h"
 #include "atmel_start_pins.h"
 #include "driver_init.h"
@@ -42,5 +44,6 @@
 #include "tmc2209_uart/TMC2209.h"
 #include "tmc2209_uart/TMC2209_Motion.h"
 #include "tmc2209_uart/Step_Counter.h"
+#include "Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h"
 
 #endif /* ALL_HEADERS_H_ */

@@ -198,6 +198,7 @@ Bring_Up/CAN/IMM_CAN_Read.d Bring_Up/CAN/IMM_CAN_Read.o: \
  ../tmc2209_uart/TMC2209.h ../tmc2209_uart/TMC2209_HW_Abstraction.h \
  ../tmc2209_uart/TMC2209_Simple_Rotation.h ../tmc2209_uart/TMC2209.h \
  ../tmc2209_uart/TMC2209_Motion.h ../tmc2209_uart/Step_Counter.h \
+ ../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h \
  ../Bring_Up/CAN/TMCL_IDE_reply.h ../Bring_Up/CAN/IMM_CAN.h
 
 ../Bring_Up/CAN/IMM_CAN_Read.h:
@@ -735,6 +736,8 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../tmc2209_uart/TMC2209_Motion.h:
 
 ../tmc2209_uart/Step_Counter.h:
+
+../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h:
 
 ../Bring_Up/CAN/TMCL_IDE_reply.h:
 

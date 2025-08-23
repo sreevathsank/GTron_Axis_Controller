@@ -77,7 +77,7 @@ void timer_ramp_cb(void)
 
 void vel_timer_cb(void)
 {
-	vel_struct.flags.reeler_vel_timer = true;
+	p_reeler_info->flags.vel_timer = true;
 	return;
 }
 
@@ -102,6 +102,55 @@ void init_timers(void)
 	timer_add_task(&VEL_TIMER, &vel_timer_struct);
 	
 	
+}
+
+static void init_Motor_Struct(Motor_Info_t *motor_info, Motor_Name_Enum_t motor_name)
+{
+	if(motor_info == NULL)
+	{
+		PRINTF_DEBUG ? printf("\ninit_Motor_Struct NULL Pointer.\n"): 0;
+		return;
+	}
+	if(motor_name > NO_OF_MOTOR_NAME)
+	{
+		PRINTF_DEBUG ? printf("\ninit_Motor_Struct Motor Name not in Motor_Name_Enum_t.\n"): 0;
+		return;	
+	}
+	
+	// To what motor this struct belongs to.
+	motor_info->motor_name = motor_name;
+	
+	// Velocity
+	motor_info->velocity.target				= 0;
+	motor_info->velocity.current			= 0;
+	motor_info->velocity.limit				= 0;
+	
+	// Position
+	motor_info->position.target				= 0;
+	motor_info->position.current			= 0;
+	motor_info->position.right_open_limit	= 0;
+	motor_info->position.left_close_limit	= 0;
+	motor_info->position.initial			= 0;
+	motor_info->position.trig_step_size		= 0;
+	motor_info->position.counter_value		= 0;
+	
+	// Step  Tracker
+	motor_info->step_tracker.total_steps	= 0;
+	motor_info->step_tracker.prev_mscnt		= 0;
+	motor_info->step_tracker.total_dist		= 0;
+	
+	// Flags
+	motor_info->flags.homing				= 0;
+	motor_info->flags.move_to_open_lim		= 0;
+	motor_info->flags.move_to_close_lim		= 0;
+	motor_info->flags.move_given			= 0;
+	motor_info->flags.rotate_vel_mode		= 0;
+	motor_info->flags.sag_enabled			= 0;
+	motor_info->flags.vel_timer				= 0;
+	motor_info->flags.direction				= 0;
+	motor_info->flags.mscnt_first_reading	= 1;
+	motor_info->flags.reserved				= 0;
+	return;
 }
 
 /** 
@@ -477,10 +526,10 @@ void call_All_Init_Functions(void)
 	gpio_set_pin_level(DBGLED3, 1);
 	gpio_set_pin_level(DBGLED1, 1);
 	gpio_set_pin_level(DBGLED2, 1);
+	
 	gpio_set_pin_level(EXT_CS, HIGH);
 	gpio_set_pin_level(IOXP_CS, HIGH);
-	//SYSTICK_INIT();
-	//EXTFLASH_init();
+	
 	init_UART();
 	TMC2209_UART_init();
 	TMC2209_UART_enable();
@@ -502,18 +551,22 @@ void call_All_Init_Functions(void)
 	PRINTF_DEBUG && printf("\nExt Flash CS -> %d | IOXP CS -> %d\n", gpio_get_pin_level(EXT_CS), gpio_get_pin_level(IOXP_CS) );
 	
 	read_Set_Parameters_From_Flash();
+	
+	// TMC4671 related inits.
 	reset_Basics(MOTOR);
-	//configure_ABN(MOTOR, 2400);
 	init_Basics(MOTOR);
 	init_PosMode(MOTOR);
 	read_4671_ADC_Raw();
-	initAllMotors(TMC2209_GUIDE_ADDR);
-	init_timers();
+	init_Motor_Struct(p_reeler_info, REELER_STRUCT);
 	
-	//timer_start(&TIMER_0);
+	// Tmc2209 related inits
+	init_Motor_Struct(p_guide_info, GUIDE_STRUCT);
+	init_tmc2209_motor(TMC2209_GUIDE_ADDR);
+	
+	init_timers();
+	//init_Motor_Struct(p_varrest_info, VARREST_STRUCT);
 	can_Init();
 	init_ext_irq_limits();
-	//init_Enc_Cnt_Dir();
 	return;
 }
 
@@ -561,8 +614,8 @@ void run_Open_Loop_Setup_Closed_Loop(uint32_t time_taken)
 			PRINTF_DEBUG && printf("\nZ Axis Rotary Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE));
 		break;
 		case GTRON_AXC_TOP:
-			PRINTF_DEBUG ? printf("\nX Axis Rotary Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_PPR)):0;
-			PRINTF_DEBUG && printf("\nX Axis Rotary Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE));
+			PRINTF_DEBUG ? printf("\nTop Reeler Rotary Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_PPR)):0;
+			PRINTF_DEBUG ? printf("\nTop Reeler Rotary Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE)):0;
 		break;
 		default: break;
 	}

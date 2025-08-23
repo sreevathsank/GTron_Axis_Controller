@@ -177,8 +177,11 @@ typedef struct
 	int32_t phase_error;
 }rampParams;
 
-uint32_t guide_step_counter_value;
-bool guide_direction;
+typedef struct  
+{
+	uint32_t guide_step_counter_value;
+	bool guide_direction;
+};
 
 typedef enum
 {

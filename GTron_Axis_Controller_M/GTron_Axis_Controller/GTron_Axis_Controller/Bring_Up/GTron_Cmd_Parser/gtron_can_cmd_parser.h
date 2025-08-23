@@ -49,37 +49,77 @@ typedef struct
 	int32_t value;
 }Can_Cmd_Info_t;
 
+typedef enum
+{
+	GUIDE_STRUCT	= 0,
+	REELER_STRUCT	= 1,
+	VARREST_STRUCT	= 2,
+	NO_OF_MOTOR_NAME	
+}Motor_Name_Enum_t;
+
 typedef struct
 {
-	int32_t velocity_limit;
-	int32_t current_position;
-	int32_t initial_position;
-	int32_t trigger_step_size;
-	uint32_t flags;
-}Reeler_Info_t;
-
-typedef struct 
-{
-	int32_t target_velocity;
-	int32_t current_velocity;
-	int32_t target_posiiton;
-	int32_t current_position;
-	int32_t right_open_lim_pos;
-	int32_t left_close_lim_pos;
+	Motor_Name_Enum_t motor_name;
+	struct  
+	{
+		int32_t target;
+		int32_t current;
+		uint32_t limit;
+	}velocity;
+	struct
+	{
+		int32_t target;
+		int32_t current;
+		int32_t right_open_limit;
+		int32_t left_close_limit;	
+		int32_t initial;
+		uint32_t trig_step_size;
+		uint32_t counter_value;
+	}position;
 	struct 
 	{
-		uint32_t homing				: 1;		// 1
-		uint32_t move_to_open_lim	: 1;		// 2
-		uint32_t move_to_close_lim	: 1;		// 3
-		uint32_t move_given			: 1;		// 4	
+		int32_t total_steps;
+		uint16_t prev_mscnt;
+		int32_t total_dist;
+	}step_tracker;
+	struct
+	{
+		uint32_t homing					: 1;	// 1
+		uint32_t move_to_open_lim		: 1;	// 2
+		uint32_t move_to_close_lim		: 1;	// 3
+		uint32_t move_given				: 1;	// 4
+		uint32_t rotate_vel_mode		: 1;	// 5
+		uint32_t sag_enabled			: 1;	// 6
+		uint32_t vel_timer				: 1;	// 7
+		uint32_t direction				: 1;	// 8
+		uint32_t mscnt_first_reading	: 1;	// 9
+		uint32_t reserved				: 23;
 	}flags;
-}Guide_Info_t;
+}Motor_Info_t;
 
-extern Guide_Info_t *p_guide_info;
+extern Motor_Info_t *p_guide_info;
 
-extern Reeler_Info_t *p_reeler_info;
+extern Motor_Info_t *p_reeler_info;
 
 extern Can_Cmd_Info_t rx_can_cmd_info;
+
+/************************************************************************/
+/* Velocity Variable Checking                                           */
+/************************************************************************/
+static inline bool is_Motor_At_TargetVelocity(const Motor_Info_t *motor)
+{
+	return ( motor->velocity.current == motor->velocity.target );
+}
+
+static inline bool is_Motor_Less_Than_Equal_TargetVelocity(const Motor_Info_t *motor)
+{
+	return ( motor->velocity.current <= motor->velocity.target );
+}
+
+static inline bool is_Motor_Greater_Than_Equal_TargetVelocity(const Motor_Info_t *motor)
+{
+	return ( motor->velocity.current >= motor->velocity.target );
+}
 
 void parse_GTron_CAN_Msg_Data( void );
 

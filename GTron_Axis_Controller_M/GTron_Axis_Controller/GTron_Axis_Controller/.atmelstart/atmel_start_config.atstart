@@ -481,7 +481,7 @@ drivers:
       eic_arch_sense11: Falling-edge detection
       eic_arch_sense12: Rising-edge detection
       eic_arch_sense13: Rising-edge detection
-      eic_arch_sense14: Rising-edge detection
+      eic_arch_sense14: Both-edges detection
       eic_arch_sense15: No detection
       eic_arch_sense2: No detection
       eic_arch_sense3: Rising-edge detection
@@ -1025,7 +1025,7 @@ drivers:
     functionality: USART
     api: Lite:USART:USART_Async
     configuration:
-      baud_baud: 9600
+      baud_baud: 230400
       baud_fp: 0
       ctrla_cmode: Asynchronous communication
       ctrla_dord: LSB is transmitted first

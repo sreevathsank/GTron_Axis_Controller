@@ -198,7 +198,8 @@ Bring_Up/CAN/MCD_v3.d Bring_Up/CAN/MCD_v3.o: ../Bring_Up/CAN/MCD_v3.c \
  ../Code_Dump/tlv_flash.h ../Bring_Up/IO_Expander/spi_io_expander.h \
  ../tmc2209_uart/TMC2209.h ../tmc2209_uart/TMC2209_HW_Abstraction.h \
  ../tmc2209_uart/TMC2209_Simple_Rotation.h ../tmc2209_uart/TMC2209.h \
- ../tmc2209_uart/TMC2209_Motion.h ../tmc2209_uart/Step_Counter.h
+ ../tmc2209_uart/TMC2209_Motion.h ../tmc2209_uart/Step_Counter.h \
+ ../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h
 
 ../Bring_Up/CAN/MCD_v3.h:
 
@@ -743,3 +744,5 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../tmc2209_uart/TMC2209_Motion.h:
 
 ../tmc2209_uart/Step_Counter.h:
+
+../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h:

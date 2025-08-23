@@ -93,7 +93,7 @@
 /* Generic Motor based Macros                                           */
 /************************************************************************/
 #define IMM_PITCH_MM				6.35f									// Linear Distance traveled in the lead screw for 1 motor mechanical rotation in mm.
-#define GUIDE_PITCH_MM				3.00f									// Linear Distance traveled in the lead screw for 1 guide motor mechanical rotation in MM.
+#define GUIDE_PITCH_MM				2.00f									// Linear Distance traveled in the lead screw for 1 guide motor mechanical rotation in MM.
 #define PITCH_DEGREE				360.00f									// 1 motor mechanical rotation in degree.
 
 /************************************************************************/
@@ -110,7 +110,19 @@
 /************************************************************************/
 /* TMC2209 Motor based Macros                                           */
 /************************************************************************/
-#define TMC2209_ROTATION			51200.00f								// No. of steps in one full rotation for the TMC2209 Motor Driver. 200 Full Steps * 250 Micro Steps = 51200 MicroSteps.
+#define TMC2209_F_CLK				12000000.0f								// Clock frequency (fCLK) of the TMC2209 internal oscillator in Hz.
+
+#define VACTUAL_TO_HZ_FACTOR		0.7151185789f							// Factor to convert VACTUAL to microsteps/sec (Hz).
+																			// Calculated as: fCLK / 2^24 = 12,000,000 / 16,777,216.
+																			
+#define HZ_TO_VACTUAL_FACTOR		1.3981013333f							// Factor to convert microsteps/sec (Hz) to VACTUAL
+																			// Calculated as: 2^24 / fCLK = 16,777,216 / 12,000,000
+						
+#define TMC2209_FULLSTEPS			200.00f									// No. of Full Steps in 1 full mechanical rotation (360 deg).
+
+#define TMC2209_MICROSTEPS			256.00f									// No. of MicroSteps in 1 full mechanical rotation (360 deg).						
+
+#define TMC2209_ROTATION			(TMC2209_FULLSTEPS * TMC2209_MICROSTEPS)// No. of steps in one full rotation for the TMC2209 Motor Driver. 51200 MicroSteps.
 
 #define TMC2209_ONE_MM_STEPS		(TMC2209_ROTATION / GUIDE_PITCH_MM)		// 17066.6667 steps per MM.
 

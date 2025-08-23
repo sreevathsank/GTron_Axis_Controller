@@ -541,49 +541,52 @@ void toggle_Limit_Led(void)
  */
 void check_Limit_Flags(void)
 {
-	if( ( (axis_id == GTRON_AXC_TOP) || (axis_id == GTRON_AXC_BOT) ) && gtron_limits.interrupt_raised )
+	gtron_limits.interrupt_raised = false;
+	PRINTF_DEBUG ? printf("\nInterrupt raised set to false\n"): 0;
+	//for(int8_t i = 7; i >= 0; i--) { PRINTF_DEBUG ? printf(" Bit %d = %d | ", i, (gtron_limits.limit_flags >> i) & 1 ): 0; }
+	
+	/*PRINTF_DEBUG ? printf("\n"): 0;
+	if( MSK_GUIDE_R_LIM(gtron_limits.limit_flags) )	// Guide Right Open Limit.
 	{
-		gtron_limits.interrupt_raised = false;
-		
-		for(int8_t i = 7; i >= 0; i--) { PRINTF_DEBUG ? printf(" Bit %d = %d | ", i, (gtron_limits.limit_flags >> i) & 1 ): 0; }
+		PRINTF_DEBUG ? printf("\nInside msk right limit\n"): 0;
+		if(p_guide_info->flags.move_to_open_lim)
+		{
+			p_guide_info->flags.move_to_open_lim = false;
+			tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_VACTUAL, 0x00000000);
 			
-		PRINTF_DEBUG ? printf("\n"): 0;
-		if( MSK_GUIDE_R_LIM(gtron_limits.limit_flags) )	// Guide Right Open Limit.
-		{
-			if(p_guide_info->flags.move_to_open_lim)
-			{
-				p_guide_info->flags.move_to_open_lim = false;
-				tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_VACTUAL, 0x00000000);
-				
-				// Write to the Guide Step Counter TCC Counter Register as 0.
-				//counter_Write_Count_Val(GUIDE_STEP_COUNTER, 0);
-				//p_guide_info->right_open_lim_pos = counter_Read_Count_Val(GUIDE_STEP_COUNTER);	
-				PRINTF_DEBUG ? printf("\nMove to Open Limit Done. Setting Current Position as %ld...\n", p_guide_info->right_open_lim_pos): 0;
-			}
-			PRINTF_DEBUG ? printf("\nGuide Right Open Limit is Hit!\n"): 0;
+			// Write to the Guide Step Counter TCC Counter Register as 0.
+			update_TMC2209_Step_Tracking(p_guide_info);
+			p_guide_info->step_tracker.total_steps	= 0;
+			p_guide_info->step_tracker.total_dist	= 0;
+			p_guide_info->position.right_open_limit	= p_guide_info->step_tracker.total_steps;
+			PRINTF_DEBUG ? printf("\nMove to Open Limit Done. Setting Current Position as %ld...\n", p_guide_info->position.right_open_limit): 0;
 		}
-		else if( MSK_GUIDE_L_LIM(gtron_limits.limit_flags) )	// Guide Left Close Limit.
-		{
-			if(p_guide_info->flags.move_to_close_lim)
-			{
-				p_guide_info->flags.move_to_close_lim = false;
-				tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_VACTUAL, 0x00000000);
-				
-				// Get the current position as the stroke length of the Guide setup.
-				//p_guide_info->left_close_lim_pos = counter_Read_Count_Val(GUIDE_STEP_COUNTER);
-				PRINTF_DEBUG ? printf("\nMove to Close Limit Done. Setting Current Position as %ld...\n", p_guide_info->left_close_lim_pos): 0;
-			}
-			PRINTF_DEBUG ? printf("\nGuide Left Close Limit is Hit!\n"): 0;
-		}
-		else if( MSK_VARREST_R_LIM(gtron_limits.limit_flags) )
-		{
-			PRINTF_DEBUG ? printf("\nVertical Arrestor Right Limit is Hit!\n"): 0;
-		}
-		else if( MSK_VARREST_L_LIM(gtron_limits.limit_flags) )
-		{
-			PRINTF_DEBUG ? printf("\nVertical Arrestor Left Limit is Hit!\n"): 0;
-		}
+		PRINTF_DEBUG ? printf("\nGuide Right Open Limit is Hit!\n"): 0;
 	}
+	else if( MSK_GUIDE_L_LIM(gtron_limits.limit_flags) )	// Guide Left Close Limit.
+	{
+		PRINTF_DEBUG ? printf("\nInside msk left limit\n"): 0;
+		if(p_guide_info->flags.move_to_close_lim)
+		{
+			p_guide_info->flags.move_to_close_lim = false;
+			tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_VACTUAL, 0x00000000);
+			
+			// Get the current position as the stroke length of the Guide setup.
+			//update_TMC2209_Step_Tracking(p_guide_info);
+			p_guide_info->position.left_close_limit	= p_guide_info->step_tracker.total_steps;
+			PRINTF_DEBUG ? printf("\nMove to Close Limit Done. Setting Current Position as %ld...\n", p_guide_info->position.left_close_limit): 0;
+		}
+		PRINTF_DEBUG ? printf("\nGuide Left Close Limit is Hit!\n"): 0;
+	}
+	else if( MSK_VARREST_R_LIM(gtron_limits.limit_flags) )
+	{
+		PRINTF_DEBUG ? printf("\nVertical Arrestor Right Limit is Hit!\n"): 0;
+	}
+	else if( MSK_VARREST_L_LIM(gtron_limits.limit_flags) )
+	{
+		PRINTF_DEBUG ? printf("\nVertical Arrestor Left Limit is Hit!\n"): 0;
+	}*/
+	
 	return;
 }
 
@@ -1223,7 +1226,7 @@ void run_Velocity_Ramp(void)
 	if(!p_reeler_info) { return; }
 		
 	int32_t current_velocity = tmc4671_getVelocityTarget(MOTOR);
-	int32_t target_velocity = p_reeler_info->velocity_limit;
+	int32_t target_velocity = p_reeler_info->velocity.limit;
 
 	// Check if the Motor's current Mode Motion is in Velocity Mode or not.
 	int32_t mode_motion = tmc4671_getModeMotion(MOTOR);
@@ -1233,7 +1236,7 @@ void run_Velocity_Ramp(void)
 	}
 	
 	// For Encoder based Triggering.
-	if( (abs(prev_trig_pos - tmc4671_getActualPosition(MOTOR)) >= p_reeler_info->trigger_step_size) && (p_reeler_info->trigger_step_size != 0) )
+	if( (abs(prev_trig_pos - tmc4671_getActualPosition(MOTOR)) >= p_reeler_info->position.trig_step_size) && (p_reeler_info->position.trig_step_size != 0) )
 	{
 		gpio_set_pin_level(REELER_INT, HIGH);
 		delay_us(1);

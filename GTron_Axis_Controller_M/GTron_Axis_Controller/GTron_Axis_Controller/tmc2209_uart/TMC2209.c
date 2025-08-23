@@ -182,8 +182,6 @@ int32_t readRegisterUART(uint16_t icID, uint8_t address)
 {
     int32_t value;
 	
-	//usart_async_flush_rx_buffer(&UART);
-
     // Read from cache for registers with write-only access
     if (tmc2209_cache(icID, TMC2209_CACHE_READ, address, &value))
     {
@@ -194,36 +192,28 @@ int32_t readRegisterUART(uint16_t icID, uint8_t address)
     address = address & TMC2209_ADDRESS_MASK;
     
     data[0] = 0x05;
-	tmc2209_UART_write(&data[0], 1);
-	//io_write(&UART.io, &data[0], 1);
-	//while(usart_async_get_status(&UART.io, &uart_status) != ERR_NONE);
+	//tmc2209_UART_write(&data[0], 1);
    
 	data[1] = icID;//tmc2209_getNodeAddress(icID); //targetAddressUart;
-	tmc2209_UART_write(&data[1], 1);
-	//io_write(&UART.io, &data[1], 1);
-	//while(usart_async_get_status(&UART.io, &uart_status) != ERR_NONE);
+	//tmc2209_UART_write(&data[1], 1);
 	
 	data[2] = address;
-	tmc2209_UART_write(&data[2], 1);
+	//tmc2209_UART_write(&data[2], 1);
 
 	data[3] = CRC8(data, 3);
-	tmc2209_UART_write(&data[3], 1);
-	
-	// Reading the 4 bytes written to clear the Rx buffer.
-	(void)tmc2209_UART_read(&data, 4);
-	
-	memset(&data, 0x00, sizeof(data));
-	tmc2209_read_flag = true;
-	
-	// Read the 8 incoming bytes.
-	tmc2209_UART_read(&data, 8);
-	
-	printf("\n");
-	for(int32_t iter = 0; iter < 8; iter++)
-	{
-		printf("%x ", data[iter]);
-	}
-	
+	//tmc2209_UART_write(&data[3], 1);
+	CRITICAL_SECTION_ENTER();
+		tmc2209_UART_write(&data, 4);
+		
+		// Reading the 4 bytes written to clear the Rx buffer.
+		(void)tmc2209_UART_read(&data, 4);
+		
+		memset(&data, 0x00, sizeof(data));
+		tmc2209_read_flag = true;
+		
+		// Read the 8 incoming bytes.
+		tmc2209_UART_read(&data, 8);
+	CRITICAL_SECTION_LEAVE();
 	// Byte 0: Sync nibble correct?
 	if (data[0] != 0x05)
 	{
@@ -253,28 +243,32 @@ void writeRegisterUART(uint16_t icID, uint8_t address, int32_t value)
     uint8_t data[8] = { 0 };
     
     data[0] = 0x05;
-	tmc2209_UART_write(&data[0], 1);
+	//tmc2209_UART_write(&data[0], 1);
     
     data[1] = icID;							//targetAddressUart;
-	tmc2209_UART_write(&data[1], 1);
+	//tmc2209_UART_write(&data[1], 1);
 	
 	data[2] = address | TMC_WRITE_BIT;
-	tmc2209_UART_write(&data[2], 1);
+	//tmc2209_UART_write(&data[2], 1);
 	
 	data[3] = (value >> 24) & 0xFF;
-	tmc2209_UART_write(&data[3], 1);
+	//tmc2209_UART_write(&data[3], 1);
 	
 	data[4] = (value >> 16) & 0xFF;
-	tmc2209_UART_write(&data[4], 1);
+	//tmc2209_UART_write(&data[4], 1);
 	
 	data[5] = (value >> 8 ) & 0xFF;
-	tmc2209_UART_write(&data[5], 1);
+	//tmc2209_UART_write(&data[5], 1);
 	
 	data[6] = (value      ) & 0xFF;
-	tmc2209_UART_write(&data[6], 1);
+	//tmc2209_UART_write(&data[6], 1);
 	
 	data[7] = CRC8(data, 7);
-	tmc2209_UART_write(&data[7], 1);
+	//tmc2209_UART_write(&data[7], 1);
+	
+	CRITICAL_SECTION_ENTER();
+		tmc2209_UART_write(&data, 8);
+	CRITICAL_SECTION_LEAVE();
 	
 	//Cache the registers with write-only access
 	tmc2209_cache(icID, TMC2209_CACHE_WRITE, address, &value);

@@ -200,7 +200,7 @@
           <AcmeProjectActionInfo Action="File" Source="hpl/tc/hpl_tc.c" IsConfig="false" Hash="dOI2DdNP09xuHIeL+A0gWA" />
           <AcmeProjectActionInfo Action="File" Source="hpl/tc/hpl_tc_base.h" IsConfig="false" Hash="gjj5IyaZPy6sUReifzS1GQ" />
           <AcmeProjectActionInfo Action="File" Source="hpl/usart/usart_lite.c" IsConfig="false" Hash="ZmfFqC+kt/eHp1VSy2/0dg" />
-          <AcmeProjectActionInfo Action="File" Source="hpl/usart/usart_lite.h" IsConfig="false" Hash="Ya5OvrNHD6a/naNYgmckMA" />
+          <AcmeProjectActionInfo Action="File" Source="hpl/usart/usart_lite.h" IsConfig="false" Hash="uVCNlXRrXutD8C6hbcwAcA" />
           <AcmeProjectActionInfo Action="File" Source="stdio_start.c" IsConfig="false" Hash="WtwT7ld+0j4cPDj52v3y1A" />
           <AcmeProjectActionInfo Action="File" Source="stdio_start.h" IsConfig="false" Hash="5j2k69zdoQpbzluEyr/rHQ" />
           <AcmeProjectActionInfo Action="File" Source="atmel_start.h" IsConfig="false" Hash="TNU9VszFRFbDuMJ3vToUzg" />
@@ -208,7 +208,7 @@
           <AcmeProjectActionInfo Action="File" Source="config/hpl_adc_config.h" IsConfig="true" Hash="dqzITiKPXQEV9h5NdjJ6Rg" />
           <AcmeProjectActionInfo Action="File" Source="config/hpl_can_config.h" IsConfig="true" Hash="2HG7Nwbwk+dCYGc/JjRHug" />
           <AcmeProjectActionInfo Action="File" Source="config/hpl_dmac_config.h" IsConfig="true" Hash="FVBa5+m2dElV1O7IF+cxMw" />
-          <AcmeProjectActionInfo Action="File" Source="config/hpl_eic_config.h" IsConfig="true" Hash="csoDhE1BDfWS9TI3p2DS9w" />
+          <AcmeProjectActionInfo Action="File" Source="config/hpl_eic_config.h" IsConfig="true" Hash="r8T2sKls13R7LK1gp/qVjA" />
           <AcmeProjectActionInfo Action="File" Source="config/hpl_gclk_config.h" IsConfig="true" Hash="g6ArhmGAVyBE+xtMZ2Y4og" />
           <AcmeProjectActionInfo Action="File" Source="config/hpl_mclk_config.h" IsConfig="true" Hash="9ry0ZAt2ygApPQG871aBmQ" />
           <AcmeProjectActionInfo Action="File" Source="config/hpl_osc32kctrl_config.h" IsConfig="true" Hash="e9o/TJDK3cfkTdnVxdMDjA" />

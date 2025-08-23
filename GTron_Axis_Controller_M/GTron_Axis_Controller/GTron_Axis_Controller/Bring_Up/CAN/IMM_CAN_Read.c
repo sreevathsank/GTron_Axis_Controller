@@ -21,17 +21,14 @@
 void can_Read(void)
 {
 	int32_t data;
-	if(can_rx_int)
-	{
-		can_rx_int--;
-		can_rx_frame.data_64bit = 0;
-		message_Id = 0;
-		ad = 0; cmd = 0; typ = 0; mot = 0;
-		
-		can_receive(&CAN_1, &message_Id, &can_rx_frame);
-		data = can_rx_frame.data_64bit;
-		can_Message_Decode(message_Id, data);
-	}
+	can_rx_int--;
+	can_rx_frame.data_64bit = 0;
+	message_Id = 0;
+	ad = 0; cmd = 0; typ = 0; mot = 0;
+	
+	can_receive(&CAN_1, &message_Id, &can_rx_frame);
+	data = can_rx_frame.data_64bit;
+	can_Message_Decode(message_Id, data);
 	return;
 }
 
@@ -1442,9 +1439,9 @@ void can_Message_Decode(uint32_t message_Id, int32_t data)
 	switch(axis_id)
 	{
 		case X_AXIS:
-			//PRINTF_DEBUG && printf("\nReceived by X: %x %x %x %x Data %x %x %x %x %x", ad, cmd, typ, mot, can_rx_frame.data[0], can_rx_frame.data[1], can_rx_frame.data[2], can_rx_frame.data[3], can_rx_frame.data[4]);
+			PRINTF_DEBUG && printf("\nReceived by X: %x %x %x %x Data %x %x %x %x %x", ad, cmd, typ, mot, can_rx_frame.data[0], can_rx_frame.data[1], can_rx_frame.data[2], can_rx_frame.data[3], can_rx_frame.data[4]);
 			
-			//can_Message_Operational_v3_XAxis(message_Id, data); 
+			can_Message_Operational_v3_XAxis(message_Id, data); 
 			//can_Message_Process_GTron_Message_Data();
 		break;
 		case Y_AXIS: 

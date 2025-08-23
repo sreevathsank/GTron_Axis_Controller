@@ -13,10 +13,10 @@ extern "C" {
 #endif
 
 
-#include "TMC2209.h"
+#include "TMC2209.h"	
 
-void move_guide_motor( void );
-void initAllMotors(uint16_t icID);
+void move_guide_motor(uint32_t loop_count);
+void init_tmc2209_motor(uint16_t icID);
 void read_Init_Registers(uint16_t icID);
 
 

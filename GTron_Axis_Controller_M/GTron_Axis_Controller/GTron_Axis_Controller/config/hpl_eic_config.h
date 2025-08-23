@@ -783,7 +783,7 @@
 // <i> This defines input sense trigger
 // <id> eic_arch_sense14
 #ifndef CONF_EIC_SENSE14
-#define CONF_EIC_SENSE14 EIC_NMICTRL_NMISENSE_RISE_Val
+#define CONF_EIC_SENSE14 EIC_NMICTRL_NMISENSE_BOTH_Val
 #endif
 
 // <q> External Interrupt 14 Asynchronous Edge Detection Mode
