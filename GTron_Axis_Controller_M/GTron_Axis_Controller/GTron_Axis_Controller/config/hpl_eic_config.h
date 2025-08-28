@@ -406,7 +406,7 @@
 // <e> Interrupt 7 Settings
 // <id> eic_arch_enable_irq_setting7
 #ifndef CONF_EIC_ENABLE_IRQ_SETTING7
-#define CONF_EIC_ENABLE_IRQ_SETTING7 0
+#define CONF_EIC_ENABLE_IRQ_SETTING7 1
 #endif
 
 // <q> External Interrupt 7 Filter Enable
@@ -440,14 +440,14 @@
 // <i> This defines input sense trigger
 // <id> eic_arch_sense7
 #ifndef CONF_EIC_SENSE7
-#define CONF_EIC_SENSE7 EIC_NMICTRL_NMISENSE_NONE_Val
+#define CONF_EIC_SENSE7 EIC_NMICTRL_NMISENSE_RISE_Val
 #endif
 
 // <q> External Interrupt 7 Asynchronous Edge Detection Mode
 // <i> Indicates the external interrupt 7 detection mode operated synchronously or asynchronousl
 // <id> eic_arch_asynch7
 #ifndef CONF_EIC_ASYNCH7
-#define CONF_EIC_ASYNCH7 0
+#define CONF_EIC_ASYNCH7 1
 #endif
 
 // </e>
@@ -749,7 +749,7 @@
 // <e> Interrupt 14 Settings
 // <id> eic_arch_enable_irq_setting14
 #ifndef CONF_EIC_ENABLE_IRQ_SETTING14
-#define CONF_EIC_ENABLE_IRQ_SETTING14 1
+#define CONF_EIC_ENABLE_IRQ_SETTING14 0
 #endif
 
 // <q> External Interrupt 14 Filter Enable
@@ -907,8 +907,8 @@
 // </h>
 
 #define CONFIG_EIC_EXTINT_MAP                                                                                          \
-	{1, PIN_PA17}, {2, PIN_PA18}, {3, PIN_PA19}, {5, PIN_PB21}, {8, PIN_PC16}, {9, PIN_PC17}, {10, PIN_PC18},          \
-	    {12, PIN_PC20}, {13, PIN_PC21}, {14, PIN_PB30},
+	{1, PIN_PA17}, {2, PIN_PA18}, {3, PIN_PA19}, {5, PIN_PB21}, {7, PIN_PB23}, {8, PIN_PC16}, {9, PIN_PC17},           \
+	    {10, PIN_PC18}, {12, PIN_PC20}, {13, PIN_PC21},
 
 // <<< end of configuration section >>>
 

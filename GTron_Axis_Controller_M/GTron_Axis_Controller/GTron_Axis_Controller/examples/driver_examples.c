@@ -40,6 +40,10 @@ static void button_on_PB21_pressed(void)
 {
 }
 
+static void button_on_PB23_pressed(void)
+{
+}
+
 static void button_on_PC16_pressed(void)
 {
 }
@@ -60,10 +64,6 @@ static void button_on_PC21_pressed(void)
 {
 }
 
-static void button_on_PB30_pressed(void)
-{
-}
-
 /**
  * Example of using EXTERNAL_IRQ_0
  */
@@ -74,12 +74,12 @@ void EXTERNAL_IRQ_0_example(void)
 	ext_irq_register(PIN_PA18, button_on_PA18_pressed);
 	ext_irq_register(PIN_PA19, button_on_PA19_pressed);
 	ext_irq_register(PIN_PB21, button_on_PB21_pressed);
+	ext_irq_register(PIN_PB23, button_on_PB23_pressed);
 	ext_irq_register(PIN_PC16, button_on_PC16_pressed);
 	ext_irq_register(PIN_PC17, button_on_PC17_pressed);
 	ext_irq_register(PIN_PC18, button_on_PC18_pressed);
 	ext_irq_register(PIN_PC20, button_on_PC20_pressed);
 	ext_irq_register(PIN_PC21, button_on_PC21_pressed);
-	ext_irq_register(PIN_PB30, button_on_PB30_pressed);
 }
 
 /**

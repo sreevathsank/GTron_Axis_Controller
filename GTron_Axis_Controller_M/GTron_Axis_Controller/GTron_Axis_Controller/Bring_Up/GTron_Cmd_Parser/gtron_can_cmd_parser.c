@@ -180,6 +180,7 @@ static void guide_VArrestor_Move(Guide_or_VArrestor_t guide_varrestor, int32_t t
 {
 	p_guide_info->flags.move_given = true;
 	p_guide_info->position.current = p_guide_info->step_tracker.total_steps;
+	p_guide_info->velocity.target  = 4000; 
 	
 	if(move_to_by == MOVE_TO) { p_guide_info->position.target = target_position; }					// Absolute Move.
 															   
@@ -218,7 +219,7 @@ static void guide_VArrestor_Move(Guide_or_VArrestor_t guide_varrestor, int32_t t
  **/
 static void guide_Move_To_Open_Limit( void )
 {
-	tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_VACTUAL, 0xFFFFF060);
+	tmc2209_set_velocity(TMC2209_GUIDE_ADDR, p_guide_info, 0xFFFFF060);
 	guide_info.flags.move_to_open_lim = true;
 	PRINTF_DEBUG ? printf("\nGuide Move To Open Limit Cmd Rxcvd\n"): 0;
 	return;
@@ -233,7 +234,7 @@ static void guide_Move_To_Open_Limit( void )
  **/
 static void guide_Move_To_Close_Limit( void )
 {
-	tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_VACTUAL, 0x00000FA0);
+	tmc2209_set_velocity(TMC2209_GUIDE_ADDR, p_guide_info, 0x00000FA0);
 	guide_info.flags.move_to_close_lim = true;
 	PRINTF_DEBUG ? printf("\nGuide Move to Close Limit Cmd Rxcvd\n"): 0;
 	return;
@@ -314,7 +315,7 @@ static void guide_Limits_Status_Check(/*uint8_t limit*/ void)
 	else if(axis_id == GTRON_AXC_BOT) { message_Id = CAN_REPLY_BOT_RACK_ID; }
 	if( (limit_reg_value >> GUIDE_R_LIM_BIT & 1) )
 	{
-		can_tx_frame.data[0] = GUIDE_OPEN_LIMIT;
+		can_tx_frame.data[0] = GUIDE_MOTOR;
 		can_tx_frame.data[1] = AXC_PRESSED;
 		for(int32_t i = 2; i < 8; i++) { can_tx_frame.data[i] = 0x00; }
 		can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
@@ -322,7 +323,7 @@ static void guide_Limits_Status_Check(/*uint8_t limit*/ void)
 	}
 	else
 	{
-		can_tx_frame.data[0] = GUIDE_OPEN_LIMIT;
+		can_tx_frame.data[0] = GUIDE_MOTOR;
 		can_tx_frame.data[1] = AXC_NOT_PRESSED;
 		for(int32_t i = 2; i < 8; i++) { can_tx_frame.data[i] = 0x00; }
 		can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
@@ -446,7 +447,7 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_START:				reeler_Start_Motor();											break;
 					case AXC_STOP:				reeler_Stop_Motor();											break;
 					case AXC_VELOCITY:			reeler_Set_Velocity((int32_t)rx_can_cmd_info.value);			break;
-					case AXC_ROTATE:			reeler_Move((int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
+					case AXC_ROTATE:			reeler_Move( TMC4671_ROTATION, MOVE_BY);					    break;
 					case AXC_MOVE_TO:			reeler_Move((int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
 					case AXC_MOVE_BY:			reeler_Move((int32_t)rx_can_cmd_info.value, MOVE_BY);			break;
 					case AXC_TEETH:				reeler_Set_Teeth((uint32_t)rx_can_cmd_info.value);				break;

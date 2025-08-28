@@ -57,8 +57,6 @@ void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info)
 	// Calculate the difference.
 	int16_t diff = (int16_t)current_mscnt - (int16_t)motor_info->step_tracker.prev_mscnt;
 	
-	//PRINTF_DEBUG ? printf("\ndiff = %d\n", diff): 0;
-	
 	// Detect and handle wraparound.
 	if( diff > MSCNT_WRAP_THRESHOLD )
 	{
@@ -92,20 +90,23 @@ void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info)
 			diff_zero = true;
 		}
 		
-		printf("\n%ld\n", pos_diff );
+		//printf("\n%ld\n", pos_diff );
 		if( diff_zero )
 		{
 			motor_info->flags.move_given = false;
 			tmc2209_set_velocity(TMC2209_GUIDE_ADDR, p_guide_info, ZERO_HEX);
 			p_guide_info->position.current = p_guide_info->step_tracker.total_steps;
-			//message_Id = CAN_REPLY_TOP_RACK_ID;
-			//can_tx_frame.data[0] = GUIDE_MOTOR;
-			//can_tx_frame.data[1] = AXC_MOVE_DONE;
-			//can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
+			message_Id = CAN_REPLY_TOP_RACK_ID;
+			can_tx_frame.data[0] = GUIDE_MOTOR;
+			can_tx_frame.data[1] = AXC_MOVE_DONE;
+			can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
 			PRINTF_DEBUG ? printf("\nGuide Move Done. Current Position = %ld usteps\n", \
 			p_guide_info->position.current): 0;
 		}
 	}
+	
+	//PRINTF_DEBUG ? printf("\nguide_step_counter Val = %ld\n", p_guide_info->position.counter_value): 0;
+	//PRINTF_DEBUG ? printf("\nCurrent Pos = %ld\n", p_guide_info->step_tracker.total_steps): 0;
 	
 	return;
 }

@@ -109,6 +109,19 @@ void EXTERNAL_IRQ_0_init(void)
 	gpio_set_pin_function(IOXP_INT, PINMUX_PB21A_EIC_EXTINT5);
 
 	// Set pin direction to input
+	gpio_set_pin_direction(INDEX, GPIO_DIRECTION_IN);
+
+	gpio_set_pin_pull_mode(INDEX,
+	                       // <y> Pull configuration
+	                       // <id> pad_pull_config
+	                       // <GPIO_PULL_OFF"> Off
+	                       // <GPIO_PULL_UP"> Pull-up
+	                       // <GPIO_PULL_DOWN"> Pull-down
+	                       GPIO_PULL_OFF);
+
+	gpio_set_pin_function(INDEX, PINMUX_PB23A_EIC_EXTINT7);
+
+	// Set pin direction to input
 	gpio_set_pin_direction(ROTENC_DIR, GPIO_DIRECTION_IN);
 
 	gpio_set_pin_pull_mode(ROTENC_DIR,
@@ -172,19 +185,6 @@ void EXTERNAL_IRQ_0_init(void)
 	                       GPIO_PULL_OFF);
 
 	gpio_set_pin_function(DIAG, PINMUX_PC21A_EIC_EXTINT13);
-
-	// Set pin direction to input
-	gpio_set_pin_direction(INDEX, GPIO_DIRECTION_IN);
-
-	gpio_set_pin_pull_mode(INDEX,
-	                       // <y> Pull configuration
-	                       // <id> pad_pull_config
-	                       // <GPIO_PULL_OFF"> Off
-	                       // <GPIO_PULL_UP"> Pull-up
-	                       // <GPIO_PULL_DOWN"> Pull-down
-	                       GPIO_PULL_OFF);
-
-	gpio_set_pin_function(INDEX, PINMUX_PB30A_EIC_EXTINT14);
 
 	ext_irq_init();
 }
@@ -631,7 +631,7 @@ void system_init(void)
 
 	gpio_set_pin_function(EXT_CS, GPIO_PIN_FUNCTION_OFF);
 
-	// GPIO on PB23
+	// GPIO on PB30
 
 	gpio_set_pin_level(REELER_INT,
 	                   // <y> Initial level

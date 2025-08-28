@@ -624,6 +624,12 @@ void rot_Enc_Z_Pulse_Interrupt_Callback(void)
 		limit_variables.rot_enc_z_first_hit = false;
 		limit_variables.homing = false;
 		ext_irq_disable(ROTENC_Z);
+		
+		message_Id = CAN_REPLY_TOP_RACK_ID;
+		can_tx_frame.data[0] = REELER_MOTOR;
+		can_tx_frame.data[1] = AXC_HOMING;
+		can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
+		
 		PRINTF_DEBUG ? printf("\nReeler Homing Done\n"): 0;
 	}
 	
@@ -1236,18 +1242,22 @@ void run_Velocity_Ramp(void)
 	}
 	
 	// For Encoder based Triggering.
-	if( (abs(prev_trig_pos - tmc4671_getActualPosition(MOTOR)) >= p_reeler_info->position.trig_step_size) && (p_reeler_info->position.trig_step_size != 0) )
+	int32_t current_position = tmc4671_getActualPosition(MOTOR);
+	if( (p_reeler_info->position.trig_step_size != 0) && ramping
+	    && (abs(prev_trig_pos - current_position) >= p_reeler_info->position.trig_step_size) )
 	{
+		//printf("\nTrig\n");
 		gpio_set_pin_level(REELER_INT, HIGH);
 		delay_us(1);
 		gpio_set_pin_level(REELER_INT, LOW);
+		prev_trig_pos = current_position;
 	}
 	if(!ramping)
 	{
 		vel = current_velocity;
 		prev_trig_pos = tmc4671_getActualPosition(MOTOR);
 		// This is the velocity limit threshold that cannot be crossed in Position Mode as well as Velocity Mode.
-		tmc4671_setVelocityLimit(MOTOR, axis_params.endurance_vel);
+		tmc4671_setVelocityLimit(MOTOR, 1000);
 		
 		ramping = true;
 	}

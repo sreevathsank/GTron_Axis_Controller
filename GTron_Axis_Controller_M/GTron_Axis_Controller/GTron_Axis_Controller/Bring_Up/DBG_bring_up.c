@@ -449,7 +449,7 @@ void define_All_Global_Variables(void)
 	prev_time = 0;
 	//non_rep = 1;
 	move_given_trapezoidal_ramp = true;
-	move_given_s_ramp = true;
+	move_given_s_ramp = false;
 	repeat_ramp = 0;		// Remove
 	//t_Position = 500000;
 	t_Position = 100000;

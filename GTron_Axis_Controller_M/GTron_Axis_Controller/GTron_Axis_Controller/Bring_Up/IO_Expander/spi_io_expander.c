@@ -31,27 +31,36 @@ void ioxp_Interrupt_Callback( void )
 			gtron_limits.interrupt_raised = true;
 			PRINTF_DEBUG ? printf("\nGuide Limit Hit, Setting Guide Motor Velocity to 0...\n"): 0;
 		}*/
+		
 		PRINTF_DEBUG ? printf("\nGuide Limit Hit, Setting Guide Motor Velocity to 0...\n"): 0;
 		PRINTF_DEBUG ? printf("\n"): 0;
 		if( MSK_GUIDE_R_LIM(gtron_limits.limit_flags) )	// Guide Right Open Limit.
 		{
+			tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_VACTUAL, 0x00000000);
 			PRINTF_DEBUG ? printf("\nInside msk right limit\n"): 0;
 			if(p_guide_info->flags.move_to_open_lim)
 			{
 				p_guide_info->flags.move_to_open_lim = false;
-				tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_VACTUAL, 0x00000000);
 				
 				// Write to the Guide Step Counter TCC Counter Register as 0.
 				update_TMC2209_Step_Tracking(p_guide_info);
 				p_guide_info->step_tracker.total_steps	= 0;
 				p_guide_info->step_tracker.total_dist	= 0;
 				p_guide_info->position.right_open_limit	= p_guide_info->step_tracker.total_steps;
+				
+				// Send the CAN Command
+				message_Id = CAN_REPLY_TOP_RACK_ID;
+				can_tx_frame.data[0] = GUIDE_OPEN_LIMIT;
+				can_tx_frame.data[1] = AXC_PRESSED;
+				can_Write(message_Id, can_tx_frame.data_64bit);
+				
 				PRINTF_DEBUG ? printf("\nMove to Open Limit Done. Setting Current Position as %ld...\n", p_guide_info->position.right_open_limit): 0;
 			}
 			PRINTF_DEBUG ? printf("\nGuide Right Open Limit is Hit!\n"): 0;
 		}
 		else if( MSK_GUIDE_L_LIM(gtron_limits.limit_flags) )	// Guide Left Close Limit.
 		{
+			tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_VACTUAL, 0x00000000);
 			PRINTF_DEBUG ? printf("\nInside msk left limit\n"): 0;
 			if(p_guide_info->flags.move_to_close_lim)
 			{
@@ -59,8 +68,15 @@ void ioxp_Interrupt_Callback( void )
 				tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_VACTUAL, 0x00000000);
 				
 				// Get the current position as the stroke length of the Guide setup.
-				//update_TMC2209_Step_Tracking(p_guide_info);
+				update_TMC2209_Step_Tracking(p_guide_info);
 				p_guide_info->position.left_close_limit	= p_guide_info->step_tracker.total_steps;
+				
+				// Send the CAN Command
+				message_Id = CAN_REPLY_TOP_RACK_ID;
+				can_tx_frame.data[0] = GUIDE_CLOSE_LIMIT;
+				can_tx_frame.data[1] = AXC_PRESSED;
+				can_Write(message_Id, can_tx_frame.data_64bit);
+				
 				PRINTF_DEBUG ? printf("\nMove to Close Limit Done. Setting Current Position as %ld...\n", p_guide_info->position.left_close_limit): 0;
 			}
 			PRINTF_DEBUG ? printf("\nGuide Left Close Limit is Hit!\n"): 0;

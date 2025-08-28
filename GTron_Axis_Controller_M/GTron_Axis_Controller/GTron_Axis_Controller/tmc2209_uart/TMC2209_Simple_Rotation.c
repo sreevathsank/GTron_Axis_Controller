@@ -18,7 +18,7 @@ void init_tmc2209_motor(uint16_t icID)
     
     tmc2209_writeRegister(icID, TMC2209_TPOWERDOWN, 0x00000014);    // DEC 20.
     
-    tmc2209_writeRegister(icID, TMC2209_IHOLD_IRUN, 0x00071703);    // DEC 464643.
+    tmc2209_writeRegister(icID, TMC2209_IHOLD_IRUN, 0x00071700);    // DEC 464643. 0x71703
     
     tmc2209_writeRegister(icID, TMC2209_CHOPCONF, 0x10000053);      // DEC 268435539.
     
@@ -77,7 +77,7 @@ void read_Init_Registers(uint16_t icID)
     //while(SERCOM6_USART_ReadIsBusy());
     
     printf("\nRead Values:\ngconf = %x | tpwrdwn = %x | ihold = %x | chop = %x | pwm = %x\n",
-            gconf, tpwrdwm, ihold, chop, pwm);
+            (unsigned int)gconf, (unsigned int)tpwrdwm, (unsigned int)ihold, (unsigned int)chop, (unsigned int)pwm);
     
     return;
 }

@@ -1453,11 +1453,11 @@ void can_Message_Decode(uint32_t message_Id, int32_t data)
 			can_Message_Operational_v3_ZAxis(message_Id, data);
 		break;
 		case GTRON_AXC_TOP:
-			PRINTF_DEBUG && printf("\nReceived by AxC_Top: %x %x %x %x Data %x %x %x %x %x", ad, cmd, typ, mot, can_rx_frame.data[0], can_rx_frame.data[1], can_rx_frame.data[2], can_rx_frame.data[3], can_rx_frame.data[4]);
+			PRINTF_DEBUG && printf("\nReceived by AxC_Top: %x Data %x %x %x %x %x", message_Id, can_rx_frame.data[0], can_rx_frame.data[1], can_rx_frame.data[2], can_rx_frame.data[3], can_rx_frame.data[4]);
 			can_Message_Process_GTron_Message_Data();
 		break;
 		case GTRON_AXC_BOT:
-			PRINTF_DEBUG && printf("\nReceived by AxC_Bot: %x %x %x %x Data %x %x %x %x %x", ad, cmd, typ, mot, can_rx_frame.data[0], can_rx_frame.data[1], can_rx_frame.data[2], can_rx_frame.data[3], can_rx_frame.data[4]);
+			PRINTF_DEBUG && printf("\nReceived by AxC_Bot: %x Data %x %x %x %x %x", message_Id, can_rx_frame.data[0], can_rx_frame.data[1], can_rx_frame.data[2], can_rx_frame.data[3], can_rx_frame.data[4]);
 			can_Message_Process_GTron_Message_Data();
 		break;
 		default: break;

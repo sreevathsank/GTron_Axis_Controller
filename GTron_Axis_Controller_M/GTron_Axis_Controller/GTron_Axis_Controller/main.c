@@ -1,6 +1,6 @@
 // For Axis Controller V1R1
 
-// DEBUG UART baud rate - 2000000.
+// DEBUG UART baud rate - 2,000,000.
 
 #include <atmel_start.h>
 #include "All_Headers.h"
@@ -54,40 +54,33 @@ int main(void)
 	//move_guide_motor(10);
 	
 	// Enable Homing Flag if RF is enabled for X, Y or Z axis or repeat_ramp is greater than 0.
-	limit_variables.homing = ( (repeat_ramp > 0) || (axis_params.rotary_axis_enabled) ) ? true : false;
+	limit_variables.homing = ( repeat_ramp > 0 ) ? true : false;
 	
 	// Check whether to do firmware limit based homing.
-	//if( limit_variables.homing )
-	//{
-	//	if(axis_params.rotary_axis_enabled)
-	//	{
-	//		limit_variables.rot_enc_z_first_hit = false;
-	//		ext_irq_enable(ROTENC_Z);
-	//	}
-	//	do_homing_sequence();
-	//}
-	//else { limit_variables.switch_seq_flag = false; }	// No need for Switching Sequence if Homing Sequence is disabled...
-	
+	if( limit_variables.homing )
+	{
+		if(axis_params.rotary_axis_enabled)
+		{
+			limit_variables.rot_enc_z_first_hit = false;
+			ext_irq_enable(ROTENC_Z);
+		}
+		do_homing_sequence();
+	}
+	else { limit_variables.switch_seq_flag = false; }	// No need for Switching Sequence if Homing Sequence is disabled...
+
 	/* Replace with your application code */
 	for ever
-	{	
-		// Limit Flags Check.
-		if( ( (axis_id == GTRON_AXC_TOP) || (axis_id == GTRON_AXC_BOT) ) && gtron_limits.interrupt_raised )
-										{ check_Limit_Flags();							}
-		
-		// TMC2209 Step Tracker.
+	{
+		// TMC2209 Step Tracker and Move Done.
 		if( p_guide_info->flags.homing || p_guide_info->flags.move_given || \
-		    p_guide_info->flags.move_to_open_lim || p_guide_info->flags.move_to_close_lim 
+		    p_guide_info->flags.move_to_open_lim || p_guide_info->flags.move_to_close_lim \
 			&& !gtron_limits.interrupt_raised)
 										{ update_TMC2209_Step_Tracking(p_guide_info);	}
-											
-		//if(p_guide_info->flags.move_given)
-										//{ check_tmc2209_move_done(p_guide_info);		}
 		
-		// For Homing Ramp.
+		// For TMC4671 Homing Ramp.
 		if(limit_variables.homing)		{ homing_Ramp();								}
 			
-		// For Checking if the Motor has reached its target position.
+		// For checking if the Motor has reached its target position TMC4671.
 		if(check_move_done)				{ check_For_Move_Done();						}
 			
 		// For Generating S Ramp profile for TMC4671.
