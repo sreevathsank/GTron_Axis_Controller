@@ -33,6 +33,11 @@ uint8_t rack_id;
  **/
 static void reeler_Home( void )
 {
+	tmc4671_setActualPosition(MOTOR, 0);
+	tmc4671_setAbsolutTargetPosition(MOTOR, 0);
+	p_reeler_info->flags.move_given = 0;
+	p_reeler_info->flags.rotate_vel_mode = 0;
+	p_reeler_info->flags.sag_enabled = 0;
 	limit_variables.homing = true;
 	// Check whether to do firmware limit based homing.
 	if( limit_variables.homing )

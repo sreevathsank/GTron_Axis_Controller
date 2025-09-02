@@ -625,10 +625,10 @@ void rot_Enc_Z_Pulse_Interrupt_Callback(void)
 		limit_variables.homing = false;
 		ext_irq_disable(ROTENC_Z);
 		
-		message_Id = CAN_REPLY_TOP_RACK_ID;
-		can_tx_frame.data[0] = REELER_MOTOR;
-		can_tx_frame.data[1] = AXC_HOMING;
-		can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
+		//message_Id = CAN_REPLY_TOP_RACK_ID;
+		//can_tx_frame.data[0] = REELER_MOTOR;
+		//can_tx_frame.data[1] = AXC_HOMING;
+		//can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
 		
 		PRINTF_DEBUG ? printf("\nReeler Homing Done\n"): 0;
 	}
