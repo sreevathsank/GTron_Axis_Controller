@@ -600,7 +600,7 @@ void rot_Enc_Z_Pulse_Interrupt_Callback(void)
 {
 	if(limit_variables.rot_enc_z_first_hit)
 	{
-		tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
+		/*tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
 		tmc4671_setVelocityLimit(MOTOR, 0);
 		tmc4671_writeInt(MOTOR, TMC4671_ABN_DECODER_COUNT, ZERO_HEX);
 		tmc4671_setActualPosition(MOTOR, ZERO_HEX);
@@ -608,7 +608,7 @@ void rot_Enc_Z_Pulse_Interrupt_Callback(void)
 		limit_variables.rot_enc_z_first_hit = false;
 		limit_variables.homing = false;
 		move_given_s_ramp = false;
-		move_given_trapezoidal_ramp = false;
+		move_given_trapezoidal_ramp = false;*/
 		ext_irq_disable(ROTENC_Z);
 	}
 	else if(limit_variables.rot_enc_z_first_hit == false)
@@ -621,7 +621,7 @@ void rot_Enc_Z_Pulse_Interrupt_Callback(void)
 		
 		move_With_S_Ramp(0, 30, MOVE_TO);
 		
-		limit_variables.rot_enc_z_first_hit = false;
+		limit_variables.rot_enc_z_first_hit = true;
 		limit_variables.homing = false;
 		ext_irq_disable(ROTENC_Z);
 		
@@ -1215,7 +1215,7 @@ void check_Motor_Movement(void)
 }
 
 /** 
- * \brief Generates a simple linear slope for the Velocity Target in Velocity Mode.
+ * \brief Generates a simple linear slope for the Velocity Target in Velocity Mode and sends Camera Trigger if encoder based triggering is enabled.
  *
  * @param	void
  * @return	void
@@ -1225,6 +1225,7 @@ void run_Velocity_Ramp(void)
 	static float vel = 0;	// Velocity to be set.
 	static bool ramping = false;
 	static int32_t prev_trig_pos = 0;
+	static uint32_t trig_no = 0;
 	
 	vel_struct.flags.reeler_vel_timer = false;
 	
@@ -1246,10 +1247,11 @@ void run_Velocity_Ramp(void)
 	if( (p_reeler_info->position.trig_step_size != 0) && ramping
 	    && (abs(prev_trig_pos - current_position) >= p_reeler_info->position.trig_step_size) )
 	{
-		//printf("\nTrig\n");
 		gpio_set_pin_level(REELER_INT, HIGH);
-		delay_us(1);
+		//delay_us(1);
+		gpio_toggle_pin_level(DBGLED3);
 		gpio_set_pin_level(REELER_INT, LOW);
+		//printf("\nT%ld", ++trig_no);
 		prev_trig_pos = current_position;
 	}
 	if(!ramping)
@@ -1263,18 +1265,17 @@ void run_Velocity_Ramp(void)
 	}
 	
 	// Return from the current function if the current motor velocity is equal to the Target Velocity.
-	if(current_velocity == target_velocity)
+	//if(current_velocity == target_velocity)
 	{
-		ramping = false;
-		timer_stop(&VEL_TIMER);
-		return;
+		//ramping = false;
+		//timer_stop(&VEL_TIMER);
+		//return;
 	}
 	
 	// Check if the current motor velocity is greater than or less than the Target Velocity.
 	bool is_greater = (current_velocity > target_velocity);
 	
 	// Depending on the boolean is_greater, increase or decrease the value of vel.
-	
 	if(is_greater)
 	{
 		if(vel > target_velocity)
@@ -1288,8 +1289,7 @@ void run_Velocity_Ramp(void)
 		{
 			vel += axis_params.acceleration_delta;
 		}	
-	}
-					   
+	}			   
 	tmc4671_setVelocityTarget(MOTOR, (int32_t)vel);
 	
 	return;

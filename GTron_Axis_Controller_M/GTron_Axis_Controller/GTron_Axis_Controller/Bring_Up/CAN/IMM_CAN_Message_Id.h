@@ -97,6 +97,17 @@ can_union_type can_rx_frame;
  **/
 typedef enum
 {
+	TOP_SYSCTRL_BOARD_ID    = 0,
+	TOP_AXC_BOARD_ID        = 1,
+	BOT_SYSCTRL_BOARD_ID    = 2,
+	BOT_AXC_BOARD_ID        = 3,
+	IOCTRL_BOARD_ID         = 4,
+	FRONT_PANEL_BOARD_ID    = 5,
+	NO_OF_BOARD_ID
+}Board_Id_t;
+
+typedef enum
+{
 	AxC_DEFAULT = 0,
 	REELER_MOTOR = 1,
 	GUIDE_MOTOR = 2,
@@ -135,8 +146,6 @@ typedef enum
 /** 
  * GTron AxC Message IDs.
  **/
-
-
 #define CAN_TOP_RACK_ID							0x108
 #define CAN_BOT_RACK_ID							0x109
 
@@ -145,6 +154,9 @@ typedef enum
 
 #define CAN_TOP_SAG_REELER_ID					0x10C
 #define CAN_BOT_SAG_REELER_ID					0x10D
+
+#define CAN_BOARD_ACTIVE_PING_ID				0x10E
+#define CAN_REPLY_BOARD_ACTIVE_PING_ID			0x10F	
 
 /** 
  * Knob Messages

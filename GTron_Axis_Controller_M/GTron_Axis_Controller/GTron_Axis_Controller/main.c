@@ -32,9 +32,9 @@ int main(void)
 	repeat_ramp = read_tlv_flash(tlv_ptr, REPEAT_RAMP_FLASH, tlv_traversal);
 	switch(repeat_ramp)
 	{
-		case 0: PRINTF_DEBUG && printf("\nrepeat_ramp = 0 | No Endurance Run | No Homing\n");	break;
-		case 2: PRINTF_DEBUG && printf("\nrepeat_ramp = 2 | Endurance Run | Homing\n");			break;
-		case 4: PRINTF_DEBUG && printf("\nrepeat_ramp = 4 | No Endurance Run | Homing\n");		break;
+		case 0: PRINTF_DEBUG ? printf("\nrepeat_ramp = 0 | No Endurance Run | No Homing\n"): 0;	break;
+		case 2: PRINTF_DEBUG ? printf("\nrepeat_ramp = 2 | Endurance Run | Homing\n"): 0;		break;
+		case 4: PRINTF_DEBUG ? printf("\nrepeat_ramp = 4 | No Endurance Run | Homing\n"): 0;	break;
 		default: break;
 	}
 	if(axis_params.rotary_axis_enabled)

@@ -64,6 +64,7 @@ static void reeler_Home( void )
 static void reeler_Move(int32_t target_position, bool move_to_by)
 {
 	check_move_done = true;
+	//reeler_info.position.trig_step_size = 0;
 	if( (abs(tmc4671_getActualPosition(MOTOR) - target_position) > MIN_DISTANCE_RAMP ) )
 	{
 		(move_to_by == MOVE_TO) ? move_With_S_Ramp(target_position, reeler_info.velocity.limit, MOVE_TO) \
@@ -159,9 +160,9 @@ static void reeler_Stop_Motor( void )
 	move_given_s_ramp = false; 
 	check_move_done = false;
 	reeler_info.flags.rotate_vel_mode = false;
-	//vel_struct.flags.sag_enabled = false;
+	//reeler_info.position.trig_step_size = 0;
 	homing_v = 0;
-	if(!reeler_info.flags.sag_enabled & !reeler_info.flags.rotate_vel_mode)
+	//if(!reeler_info.flags.sag_enabled || !reeler_info.flags.rotate_vel_mode)
 	{
 		timer_stop(&VEL_TIMER);
 	}
@@ -396,12 +397,13 @@ void parse_GTron_CAN_Msg_Data( void )
 				if(reeler_info.flags.sag_enabled & reeler_info.flags.rotate_vel_mode)
 				{
 					timer_start(&VEL_TIMER);
+					tmc4671_setVelocityLimit(MOTOR, reeler_info.velocity.limit);
 				}
 				PRINTF_DEBUG ? printf("\nSag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Rotate.\n"): 0;
 				break;
 				case 0:
 				reeler_info.flags.sag_enabled = false;
-				if(!reeler_info.flags.sag_enabled & !reeler_info.flags.rotate_vel_mode)
+				if(!reeler_info.flags.sag_enabled || !reeler_info.flags.rotate_vel_mode)
 				{
 					timer_stop(&VEL_TIMER);
 				}
@@ -426,7 +428,7 @@ void parse_GTron_CAN_Msg_Data( void )
 				break;
 				case 0:
 				reeler_info.flags.sag_enabled = false;
-				if(!reeler_info.flags.sag_enabled & !reeler_info.flags.rotate_vel_mode)
+				//if(!reeler_info.flags.sag_enabled & !reeler_info.flags.rotate_vel_mode)
 				{
 					timer_stop(&VEL_TIMER);
 				}
@@ -436,6 +438,23 @@ void parse_GTron_CAN_Msg_Data( void )
 				default: PRINTF_DEBUG ? printf("\nSag Sensor Invalid Operation Rxcvd\n"): 0;					break;
 			}
 		break;
+		case CAN_BOARD_ACTIVE_PING_ID:
+			if( (axis_id == GTRON_AXC_TOP) && (can_rx_frame.data[0] == TOP_AXC_BOARD_ID) )
+			{
+				message_Id = CAN_REPLY_BOARD_ACTIVE_PING_ID;
+				can_tx_frame.data[0] = TOP_AXC_BOARD_ID;
+				can_Write(message_Id, can_tx_frame.data_64bit);
+				PRINTF_DEBUG ? printf("\nGTron Top AxC Board Active Ping Rxcvd\t Board Active Ping Reply Sent\n"): 0;
+			}
+			else if( (axis_id == GTRON_AXC_BOT) && (can_rx_frame.data[0] == BOT_AXC_BOARD_ID) )
+			{
+				message_Id = CAN_REPLY_BOARD_ACTIVE_PING_ID;
+				can_tx_frame.data[0] = BOT_AXC_BOARD_ID;
+				can_Write(message_Id, can_tx_frame.data_64bit);
+				PRINTF_DEBUG ? printf("\nGTron Bottom AxC Board Active Ping Rxcvd\t Board Active Ping Reply Sent\n"): 0;
+			}
+		break;
+		default: break;
 	}	
 	
 	// Check if the current node and message id received are for the current node.
@@ -530,7 +549,6 @@ void parse_GTron_CAN_Msg_Data( void )
 			break;
 			default: break;
 		}
-		
 	}
 	return;
 }

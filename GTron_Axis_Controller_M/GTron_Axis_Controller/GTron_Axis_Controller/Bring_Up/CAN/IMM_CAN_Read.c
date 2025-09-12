@@ -328,7 +328,7 @@ void can_Message_Operational_v3_XAxis(uint32_t message_Id, int32_t data)
 			{
 				vel_struct.flags.reeler_rotate = true;
 				tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
-				timer_start(&VEL_TIMER);
+				timer_start(& VEL_TIMER);
 				//vel_struct.prev_lin_enc_val = 0;
 			}
 			else
