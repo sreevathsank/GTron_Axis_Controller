@@ -20,9 +20,9 @@ struct io_descriptor *oi;
 
 void led_Blink(uint32_t iteration, uint32_t time_taken);
 
-void tx_cb_UART(const struct usart_async_descriptor *const io_descr);
+//void tx_cb_UART(const struct usart_async_descriptor *const io_descr);
 
-void rx_cb_UART(const struct usart_async_descriptor *const io_descr);
+//void rx_cb_UART(const struct usart_async_descriptor *const io_descr);
 
 void init_UART(void);
 

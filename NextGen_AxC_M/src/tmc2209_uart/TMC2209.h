@@ -2,7 +2,7 @@
  * File:   TMC2209.h
  * Author: sreevathsank
  *
- * Created on February 25, 2025, 6:10 PM
+ * Created on 24 September, 2025, 11:21 AM
  */
 
 #ifndef TMC2209_H
@@ -18,10 +18,8 @@ extern "C" {
 #include <string.h>
 #include "TMC2209_HW_Abstraction.h"
 #include "TMC2209_Simple_Rotation.h"
-#include "All_Headers.h"
-//#include "hal_usart_async.h"
-//#include "usart_lite.h"
-#include "driver_init.h"
+#include "../src/config/default/peripheral/sercom/usart/plib_sercom5_usart.h"
+#include "definitions.h"                // SYS function prototypes
 
 /*******************************************************************************
 * API Configuration Defines
@@ -74,7 +72,7 @@ extern bool tmc2209_readWriteUART(uint16_t icID, uint8_t *data, size_t writeLeng
 extern uint8_t tmc2209_getNodeAddress(uint16_t icID);
 // => TMC-API wrapper
 
-bool tmc2209_read_flag;
+extern bool tmc2209_read_flag;
 
 int32_t tmc2209_readRegister(uint16_t icID, uint8_t address);
 void tmc2209_writeRegister(uint16_t icID, uint8_t address, int32_t value);
@@ -210,4 +208,7 @@ extern bool tmc2209_cache(uint16_t icID, TMC2209CacheOp operation, uint8_t addre
 #endif
 
 #endif	/* TMC2209_H */
+
+
+
 

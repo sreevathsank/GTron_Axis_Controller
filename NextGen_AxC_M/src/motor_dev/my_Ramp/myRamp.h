@@ -6,10 +6,10 @@
  */ 
 #include <stdlib.h>
 #include <math.h>
-#include <fastmath.h>
+//#include <fastmath.h>
 #include <float.h>
-#include <newlib-nano/newlib.h> //for double
-#include <atmel_start.h>
+//#include <newlib-nano/newlib.h> //for double
+//#include <atmel_start.h>
 #include "TMC-API/tmc/ramp/LinearRamp1.h"
 #include "TMC-API/tmc/helpers/Functions.h"
 #include "All_Headers.h"

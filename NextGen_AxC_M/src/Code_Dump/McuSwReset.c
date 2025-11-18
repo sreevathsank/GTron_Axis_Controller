@@ -27,19 +27,20 @@ void sw_reset()
 }
 void fpga_on()
 {
-	gpio_set_pin_level(SWITCH_EN,false);
-	gpio_set_pin_level(FPGA_CRESET_B,true);
-	delay_ms(200);
+	//gpio_set_pin_level(SWITCH_EN,false);
+	//gpio_set_pin_level(FPGA_CRESET_B,true);
+	//delay_ms(200);
 	//io_write(debug_io,(uint8_t*)CDONE1,sizeof(CDONE1));
 }
 void fpga_off()
 {
 	uint8_t wbuf[3] = {0xab,0x00,0x00};    // 0xab wakeup command for flash
 	uint8_t rxbuf[3] = {0} ;
-	gpio_set_pin_level(SWITCH_EN,true);
-	gpio_set_pin_level(FPGA_CRESET_B,false);
+	//gpio_set_pin_level(SWITCH_EN,true);
+	//gpio_set_pin_level(FPGA_CRESET_B,false);
+        
 	//io_write(debug_io,(uint8_t*)CDONE0,sizeof(CDONE0));
-	delay_ms(10);
+	//delay_ms(10);
 	EXTFLASH_transfer(wbuf, rxbuf, 3);
 }
 void check_cdone()
@@ -51,8 +52,8 @@ void check_cdone()
 	 * cdone = 0 : FPGA not configured properly
 	 */
 	uint8_t cdone = 0;
- 	cdone = gpio_get_pin_level(FPGA_CDONE);
- 	gpio_set_pin_level(DBGLED3,cdone);
+ 	//cdone = gpio_get_pin_level(FPGA_CDONE);
+ 	//gpio_set_pin_level(DBGLED3,cdone);
 	if (cdone)
 	{
 		fpga_on();
@@ -93,7 +94,7 @@ void erase_can_flash()
 			if (EXTFLASH_erase(write_addr, FLASH_ERASE_SECTOR_SIZE))
 			{
 				// Delay to allow erase
-				delay_ms(240);
+				// //delay_ms(240);
 				write_addr = write_addr + FLASH_ERASE_SECTOR_SIZE ;
 				//io_write(debug_io,(uint8_t*)"ERS\n", 4);
 			}
@@ -103,7 +104,7 @@ void erase_can_flash()
 		
 		message_Id = CAN_ERASE_DONE ;
 		can_tx_frame.data_64bit = 0x00;
-		can_send(&CAN_1, message_Id, EXT_ID, 8, can_tx_frame);
+		//can_send(&CAN_1, message_Id, EXT_ID, 8, can_tx_frame);
 		
 		//io_write(debug_io,(uint8_t*)"Erase done\n", 11);
 	}
@@ -113,7 +114,7 @@ void erase_can_flash()
 		
 		message_Id = CAN_SIZE_ERROR ;
 		can_tx_frame.data_64bit = 0x00;
-		can_send(&CAN_1, message_Id, EXT_ID, 8, can_tx_frame);
+		//can_send(&CAN_1, message_Id, EXT_ID, 8, can_tx_frame);
 	}
 }
 void write_can_flash()
@@ -129,7 +130,7 @@ void write_can_flash()
 		fpga_on();
 		message_Id = CAN_WRITE_DONE ;
 		can_tx_frame.data_64bit = 0x00;
-		can_send(&CAN_1, message_Id, EXT_ID, 8, can_tx_frame);
+		//can_send(&CAN_1, message_Id, EXT_ID, 8, can_tx_frame);
 		//write_addr = FLASH_START_ADDR ;
 		check_cdone();
 	}

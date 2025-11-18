@@ -147,6 +147,7 @@
             <itemPath>../src/third_party/rtos/FreeRTOS/Source/include/mpu_syscall_numbers.h</itemPath>
             <itemPath>../src/third_party/rtos/FreeRTOS/Source/include/stream_buffer.h</itemPath>
             <itemPath>../src/third_party/rtos/FreeRTOS/Source/include/message_buffer.h</itemPath>
+            <itemPath>../src/freertos_daemon.h</itemPath>
           </logicalFolder>
           <logicalFolder name="portable" displayName="portable" projectFiles="true">
             <logicalFolder name="GCC" displayName="GCC" projectFiles="true">
@@ -526,6 +527,7 @@
           <itemPath>../src/third_party/rtos/FreeRTOS/Source/timers.c</itemPath>
           <itemPath>../src/third_party/rtos/FreeRTOS/Source/event_groups.c</itemPath>
           <itemPath>../src/third_party/rtos/FreeRTOS/Source/stream_buffer.c</itemPath>
+          <itemPath>../src/freertos_daemon.c</itemPath>
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="motor_dev" displayName="motor_dev" projectFiles="true">
@@ -612,6 +614,30 @@
         <makeCustomizationEnableLongLines>false</makeCustomizationEnableLongLines>
         <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
+      <item path="../src/Bring_Up/CAN/IMM_CAN.c" ex="true" overriding="false">
+      </item>
+      <item path="../src/Bring_Up/CAN/IMM_CAN_Read.c" ex="true" overriding="false">
+      </item>
+      <item path="../src/Bring_Up/CAN/IMM_CAN_Write.c" ex="true" overriding="false">
+      </item>
+      <item path="../src/Bring_Up/CAN/MCD_v3.c" ex="true" overriding="false">
+      </item>
+      <item path="../src/Bring_Up/CAN/TMCL_IDE_reply.c" ex="true" overriding="false">
+      </item>
+      <item path="../src/Bring_Up/DBG_bring_up.c" ex="true" overriding="false">
+      </item>
+      <item path="../src/Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.c"
+            ex="true"
+            overriding="false">
+      </item>
+      <item path="../src/Bring_Up/IO_Expander/spi_io_expander.c"
+            ex="true"
+            overriding="false">
+      </item>
+      <item path="../src/Bring_Up/Motion/Motion.c" ex="true" overriding="false">
+      </item>
+      <item path="../src/motor_dev/my_Ramp/myRamp.c" ex="true" overriding="false">
+      </item>
       <C32>
         <property key="additional-warnings" value="true"/>
         <property key="addresss-attribute-use" value="false"/>
@@ -635,7 +661,7 @@
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>
         <property key="keep-inline" value="false"/>
-        <property key="make-warnings-into-errors" value="true"/>
+        <property key="make-warnings-into-errors" value="false"/>
         <property key="oXC16gcc-errata" value=""/>
         <property key="oXC16gcc-large-aggregate" value="false"/>
         <property key="oXC16gcc-mpa-lvl" value=""/>

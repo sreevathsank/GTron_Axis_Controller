@@ -6,6 +6,7 @@
  */ 
 #include "motor_dev/my_Ramp/myRamp.h"
 #include <math.h>
+#include "system/debug/sys_debug.h"
 
 double_t mn = 0; // start point in seconds
 double_t mx = 2; // total duration in seconds
@@ -554,7 +555,7 @@ void find_S_Ramp_Case(rampParams *r_Params)
 
 	double prod_V_J = (r_Params->target_Velocity * r_Params->jerk);
 
-	PRINTF_DEBUG && printf("\nVmax * Jerk = %.2f | accleration^2 = %.2f\n", prod_V_J, sq_Value(r_Params->accelerations));
+	SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\nVmax * Jerk = %.2f | accleration^2 = %.2f\n", prod_V_J, sq_Value(r_Params->accelerations));
 	
 	//Check if its case 1 or 2.
 	if(prod_V_J < sq_Value(r_Params->accelerations))
@@ -589,9 +590,9 @@ void find_S_Ramp_Case(rampParams *r_Params)
 	}
 	//r_Params->ramp_case = A;
 	r_Params->s_S_min = ( (cube_Value(r_Params->accelerations) / sq_Value(r_Params->jerk)) );
-	(r_Params->distance_total > r_Params->s_S_min) ? (PRINTF_DEBUG && printf("\nS > S_min\n")) : (PRINTF_DEBUG && printf("\nS < S_min\n"));
-	(r_Params->distance_total == r_Params->s_S_min) ? (PRINTF_DEBUG && printf("\nS = S_min\n")) : (0);
-	PRINTF_DEBUG && printf("\nCase %d\nVa = %.2f | Sa = %.2f | Sv = %.2f | S_min = %.2f", (r_Params->case_x + 1), r_Params->s_Va, r_Params->s_Sa, r_Params->s_Sv, r_Params->s_S_min);
+	(r_Params->distance_total > r_Params->s_S_min) ? (SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\nS > S_min\n")) : (SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\nS < S_min\n"));
+	(r_Params->distance_total == r_Params->s_S_min) ? (SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\nS = S_min\n")) : (0);
+	SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\nCase %d\nVa = %.2f | Sa = %.2f | Sv = %.2f | S_min = %.2f", (r_Params->case_x + 1), r_Params->s_Va, r_Params->s_Sa, r_Params->s_Sv, r_Params->s_S_min);
 	return;
 }
 
@@ -599,12 +600,12 @@ void calculate_S_Time(rampParams *r_Params)
 {
 	switch(r_Params->ramp_case)
 	{
-		case A:  PRINTF_DEBUG && printf("\nCase A\n");  break;
-		case B:  PRINTF_DEBUG && printf("\nCase B\n");  break;
-		case C1: PRINTF_DEBUG && printf("\nCase C1\n"); break;
-		case C2: PRINTF_DEBUG && printf("\nCase C2\n"); break;
-		case D1: PRINTF_DEBUG && printf("\nCase D1\n"); break;
-		case D2: PRINTF_DEBUG && printf("\nCase D2\n"); break;
+		case A:  SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\nCase A\n");  break;
+		case B:  SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\nCase B\n");  break;
+		case C1: SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\nCase C1\n"); break;
+		case C2: SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\nCase C2\n"); break;
+		case D1: SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\nCase D1\n"); break;
+		case D2: SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\nCase D2\n"); break;
 		default: break;
 	}
 	switch(r_Params->ramp_case)
@@ -640,8 +641,8 @@ void calculate_S_Time(rampParams *r_Params)
 	r_Params->s_t5 = r_Params->s_t_j + r_Params->s_t_v;
 	r_Params->s_t6 = r_Params->s_t_v + r_Params->s_t_a;
 	r_Params->s_t7 = r_Params->s_t_j + r_Params->s_t_a + r_Params->s_t_v;
-	PRINTF_DEBUG && printf("\nTj = %.2f | Ta = %.2f | Tv = %.2f\n", r_Params->s_t_j, r_Params->s_t_a, r_Params->s_t_v);
-	PRINTF_DEBUG && printf("\nt1 = %.2f | t2 = %.2f | t3 = %.2f | t4 = %.2f | t5 = %.2f | t6 = %.2f | t7 = %.2f\n", r_Params->s_t1, r_Params->s_t2, r_Params->s_t3, r_Params->s_t4, r_Params->s_t5, r_Params->s_t6, r_Params->s_t7);
+	SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\nTj = %.2f | Ta = %.2f | Tv = %.2f\n", r_Params->s_t_j, r_Params->s_t_a, r_Params->s_t_v);
+	SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\nt1 = %.2f | t2 = %.2f | t3 = %.2f | t4 = %.2f | t5 = %.2f | t6 = %.2f | t7 = %.2f\n", r_Params->s_t1, r_Params->s_t2, r_Params->s_t3, r_Params->s_t4, r_Params->s_t5, r_Params->s_t6, r_Params->s_t7);
 	return;
 }
 
@@ -654,8 +655,8 @@ void calculate_S_accelerations(rampParams *r_Params)
 	r_Params->s_a5 = -1 * r_Params->s_a1;	// a5 = -a1.
 	r_Params->s_a6 = -1 * r_Params->s_a1;	// a6 = a5 = -a1.
 	r_Params->s_a7 = 0;//r_Params->s_a6 + r_Params->jerk * (r_Params->s_t7 - r_Params->s_t6);	// a7 = 0.
-	PRINTF_DEBUG && printf("\na1 = %.2f | a2 = %.2f | a3 = %.2f | a4 = %.2f | a5 = %.2f | a6 = %.2f | a7 = %.2f\n", convert_PPS_To_RPM(r_Params->s_a1), convert_PPS_To_RPM(r_Params->s_a2), convert_PPS_To_RPM(r_Params->s_a3), convert_PPS_To_RPM(r_Params->s_a4), convert_PPS_To_RPM(r_Params->s_a5), convert_PPS_To_RPM(r_Params->s_a6), convert_PPS_To_RPM(r_Params->s_a7));
-	PRINTF_DEBUG && printf("\na1 = %.2f | a2 = %.2f | a3 = %.2f | a4 = %.2f | a5 = %.2f | a6 = %.2f | a7 = %.2f\n", r_Params->s_a1, r_Params->s_a2, r_Params->s_a3, r_Params->s_a4, r_Params->s_a5, r_Params->s_a6, r_Params->s_a7);
+	SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\na1 = %.2f | a2 = %.2f | a3 = %.2f | a4 = %.2f | a5 = %.2f | a6 = %.2f | a7 = %.2f\n", convert_PPS_To_RPM(r_Params->s_a1), convert_PPS_To_RPM(r_Params->s_a2), convert_PPS_To_RPM(r_Params->s_a3), convert_PPS_To_RPM(r_Params->s_a4), convert_PPS_To_RPM(r_Params->s_a5), convert_PPS_To_RPM(r_Params->s_a6), convert_PPS_To_RPM(r_Params->s_a7));
+	SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\na1 = %.2f | a2 = %.2f | a3 = %.2f | a4 = %.2f | a5 = %.2f | a6 = %.2f | a7 = %.2f\n", r_Params->s_a1, r_Params->s_a2, r_Params->s_a3, r_Params->s_a4, r_Params->s_a5, r_Params->s_a6, r_Params->s_a7);
 	return;
 }
 
@@ -669,9 +670,9 @@ void calculate_S_velocities(rampParams *r_Params)
 	r_Params->s_v6 = r_Params->s_v5 - r_Params->accelerations * (r_Params->s_t6 - r_Params->s_t5);
 	r_Params->s_v7 = r_Params->s_v6 + r_Params->s_a6 * (r_Params->s_t7 - r_Params->s_t6) + r_Params->jerk * ((sq_Value(r_Params->s_t7 - r_Params->s_t6) ) / 2);
 	
-	(r_Params->s_v3 != r_Params->target_Velocity) ? PRINTF_DEBUG && printf("\nV3 != Vmax\n"): (0);
-	PRINTF_DEBUG && printf("\nv1 = %.2f | v2 = %.2f | v3 = %.2f | v4 = %.2f | v5 = %.2f | v6 = %.2f | v7 = %.2f\n", convert_PPS_To_RPM(r_Params->s_v1), convert_PPS_To_RPM(r_Params->s_v2), convert_PPS_To_RPM(r_Params->s_v3), convert_PPS_To_RPM(r_Params->s_v4), convert_PPS_To_RPM(r_Params->s_v5), convert_PPS_To_RPM(r_Params->s_v6), convert_PPS_To_RPM(r_Params->s_v7));
-	PRINTF_DEBUG && printf("\nv1 = %.2f | v2 = %.2f | v3 = %.2f | v4 = %.2f | v5 = %.2f | v6 = %.2f | v7 = %.2f\n", r_Params->s_v1, r_Params->s_v2, r_Params->s_v3, r_Params->s_v4, r_Params->s_v5, r_Params->s_v6, r_Params->s_v7);
+	(r_Params->s_v3 != r_Params->target_Velocity) ? SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\nV3 != Vmax\n"): (0);
+	SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\nv1 = %.2f | v2 = %.2f | v3 = %.2f | v4 = %.2f | v5 = %.2f | v6 = %.2f | v7 = %.2f\n", convert_PPS_To_RPM(r_Params->s_v1), convert_PPS_To_RPM(r_Params->s_v2), convert_PPS_To_RPM(r_Params->s_v3), convert_PPS_To_RPM(r_Params->s_v4), convert_PPS_To_RPM(r_Params->s_v5), convert_PPS_To_RPM(r_Params->s_v6), convert_PPS_To_RPM(r_Params->s_v7));
+	SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\nv1 = %.2f | v2 = %.2f | v3 = %.2f | v4 = %.2f | v5 = %.2f | v6 = %.2f | v7 = %.2f\n", r_Params->s_v1, r_Params->s_v2, r_Params->s_v3, r_Params->s_v4, r_Params->s_v5, r_Params->s_v6, r_Params->s_v7);
 	return;
 }
 
@@ -689,7 +690,7 @@ void calculate_S_distances(rampParams *r_Params)
 	/*r_Params->s_p5 = r_Params->s_p4 + r_Params->s_p1;
 	r_Params->s_p6 = r_Params->s_p5 + (r_Params->s_p3 - (2 * r_Params->s_p1) );
 	r_Params->s_p7 = r_Params->s_p6 + r_Params->s_p1;*/
-	PRINTF_DEBUG && printf("\np1 = %.2f | p2 = %.2f | p3 = %.2f | p4 = %.2f | p5 = %.2f | p6 = %.2f | p7 = %.2f\n", r_Params->s_p1, r_Params->s_p2, r_Params->s_p3, r_Params->s_p4, r_Params->s_p5, r_Params->s_p6, r_Params->s_p7);
+	SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\np1 = %.2f | p2 = %.2f | p3 = %.2f | p4 = %.2f | p5 = %.2f | p6 = %.2f | p7 = %.2f\n", r_Params->s_p1, r_Params->s_p2, r_Params->s_p3, r_Params->s_p4, r_Params->s_p5, r_Params->s_p6, r_Params->s_p7);
 	return;
 }
 
@@ -704,12 +705,12 @@ void calculate_S_Ramp_Parameters(rampParams *r_Params)
 	r_Params->dist_mm			= r_Params->distance_total / TMC4671_ONE_MM_STEPS;
 	adjust_S_Velocity();
 	conversion_of_values(&rParams);
-	PRINTF_DEBUG && printf("\nTotal Distance = %.2f steps or %.2f mm\n", r_Params->distance_total, (r_Params->distance_total / TMC4671_ONE_MM_STEPS) );
-	PRINTF_DEBUG && printf("\nInitial Position = %.2f steps or %.2f mm\n", r_Params->initial_Position, (r_Params->initial_Position / TMC4671_ONE_MM_STEPS) );
-	PRINTF_DEBUG && printf("\nTarget Position = %.2f steps or %.2f mm\n", r_Params->target_Position, (r_Params->target_Position / TMC4671_ONE_MM_STEPS) );
-	PRINTF_DEBUG && printf("\nTarget Velocity = %.2f pps or %.2f rpm\n", r_Params->target_Velocity, (convert_PPS_To_RPM(r_Params->target_Velocity)) );
-	PRINTF_DEBUG && printf("\nAcceleration = %.2f pps/s or %.2f rpm/s\n", r_Params->accelerations, (convert_PPS_To_RPM(r_Params->accelerations)) );
-	PRINTF_DEBUG && printf("\nJerk = %.2f pps/s/s or %.2f rpm/s/s\n", r_Params->jerk, (convert_PPS_To_RPM(r_Params->jerk)) );
+	SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\nTotal Distance = %.2f steps or %.2f mm\n", r_Params->distance_total, (r_Params->distance_total / TMC4671_ONE_MM_STEPS) );
+	SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\nInitial Position = %.2f steps or %.2f mm\n", r_Params->initial_Position, (r_Params->initial_Position / TMC4671_ONE_MM_STEPS) );
+	SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\nTarget Position = %.2f steps or %.2f mm\n", r_Params->target_Position, (r_Params->target_Position / TMC4671_ONE_MM_STEPS) );
+	SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\nTarget Velocity = %.2f pps or %.2f rpm\n", r_Params->target_Velocity, (convert_PPS_To_RPM(r_Params->target_Velocity)) );
+	SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\nAcceleration = %.2f pps/s or %.2f rpm/s\n", r_Params->accelerations, (convert_PPS_To_RPM(r_Params->accelerations)) );
+	SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, ("\nJerk = %.2f pps/s/s or %.2f rpm/s/s\n", r_Params->jerk, (convert_PPS_To_RPM(r_Params->jerk)) );
 	find_S_Ramp_Case(&rParams);
 	calculate_S_Time(&rParams);
 	calculate_S_accelerations(&rParams);

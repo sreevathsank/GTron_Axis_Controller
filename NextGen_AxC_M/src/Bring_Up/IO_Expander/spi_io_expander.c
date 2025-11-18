@@ -13,7 +13,7 @@
  *	@param void
  *	@return void 
  **/
-void ioxp_Interrupt_Callback( void )
+/*void ioxp_Interrupt_Callback( void )
 {
 	uint8_t intf_rd_data = 0x00;
 	
@@ -24,13 +24,7 @@ void ioxp_Interrupt_Callback( void )
 	if(intf_rd_data)
 	{
 		// Read the INTCAP register to get the pin states and clear the register.
-		IOXP_Read_Byte(IOXP_REG_INTCAP_RD_ONLY, &gtron_limits.limit_flags);
-		/*if( MSK_GUIDE_R_LIM(gtron_limits.limit_flags) || MSK_GUIDE_L_LIM(gtron_limits.limit_flags) )
-		{
-			tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_VACTUAL, 0x00000000);
-			gtron_limits.interrupt_raised = true;
-			PRINTF_DEBUG ? printf("\nGuide Limit Hit, Setting Guide Motor Velocity to 0...\n"): 0;
-		}*/
+		
 		
 		PRINTF_DEBUG ? printf("\nGuide Limit Hit, Setting Guide Motor Velocity to 0...\n"): 0;
 		PRINTF_DEBUG ? printf("\n"): 0;
@@ -84,7 +78,7 @@ void ioxp_Interrupt_Callback( void )
 		
 	}
 	return;
-}
+}*/
 
 /** 
  *	\brief ioxp_Init - Initializes MCP23S08 IO Expander's registers.
@@ -103,24 +97,25 @@ void ioxp_Init( void )
 	uint8_t ioxp_rd_data = 0x00;
 	IOXP_Read_Byte(IOXP_REG_INTCAP_RD_ONLY, &ioxp_rd_data);
 	
-	PRINTF_DEBUG ? printf("\nIOXP Init Done\n"): 0;
+	printf("\nIOXP Init Done\n");
 	return;
 }
 
-void IOXP_transfer_block(void *wr_buf, void *rd_buf, uint8_t size)
+void IOXP_transfer_lbock(void *wr_buf, void *rd_buf, uint8_t size)
 {
-	uint8_t *w = (uint8_t *)wr_buf;
-	uint8_t *r = (uint8_t *)rd_buf;
+    SERCOM3_SPI_WriteRead(wr_buf, size, rd_buf, size);
+    //uint8_t *w = (uint8_t *)wr_buf;
+    //uint8_t *r = (uint8_t *)rd_buf;
+    //while (size--)
+    //{
+    //        hri_sercomspi_write_DATA_reg(SERCOM3, *w);
+    //        while (!(hri_sercomspi_read_INTFLAG_reg(SERCOM3) & SERCOM_SPI_INTFLAG_RXC));
+    //        *r = hri_sercomspi_read_DATA_reg(SERCOM3);
+    //        r++;
+    //        w++;
+    //}
+    //return;
 
-	while (size--)
-	{
-		hri_sercomspi_write_DATA_reg(SERCOM3, *w);
-		while (!(hri_sercomspi_read_INTFLAG_reg(SERCOM3) & SERCOM_SPI_INTFLAG_RXC));
-		*r = hri_sercomspi_read_DATA_reg(SERCOM3);
-		r++;
-		w++;
-	}
-	return;
 }
 
 /**
@@ -134,22 +129,27 @@ void IOXP_transfer_block(void *wr_buf, void *rd_buf, uint8_t size)
  */
 bool IOXP_transfer(const uint8_t *wbuf, uint8_t *rbuf, const uint16_t length)
 {
-	// Pull SS low to communicate to device.
-	gpio_set_pin_level(IOXP_CS, 0);
-	delay_ms(1);
-	// Set the Initial Return Value
-	bool returnVal = false;
+    // Pull SS low to communicate to device.
+    //gpio_set_pin_level(IOXP_CS, 0);
+    IOXP_CS_Clear();
+    //delay_ms(1);
 
-	IOXP_transfer_block(wbuf, rbuf, length);
-	
-	// Set the Return Value
-	returnVal = true;
-	delay_ms(1);
-	// Pull SS high to stop communication.
-	gpio_set_pin_level(IOXP_CS, 1);
-	
-	// Return the Function
-	return returnVal;
+    // Set the Initial Return Value
+    bool returnVal = false;
+
+    IOXP_transfer_block(wbuf, rbuf, length);
+
+    // Set the Return Value
+    returnVal = true;
+    //delay_ms(1);
+
+    // Pull SS high to stop communication.
+    //gpio_set_pin_level(IOXP_CS, 1);
+    IOXP_CS_Set();
+
+    // Return the Function
+    return returnVal;
+
 }
 
 /**
@@ -201,8 +201,8 @@ void IOXP_Read_Byte( IOXP_REGISTERS_t reg_addr, uint8_t *addr_rd_data )
 	
 	*addr_rd_data = rd_buf[2];
 	
-	PRINTF_DEBUG ? printf("\nIOXP SPI RD: Dev Opcode: 0x%x | Reg Addr: 0x%x | Read Byte: 0x%x\n", \
-							wr_buf[0], wr_buf[1], rd_buf[2]): 0;
+	printf("\nIOXP SPI RD: Dev Opcode: 0x%x | Reg Addr: 0x%x | Read Byte: 0x%x\n", \
+							wr_buf[0], wr_buf[1], rd_buf[2]);
 	
 	return;
 }

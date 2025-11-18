@@ -46,7 +46,7 @@ data:
       - children:
         - attributes:
             id: sercom3
-            value: '479'
+            value: '11'
           type: Dynamic
         type: Values
       type: Integer
@@ -331,11 +331,6 @@ data:
             value: 'true'
           type: Boolean
         type: Attributes
-      - children:
-        - attributes:
-            value: 'true'
-          type: User
-        type: Values
       type: Boolean
     SPI_CLOCK_PHASE:
       attributes:
@@ -387,7 +382,7 @@ data:
         type: Attributes
       - children:
         - attributes:
-            value: '50000'
+            value: '2000000'
           type: User
         type: Values
       type: Integer

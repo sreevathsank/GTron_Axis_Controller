@@ -1,3 +1,10 @@
+/* 
+ * File:   ext_flash.h
+ * Author: sreevathsank
+ *
+ * Created on September 26, 2025, 10:37 AM
+ */
+
 #ifndef EXT_FLASH_H_
 #define EXT_FLASH_H_
 
@@ -6,13 +13,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
-// Include Files for Driver Initialisation
-//#include "driver_init.h"
-//#include <hpl/spi/spi_lite.h>
-//#include <hal_spi_m_async.h>
-//#include "All_Headers.h"
-#include "string.h"
+#include "libpic32c.h"
+
+#include "definitions.h"                // SYS function prototypes
 #include "tlv_flash.h"
 
 //struct spi_m_async_descriptor SERIALFLASH;
@@ -50,7 +55,7 @@ typedef struct
 } extFlashInfo_t;
 
 // IO Descriptor for EXTFLASH SPI Comms
-struct io_descriptor *extflash_io;
+extern struct io_descriptor *extflash_io;
 
 // Function for Initialising SPI on ExtFlash
 void EXTFLASH_init(void);
@@ -58,13 +63,14 @@ void EXTFLASH_init(void);
 // ExtFlash Methods
 
 extern void SPI_0_transfer_block(void *wr_buf, void *rd_buf, uint8_t size);
-extern void Ext_Flash_transfer_block(void *wr_buf, void *rd_buf, uint8_t size);
+extern void Ext_Flash_transfer_block(void *wr_buf, void *rd_buf, size_t size);
 
 extern void EXTFLASH_setup(void);
 extern bool EXTFLASH_open(void);
 extern bool EXTFLASH_read(size_t offset, size_t length, uint8_t *buf);
-extern bool EXTFLASH_write(size_t offset, size_t length, const uint8_t *buf);
+extern bool EXTFLASH_write(size_t offset, size_t length, uint8_t *buf);
 extern bool EXTFLASH_erase(size_t offset, size_t length);
 extern bool EXTFLASH_readInfo(void);
 extern bool EXTFLASH_transfer(const uint8_t *wbuf, uint8_t *rbuf, const uint16_t length);
 #endif
+

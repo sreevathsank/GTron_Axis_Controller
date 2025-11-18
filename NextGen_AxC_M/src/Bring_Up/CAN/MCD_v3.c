@@ -28,50 +28,50 @@ double_t convert_RPM_To_PPS(double_t value)
  * @param void
  * @return void
  */
-void do_4671_Ping(void)
-{
-	//value = can_rx_frame.data_64bit;
-	tmc4671_writeInt(MOTOR, TMC4671_CHIPINFO_ADDR, ZERO_HEX);
-	//if(VERSION_4671 == tmc4671_readInt(MOTOR, TMC4671_CHIPINFO_DATA))
-	{
-		int32_t value = ZERO_HEX;
-		switch(axis_id)
-		{
-			case X_AXIS: message_Id = CAN_ID(REPLY_ID_X, X, 0x64, 0x8A); break;
-			case Y_AXIS: message_Id = CAN_ID(REPLY_ID_Y, Y, 0x64, 0x8A); break;
-			case Z_AXIS: message_Id = CAN_ID(REPLY_ID_Z, Z, 0x64, 0x8A); break;
-			default: break;
-		}
-		encoding_CAN_Byte_Data(0x01);
-		can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
-		can_Write(message_Id, value);
-		PRINTF_DEBUG && printf("\nad %x  cmd %x  typ %x mot %x Data %x %x %x %x %x", ad, cmd, typ ,mot, can_tx_frame.data[0], can_tx_frame.data[1], can_tx_frame.data[2], can_tx_frame.data[3], can_rx_frame.data[4]);
-	}
-}
+//void do_4671_Ping(void)
+//{
+//	//value = can_rx_frame.data_64bit;
+//	tmc4671_writeInt(MOTOR, TMC4671_CHIPINFO_ADDR, ZERO_HEX);
+//	//if(VERSION_4671 == tmc4671_readInt(MOTOR, TMC4671_CHIPINFO_DATA))
+//	{
+//		int32_t value = ZERO_HEX;
+//		switch(axis_id)
+//		{
+//			case X_AXIS: message_Id = CAN_ID(REPLY_ID_X, X, 0x64, 0x8A); break;
+//			case Y_AXIS: message_Id = CAN_ID(REPLY_ID_Y, Y_ADDR, 0x64, 0x8A); break;
+//			case Z_AXIS: message_Id = CAN_ID(REPLY_ID_Z, Z, 0x64, 0x8A); break;
+//			default: break;
+//		}
+//		encoding_CAN_Byte_Data(0x01);
+//		can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
+//		can_Write(message_Id, value);
+//		PRINTF_DEBUG && printf("\nad %x  cmd %x  typ %x mot %x Data %x %x %x %x %x", ad, cmd, typ ,mot, can_tx_frame.data[0], can_tx_frame.data[1], can_tx_frame.data[2], can_tx_frame.data[3], can_rx_frame.data[4]);
+//	}
+//}
 
-void do_Move_Done_Ping(void)
-{
-	int32_t value = 0x01;
-	switch(axis_id)
-	{
-		case X_AXIS: message_Id = CAN_ID(REPLY_ID_X, X, 0x64, 0x8A); break;
-		case Y_AXIS: message_Id = CAN_ID(REPLY_ID_Y, Y, 0x64, 0x8A); break;
-		case Z_AXIS: message_Id = CAN_ID(REPLY_ID_Z, Z, 0x64, 0x8A); break;
-	}
-	if(limit_variables.homing)
-	{
-		encoding_CAN_Byte_Data(0x03);
-		can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
-	}
-	else if(limit_variables.homing == false)
-	{
-		encoding_CAN_Byte_Data(0x00);
-		can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
-	}
-	can_Write(message_Id, value); 
-	printf("\nad %x  cmd %x  typ %x mot %x Data %x %x %x %x %x", ad, cmd, typ ,mot, can_tx_frame.data[0], can_tx_frame.data[1], can_tx_frame.data[2], can_tx_frame.data[3], can_rx_frame.data[4]);
-	return;
-}
+//void do_Move_Done_Ping(void)
+//{
+//	int32_t value = 0x01;
+//	switch(axis_id)
+//	{
+//		case X_AXIS: message_Id = CAN_ID(REPLY_ID_X, X, 0x64, 0x8A); break;
+//		case Y_AXIS: message_Id = CAN_ID(REPLY_ID_Y, Y_ADDR, 0x64, 0x8A); break;
+//		case Z_AXIS: message_Id = CAN_ID(REPLY_ID_Z, Z, 0x64, 0x8A); break;
+//	}
+//	if(limit_variables.homing)
+//	{
+//		encoding_CAN_Byte_Data(0x03);
+//		can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
+//	}
+//	else if(limit_variables.homing == false)
+//	{
+//		encoding_CAN_Byte_Data(0x00);
+//		can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
+//	}
+//	can_Write(message_Id, value); 
+//	printf("\nad %x  cmd %x  typ %x mot %x Data %x %x %x %x %x", ad, cmd, typ ,mot, can_tx_frame.data[0], can_tx_frame.data[1], can_tx_frame.data[2], can_tx_frame.data[3], can_rx_frame.data[4]);
+//	return;
+//}
 
 void reeler_Move_Done(void)
 {
@@ -97,44 +97,44 @@ void reeler_Move_Done(void)
  * @param void
  * @return void
  */
-void do_Ref_Search_Ping(void)
-{
-	switch(axis_id)
-	{
-		case X_AXIS: message_Id = CAN_ID(REPLY_ID_X, X, 0x64, RFS); break;
-		case Y_AXIS: message_Id = CAN_ID(REPLY_ID_Y, Y, 0x64, RFS); break;
-		case Z_AXIS: message_Id = CAN_ID(REPLY_ID_Z, Z, 0x64, RFS); break;
-	}
-	if(limit_variables.homing)
-	{
-		can_tx_frame.data[0] = ZERO_HEX;
-		can_tx_frame.data[1] = ZERO_HEX;
-		can_tx_frame.data[2] = ZERO_HEX;
-		can_tx_frame.data[3] = 0x05;		// Some non-zero value
-	}
-	else if(limit_variables.homing == false)
-	{
-		can_tx_frame.data[0] = ZERO_HEX;
-		can_tx_frame.data[1] = ZERO_HEX;
-		can_tx_frame.data[2] = ZERO_HEX;
-		can_tx_frame.data[3] = ZERO_HEX;
-	}
-	can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, can_tx_frame.data_64bit);
-	can_Write(message_Id, data);
-	switch(axis_id)
-	{
-		case X_AXIS:
-			PRINTF_DEBUG && printf("\n ad %x  cmd %x  typ %x mot %x Data %x %x %x %x %x RFS_PING_X", ad, cmd, typ ,mot, can_tx_frame.data[0], can_tx_frame.data[1], can_tx_frame.data[2], can_tx_frame.data[3], can_rx_frame.data[4]);
-		break;
-		case Y_AXIS:
-			PRINTF_DEBUG && printf("\n ad %x  cmd %x  typ %x mot %x Data %x %x %x %x %x RFS_PING_Y", ad, cmd, typ ,mot, can_tx_frame.data[0], can_tx_frame.data[1], can_tx_frame.data[2], can_tx_frame.data[3], can_rx_frame.data[4]);
-		break;
-		case Z_AXIS:
-			PRINTF_DEBUG && printf("\n ad %x  cmd %x  typ %x mot %x Data %x %x %x %x %x RFS_PING_Z", ad, cmd, typ ,mot, can_tx_frame.data[0], can_tx_frame.data[1], can_tx_frame.data[2], can_tx_frame.data[3], can_rx_frame.data[4]);
-		break;
-	}
-	return;	
-}
+//void do_Ref_Search_Ping(void)
+//{
+//	switch(axis_id)
+//	{
+//		case X_AXIS: message_Id = CAN_ID(REPLY_ID_X, X, 0x64, RFS); break;
+//		case Y_AXIS: message_Id = CAN_ID(REPLY_ID_Y, Y_ADDR, 0x64, RFS); break;
+//		case Z_AXIS: message_Id = CAN_ID(REPLY_ID_Z, Z, 0x64, RFS); break;
+//	}
+//	if(limit_variables.homing)
+//	{
+//		can_tx_frame.data[0] = ZERO_HEX;
+//		can_tx_frame.data[1] = ZERO_HEX;
+//		can_tx_frame.data[2] = ZERO_HEX;
+//		can_tx_frame.data[3] = 0x05;		// Some non-zero value
+//	}
+//	else if(limit_variables.homing == false)
+//	{
+//		can_tx_frame.data[0] = ZERO_HEX;
+//		can_tx_frame.data[1] = ZERO_HEX;
+//		can_tx_frame.data[2] = ZERO_HEX;
+//		can_tx_frame.data[3] = ZERO_HEX;
+//	}
+//	can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, can_tx_frame.data_64bit);
+//	can_Write(message_Id, data);
+//	switch(axis_id)
+//	{
+//		case X_AXIS:
+//			PRINTF_DEBUG && printf("\n ad %x  cmd %x  typ %x mot %x Data %x %x %x %x %x RFS_PING_X", ad, cmd, typ ,mot, can_tx_frame.data[0], can_tx_frame.data[1], can_tx_frame.data[2], can_tx_frame.data[3], can_rx_frame.data[4]);
+//		break;
+//		case Y_AXIS:
+//			PRINTF_DEBUG && printf("\n ad %x  cmd %x  typ %x mot %x Data %x %x %x %x %x RFS_PING_Y", ad, cmd, typ ,mot, can_tx_frame.data[0], can_tx_frame.data[1], can_tx_frame.data[2], can_tx_frame.data[3], can_rx_frame.data[4]);
+//		break;
+//		case Z_AXIS:
+//			PRINTF_DEBUG && printf("\n ad %x  cmd %x  typ %x mot %x Data %x %x %x %x %x RFS_PING_Z", ad, cmd, typ ,mot, can_tx_frame.data[0], can_tx_frame.data[1], can_tx_frame.data[2], can_tx_frame.data[3], can_rx_frame.data[4]);
+//		break;
+//	}
+//	return;	
+//}
 
 /** 
  * \brief Common function to reply to MCD commands

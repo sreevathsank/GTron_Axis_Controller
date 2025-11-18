@@ -746,13 +746,13 @@ void reply_MST(uint32_t message_Id, int32_t data)
 	switch(axis_id)
 	{
 		case X_AXIS:
-			message_Id = CAN_ID(REPLY_ID_X, X, 0x64, MST);
+			message_Id = CAN_ID(REPLY_ID_X, X_ADDR, 0x64, MST);
 		break;
 		case Y_AXIS:
-			message_Id = CAN_ID(REPLY_ID_Y, Y, 0x64, MST);
+			message_Id = CAN_ID(REPLY_ID_Y, Y_ADDR, 0x64, MST);
 		break;
 		case Z_AXIS:
-			message_Id = CAN_ID(REPLY_ID_Z, Z, 0x64, MST);
+			message_Id = CAN_ID(REPLY_ID_Z, Z_ADDR, 0x64, MST);
 		break;
 		default: break;
 	}

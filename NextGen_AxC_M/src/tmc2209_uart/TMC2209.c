@@ -15,6 +15,8 @@
 extern const uint8_t tmcCRCTable_Poly7Reflected[256];
 #else
 
+bool tmc2209_read_flag = false;
+
 const uint8_t tmcCRCTable_Poly7Reflected[256] = {
             0x00, 0x91, 0xE3, 0x72, 0x07, 0x96, 0xE4, 0x75, 0x0E, 0x9F, 0xED, 0x7C, 0x09, 0x98, 0xEA, 0x7B,
             0x1C, 0x8D, 0xFF, 0x6E, 0x1B, 0x8A, 0xF8, 0x69, 0x12, 0x83, 0xF1, 0x60, 0x15, 0x84, 0xF6, 0x67,
@@ -130,15 +132,19 @@ extern bool tmc2209_cache(uint16_t icID, TMC2209CacheOp operation, uint8_t addre
 uint32_t tmc2209_UART_write(const uint8_t *const buf, const uint16_t length)
 {
 	uint32_t offset = 0;
+        
+	//assert(buf && length);
 
-	ASSERT(buf && length);
-
-	while (!TMC2209_UART_is_byte_sent());
+	//while (!TMC2209_UART_is_byte_sent());
+        //while( !SERCOM5_USART_WriteCountGet() );
 	do {
-		TMC2209_UART_write_byte(buf[offset]);
-		while (!TMC2209_UART_is_byte_sent());
+            SERCOM5_USART_Write( (uint8_t *)&buf[offset], 1 );
+        //SERCOM5_USART_WriteByte();
+            //while( SERCOM5_USART_WriteIsBusy() );
+            //while (!TMC2209_UART_is_byte_sent());
 	} while (++offset < length);
-
+        while( SERCOM5_USART_WriteCountGet() != 0 );
+        //printf("\nWrite Count = %ld\n", SERCOM5_USART_WriteCountGet());
 	return offset;
 }
 
@@ -154,11 +160,14 @@ uint32_t tmc2209_UART_read(uint8_t *const buf, const uint16_t length)
 {
 	uint32_t offset = 0;
 
-	ASSERT(buf && length);
-
+	//ASSERT(buf && length);
+        printf("\n TMC2209 Rd ");
 	do {
-		while (!TMC2209_UART_is_byte_received());
-		buf[offset] = TMC2209_UART_read_byte();
+            //while (!TMC2209_UART_is_byte_received());
+            //while( SERCOM5_USART_ReadCountGet() > 0 );
+            SERCOM5_USART_Read( &buf[offset], 1 );
+            printf("buf[%ld] = %x |", offset, buf[offset]);
+            //buf[offset] = TMC2209_UART_read_byte();
 	} while (++offset < length);
 
 	return offset;
@@ -192,50 +201,53 @@ int32_t readRegisterUART(uint16_t icID, uint8_t address)
     address = address & TMC2209_ADDRESS_MASK;
     
     data[0] = 0x05;
-	//tmc2209_UART_write(&data[0], 1);
    
-	data[1] = icID;//tmc2209_getNodeAddress(icID); //targetAddressUart;
-	//tmc2209_UART_write(&data[1], 1);
-	
-	data[2] = address;
-	//tmc2209_UART_write(&data[2], 1);
+    data[1] = icID;
+    
+    data[2] = address;
+    
+    data[3] = CRC8(data, 3);
+    //CRITICAL_SECTION_ENTER();
+    //taskENTER_CRITICAL();
+    tmc2209_UART_write(data, 4);
 
-	data[3] = CRC8(data, 3);
-	//tmc2209_UART_write(&data[3], 1);
-	CRITICAL_SECTION_ENTER();
-		tmc2209_UART_write(&data, 4);
-		
-		// Reading the 4 bytes written to clear the Rx buffer.
-		(void)tmc2209_UART_read(&data, 4);
-		
-		memset(&data, 0x00, sizeof(data));
-		tmc2209_read_flag = true;
-		
-		// Read the 8 incoming bytes.
-		tmc2209_UART_read(&data, 8);
-	CRITICAL_SECTION_LEAVE();
-	// Byte 0: Sync nibble correct?
-	if (data[0] != 0x05)
-	{
-		   return 0;
-	}
-	// Byte 1: Master address correct?
-	if (data[1] != 0xFF)
-	{
-		   return 0;
-	}
-	// Byte 2: Address correct?
-	if (data[2] != address)
-	{
-		   return 0;
-	}
-	// Byte 7: CRC correct?
-	if (data[7] != CRC8(data, 7))
-	{
-		   return 0;
-	}
+    // Reading the 4 bytes written to clear the Rx buffer.
+    (void)tmc2209_UART_read(data, 4);
 
-	return ( ((uint32_t)data[3] << 24) | ((uint32_t)data[4] << 16) | (data[5] << 8) | data[6] );
+    memset(data, 0x00, sizeof(data));
+    tmc2209_read_flag = true;
+
+    // Read the 8 incoming bytes.
+    tmc2209_UART_read(data, 8);
+    //taskEXIT_CRITICAL();
+    //CRITICAL_SECTION_LEAVE();
+    // Byte 0: Sync nibble correct?
+    if (data[0] != 0x05)
+    {
+        printf("\nSync Nibble Reply Error TMC2209\n");
+    	return 0;
+    }
+    // Byte 1: Master address correct?
+    if (data[1] != 0xFF)
+    {
+    	printf("\nMaster Address Reply Error TMC2209\n");
+        return 0;
+    }
+    // Byte 2: Address correct?
+    if (data[2] != address)
+    {
+    	printf("\nReg Addr Reply Error TMC2209\n");
+        return 0;
+    }
+    // Byte 7: CRC correct?
+    if (data[7] != CRC8(data, 7))
+    {
+    	printf("\nCRC8 Reply Error TMC2209\n");   
+        return 0;
+    }
+    for(int32_t i = 3; i < 8; i++) { printf("%ld => %x\t", i, data[i]); }
+    SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nret val %x\n", ( ((uint32_t)data[3] << 24) | ((uint32_t)data[4] << 16) | (data[5] << 8) | data[6] ));
+    return ( ((uint32_t)data[3] << 24) | ((uint32_t)data[4] << 16) | (data[5] << 8) | data[6] );
 }
 
 void writeRegisterUART(uint16_t icID, uint8_t address, int32_t value)
@@ -246,32 +258,42 @@ void writeRegisterUART(uint16_t icID, uint8_t address, int32_t value)
 	//tmc2209_UART_write(&data[0], 1);
     
     data[1] = icID;							//targetAddressUart;
-	//tmc2209_UART_write(&data[1], 1);
-	
-	data[2] = address | TMC_WRITE_BIT;
-	//tmc2209_UART_write(&data[2], 1);
-	
-	data[3] = (value >> 24) & 0xFF;
-	//tmc2209_UART_write(&data[3], 1);
-	
-	data[4] = (value >> 16) & 0xFF;
-	//tmc2209_UART_write(&data[4], 1);
-	
-	data[5] = (value >> 8 ) & 0xFF;
-	//tmc2209_UART_write(&data[5], 1);
-	
-	data[6] = (value      ) & 0xFF;
-	//tmc2209_UART_write(&data[6], 1);
-	
-	data[7] = CRC8(data, 7);
-	//tmc2209_UART_write(&data[7], 1);
-	
-	CRITICAL_SECTION_ENTER();
-		tmc2209_UART_write(&data, 8);
-	CRITICAL_SECTION_LEAVE();
-	
-	//Cache the registers with write-only access
-	tmc2209_cache(icID, TMC2209_CACHE_WRITE, address, &value);
+    //tmc2209_UART_write(&data[1], 1);
+    
+    data[2] = address | TMC_WRITE_BIT;
+    //tmc2209_UART_write(&data[2], 1);
+    
+    data[3] = (value >> 24) & 0xFF;
+    //tmc2209_UART_write(&data[3], 1);
+    
+    data[4] = (value >> 16) & 0xFF;
+    //tmc2209_UART_write(&data[4], 1);
+    
+    data[5] = (value >> 8 ) & 0xFF;
+    //tmc2209_UART_write(&data[5], 1);
+    
+    data[6] = (value      ) & 0xFF;
+    //tmc2209_UART_write(&data[6], 1);
+    
+    data[7] = CRC8(data, 7);
+    //tmc2209_UART_write(&data[7], 1);
+    
+    //CRITICAL_SECTION_ENTER();
+    //taskENTER_CRITICAL();
+    tmc2209_UART_write(data, 8);
+        
+    while( SERCOM5_USART_WriteCountGet() != 0 );
+    size_t rd_buf_count = SERCOM5_USART_ReadCountGet();
+    if( rd_buf_count )
+    {
+        //printf("\nReading %ld bytes after writing inside write\n", rd_buf_count);
+        tmc2209_UART_read(data, 8 );
+    }
+    //taskEXIT_CRITICAL();
+           //CRITICAL_SECTION_LEAVE();
+    
+    //Cache the registers with write-only access
+    tmc2209_cache(icID, TMC2209_CACHE_WRITE, address, &value);
 }
 
 static uint8_t CRC8(uint8_t *data, uint32_t bytes)

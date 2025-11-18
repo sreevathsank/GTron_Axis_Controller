@@ -14,17 +14,17 @@
 #include "Bring_Up/DBG_bring_up.h"
 #include "Code_Dump/tlv_flash.h"
 
-struct timer_task ramp_timer_struct;
-struct timer_task vel_timer_struct;
-struct timer_task guide_idx_counter_timer_struct;
+//struct timer_task ramp_timer_struct;
+//struct timer_task vel_timer_struct;
+//struct timer_task guide_idx_counter_timer_struct;
 
 void debounce_delay(uint32_t time_taken)
 {
-	current_time = millis();
+	//current_time = millis();
 	prev_time = current_time;
 	while( (current_time - prev_time) < time_taken )
 	{
-		current_time = millis();
+		//current_time = millis();
 	}
 	return;
 }
@@ -41,25 +41,25 @@ void led_Blink(uint32_t iteration, uint32_t time_taken)
 {
 	for(int i = 0; i < iteration; i++)
 	{
-		gpio_toggle_pin_level(DBGLED1);
+		// //gpio_toggle_pin_level(DBGLED1);
 		//while(!debounce_delay(time_taken));
-		delay_ms(time_taken);
+		// //delay_ms(time_taken);
 				
-		gpio_toggle_pin_level(DBGLED1);
-		gpio_toggle_pin_level(DBGLED3);
+		// //gpio_toggle_pin_level(DBGLED1);
+		// //gpio_toggle_pin_level(DBGLED3);
 		//while(!debounce_delay(time_taken));
-		delay_ms(time_taken);
+		// //delay_ms(time_taken);
 		
-		gpio_toggle_pin_level(DBGLED3);
-		gpio_toggle_pin_level(DBGLED2);
+		// //gpio_toggle_pin_level(DBGLED3);
+		// //gpio_toggle_pin_level(DBGLED2);
 		//while(!debounce_delay(time_taken));
-		delay_ms(time_taken);
+		// //delay_ms(time_taken);
 		
-		gpio_toggle_pin_level(DBGLED2);
+		// //gpio_toggle_pin_level(DBGLED2);
 	}
-	gpio_set_pin_level(DBGLED1, 1);
-	gpio_set_pin_level(DBGLED2, 1);
-	gpio_set_pin_level(DBGLED3, 1);
+	// //gpio_set_pin_level(DBGLED1, 1);
+	// //gpio_set_pin_level(DBGLED2, 1);
+	// //gpio_set_pin_level(DBGLED3, 1);
 }
 
 /** 
@@ -90,16 +90,16 @@ void vel_timer_cb(void)
 void init_timers(void)
 {
 	// Init the timer used for ramp generation.
-	ramp_timer_struct.interval = RAMP_INTERVAL_MS;
-	ramp_timer_struct.cb       = timer_ramp_cb;
-	ramp_timer_struct.mode     = TIMER_TASK_REPEAT;
-	timer_add_task(&TIMER_0, &ramp_timer_struct);
+	// //ramp_timer_struct.interval = RAMP_INTERVAL_MS;
+	// //ramp_timer_struct.cb       = timer_ramp_cb;
+	// //ramp_timer_struct.mode     = TIMER_TASK_REPEAT;
+	// //timer_add_task(&TIMER_0, &ramp_timer_struct);
 	
 	// Init the timer used for sending position during knob mode.
-	vel_timer_struct.interval	= VEL_INTERVAL_MS;
-	vel_timer_struct.cb			= vel_timer_cb;
-	vel_timer_struct.mode		= TIMER_TASK_REPEAT;
-	timer_add_task(&VEL_TIMER, &vel_timer_struct);
+	// //vel_timer_struct.interval	= VEL_INTERVAL_MS;
+	// //vel_timer_struct.cb			= vel_timer_cb;
+	// //vel_timer_struct.mode		= TIMER_TASK_REPEAT;
+	// //timer_add_task(&VEL_TIMER, &vel_timer_struct);
 	
 	
 }
@@ -108,12 +108,12 @@ static void init_Motor_Struct(Motor_Info_t *motor_info, Motor_Name_Enum_t motor_
 {
 	if(motor_info == NULL)
 	{
-		PRINTF_DEBUG ? printf("\ninit_Motor_Struct NULL Pointer.\n"): 0;
+		SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\ninit_Motor_Struct NULL Pointer.\n");
 		return;
 	}
 	if(motor_name > NO_OF_MOTOR_NAME)
 	{
-		PRINTF_DEBUG ? printf("\ninit_Motor_Struct Motor Name not in Motor_Name_Enum_t.\n"): 0;
+		SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\ninit_Motor_Struct Motor Name not in Motor_Name_Enum_t.\n");
 		return;	
 	}
 	
@@ -173,10 +173,10 @@ void can_Rx_Cb(void)
  */
 void can_Init(void)
 {
-	can_begin(&CAN_1, CAN1, 500, SILENT);
-	can_set_txcb(&CAN_1, (FUNC_PTR)can_Tx_Cb);
-	can_set_rxcb(&CAN_1, (FUNC_PTR)can_Rx_Cb);
-	can_set_filter(&CAN_1, 0, 0, EXT_ID);
+	// //can_begin(&CAN_1, CAN1, 500, SILENT);
+	// //can_set_txcb(&CAN_1, (FUNC_PTR)can_Tx_Cb);
+	// //can_set_rxcb(&CAN_1, (FUNC_PTR)can_Rx_Cb);
+	// //can_set_filter(&CAN_1, 0, 0, EXT_ID);
 	
 	return;
 }
@@ -194,14 +194,14 @@ void rx_cb_UART(const struct usart_async_descriptor *const io_descr)
 void init_UART(void)
 {
 	
-	usart_sync_get_io_descriptor(&TARGET_IO, &io);
-	usart_sync_enable(&TARGET_IO);	
-
-	//usart_async_register_callback(&UART_0, USART_ASYNC_TXC_CB, tx_cb_UART);
-	usart_async_register_callback(&UART_0, USART_ASYNC_RXC_CB, rx_cb_UART);
-	//usart_async_register_callback(&UART_0, USART_ASYNC_ERROR_CB, err_cb);
-	usart_async_get_io_descriptor(&UART_0, &oi);
-	usart_async_enable(&UART_0);
+	// //usart_sync_get_io_descriptor(&TARGET_IO, &io);
+	// //usart_sync_enable(&TARGET_IO);	
+// //
+	// ////usart_async_register_callback(&UART_0, USART_ASYNC_TXC_CB, tx_cb_UART);
+	// //usart_async_register_callback(&UART_0, USART_ASYNC_RXC_CB, rx_cb_UART);
+	// ////usart_async_register_callback(&UART_0, USART_ASYNC_ERROR_CB, err_cb);
+	// //usart_async_get_io_descriptor(&UART_0, &oi);
+	// //usart_async_enable(&UART_0);
 }
 
 /** 
@@ -215,19 +215,19 @@ void check_Current_Axis_ADC(void)
 	
 	for(int32_t iter = 0; iter < ADC_NUM_READINGS; iter++)
 	{
-		adc_sync_read_channel(&ADC_0, ADC_CHANNEL, adc_reading.adc_8bit, ADC_READ_LENGTH);
-		if(adc_reading.adc_16bit > adc_max)
-		{
-			adc_max = adc_reading.adc_16bit;
-		}
-		else if(adc_reading.adc_16bit < adc_min)
-		{
-			adc_min = adc_reading.adc_16bit;
-		}
-		adc_sum += adc_reading.adc_16bit;
+		// //adc_sync_read_channel(&ADC_0, ADC_CHANNEL, adc_reading.adc_8bit, ADC_READ_LENGTH);
+		// //if(adc_reading.adc_16bit > adc_max)
+		// //{
+		// //	adc_max = adc_reading.adc_16bit;
+		// //}
+		// //else if(adc_reading.adc_16bit < adc_min)
+		// //{
+		// //	adc_min = adc_reading.adc_16bit;
+		// //}
+		// //adc_sum += adc_reading.adc_16bit;
 	}
 	adc_result = (uint32_t)(adc_sum / ADC_NUM_READINGS);
-	PRINTF_DEBUG ? printf("\nADC Max = %ld | ADC Avg = %ld | ADC Min = %ld\n", (uint32_t)adc_max, (uint32_t)adc_result, (uint32_t)adc_min) : 0;
+	SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nADC Max = %ld | ADC Avg = %ld | ADC Min = %ld\n", (uint32_t)adc_max, (uint32_t)adc_result, (uint32_t)adc_min);
 	
 	//if( (adc_result >= GTRON_AXC_ADC_MIN) && (adc_result <= GTRON_AXC_ADC_MAX) )
 	{
@@ -245,7 +245,7 @@ void read_4671_ADC_Raw(void)
 	tmc4671_writeInt(MOTOR, TMC4671_PWM_SV_CHOP, ZERO_HEX);
 	
 	// Set the Enable pin of TMC4671 to LOW.
-	gpio_set_pin_level(EN_4671, LOW);
+	// //gpio_set_pin_level(EN_4671, LOW);
 	
 	// Set the ADC_ADDR register to show ADC I0 and I1 RAW values.
 	tmc4671_writeInt(MOTOR, TMC4671_ADC_RAW_ADDR, ZERO_HEX);
@@ -371,7 +371,7 @@ void read_Set_Parameters_From_Flash(void)
 		break;
 		default: break;
 	}
-	//PRINTF_DEBUG && printf("\naccel delta =%.4f | jerk delta = %.4f\n", axis_params.acceleration_delta, axis_params.jerk_delta);
+	//SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\naccel delta =%.4f | jerk delta = %.4f\n", axis_params.acceleration_delta, axis_params.jerk_delta);
 	return;
 }
 
@@ -392,8 +392,7 @@ bool check_4671_version_spi(void)
 	int32_t chip_info = tmc4671_readInt(MOTOR, TMC4671_CHIPINFO_DATA);
 	bool ret_val = VERSION_4671 == tmc4671_readInt(MOTOR, TMC4671_CHIPINFO_DATA);
 	printf("\nchip info = %ld or 0x%x\n", chip_info, chip_info);
-	ret_val ? PRINTF_DEBUG ? printf("\nSPI Comms with TMC4671 is successful\n"): 0
-			: 0;
+	//ret_val ? SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nSPI Comms with TMC4671 is successful\n")
     return ret_val;
 }
 
@@ -408,7 +407,7 @@ bool check_passive_flash_spi(void)
 	// Check the Flash Manufacture and Device ID.
 	if( EXTFLASH_open() )
 	{
-		PRINTF_DEBUG && printf("\nExt Flash ID Check Pass\n");
+		SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nExt Flash ID Check Pass\n");
 		ioxp_Init();
 		return 0; // Success.
 	}
@@ -424,10 +423,10 @@ bool check_passive_flash_spi(void)
 void reset_TMC4671(void)
 {
 	//tmc4671_disablePWM(MOTOR);
-	delay_ms(1);
-	gpio_set_pin_level(RST_4671, 0);
-	delay_ms(1);
-	gpio_set_pin_level(RST_4671, 1);	
+	// //delay_ms(1);
+	// //gpio_set_pin_level(RST_4671, 0);
+	// //delay_ms(1);
+	// //gpio_set_pin_level(RST_4671, 1);	
 }
 
 /** 
@@ -505,7 +504,7 @@ void define_All_Global_Variables(void)
 	can_tx_frame.data_64bit = 0;
 	message_Id = 0;
 	
-	x_axis_encoder_counters.direction = (gpio_get_pin_level(ROTENC_DIR) == HIGH) ? (1) : (-1);
+	// //x_axis_encoder_counters.direction = (gpio_get_pin_level(ROTENC_DIR) == HIGH) ? (1) : (-1);
 }
 
 /** 
@@ -517,40 +516,40 @@ void define_All_Global_Variables(void)
 void call_All_Init_Functions(void)
 {	
 	// PWM_0 is clk source for TMC4671. Produces 25MHz.
-	pwm_set_parameters(&PWM_0, 1, 1);
-	pwm_enable(&PWM_0);
+	// //pwm_set_parameters(&PWM_0, 1, 1);
+	// //pwm_enable(&PWM_0);
 	
 	//GUIDE_STEP_COUNTER_init();
 
 	reset_TMC4671();
-	gpio_set_pin_level(EN_4671, LOW);
+	// //gpio_set_pin_level(EN_4671, LOW);
 	
-	gpio_set_pin_level(DBGLED3, 1);
-	gpio_set_pin_level(DBGLED1, 1);
-	gpio_set_pin_level(DBGLED2, 1);
+        // //gpio_set_pin_level(DBGLED3, 1);
+        // //gpio_set_pin_level(DBGLED1, 1);
+        // //gpio_set_pin_level(DBGLED2, 1);
 	
-	gpio_set_pin_level(EXT_CS, HIGH);
-	gpio_set_pin_level(IOXP_CS, HIGH);
+	// //gpio_set_pin_level(EXT_CS, HIGH);
+	// //gpio_set_pin_level(IOXP_CS, HIGH);
 	
 	init_UART();
-	TMC2209_UART_init();
-	TMC2209_UART_enable();
-	adc_sync_enable_channel(&ADC_0, 0);
+	// //TMC2209_UART_init();
+	// //TMC2209_UART_enable();
+	// //adc_sync_enable_channel(&ADC_0, 0);
 	check_Current_Axis_ADC();
 	if(!check_4671_version_spi()) 
 	{
-		PRINTF_DEBUG && printf("\n--------TMC4671 SPI Check Failed--------\n");
+		SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\n--------TMC4671 SPI Check Failed--------\n");
 		return;
 	}
-	gpio_set_pin_level(IOXP_CS, HIGH);
+	// //gpio_set_pin_level(IOXP_CS, HIGH);
 	
 	if(check_passive_flash_spi())
 	{
-		PRINTF_DEBUG && printf("\n------Passive Flash SPI Check Failed-----\n");
+		SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\n------Passive Flash SPI Check Failed-----\n");
 	}
-	gpio_set_pin_level(IOXP_CS, HIGH);
+	// //gpio_set_pin_level(IOXP_CS, HIGH);
 	
-	PRINTF_DEBUG && printf("\nExt Flash CS -> %d | IOXP CS -> %d\n", gpio_get_pin_level(EXT_CS), gpio_get_pin_level(IOXP_CS) );
+	// //SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nExt Flash CS -> %d | IOXP CS -> %d\n", gpio_get_pin_level(EXT_CS), gpio_get_pin_level(IOXP_CS) );
 	
 	read_Set_Parameters_From_Flash();
 	
@@ -581,7 +580,7 @@ void call_All_Init_Functions(void)
 void run_Open_Loop_Setup_Closed_Loop(uint32_t time_taken)
 {
 	//delay_ms(100);
-	gpio_set_pin_level(EN_4671, 1);
+	// //gpio_set_pin_level(EN_4671, 1);
 	set_RampVelocity(0);
 	open_loop_fb();	
 	delay_ms(time_taken);
@@ -600,24 +599,24 @@ void run_Open_Loop_Setup_Closed_Loop(uint32_t time_taken)
 	switch(axis_id)
 	{
 		case X_AXIS:
-			PRINTF_DEBUG ? printf("\nX Axis Rotary Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_PPR)):0;
-			PRINTF_DEBUG && printf("\nX Axis Rotary Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE));
-			PRINTF_DEBUG ? printf("\nX Axis Linear Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_2_DECODER_PPR)):0;
-			PRINTF_DEBUG && printf("\nX Axis Linear Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_2_DECODER_MODE));
+			SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nX Axis Rotary Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_PPR));
+			SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nX Axis Rotary Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE));
+			SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nX Axis Linear Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_2_DECODER_PPR));
+			SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nX Axis Linear Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_2_DECODER_MODE));
 		break;
 		case Y_AXIS:
-			PRINTF_DEBUG ? printf("\nY Axis Rotary Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_PPR)):0;
-			PRINTF_DEBUG && printf("\nY Axis Rotary Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE));
-			PRINTF_DEBUG ? printf("\nY Axis Linear Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_2_DECODER_PPR)):0;
-			PRINTF_DEBUG && printf("\nX Axis Linear Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_2_DECODER_MODE));
+			SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nY Axis Rotary Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_PPR));
+			SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nY Axis Rotary Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE));
+			SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nY Axis Linear Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_2_DECODER_PPR));
+			SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nX Axis Linear Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_2_DECODER_MODE));
 		break;
 		case Z_AXIS:
-			PRINTF_DEBUG ? printf("\nZ Axis Rotary Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_PPR)):0;
-			PRINTF_DEBUG && printf("\nZ Axis Rotary Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE));
+			SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nZ Axis Rotary Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_PPR));
+			// //SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nZ Axis Rotary Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE));
 		break;
 		case GTRON_AXC_TOP:
-			PRINTF_DEBUG ? printf("\nTop Reeler Rotary Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_PPR)):0;
-			PRINTF_DEBUG ? printf("\nTop Reeler Rotary Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE)):0;
+			SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nTop Reeler Rotary Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_PPR));
+			SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nTop Reeler Rotary Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE));
 		break;
 		default: break;
 	}
@@ -631,95 +630,95 @@ void run_Open_Loop_Setup_Closed_Loop(uint32_t time_taken)
  * @param  void
  * @return void
  */
-void doEncoderDirectionCheck(void)
-{
-	// Set phi_e_selection to 2:phi_e_openloop
-	tmc4671_writeInt(MOTOR, TMC4671_PHI_E_SELECTION, 0x02);
-	
-	// Set mode motion to 8:up_ud_ext
-	tmc4671_setModeMotion(MOTOR, UQ_UD_MODE);
-	
-	// Set openloop_velocity target, openloop acceleration and ud_ext.
-	tmc4671_writeInt(MOTOR, TMC4671_OPENLOOP_ACCELERATION, 0x3C);
-	tmc4671_writeInt(MOTOR, TMC4671_OPENLOOP_VELOCITY_TARGET, 0x01);
-	tmc4671_writeInt(MOTOR, TMC4671_UQ_UD_EXT, 0x7D0);
-	delay_ms(50);
-	
-	int32_t curr_abn_phi_e = 0, prev_abn_phi_e = 0, diff_abn_phi_e = 0;
-	int32_t curr_openloop_phi = 0, prev_openloop_phi = 0, diff_openloop_phi = 0;
-	bool is_abn_negative = false, is_openloop_negative = false;
-	
-	// Get the values to check difference.
-	prev_abn_phi_e = tmc4671_readRegister16BitValue(MOTOR, TMC4671_ABN_DECODER_PHI_E_PHI_M, BIT_16_TO_31);
-	prev_openloop_phi = tmc4671_readInt(MOTOR, TMC4671_OPENLOOP_PHI);
-	delay_ms(100);
-	curr_abn_phi_e = tmc4671_readRegister16BitValue(MOTOR, TMC4671_ABN_DECODER_PHI_E_PHI_M, BIT_16_TO_31);
-	curr_openloop_phi = tmc4671_readInt(MOTOR, TMC4671_OPENLOOP_PHI);
-	
-	// Find the difference
-	diff_abn_phi_e = curr_abn_phi_e - prev_abn_phi_e;
-	diff_openloop_phi = curr_openloop_phi - prev_openloop_phi;
-	
-	// Check if the difference is positive or negative.
-	//PRINTF_DEBUG ? printf("\nprev_abn_phi_e     = %6ld | curr_abn_phi_e    = %6ld | curr - prev = %6ld", prev_abn_phi_e, curr_abn_phi_e, diff_abn_phi_e) : 0;
-	is_abn_negative = ( diff_abn_phi_e == abs(diff_abn_phi_e) ) ? false : true;
-	//(is_abn_negative) ? (PRINTF_DEBUG ? printf(" | Difference is -ve"): 0) : (PRINTF_DEBUG ? printf(" | Difference is +ve"): 0);
-	
-	//PRINTF_DEBUG ? printf("\nprev_openloop_ phi = %6ld | curr_openloop_phi = %6ld | curr - prev = %6ld", prev_openloop_phi, curr_openloop_phi, diff_openloop_phi) : 0;
-	is_openloop_negative = ( diff_openloop_phi == abs(diff_openloop_phi) ) ? false : true;
-	//(is_openloop_negative) ? (PRINTF_DEBUG ? printf(" | Difference is -ve"): 0) : (PRINTF_DEBUG ? printf(" | Difference is +ve"): 0);
-	
-	if(is_openloop_negative == is_abn_negative)
-	{
-		switch(axis_id)
-		{
-			case X_AXIS: PRINTF_DEBUG ? printf("\n\nX axis Rotary Encoder Direction IS aligned.") : 0; break;
-			case Y_AXIS: PRINTF_DEBUG ? printf("\n\nY axis Rotary Encoder Direction IS aligned.") : 0; break;
-			case Z_AXIS: PRINTF_DEBUG ? printf("\n\nZ axis Rotary Encoder Direction IS aligned.") : 0; break;
-			default: break;
-		}
-	}
-	else 
-	{
-		switch(axis_id)
-		{
-			case X_AXIS: PRINTF_DEBUG ? printf("\nX Axis Rotary Encoder Direction IS NOT aligned.") : 0; break;
-			case Y_AXIS: PRINTF_DEBUG ? printf("\nY Axis Rotary Encoder Direction IS NOT aligned.") : 0; break;
-			case Z_AXIS: PRINTF_DEBUG ? printf("\nZ Axis Rotary Encoder Direction IS NOT aligned.") : 0; break;
-			default: break;
-		}
-		if(tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE) == ABN_ENC_FORWARD_DIRECTION)
-		{
-			switch(axis_id)
-			{
-				case X_AXIS: PRINTF_DEBUG ? printf("\nX Axis Rotary Encoder Direction is FORWARD. Set it to REVERSE.") : 0; break;
-				case Y_AXIS: PRINTF_DEBUG ? printf("\nY Axis Rotary Encoder Direction is FORWARD. Set it to REVERSE.") : 0; break;
-				case Z_AXIS: PRINTF_DEBUG ? printf("\nZ Axis Rotary Encoder Direction is FORWARD. Set it to REVERSE.") : 0; break;
-				default: break;
-			}
-		}
-		else
-		{
-			switch(axis_id)
-			{
-				case X_AXIS: PRINTF_DEBUG ? printf("\nX Axis Rotary Encoder Direction is REVERSE, Set it to FORWARD.") : 0; break;
-				case Y_AXIS: PRINTF_DEBUG ? printf("\nY Axis Rotary Encoder Direction is REVERSE, Set it to FORWARD.") : 0; break;
-				case Z_AXIS: PRINTF_DEBUG ? printf("\nZ Axis Rotary Encoder Direction is REVERSE, Set it to FORWARD.") : 0; break;
-				default: break;
-			}
-		}
-		/*PRINTF_DEBUG ? printf("\n\nCorrecting Encoder Direction") : 0;
-		if(tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE) == ABN_ENC_FORWARD_DIRECTION)
-		{
-			tmc4671_writeInt(MOTOR, TMC4671_ABN_DECODER_MODE, ABN_ENC_REVERSE_DIRECTION);
-		}
-		else
-		{
-			tmc4671_writeInt(MOTOR, TMC4671_ABN_DECODER_MODE, ABN_ENC_FORWARD_DIRECTION);
-		}*/
-	}
-	tmc4671_writeInt(MOTOR, TMC4671_OPENLOOP_VELOCITY_TARGET, (-1) );
-	delay_ms(150);
-
-	return;
-}
+//void doEncoderDirectionCheck(void)
+//{
+//	// Set phi_e_selection to 2:phi_e_openloop
+//	tmc4671_writeInt(MOTOR, TMC4671_PHI_E_SELECTION, 0x02);
+//	
+//	// Set mode motion to 8:up_ud_ext
+//	tmc4671_setModeMotion(MOTOR, UQ_UD_MODE);
+//	
+//	// Set openloop_velocity target, openloop acceleration and ud_ext.
+//	tmc4671_writeInt(MOTOR, TMC4671_OPENLOOP_ACCELERATION, 0x3C);
+//	tmc4671_writeInt(MOTOR, TMC4671_OPENLOOP_VELOCITY_TARGET, 0x01);
+//	tmc4671_writeInt(MOTOR, TMC4671_UQ_UD_EXT, 0x7D0);
+//	delay_ms(50);
+//	
+//	int32_t curr_abn_phi_e = 0, prev_abn_phi_e = 0, diff_abn_phi_e = 0;
+//	int32_t curr_openloop_phi = 0, prev_openloop_phi = 0, diff_openloop_phi = 0;
+//	bool is_abn_negative = false, is_openloop_negative = false;
+//	
+//	// Get the values to check difference.
+//	prev_abn_phi_e = tmc4671_readRegister16BitValue(MOTOR, TMC4671_ABN_DECODER_PHI_E_PHI_M, BIT_16_TO_31);
+//	prev_openloop_phi = tmc4671_readInt(MOTOR, TMC4671_OPENLOOP_PHI);
+//	delay_ms(100);
+//	curr_abn_phi_e = tmc4671_readRegister16BitValue(MOTOR, TMC4671_ABN_DECODER_PHI_E_PHI_M, BIT_16_TO_31);
+//	curr_openloop_phi = tmc4671_readInt(MOTOR, TMC4671_OPENLOOP_PHI);
+//	
+//	// Find the difference
+//	diff_abn_phi_e = curr_abn_phi_e - prev_abn_phi_e;
+//	diff_openloop_phi = curr_openloop_phi - prev_openloop_phi;
+//	
+//	// Check if the difference is positive or negative.
+//	//SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nprev_abn_phi_e     = %6ld | curr_abn_phi_e    = %6ld | curr - prev = %6ld", prev_abn_phi_e, curr_abn_phi_e, diff_abn_phi_e) : 0;
+//	is_abn_negative = ( diff_abn_phi_e == abs(diff_abn_phi_e) ) ? false : true;
+//	//(is_abn_negative) ? (SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, " | Difference is -ve"): 0) : (SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, " | Difference is +ve"): 0);
+//	
+//	//SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nprev_openloop_ phi = %6ld | curr_openloop_phi = %6ld | curr - prev = %6ld", prev_openloop_phi, curr_openloop_phi, diff_openloop_phi) : 0;
+//	is_openloop_negative = ( diff_openloop_phi == abs(diff_openloop_phi) ) ? false : true;
+//	//(is_openloop_negative) ? (SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, " | Difference is -ve"): 0) : (SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, " | Difference is +ve"): 0);
+//	
+//	if(is_openloop_negative == is_abn_negative)
+//	{
+//		switch(axis_id)
+//		{
+//			case X_AXIS: SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\n\nX axis Rotary Encoder Direction IS aligned.") : 0; break;
+//			case Y_AXIS: SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\n\nY axis Rotary Encoder Direction IS aligned.") : 0; break;
+//			case Z_AXIS: SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\n\nZ axis Rotary Encoder Direction IS aligned.") : 0; break;
+//			default: break;
+//		}
+//	}
+//	else 
+//	{
+//		switch(axis_id)
+//		{
+//			case X_AXIS: SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nX Axis Rotary Encoder Direction IS NOT aligned.") : 0; break;
+//			case Y_AXIS: SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nY Axis Rotary Encoder Direction IS NOT aligned.") : 0; break;
+//			case Z_AXIS: SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nZ Axis Rotary Encoder Direction IS NOT aligned.") : 0; break;
+//			default: break;
+//		}
+//		if(tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE) == ABN_ENC_FORWARD_DIRECTION)
+//		{
+//			switch(axis_id)
+//			{
+//				case X_AXIS: SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nX Axis Rotary Encoder Direction is FORWARD. Set it to REVERSE.") : 0; break;
+//				case Y_AXIS: SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nY Axis Rotary Encoder Direction is FORWARD. Set it to REVERSE.") : 0; break;
+//				case Z_AXIS: SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nZ Axis Rotary Encoder Direction is FORWARD. Set it to REVERSE.") : 0; break;
+//				default: break;
+//			}
+//		}
+//		else
+//		{
+//			switch(axis_id)
+//			{
+//				case X_AXIS: SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nX Axis Rotary Encoder Direction is REVERSE, Set it to FORWARD.") : 0; break;
+//				case Y_AXIS: SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nY Axis Rotary Encoder Direction is REVERSE, Set it to FORWARD.") : 0; break;
+//				case Z_AXIS: SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nZ Axis Rotary Encoder Direction is REVERSE, Set it to FORWARD.") : 0; break;
+//				default: break;
+//			}
+//		}
+//		/*SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\n\nCorrecting Encoder Direction") : 0;
+//		if(tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE) == ABN_ENC_FORWARD_DIRECTION)
+//		{
+//			tmc4671_writeInt(MOTOR, TMC4671_ABN_DECODER_MODE, ABN_ENC_REVERSE_DIRECTION);
+//		}
+//		else
+//		{
+//			tmc4671_writeInt(MOTOR, TMC4671_ABN_DECODER_MODE, ABN_ENC_FORWARD_DIRECTION);
+//		}*/
+//	}
+//	tmc4671_writeInt(MOTOR, TMC4671_OPENLOOP_VELOCITY_TARGET, (-1) );
+//	//delay_ms(150);
+//
+//	return;
+//}

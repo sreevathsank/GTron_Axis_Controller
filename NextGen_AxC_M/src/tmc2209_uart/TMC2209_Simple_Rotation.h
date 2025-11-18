@@ -12,8 +12,9 @@
 extern "C" {
 #endif
 
-
+#include <stdio.h>
 #include "TMC2209.h"	
+#include "Macros.h"
 
 void move_guide_motor(uint32_t loop_count);
 void init_tmc2209_motor(uint16_t icID);

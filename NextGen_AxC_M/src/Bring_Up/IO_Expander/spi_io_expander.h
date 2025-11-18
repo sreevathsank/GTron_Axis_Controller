@@ -1,15 +1,14 @@
-/*
- * spi_io_expander.h
+/* 
+ * File:   spi_io_expander.h
+ * Author: sreevathsank
  *
- * Created: 25-07-2025 14:56:50
- *  Author: sreevathsank
- */ 
-
+ * Created on 30 September, 2025, 11:51 AM
+ */
 
 #ifndef SPI_IO_EXPANDER_H_
 #define SPI_IO_EXPANDER_H_
 
-#include "All_Headers.h"
+#include "definitions.h"
 
 typedef enum
 {
@@ -51,3 +50,4 @@ void IOXP_Write_Byte( IOXP_REGISTERS_t reg_addr, uint8_t byte_to_wr );
 void IOXP_Read_Byte( IOXP_REGISTERS_t reg_addr, uint8_t *addr_rd_data );
 
 #endif /* SPI_IO_EXPANDER_H_ */
+

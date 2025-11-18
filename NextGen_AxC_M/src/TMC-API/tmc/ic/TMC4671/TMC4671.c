@@ -4,10 +4,12 @@
  *  Created on: 30.09.2016
  *      Author: ed
  */
-#include <atmel_start.h>
+//#include <atmel_start.h>
 #include "TMC4671.h"
 #include "TMC4671_Register.h"
-#include "spi_lite.h"
+#include "peripheral/port/plib_port.h"
+//#include "peripheral/port/plib_port.h"
+//#include "spi_lite.h"
 
 #define STATE_NOTHING_TO_DO    0
 #define STATE_START_INIT       1
@@ -54,7 +56,8 @@ int32_t tmc4671_readInt(uint8_t motor, uint8_t address)
 	// clear write bit
 	//address &= 0x7F;
 	uint32_t data = 0;
-	gpio_set_pin_level(nCS_4671, 0);
+	//gpio_set_pin_level(nCS_4671, 0);
+        nCS_4671_Clear();
 	//delay_ms(1);
 	
 	uint8_t rd_addr = RD, wr_addr = 0x00;
@@ -87,7 +90,8 @@ int32_t tmc4671_readInt(uint8_t motor, uint8_t address)
 	data |= ((uint32_t)wr_3b) << 8;
 	data |= ((uint32_t)wr_4b);	
 	
-	gpio_set_pin_level(nCS_4671, 1);	
+	//gpio_set_pin_level(nCS_4671, 1);	
+        nCS_4671_Set();
 
 	return data;
 }
@@ -117,7 +121,8 @@ void tmc4671_writeInt(uint8_t motor, uint8_t address, int32_t value)
 void tmc4671_writeInt(uint8_t motor, uint8_t address, int32_t data)
 {
 	(void)motor;
-	gpio_set_pin_level(nCS_4671, 0);
+	//gpio_set_pin_level(nCS_4671, 0);
+        nCS_4671_Clear();
 	//delay_ms(1);
 	
 	
@@ -146,7 +151,8 @@ void tmc4671_writeInt(uint8_t motor, uint8_t address, int32_t data)
 // 	SPI_0_exchange_block(&wr_3b, 1);
 // 	SPI_0_exchange_block(&wr_4b, 1);
 	
-	gpio_set_pin_level(nCS_4671, 1);	
+	//gpio_set_pin_level(nCS_4671, 1);
+        nCS_4671_Set();	
 }
 
 uint16_t tmc4671_readRegister16BitValue(uint8_t motor, uint8_t address, uint8_t channel)

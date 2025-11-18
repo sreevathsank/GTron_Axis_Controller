@@ -9,7 +9,7 @@
 #ifndef MCUSWRESET_H_
 #define MCUSWRESET_H_
 
-#include <atmel_start.h>
+//#include <atmel_start.h>
 //#include <hal_spi_m_async.h>
 #include "Bring_Up/CAN/IMM_CAN_Message_Id.h"
 

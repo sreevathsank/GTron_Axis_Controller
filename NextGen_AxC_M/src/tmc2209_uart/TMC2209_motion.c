@@ -5,6 +5,8 @@
  *  Author: sreevathsank
  */ 
 
+#include "Bring_Up/IO_Expander/spi_io_expander.h"
+
 /** 
  * \brief config_IOXP => Sets the initial values to the MCP23S08 registers for Guide and Vertical Arrestor Limits.
  *

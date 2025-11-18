@@ -112,7 +112,7 @@ data:
       - children:
         - attributes:
             id: sercom5
-            value: 'false'
+            value: 'true'
           type: Dynamic
         type: Values
       type: Boolean
@@ -123,7 +123,7 @@ data:
       - children:
         - attributes:
             id: sercom5
-            value: 'false'
+            value: 'true'
           type: Dynamic
         type: Values
       type: Boolean
@@ -133,7 +133,7 @@ data:
       children:
       - children:
         - attributes:
-            value: '0'
+            value: '2'
           type: User
         type: Values
       type: KeyValueSet
@@ -178,4 +178,66 @@ data:
           type: User
         type: Values
       type: KeyValueSet
+    SERCOM_USART_HEADER:
+      attributes:
+        id: SERCOM_USART_HEADER
+      children:
+      - children:
+        - attributes:
+            id: source
+          children:
+          - type: Value
+            value: ../peripheral/sercom_u2201/templates/plib_sercom_usart_ring_buffer.h.ftl
+          type: String
+        type: Attributes
+      type: File
+    SERCOM_USART_SOURCE:
+      attributes:
+        id: SERCOM_USART_SOURCE
+      children:
+      - children:
+        - attributes:
+            id: source
+          children:
+          - type: Value
+            value: ../peripheral/sercom_u2201/templates/plib_sercom_usart_ring_buffer.c.ftl
+          type: String
+        type: Attributes
+      type: File
+    USART_TX_RING_BUFFER_SIZE:
+      attributes:
+        id: USART_TX_RING_BUFFER_SIZE
+      children:
+      - children:
+        - attributes:
+            id: visible
+          children:
+          - type: Value
+            value: 'true'
+          type: Boolean
+        type: Attributes
+      - children:
+        - attributes:
+            value: '256'
+          type: User
+        type: Values
+      type: Integer
+    USART_RX_RING_BUFFER_SIZE:
+      attributes:
+        id: USART_RX_RING_BUFFER_SIZE
+      children:
+      - children:
+        - attributes:
+            id: visible
+          children:
+          - type: Value
+            value: 'true'
+          type: Boolean
+        type: Attributes
+      - children:
+        - attributes:
+            value: '256'
+          type: User
+        type: Values
+      type: Integer
   userData: {}

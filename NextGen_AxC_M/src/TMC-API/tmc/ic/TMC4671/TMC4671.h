@@ -8,6 +8,7 @@
 #ifndef TMC_IC_TMC4671_H_
 #define TMC_IC_TMC4671_H_
 
+#include "Code_Dump/ext_flash.h"
 #include "TMC-API/tmc/helpers/API_Header.h"
 #include "TMC4671_Register.h"
 #include "TMC4671_Constants.h"

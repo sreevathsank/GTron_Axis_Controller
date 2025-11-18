@@ -6,6 +6,7 @@
  */ 
 
 #include "tlv_flash.h"
+#include "system/debug/sys_debug.h"
 
 #define SPI_OP_DELAY_ms				100
 
@@ -55,7 +56,7 @@ uint8_t write_tlv_flash( Param_ID parameter_id, void *value, size_t length )
 	{
 		return WRITE_OP_ERR;	// Write Operation Failed.
 	}
-	PRINTF_DEBUG && printf("\n W Tag    Flash_mem_ptr = 0x%x   | Tag = %d or 0x%x", gFlash_mem_ptr, param_tag, param_tag);
+	SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\n W Tag    Flash_mem_ptr = 0x%x   | Tag = %d or 0x%x", gFlash_mem_ptr, param_tag, param_tag);
 	// Update the Flash memory pointer.
 	gFlash_mem_ptr += sizeof(param_tag);
 	
@@ -64,7 +65,7 @@ uint8_t write_tlv_flash( Param_ID parameter_id, void *value, size_t length )
 	{
 		return WRITE_OP_ERR;	// Write Operation Failed.
 	}
-	PRINTF_DEBUG && printf("\n W Length Flash_mem_ptr = 0x%x   | Length = %d or 0x%x", gFlash_mem_ptr, param_len, param_len);
+	SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\n W Length Flash_mem_ptr = 0x%x   | Length = %d or 0x%x", gFlash_mem_ptr, param_len, param_len);
 	// Update the Flash memory pointer.
 	gFlash_mem_ptr += sizeof(param_len);
 	
@@ -80,7 +81,7 @@ uint8_t write_tlv_flash( Param_ID parameter_id, void *value, size_t length )
 		int32_val |= (int32_t)( byte_value[s] << (s * 8) );
 	}
 	//int32_t int32_val = (int32_t)( (byte_value[3] << 24) | (byte_value[2] << 16) | (byte_value[1] << 8) | byte_value[0] );
-	PRINTF_DEBUG && printf("\n W Value  Flash_mem_ptr = 0x%x   | Value = %ld or 0x%x\n", gFlash_mem_ptr, int32_val, int32_val);
+	SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\n W Value  Flash_mem_ptr = 0x%x   | Value = %ld or 0x%x\n", gFlash_mem_ptr, int32_val, int32_val);
 	// Update the Flash memory pointer.
 	gFlash_mem_ptr += (param_len);
 	
@@ -111,7 +112,7 @@ uint8_t traverse_tlv_flash ( Param_ID req_tag, Tlv_Flash *ptr_tlv, Tlv_Traversal
 		{
 			return READ_OP_ERR;
 		}
-		//PRINTF_DEBUG && printf("\nTraversing: Tag = 0x%x or %d | Tag Mem Loc = 0x%x\n", ptr_tlv->tag, ptr_tlv->tag, gFlash_mem_ptr);
+		//SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nTraversing: Tag = 0x%x or %d | Tag Mem Loc = 0x%x\n", ptr_tlv->tag, ptr_tlv->tag, gFlash_mem_ptr);
 		
 		// Check if the read tag is the same as the required tag.
 		if(ptr_tlv->tag == req_tag) 
@@ -122,24 +123,24 @@ uint8_t traverse_tlv_flash ( Param_ID req_tag, Tlv_Flash *ptr_tlv, Tlv_Traversal
 			
 			// Increment mem_ptr to read the length of the value.
 			gFlash_mem_ptr += (uint32_t) TAG_SIZE;
-			//PRINTF_DEBUG && printf("\nIncremented Mem Loc by Tag Size = 0x%x\n", gFlash_mem_ptr);
+			//SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nIncremented Mem Loc by Tag Size = 0x%x\n", gFlash_mem_ptr);
 			
 			// Read the length of the value.
 			EXTFLASH_read(gFlash_mem_ptr, LENGTH_SIZE, &ptr_tlv->length);
 			
 			// Increment the mem_ptr by the length of value.
 			gFlash_mem_ptr += (uint32_t) LENGTH_SIZE;
-			//PRINTF_DEBUG && printf("\nIncremented Mem Loc by Value Size (%d) = 0x%x\n", ptr_tlv->length, gFlash_mem_ptr);
+			//SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nIncremented Mem Loc by Value Size (%d) = 0x%x\n", ptr_tlv->length, gFlash_mem_ptr);
 			
 			// Read the value.
 			memset(&ptr_tlv->value, 0x00, sizeof(ptr_tlv->value) );
-			EXTFLASH_read(gFlash_mem_ptr, ptr_tlv->length, &ptr_tlv->value);
+			EXTFLASH_read(gFlash_mem_ptr, ptr_tlv->length, ptr_tlv->value);
 			
 			return 0;	// Success.
 		}
 		// Increment mem_ptr to read the length of the value.
 		gFlash_mem_ptr += (uint32_t) TAG_SIZE;
-		//PRINTF_DEBUG && printf("\nIncremented Mem Loc by Tag Size = 0x%x\n", gFlash_mem_ptr);
+		//SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nIncremented Mem Loc by Tag Size = 0x%x\n", gFlash_mem_ptr);
 		
 		// Read the length of the value.
 		EXTFLASH_read(gFlash_mem_ptr, LENGTH_SIZE, &ptr_tlv->length);
@@ -147,7 +148,7 @@ uint8_t traverse_tlv_flash ( Param_ID req_tag, Tlv_Flash *ptr_tlv, Tlv_Traversal
 		// If Both Tag and Length are 0xFF, then its no use searching after this.
 		if( (ptr_tlv->tag == 0xFF) || (ptr_tlv->length == 0xFF) )
 		{
-			PRINTF_DEBUG && printf("\nBoth Tag and Length are 0xFF\n");
+			SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nBoth Tag and Length are 0xFF\n");
 			if(gFlash_mem_ptr == (PARAM_FIRST_MEM_LOC + TAG_SIZE) )
 			{
 				gFlash_mem_ptr = PARAM_FIRST_MEM_LOC;
@@ -161,11 +162,11 @@ uint8_t traverse_tlv_flash ( Param_ID req_tag, Tlv_Flash *ptr_tlv, Tlv_Traversal
 		
 		// Increment the mem_ptr by the length of value + 1.
 		gFlash_mem_ptr += (uint32_t) ptr_tlv->length + 1;
-		//PRINTF_DEBUG && printf("\nIncremented Mem Loc by Value Size (%d) = 0x%x\n", ptr_tlv->length, gFlash_mem_ptr);
+		//SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nIncremented Mem Loc by Value Size (%d) = 0x%x\n", ptr_tlv->length, gFlash_mem_ptr);
 		
 		// Read the value.
 		memset(&ptr_tlv->value, 0x00, sizeof(ptr_tlv->length) );
-		EXTFLASH_read(gFlash_mem_ptr, ptr_tlv->length, &ptr_tlv->value);
+		EXTFLASH_read(gFlash_mem_ptr, ptr_tlv->length, ptr_tlv->value);
 	}
 	ptr_traverse->result = false;
 	return TRAVERSE_FAIL;
@@ -223,7 +224,7 @@ uint8_t chk_tlv( int32_t value_to_check, Param_ID req_tag, Tlv_Flash *ptr_tlv, T
 	
 	// Read the value.
 	memset(&ptr_tlv->value, 0x00, sizeof(ptr_tlv->length) );
-	if(!EXTFLASH_read(read_mem_ptr, ptr_tlv->length, &ptr_tlv->value) )
+	if(!EXTFLASH_read(read_mem_ptr, ptr_tlv->length, ptr_tlv->value) )
 	{
 		return READ_OP_ERR;
 	}
@@ -231,7 +232,7 @@ uint8_t chk_tlv( int32_t value_to_check, Param_ID req_tag, Tlv_Flash *ptr_tlv, T
 	int32_t cmp_val = ( (ptr_tlv->value[3] << 24) | (ptr_tlv->value[2] << 16) | (ptr_tlv->value[1] << 8) | ptr_tlv->value[0] );
 	
 	ptr_traverse->value_check_result = (value_to_check == cmp_val) ? true : false;
-	PRINTF_DEBUG && printf("\nCheck Result = %d | To be stored %ld == Stored %ld ?\n", ptr_traverse->value_check_result, value_to_check, cmp_val );
+	SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nCheck Result = %d | To be stored %ld == Stored %ld ?\n", ptr_traverse->value_check_result, value_to_check, cmp_val );
 	
 	return 0 ;	// Success.
 }
@@ -258,9 +259,9 @@ uint8_t check_tlv_param( Tlv_Flash *ptr_tlv, Param_ID param_id, Tlv_Traversal *p
 	}
 	switch(axis_id)
 	{
-		case X_AXIS: { message_Id = CAN_ID(REPLY_ID_X, X, 0x64, CHK_FW_PARAM); break; }
-		case Y_AXIS: { message_Id = CAN_ID(REPLY_ID_Y, Y, 0x64, CHK_FW_PARAM); break; }
-		case Z_AXIS: { message_Id = CAN_ID(REPLY_ID_Z, Z, 0x64, CHK_FW_PARAM); break; }
+		case X_AXIS: { message_Id = CAN_ID(REPLY_ID_X, X_ADDR, 0x64, CHK_FW_PARAM); break; }
+		case Y_AXIS: { message_Id = CAN_ID(REPLY_ID_Y, Y_ADDR, 0x64, CHK_FW_PARAM); break; }
+		case Z_AXIS: { message_Id = CAN_ID(REPLY_ID_Z, Z_ADDR, 0x64, CHK_FW_PARAM); break; }
 		default: break;
 	}
 	if(ptr_traverse->value_check_result)
@@ -270,7 +271,7 @@ uint8_t check_tlv_param( Tlv_Flash *ptr_tlv, Param_ID param_id, Tlv_Traversal *p
 		encoding_CAN_Byte_Data(ret_data);
 		can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, ret_data);
 		can_Write(message_Id, ret_data);
-		PRINTF_DEBUG && printf("\nValue stored is same. Not writing\n");
+		SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nValue stored is same. Not writing\n");
 	}
 	else
 	{
@@ -283,7 +284,7 @@ uint8_t check_tlv_param( Tlv_Flash *ptr_tlv, Param_ID param_id, Tlv_Traversal *p
 		can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, ret_data);
 		can_Write(message_Id, ret_data);
 		EXTFLASH_erase(PARAM_FIRST_MEM_LOC, FLASH_ERASE_SECTOR_SIZE);
-		PRINTF_DEBUG && printf("\nValue stored is not same. Erasing Sector...\n");
+		SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nValue stored is not same. Erasing Sector...\n");
 	}
 	return 0; // Success.
 }
@@ -328,7 +329,7 @@ int32_t read_tlv_flash( Tlv_Flash *ptr_tlv, Param_ID param_id, Tlv_Traversal *pt
 	}
 	ptr_tlv->value_32bit = val_i32;
 	//val_i32 = (int32_t) ( (ptr_tlv->value[3] << 24) | (ptr_tlv->value[2] << 16) | (ptr_tlv->value[1] << 8) | ptr_tlv->value[0] );
-	PRINTF_DEBUG && printf("\nRead: Tag = 0x%x or %d | Length = 0x%x or %d | Value = 0x%x or %d\n", ptr_tlv->tag, ptr_tlv->tag,\
+	SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nRead: Tag = 0x%x or %ld | Length = 0x%x or %ld | Value = 0x%x or %ld\n", ptr_tlv->tag, ptr_tlv->tag,\
 							ptr_tlv->length, ptr_tlv->length, val_i32, val_i32);
 	
 	// Check if the read was successful.

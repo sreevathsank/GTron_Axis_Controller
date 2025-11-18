@@ -58,8 +58,8 @@
 /* SERCOM3 clk freq value for the baud calculation */
 #define SERCOM3_Frequency      (48000000UL)
 
-/* SERCOM3 SPI baud value for 50000 Hz baud rate */
-#define SERCOM3_SPIM_BAUD_VALUE         (479UL)
+/* SERCOM3 SPI baud value for 2000000 Hz baud rate */
+#define SERCOM3_SPIM_BAUD_VALUE         (11UL)
 
 
 // *****************************************************************************
@@ -104,7 +104,7 @@ void SERCOM3_SPI_Initialize(void)
      * Data In and Pin Out,Data Order and Standby mode if configured
      * and Selection of the Clock Phase and Polarity and Enable the SPI Module
      */
-    SERCOM3_REGS->SPIM.SERCOM_CTRLA = SERCOM_SPIM_CTRLA_MODE_SPI_MASTER | SERCOM_SPIM_CTRLA_DOPO_PAD2 | SERCOM_SPIM_CTRLA_DIPO_PAD0 | SERCOM_SPIM_CTRLA_CPOL_IDLE_HIGH | SERCOM_SPIM_CTRLA_CPHA_TRAILING_EDGE | SERCOM_SPIM_CTRLA_DORD_MSB | SERCOM_SPIM_CTRLA_ENABLE_Msk | SERCOM_SPIM_CTRLA_RUNSTDBY_Msk;
+    SERCOM3_REGS->SPIM.SERCOM_CTRLA = SERCOM_SPIM_CTRLA_MODE_SPI_MASTER | SERCOM_SPIM_CTRLA_DOPO_PAD2 | SERCOM_SPIM_CTRLA_DIPO_PAD0 | SERCOM_SPIM_CTRLA_CPOL_IDLE_HIGH | SERCOM_SPIM_CTRLA_CPHA_TRAILING_EDGE | SERCOM_SPIM_CTRLA_DORD_MSB | SERCOM_SPIM_CTRLA_ENABLE_Msk ;
 
 
     /* Wait for synchronization */

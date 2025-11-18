@@ -182,7 +182,7 @@ typedef struct
 {
 	uint32_t guide_step_counter_value;
 	bool guide_direction;
-};
+}guide_struct_idk;
 
 typedef enum
 {

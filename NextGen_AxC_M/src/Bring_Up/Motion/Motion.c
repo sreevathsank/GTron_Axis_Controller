@@ -259,7 +259,7 @@ void homing_Switching_Sequence(int32_t switching_distance)
  */
 void do_homing_sequence( void )
 {
-	gpio_set_pin_level(EN_4671, HIGH);
+	// //gpio_set_pin_level(EN_4671, HIGH);
  	tmc4671_setModeMotion(MOTOR, POSITION_MODE);
 	
 	(motor_dir_rev) ? tmc4671_setAbsolutTargetPosition(MOTOR, POSITION_LOW) : tmc4671_setAbsolutTargetPosition(MOTOR, POSITION_HIGH);
@@ -343,7 +343,7 @@ void right_limit_homing()
 			
 			if(repeat_ramp == 2) 
 			{ 
-				timer_start(&TIMER_0);
+				// //timer_start(&TIMER_0);
 				//ramp_State = DO_NOTHING;	 
 				s_curve_phase = DO_REPEAT;
 			}
@@ -369,8 +369,8 @@ void right_limit_homing()
 				limit_variables.soft_limit_high = end_range   - SOFT_LIMIT_OFFSET_MM;
 				limit_variables.soft_limit_low  = start_range + SOFT_LIMIT_OFFSET_MM;
 			}
-			PRINTF_DEBUG && printf("\nLeft Limit Pos = %ld usteps | %.2f mm\tRight Limit Pos = %ld usteps | %.2f mm\n", limit_variables.left_limit_position, (limit_variables.left_limit_position / TMC4671_ONE_MM_STEPS),limit_variables.right_limit_position, (limit_variables.right_limit_position / TMC4671_ONE_MM_STEPS));
-			PRINTF_DEBUG && printf("\nSoft Limit High = %ld usteps| %.2f mm\tSoft Limit Low = %ld usteps | %.2f mm\n", limit_variables.soft_limit_high, (limit_variables.soft_limit_high / TMC4671_ONE_MM_STEPS), limit_variables.soft_limit_low, (limit_variables.soft_limit_low / TMC4671_ONE_MM_STEPS) );
+			SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nLeft Limit Pos = %ld usteps | %.2f mm\tRight Limit Pos = %ld usteps | %.2f mm\n", limit_variables.left_limit_position, (limit_variables.left_limit_position / TMC4671_ONE_MM_STEPS),limit_variables.right_limit_position, (limit_variables.right_limit_position / TMC4671_ONE_MM_STEPS));
+			SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nSoft Limit High = %ld usteps| %.2f mm\tSoft Limit Low = %ld usteps | %.2f mm\n", limit_variables.soft_limit_high, (limit_variables.soft_limit_high / TMC4671_ONE_MM_STEPS), limit_variables.soft_limit_low, (limit_variables.soft_limit_low / TMC4671_ONE_MM_STEPS) );
 			return;
 		}
 		else
@@ -446,7 +446,7 @@ void left_limit_homing()
 			tmc4671_writeInt(MOTOR, TMC4671_ABN_2_DECODER_COUNT, ZERO_HEX);
 			if(repeat_ramp == 2)
 			{
-				timer_start(&TIMER_0);
+				// //timer_start(&TIMER_0);
 				s_curve_phase = DO_REPEAT;
 			}
 			// Setting SoftLimits.
@@ -465,8 +465,8 @@ void left_limit_homing()
 				limit_variables.soft_limit_high = end_range   - SOFT_LIMIT_OFFSET_MM;
 				limit_variables.soft_limit_low  = start_range + SOFT_LIMIT_OFFSET_MM;
 			}
-			PRINTF_DEBUG && printf("\nLeft Limit Pos = %ld usteps | %.2f mm\tRight Limit Pos = %ld usteps | %.2f mm\n", limit_variables.left_limit_position, (limit_variables.left_limit_position / TMC4671_ONE_MM_STEPS),limit_variables.right_limit_position, (limit_variables.right_limit_position / TMC4671_ONE_MM_STEPS));
-			PRINTF_DEBUG && printf("\nSoft Limit High = %ld usteps| %.2f mm\tSoft Limit Low = %ld usteps | %.2f mm\n", limit_variables.soft_limit_high, (limit_variables.soft_limit_high / TMC4671_ONE_MM_STEPS), limit_variables.soft_limit_low, (limit_variables.soft_limit_low / TMC4671_ONE_MM_STEPS) );
+			SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nLeft Limit Pos = %ld usteps | %.2f mm\tRight Limit Pos = %ld usteps | %.2f mm\n", limit_variables.left_limit_position, (limit_variables.left_limit_position / TMC4671_ONE_MM_STEPS),limit_variables.right_limit_position, (limit_variables.right_limit_position / TMC4671_ONE_MM_STEPS));
+			SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nSoft Limit High = %ld usteps| %.2f mm\tSoft Limit Low = %ld usteps | %.2f mm\n", limit_variables.soft_limit_high, (limit_variables.soft_limit_high / TMC4671_ONE_MM_STEPS), limit_variables.soft_limit_low, (limit_variables.soft_limit_low / TMC4671_ONE_MM_STEPS) );
 			return;
 		}
 		// If this limit is getting hit the first.
@@ -513,13 +513,13 @@ void left_limit_homing()
 
 void toggle_Limit_Led(void)
 {
-	int32_t left_limit_state = gpio_get_pin_level(LIM_LFT) , right_limit_state = gpio_get_pin_level(LIM_RT);
+	// //int32_t left_limit_state = gpio_get_pin_level(LIM_LFT) , right_limit_state = gpio_get_pin_level(LIM_RT);
 	//if(false == limit_variables.right_limit_flag)
 	{
 		#if LIMIT_SWITCH_RISING
 			gpio_set_pin_level(DBGLED1, left_limit_state);
 		#elif LIMIT_SWITCH_FALLING
-			gpio_set_pin_level(DBGLED1, !left_limit_state);
+			// //gpio_set_pin_level(DBGLED1, !left_limit_state);
 		#endif
 	}
 	//if(false == limit_variables.left_limit_position)
@@ -527,7 +527,7 @@ void toggle_Limit_Led(void)
 		#if LIMIT_SWITCH_RISING
 			gpio_set_pin_level(DBGLED2, right_limit_state);
 		#elif LIMIT_SWITCH_FALLING
-			gpio_set_pin_level(DBGLED2, !right_limit_state);
+   			// //gpio_set_pin_level(DBGLED2, !right_limit_state);
 		#endif	
 	}
 	return;
@@ -609,7 +609,7 @@ void rot_Enc_Z_Pulse_Interrupt_Callback(void)
 		limit_variables.homing = false;
 		move_given_s_ramp = false;
 		move_given_trapezoidal_ramp = false;*/
-		ext_irq_disable(ROTENC_Z);
+                // //ext_irq_disable(ROTENC_Z);
 	}
 	else if(limit_variables.rot_enc_z_first_hit == false)
 	{
@@ -623,7 +623,7 @@ void rot_Enc_Z_Pulse_Interrupt_Callback(void)
 		
 		limit_variables.rot_enc_z_first_hit = true;
 		limit_variables.homing = false;
-		ext_irq_disable(ROTENC_Z);
+		// //ext_irq_disable(ROTENC_Z);
 		
 		message_Id = CAN_REPLY_TOP_RACK_ID;
 		can_tx_frame.data[0] = REELER_MOTOR;
@@ -659,7 +659,7 @@ void left_Limit_Interrupt_Callback(void)
 	
 	printf("\nLeft Limit HIT!\n");
 	
-	timer_stop(&TIMER_0);
+	// //timer_stop(&TIMER_0);
 	return;
 }
 
@@ -679,7 +679,7 @@ void right_Limit_Interrupt_Callback(void)
 	
 	printf("\nRight Limit HIT!\n");
 	
-	timer_stop(&TIMER_0);
+	// //timer_stop(&TIMER_0);
 	return;
 }
 
@@ -693,9 +693,9 @@ void init_ext_irq_limits(void)
 {
 	//ext_irq_register(LIM_LFT, left_Limit_Interrupt_Callback);
 	//ext_irq_register(LIM_RT, right_Limit_Interrupt_Callback);
-	ext_irq_register(ROTENC_Z, rot_Enc_Z_Pulse_Interrupt_Callback);
-	ext_irq_register(IOXP_INT, ioxp_Interrupt_Callback);
-	ext_irq_register(INDEX, index_Interrupt_Callback);
+	// //ext_irq_register(ROTENC_Z, rot_Enc_Z_Pulse_Interrupt_Callback);
+	// //ext_irq_register(IOXP_INT, ioxp_Interrupt_Callback);
+	// //ext_irq_register(INDEX, index_Interrupt_Callback);
 	return;
 }
 
@@ -707,14 +707,14 @@ void rotEnc_Count_Callback(void)
 
 void rotEnc_Direction_Callback(void)
 {
-	x_axis_encoder_counters.direction = (gpio_get_pin_level(ROTENC_DIR) == HIGH) ? (1) : (-1);
+	// //x_axis_encoder_counters.direction = (gpio_get_pin_level(ROTENC_DIR) == HIGH) ? (1) : (-1);
 	return;
 }
 
 void init_Enc_Cnt_Dir(void)
 {
-	ext_irq_register(ROTENC_COUNT, rotEnc_Count_Callback);
-	ext_irq_register(ROTENC_DIR, rotEnc_Direction_Callback);
+	// //ext_irq_register(ROTENC_DIR, rotEnc_Direction_Callback);
+	// //ext_irq_register(ROTENC_COUNT, rotEnc_Count_Callback);
 	return;
 }
 
@@ -791,7 +791,7 @@ void run_Trapezoidal_Ramp(void)
 					break;
 					case true:			// Motor is within the Position Error Window.
 						ramp_State = STOP;
-						timer_stop(&TIMER_0);
+						// //timer_stop(&TIMER_0);
 					break;
 				}
 			break;
@@ -857,7 +857,7 @@ void run_S_ramp(void)
 						current_position = abs(tmc4671_getActualPosition(MOTOR) - rParams.initial_Position);				// Go to Phase 2.
 						rParams.phase_error = ( current_position - rParams.s_p1 );
 						v_temp = convert_PPS_To_RPM(rParams.s_v1);
-						PRINTF_DEBUG && printf("\nPH1 %d %.2f a = %.2f %.2f v = %d %.2f err = %d\n", current_position, rParams.s_p1, a_temp * 1000, convert_PPS_To_RPM( rParams.s_a1), tmc4671_getActualVelocity(MOTOR), convert_PPS_To_RPM( rParams.s_v1), rParams.phase_error);
+						SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nPH1 %d %.2f a = %.2f %.2f v = %d %.2f err = %d\n", current_position, rParams.s_p1, a_temp * 1000, convert_PPS_To_RPM( rParams.s_a1), tmc4671_getActualVelocity(MOTOR), convert_PPS_To_RPM( rParams.s_v1), rParams.phase_error);
 						if( (rParams.ramp_case == A) | (rParams.ramp_case == B) | (rParams.ramp_case == C1) | (rParams.ramp_case == C2) )
 						{
 							s_curve_phase = PHASE_3;
@@ -881,7 +881,7 @@ void run_S_ramp(void)
 						current_position = abs(tmc4671_getActualPosition(MOTOR) - rParams.initial_Position);
 						rParams.phase_error = ( current_position - rParams.s_p2 );
 						v_temp = convert_PPS_To_RPM(rParams.s_v2);
-						PRINTF_DEBUG && printf("\nPH2 %d %.2f a = %.2f %.2f v = %d %.2f err = %d\n", current_position, rParams.s_p2, a_temp * 1000, convert_PPS_To_RPM( rParams.s_a2), tmc4671_getActualVelocity(MOTOR), convert_PPS_To_RPM( rParams.s_v2), rParams.phase_error);
+						// //SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nPH2 %d %.2f a = %.2f %.2f v = %d %.2f err = %d\n", current_position, rParams.s_p2, a_temp * 1000, convert_PPS_To_RPM( rParams.s_a2), tmc4671_getActualVelocity(MOTOR), convert_PPS_To_RPM( rParams.s_v2), rParams.phase_error);
 						s_curve_phase = PHASE_3;
 					break;
 				}
@@ -902,7 +902,7 @@ void run_S_ramp(void)
 						current_position = abs(tmc4671_getActualPosition(MOTOR) - rParams.initial_Position);
 						rParams.phase_error = ( current_position - rParams.s_p3 );
 						v_temp = convert_PPS_To_RPM(rParams.s_v3);
-						PRINTF_DEBUG && printf("\nPH3 %d %.2f a = %.2f %.2f v = %d %.2f err = %d\n", current_position, rParams.s_p3, a_temp * 1000, convert_PPS_To_RPM( rParams.s_a3), tmc4671_getActualVelocity(MOTOR), convert_PPS_To_RPM( rParams.s_v3), rParams.phase_error);
+						SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nPH3 %d %.2f a = %.2f %.2f v = %d %.2f err = %d\n", current_position, rParams.s_p3, a_temp * 1000, convert_PPS_To_RPM( rParams.s_a3), tmc4671_getActualVelocity(MOTOR), convert_PPS_To_RPM( rParams.s_v3), rParams.phase_error);
 						a_temp = 0;
 						if( (rParams.ramp_case == A) | (rParams.ramp_case == C1) | (rParams.ramp_case == D1) )
 						{
@@ -929,7 +929,7 @@ void run_S_ramp(void)
 						rParams.phase_error = ( current_position - rParams.s_p4 );
 						v_temp = convert_PPS_To_RPM(rParams.s_v4);
 						//v_temp = axis_params.endurance_vel;
-						PRINTF_DEBUG && printf("\nPH4 %d %.2f a = %.2f %.2f v = %d %.2f err = %d\n", current_position, rParams.s_p4, a_temp * 1000, convert_PPS_To_RPM( rParams.s_a4), tmc4671_getActualVelocity(MOTOR), convert_PPS_To_RPM( rParams.s_v4), rParams.phase_error);
+						SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nPH4 %d %.2f a = %.2f %.2f v = %d %.2f err = %d\n", current_position, rParams.s_p4, a_temp * 1000, convert_PPS_To_RPM( rParams.s_a4), tmc4671_getActualVelocity(MOTOR), convert_PPS_To_RPM( rParams.s_v4), rParams.phase_error);
 						s_curve_phase = PHASE_5;
 					break;
 				}
@@ -950,7 +950,7 @@ void run_S_ramp(void)
 						current_position = abs(tmc4671_getActualPosition(MOTOR) - rParams.initial_Position);
 						rParams.phase_error = ( current_position - rParams.s_p5 );
 						v_temp = convert_PPS_To_RPM(rParams.s_v5);
-						PRINTF_DEBUG && printf("\nPH5 %d %.2f a = %.2f %.2f v = %d %.2f err = %d\n", current_position, rParams.s_p5, a_temp * 1000, convert_PPS_To_RPM( rParams.s_a5), tmc4671_getActualVelocity(MOTOR), convert_PPS_To_RPM( rParams.s_v5), rParams.phase_error);
+						SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nPH5 %d %.2f a = %.2f %.2f v = %ld %.2f err = %ld\n", current_position, rParams.s_p5, a_temp * 1000, convert_PPS_To_RPM( rParams.s_a5), tmc4671_getActualVelocity(MOTOR), convert_PPS_To_RPM( rParams.s_v5), rParams.phase_error);
 						if( (rParams.ramp_case == A) | (rParams.ramp_case == B) | (rParams.ramp_case == C1) | (rParams.ramp_case == C2) )
 						{
 							s_curve_phase = PHASE_7;
@@ -974,7 +974,7 @@ void run_S_ramp(void)
 						current_position = abs(tmc4671_getActualPosition(MOTOR) - rParams.initial_Position);
 						rParams.phase_error = ( current_position - rParams.s_p6 );
 						v_temp = convert_PPS_To_RPM(rParams.s_v6);
-						PRINTF_DEBUG && printf("\nPH6 %d %.2f a = %.2f %.2f v = %d %.2f err = %d\n", current_position, rParams.s_p6, a_temp * 1000, convert_PPS_To_RPM( rParams.s_a6), tmc4671_getActualVelocity(MOTOR), convert_PPS_To_RPM( rParams.s_v6), rParams.phase_error);
+						SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nPH6 %d %.2f a = %.2f %.2f v = %ld %.2f err = %ld\n", current_position, rParams.s_p6, a_temp * 1000, convert_PPS_To_RPM( rParams.s_a6), tmc4671_getActualVelocity(MOTOR), convert_PPS_To_RPM( rParams.s_v6), rParams.phase_error);
 						s_curve_phase = PHASE_7;
 					break;
 				}
@@ -983,7 +983,7 @@ void run_S_ramp(void)
 				switch( abs(tmc4671_getActualPosition(MOTOR) - rParams.initial_Position) < (rParams.distance_total) )
 				{
 					case true:
-						if(ph7_entered == false) { PRINTF_DEBUG && printf("\nPH - 7\n"); ph7_entered = true; }
+						if(ph7_entered == false) { SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "\nPH - 7\n"); ph7_entered = true; }
 						if(v > 10) 
 						{ 
 							a_temp += axis_params.jerk_delta; 
@@ -998,10 +998,10 @@ void run_S_ramp(void)
 						current_position = abs(tmc4671_getActualPosition(MOTOR) - rParams.initial_Position);
 						rParams.phase_error = ( current_position - rParams.s_p7 );
 						v_temp = convert_PPS_To_RPM(rParams.s_v7);
-						PRINTF_DEBUG && printf("\nPH7 %d %.2f a = %.2f %.2f v = %d %.2f err = %d\n", current_position, rParams.s_p7, a_temp * 1000, convert_PPS_To_RPM( rParams.s_a7), tmc4671_getActualVelocity(MOTOR), convert_PPS_To_RPM( rParams.s_v7), rParams.phase_error);
+						// //RINTF_DEBUG && printf("\nPH7 %d %.2f a = %.2f %.2f v = %d %.2f err = %d\n", current_position, rParams.s_p7, a_temp * 1000, convert_PPS_To_RPM( rParams.s_a7), tmc4671_getActualVelocity(MOTOR), convert_PPS_To_RPM( rParams.s_v7), rParams.phase_error);
 						rParams.phase_error = 0;
-						( (repeat_ramp == 2) || (repeat_ramp == 1) ) ? s_curve_phase = DO_REPEAT : timer_stop(&TIMER_0); 
-						timer_stop(&TIMER_0);
+    						// //( (repeat_ramp == 2) || (repeat_ramp == 1) ) ? s_curve_phase = DO_REPEAT : timer_stop(&TIMER_0); 
+						// //timer_stop(&TIMER_0);
 					break;
 				}
 			break;
@@ -1074,7 +1074,7 @@ void move_With_Trapezoidal_Ramp(int32_t target_position, int32_t velocity)
 	move_given_trapezoidal_ramp = true;											// For Trapezoidal Ramp.
 	if(limit_variables.homing == false) { check_move_done = true; }	// For Move Done. No need of Move Done for homing.
 	velocity_limit = velocity;
-	timer_start(&TIMER_0);											// By setting the above flags, registers and timer the ramp will automatically start as it is constantly called in the main loop. 
+	// // timer_start(&TIMER_0);											// By setting the above flags, registers and timer the ramp will automatically start as it is constantly called in the main loop. 
 }
 
 /** 
@@ -1100,8 +1100,8 @@ void move_With_S_Ramp(float target_position, int32_t velocity, bool move_to_by)
 	{ 
 		check_move_done = true;					// For Move Done. No need of Move Done for homing.
 	}
-	timer_stop(&VEL_TIMER);
-	timer_start(&TIMER_0);											// By setting the above flags, registers and timer the ramp will automatically start as it is constantly called in the main loop. 
+	// //timer_stop(&VEL_TIMER);
+	// //timer_start(&TIMER_0);											// By setting the above flags, registers and timer the ramp will automatically start as it is constantly called in the main loop. 
 }
 
 /** 
@@ -1113,7 +1113,7 @@ void move_With_S_Ramp(float target_position, int32_t velocity, bool move_to_by)
 bool camera_Trigger(void)
 {
 	//gpio_set_pin_level(INTOUT, 1);
-	delay_us(1);
+	// //delay_us(1);
 	//gpio_set_pin_level(INTOUT, 0);
 	
 	autofocus_variables.cam_trigger_count += 1;
@@ -1145,11 +1145,11 @@ void check_For_Move_Done(void)
 		if(repeat_ramp == 2)
 		{
 			ramp_State = DO_NOTHING;
-			timer_start(&TIMER_0);
+			// //timer_start(&TIMER_0);
 			//move_given_trapezoidal_ramp = true;
 			move_given_s_ramp = true;
 		}
-		else { timer_stop(&TIMER_0); }
+		// //else { timer_stop(&TIMER_0); }
 		//reeler_Move_Done();
 	}
 	return;
@@ -1175,10 +1175,10 @@ void check_Motor_Movement(void)
 		if(repeat_ramp > 0)
 		{
 			ramp_State = DO_NOTHING;
-			timer_start(&TIMER_0);
+			//timer_start(&TIMER_0);
 			move_given_trapezoidal_ramp = true;
 		}
-		else { timer_stop(&TIMER_0); }
+		//else { timer_stop(&TIMER_0); }
 		//if(limit_variables.homing == true)
 		{
 			reeler_Move_Done();
@@ -1232,16 +1232,19 @@ void run_Velocity_Ramp(void)
 	}
 	
 	static uint32_t prev_time = 0, current_time;
-	current_time = millis();
+	// //current_time = millis();
 	// For Encoder based Triggering.
 	int32_t current_position = tmc4671_getActualPosition(MOTOR);
 	if( (p_reeler_info->position.trig_step_size != 0) && ramping
 	    && (abs(prev_trig_pos - current_position) >= p_reeler_info->position.trig_step_size) )
 	{
-		gpio_set_pin_level(REELER_INT, HIGH);
-		delay_us(1);
-		gpio_toggle_pin_level(DBGLED3);
-		gpio_set_pin_level(REELER_INT, LOW);
+		//gpio_set_pin_level(REELER_INT, HIGH);
+                REELER_INT_Set();
+                //delay_us(1);
+                DBG_LED3_Toggle();
+                //gpio_toggle_pin_level(DBGLED3);
+		REELER_INT_Clear();
+                //gpio_set_pin_level(REELER_INT, LOW);
 		printf("\nT%ld", ++trig_no);
 		if(current_time - prev_time >= 30000)	// 60 seconds.
 		{ 
