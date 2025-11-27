@@ -60,7 +60,7 @@
 #define OPENLOOP					0				// Make this 1 if running in Open Loop.
 #define CLOSEDLOOP					1				// Make this 1 if running in Closed Loop.
 
-#define NO_OF_MOVE_DONE_CHECK		10				// The number of times actual position of the motor is checked
+#define NO_OF_MOVE_DONE_CHECK		50				// The number of times actual position of the motor is checked
 													// before Move Done is given.
 
 /** 
@@ -147,7 +147,7 @@
 #endif
 
 #ifndef MIN_DISTANCE_RAMP
-	#define MIN_DISTANCE_RAMP		500					// If the no. of steps to move is greater than this, use ramp. Else move without ramp.
+	#define MIN_DISTANCE_RAMP		1500				// If the no. of steps to move is greater than this, use ramp. Else move without ramp.
 #endif
 
 #define POSITION_LOW				0x80000001			// Min. value of the PID_POSITION register.
@@ -223,7 +223,7 @@
 
 #define UD_EXT						3202
 
-#define PID_POSITION_WINDOW			12					//Error Window for Move Done Signal.
+#define PID_POSITION_WINDOW			24					//Error Window for Move Done Signal.
 
 #define STOP_VELOCITY				100
 

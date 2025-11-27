@@ -164,22 +164,25 @@ static bool _extFlashVerifyPart(void)
 	{
 		return false;
 	}
-	
+
 	// Point pFlashInfo to FlashInfo Array
 	pFlashInfo = flashInfo;
+	bool id_chk = false;
 	
 	// Loop and Compare
-	while(pFlashInfo->deviceSize > 0)
+	for(int32_t i = 0; i < FLASH_INFO_COUNT; i++)
 	{
 		if (infoBuf[0] == pFlashInfo->manuID && infoBuf[1] == pFlashInfo->devID)
 		{
+			id_chk = true;
 			break;
 		}
 		pFlashInfo++;
 	}
-	
+
 	// Return whether we found a matching device
-	return (pFlashInfo->deviceSize > 0);
+	return id_chk;
+
 }
 
 /**

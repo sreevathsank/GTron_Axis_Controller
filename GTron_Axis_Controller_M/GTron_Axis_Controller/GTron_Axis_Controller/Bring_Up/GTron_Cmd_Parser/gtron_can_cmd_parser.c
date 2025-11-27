@@ -160,12 +160,15 @@ static void reeler_Stop_Motor( void )
 	move_given_s_ramp = false; 
 	check_move_done = false;
 	reeler_info.flags.rotate_vel_mode = false;
+	reeler_info.flags.sag_enabled = false;
 	//reeler_info.position.trig_step_size = 0;
 	homing_v = 0;
 	//if(!reeler_info.flags.sag_enabled || !reeler_info.flags.rotate_vel_mode)
 	{
 		timer_stop(&VEL_TIMER);
 	}
+	trig_no = 0;
+	prev_trig_no = 0;
 	reeler_info.position.current = tmc4671_getActualPosition(MOTOR);
 	PRINTF_DEBUG ? printf("\nReeler Stop Motor\n"): 0;
 	return;
@@ -390,32 +393,42 @@ void parse_GTron_CAN_Msg_Data( void )
 		case CAN_TOP_SAG_REELER_ID:
 			rack_id = TOP_RACK;
 			PRINTF_DEBUG ? printf("\nTOP Sag Reeler Message ID Rxcvd\n"): 0;
+			if(!reeler_info.flags.rotate_vel_mode) { break; }
 			switch(rx_can_cmd_info.data[0])
 			{
 				case 1:
-				reeler_info.flags.sag_enabled = true;
-				if(reeler_info.flags.sag_enabled & reeler_info.flags.rotate_vel_mode)
 				{
-					timer_start(&VEL_TIMER);
-					tmc4671_setVelocityLimit(MOTOR, reeler_info.velocity.limit);
+					reeler_info.flags.sag_enabled = true;
+					if(reeler_info.flags.sag_enabled & reeler_info.flags.rotate_vel_mode)
+					{
+						trig_no = 0;
+						prev_trig_no = 0;
+						timer_start(&VEL_TIMER);
+						tmc4671_setVelocityLimit(MOTOR, reeler_info.velocity.limit);
+					}
+					PRINTF_DEBUG ? printf("\nSag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Rotate.\n"): 0;
+					break;
 				}
-				PRINTF_DEBUG ? printf("\nSag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Rotate.\n"): 0;
-				break;
 				case 0:
-				reeler_info.flags.sag_enabled = false;
-				if(!reeler_info.flags.sag_enabled || !reeler_info.flags.rotate_vel_mode)
 				{
-					timer_stop(&VEL_TIMER);
+					reeler_info.flags.sag_enabled = false;
+					if(!reeler_info.flags.sag_enabled || !reeler_info.flags.rotate_vel_mode)
+					{
+						trig_no = 0;
+						prev_trig_no = 0;
+						timer_stop(&VEL_TIMER);
+					}
+					tmc4671_setVelocityTarget(MOTOR, 0);
+					PRINTF_DEBUG ? printf("\nSag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Stop.\n"): 0;
+					break;
 				}
-				tmc4671_setVelocityTarget(MOTOR, 0);
-				PRINTF_DEBUG ? printf("\nSag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Stop.\n"): 0;
-				break;
 				default: PRINTF_DEBUG ? printf("\nSag Sensor Invalid Operation Rxcvd\n"): 0;					break;
 			}
 		break;
 		case CAN_BOT_SAG_REELER_ID:
 			rack_id = BOT_RACK;
 			PRINTF_DEBUG ? printf("\nBOTTOM Sag Reeler Message ID Rxcvd\n"): 0;
+			if(!reeler_info.flags.rotate_vel_mode) { break; }
 			switch(rx_can_cmd_info.data[0])
 			{
 				case 1:

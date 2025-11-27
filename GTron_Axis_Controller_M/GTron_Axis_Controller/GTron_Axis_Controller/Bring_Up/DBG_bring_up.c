@@ -389,7 +389,9 @@ bool check_4671_version_spi(void)
 	tmc4671_writeInt(MOTOR, TMC4671_CHIPINFO_ADDR, ZERO_HEX);
 	delay_ms(1);
 	
+	int32_t chip_info = tmc4671_readInt(MOTOR, TMC4671_CHIPINFO_DATA);
 	bool ret_val = VERSION_4671 == tmc4671_readInt(MOTOR, TMC4671_CHIPINFO_DATA);
+	printf("\nchip info = %ld or 0x%x\n", chip_info, chip_info);
 	ret_val ? PRINTF_DEBUG ? printf("\nSPI Comms with TMC4671 is successful\n"): 0
 			: 0;
     return ret_val;

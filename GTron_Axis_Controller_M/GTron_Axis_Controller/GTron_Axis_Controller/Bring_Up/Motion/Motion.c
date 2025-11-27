@@ -625,10 +625,10 @@ void rot_Enc_Z_Pulse_Interrupt_Callback(void)
 		limit_variables.homing = false;
 		ext_irq_disable(ROTENC_Z);
 		
-		//message_Id = CAN_REPLY_TOP_RACK_ID;
-		//can_tx_frame.data[0] = REELER_MOTOR;
-		//can_tx_frame.data[1] = AXC_HOMING;
-		//can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
+		message_Id = CAN_REPLY_TOP_RACK_ID;
+		can_tx_frame.data[0] = REELER_MOTOR;
+		can_tx_frame.data[1] = AXC_HOMING;
+		can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
 		
 		PRINTF_DEBUG ? printf("\nReeler Homing Done\n"): 0;
 	}
@@ -1137,12 +1137,20 @@ void check_For_Move_Done(void)
 	if( move_done_check_num >= NO_OF_MOVE_DONE_CHECK )
 	{
 		move_done_check_num = 0;
-		move_done_check_num = 0;
 		stop_error_position = tmc4671_getErrorPosition(MOTOR);
 		check_move_done = false;
 		move_given_s_ramp = false;
 		move_given_trapezoidal_ramp = false;
 		autofocus_variables.both_received = false;
+		
+		// Send RHD command as a Move Done command.
+		message_Id = CAN_REPLY_TOP_RACK_ID;
+		can_tx_frame.data[0] = REELER_MOTOR;
+		can_tx_frame.data[1] = AXC_HOMING;
+		can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
+		
+		PRINTF_DEBUG ? printf("\nReeler Move Done -> RHD\n"): 0;
+		
 		if(repeat_ramp == 2)
 		{
 			ramp_State = DO_NOTHING;
@@ -1171,17 +1179,8 @@ void check_Motor_Movement(void)
 		stop_error_position = tmc4671_getErrorPosition(MOTOR);
 		check_move_done = false;
 		
-		// If in AF, send Cam Trigger.
-		if(autofocus_variables.both_received)
-		{
-			//camera_Trigger();
-			PRINTF_DEBUG && printf("\n-----AF Done - Camera Trigger Count = %ld -----\n", autofocus_variables.cam_trigger_count);
-			autofocus_variables.cam_trigger_count = 0;
-			idx = 0;
-		}
 		move_given_trapezoidal_ramp = false;
 		//move_given_s_ramp = false;
-		autofocus_variables.both_received = false;
 		if(repeat_ramp > 0)
 		{
 			ramp_State = DO_NOTHING;
@@ -1225,7 +1224,6 @@ void run_Velocity_Ramp(void)
 	static float vel = 0;	// Velocity to be set.
 	static bool ramping = false;
 	static int32_t prev_trig_pos = 0;
-	static uint32_t trig_no = 0;
 	
 	vel_struct.flags.reeler_vel_timer = false;
 	
@@ -1242,16 +1240,24 @@ void run_Velocity_Ramp(void)
 		tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
 	}
 	
+	static uint32_t prev_time = 0, current_time;
+	current_time = millis();
 	// For Encoder based Triggering.
 	int32_t current_position = tmc4671_getActualPosition(MOTOR);
 	if( (p_reeler_info->position.trig_step_size != 0) && ramping
 	    && (abs(prev_trig_pos - current_position) >= p_reeler_info->position.trig_step_size) )
 	{
 		gpio_set_pin_level(REELER_INT, HIGH);
-		//delay_us(1);
+		delay_us(1);
 		gpio_toggle_pin_level(DBGLED3);
 		gpio_set_pin_level(REELER_INT, LOW);
-		//printf("\nT%ld", ++trig_no);
+		printf("\nT%ld", ++trig_no);
+		if(current_time - prev_time >= 30000)	// 60 seconds.
+		{ 
+			PRINTF_DEBUG ? printf("\n#-----No. of triggers after 30 seconds is %ld-----#\n", (trig_no - prev_trig_no) ):0; 
+			prev_trig_no = trig_no;
+			prev_time = current_time;
+		}
 		prev_trig_pos = current_position;
 	}
 	if(!ramping)

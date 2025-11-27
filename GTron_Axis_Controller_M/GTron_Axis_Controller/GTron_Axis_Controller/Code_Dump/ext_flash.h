@@ -17,6 +17,8 @@
 
 //struct spi_m_async_descriptor SERIALFLASH;
 
+#define FLASH_INFO_COUNT (sizeof(flashInfo) / sizeof(flashInfo[0]))
+
 // Instruction Codes
 #define FLASH_CMD_MDID					0x9F	// Manufacturer Device ID.
 #define FLASH_CMD_READ_STATUS			0x05	// Read Status Register.

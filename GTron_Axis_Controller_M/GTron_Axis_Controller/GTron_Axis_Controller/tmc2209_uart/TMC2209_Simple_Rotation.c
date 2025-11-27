@@ -24,6 +24,8 @@ void init_tmc2209_motor(uint16_t icID)
     
     tmc2209_writeRegister(icID, TMC2209_PWMCONF, 0xC10D0024);       // DEC 3238854692.
 	
+	tmc2209_writeRegister(icID, TMC2209_TPOWERDOWN, 0x00000002);
+	
 	PRINTF_DEBUG ? printf("\nTMC2209 Init Done for Guide Motor.\n"): 0;
 	
 	gpio_set_pin_level(INDEX_SEL, LOW);

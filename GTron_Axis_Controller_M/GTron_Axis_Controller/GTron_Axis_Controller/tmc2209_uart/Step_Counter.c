@@ -77,7 +77,7 @@ void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info)
 	motor_info->step_tracker.prev_mscnt = current_mscnt;
 	
 	//printf("\ntarget pos = %ld | current_pos = %ld\n", motor_info->position.target, motor_info->step_tracker.total_steps, abs(motor_info->position.target - motor_info->step_tracker.total_steps));
-	if(p_guide_info->flags.move_given)
+	if(motor_info->flags.move_given)
 	{
 		int32_t pos_diff = motor_info->position.target - motor_info->step_tracker.total_steps;
 		bool diff_zero = false;
@@ -94,14 +94,14 @@ void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info)
 		if( diff_zero )
 		{
 			motor_info->flags.move_given = false;
-			tmc2209_set_velocity(TMC2209_GUIDE_ADDR, p_guide_info, ZERO_HEX);
-			p_guide_info->position.current = p_guide_info->step_tracker.total_steps;
+			tmc2209_set_velocity(TMC2209_GUIDE_ADDR, motor_info, ZERO_HEX);
+			motor_info->position.current = motor_info->step_tracker.total_steps;
 			message_Id = CAN_REPLY_TOP_RACK_ID;
 			can_tx_frame.data[0] = GUIDE_MOTOR;
 			can_tx_frame.data[1] = AXC_MOVE_DONE;
 			can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
 			PRINTF_DEBUG ? printf("\nGuide Move Done. Current Position = %ld usteps\n", \
-			p_guide_info->position.current): 0;
+			motor_info->position.current): 0;
 		}
 	}
 	
