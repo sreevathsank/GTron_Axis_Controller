@@ -1,0 +1,4 @@
+D:/pendrive_stuff/git_repos/gtron-axis-controller-fw/VSC_GTron_AxC_M/NGen_GTron_AxC_M/_build/NGen_GTron_AxC_M/default/CMakeFiles/NGen_GTron_AxC_M_default_default_ARM_GCC_compile.dir
+D:/pendrive_stuff/git_repos/gtron-axis-controller-fw/VSC_GTron_AxC_M/NGen_GTron_AxC_M/_build/NGen_GTron_AxC_M/default/CMakeFiles/NGen_GTron_AxC_M_default_image_RBHAEjJz.dir
+D:/pendrive_stuff/git_repos/gtron-axis-controller-fw/VSC_GTron_AxC_M/NGen_GTron_AxC_M/_build/NGen_GTron_AxC_M/default/CMakeFiles/edit_cache.dir
+D:/pendrive_stuff/git_repos/gtron-axis-controller-fw/VSC_GTron_AxC_M/NGen_GTron_AxC_M/_build/NGen_GTron_AxC_M/default/CMakeFiles/rebuild_cache.dir

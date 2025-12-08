@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    app.h
+    health_task.h
 
   Summary:
     This header file provides prototypes and definitions for the application.
@@ -13,13 +13,13 @@
   Description:
     This header file provides function prototypes and data type definitions for
     the application.  Some of these are required by the system (such as the
-    "APP_Initialize" and "APP_Tasks" prototypes) and some of them are only used
-    internally by the application (such as the "APP_STATES" definition).  Both
+    "HEALTH_TASK_Initialize" and "HEALTH_TASK_Tasks" prototypes) and some of them are only used
+    internally by the application (such as the "HEALTH_TASK_STATES" definition).  Both
     are defined here for convenience.
 *******************************************************************************/
 
-#ifndef _APP_H
-#define _APP_H
+#ifndef _HEALTH_TASK_H
+#define _HEALTH_TASK_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -61,11 +61,11 @@ extern "C" {
 typedef enum
 {
     /* Application's state machine's initial state. */
-    APP_STATE_INIT=0,
-    APP_STATE_SERVICE_TASKS,
+    HEALTH_TASK_STATE_INIT=0,
+    HEALTH_TASK_STATE_SERVICE_TASKS,
     /* TODO: Define states used by the application state machine. */
 
-} APP_STATES;
+} HEALTH_TASK_STATES;
 
 
 // *****************************************************************************
@@ -84,11 +84,11 @@ typedef enum
 typedef struct
 {
     /* The application's current state */
-    APP_STATES state;
+    HEALTH_TASK_STATES state;
 
     /* TODO: Define any additional data used by the application. */
 
-} APP_DATA;
+} HEALTH_TASK_DATA;
 
 // *****************************************************************************
 // *****************************************************************************
@@ -106,7 +106,7 @@ typedef struct
 
 /*******************************************************************************
   Function:
-    void APP_Initialize ( void )
+    void HEALTH_TASK_Initialize ( void )
 
   Summary:
      MPLAB Harmony application initialization routine.
@@ -114,7 +114,7 @@ typedef struct
   Description:
     This function initializes the Harmony application.  It places the
     application in its initial state and prepares it to run so that its
-    APP_Tasks function can be called.
+    HEALTH_TASK_Tasks function can be called.
 
   Precondition:
     All other system initialization routines should be called before calling
@@ -128,19 +128,19 @@ typedef struct
 
   Example:
     <code>
-    APP_Initialize();
+    HEALTH_TASK_Initialize();
     </code>
 
   Remarks:
     This routine must be called from the SYS_Initialize function.
 */
 
-void APP_Initialize ( void );
+void HEALTH_TASK_Initialize ( void );
 
 
 /*******************************************************************************
   Function:
-    void APP_Tasks ( void )
+    void HEALTH_TASK_Tasks ( void )
 
   Summary:
     MPLAB Harmony Demo application tasks function
@@ -161,14 +161,14 @@ void APP_Initialize ( void );
 
   Example:
     <code>
-    APP_Tasks();
+    HEALTH_TASK_Tasks();
     </code>
 
   Remarks:
     This routine must be called from SYS_Tasks() routine.
  */
 
-void APP_Tasks( void );
+void HEALTH_TASK_Tasks( void );
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus
@@ -176,7 +176,7 @@ void APP_Tasks( void );
 #endif
 //DOM-IGNORE-END
 
-#endif /* _APP_H */
+#endif /* _HEALTH_TASK_H */
 
 /*******************************************************************************
  End of File

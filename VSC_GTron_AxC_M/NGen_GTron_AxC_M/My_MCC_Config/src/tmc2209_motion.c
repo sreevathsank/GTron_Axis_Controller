@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    app.c
+    tmc2209_motion.c
 
   Summary:
     This file contains the source code for the MPLAB Harmony application.
@@ -27,7 +27,7 @@
 // *****************************************************************************
 // *****************************************************************************
 
-#include "app.h"
+#include "tmc2209_motion.h"
 
 // *****************************************************************************
 // *****************************************************************************
@@ -45,12 +45,12 @@
     This structure holds the application's data.
 
   Remarks:
-    This structure should be initialized by the APP_Initialize function.
+    This structure should be initialized by the TMC2209_MOTION_Initialize function.
 
     Application strings and buffers are be defined outside this structure.
 */
 
-APP_DATA appData;
+TMC2209_MOTION_DATA tmc2209_motionData;
 
 // *****************************************************************************
 // *****************************************************************************
@@ -80,16 +80,16 @@ APP_DATA appData;
 
 /*******************************************************************************
   Function:
-    void APP_Initialize ( void )
+    void TMC2209_MOTION_Initialize ( void )
 
   Remarks:
-    See prototype in app.h.
+    See prototype in tmc2209_motion.h.
  */
 
-void APP_Initialize ( void )
+void TMC2209_MOTION_Initialize ( void )
 {
     /* Place the App state machine in its initial state. */
-    appData.state = APP_STATE_INIT;
+    tmc2209_motionData.state = TMC2209_MOTION_STATE_INIT;
 
 
 
@@ -101,20 +101,20 @@ void APP_Initialize ( void )
 
 /******************************************************************************
   Function:
-    void APP_Tasks ( void )
+    void TMC2209_MOTION_Tasks ( void )
 
   Remarks:
-    See prototype in app.h.
+    See prototype in tmc2209_motion.h.
  */
 
-void APP_Tasks ( void )
+void TMC2209_MOTION_Tasks ( void )
 {
 
     /* Check the application's current state. */
-    switch ( appData.state )
+    switch ( tmc2209_motionData.state )
     {
         /* Application's initial state. */
-        case APP_STATE_INIT:
+        case TMC2209_MOTION_STATE_INIT:
         {
             bool appInitialized = true;
 
@@ -122,12 +122,12 @@ void APP_Tasks ( void )
             if (appInitialized)
             {
 
-                appData.state = APP_STATE_SERVICE_TASKS;
+                tmc2209_motionData.state = TMC2209_MOTION_STATE_SERVICE_TASKS;
             }
             break;
         }
 
-        case APP_STATE_SERVICE_TASKS:
+        case TMC2209_MOTION_STATE_SERVICE_TASKS:
         {
 
             break;
