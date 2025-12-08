@@ -149,7 +149,9 @@ build/default/production/_ext/1832805299/sys_console_uart.o: \
  ../src/config/default/system/console/src/sys_console_uart_definitions.h \
  ../src/config/default/system/int/sys_int.h \
  ../src/config/default/osal/osal.h \
- ../src/config/default/system/debug/sys_debug.h ../src/app.h
+ ../src/config/default/system/debug/sys_debug.h ../src/health_task.h \
+ ../src/tmc4671_motion.h ../src/tmc2209_motion.h ../src/can_task.h \
+ ../src/cmd_parser.h ../src/debug_logger.h
 
 ../src/config/default/system/console/sys_console.h:
 
@@ -455,4 +457,14 @@ build/default/production/_ext/1832805299/sys_console_uart.o: \
 
 ../src/config/default/system/debug/sys_debug.h:
 
-../src/app.h:
+../src/health_task.h:
+
+../src/tmc4671_motion.h:
+
+../src/tmc2209_motion.h:
+
+../src/can_task.h:
+
+../src/cmd_parser.h:
+
+../src/debug_logger.h:

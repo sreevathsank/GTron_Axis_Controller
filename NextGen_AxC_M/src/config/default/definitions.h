@@ -71,7 +71,12 @@
 #include "system/int/sys_int.h"
 #include "osal/osal.h"
 #include "system/debug/sys_debug.h"
-#include "app.h"
+#include "health_task.h"
+#include "tmc4671_motion.h"
+#include "tmc2209_motion.h"
+#include "can_task.h"
+#include "cmd_parser.h"
+#include "debug_logger.h"
 
 
 

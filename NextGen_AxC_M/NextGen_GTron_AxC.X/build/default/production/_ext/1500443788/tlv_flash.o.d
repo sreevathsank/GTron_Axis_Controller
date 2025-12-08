@@ -145,9 +145,10 @@ build/default/production/_ext/1500443788/tlv_flash.o: \
  ../src/third_party/rtos/FreeRTOS/Source/include/semphr.h \
  ../src/third_party/rtos/FreeRTOS/Source/include/queue.h \
  ../src/config/default/system/debug/sys_debug.h \
- ../src/config/default/system/console/sys_console.h ../src/app.h \
- ../src/All_Headers.h ../src/Macros.h \
- ../src/config/default/system/debug/sys_debug.h \
+ ../src/config/default/system/console/sys_console.h ../src/health_task.h \
+ ../src/tmc4671_motion.h ../src/tmc2209_motion.h ../src/can_task.h \
+ ../src/cmd_parser.h ../src/debug_logger.h ../src/All_Headers.h \
+ ../src/Macros.h ../src/config/default/system/debug/sys_debug.h \
  ../src/Bring_Up/DBG_bring_up.h \
  ../src/Bring_Up/IO_Expander/spi_io_expander.h \
  ../src/TMC-API/tmc/ic/TMC4671/TMC4671.h ../src/Code_Dump/ext_flash.h \
@@ -483,7 +484,17 @@ build/default/production/_ext/1500443788/tlv_flash.o: \
 
 ../src/config/default/system/console/sys_console.h:
 
-../src/app.h:
+../src/health_task.h:
+
+../src/tmc4671_motion.h:
+
+../src/tmc2209_motion.h:
+
+../src/can_task.h:
+
+../src/cmd_parser.h:
+
+../src/debug_logger.h:
 
 ../src/All_Headers.h:
 

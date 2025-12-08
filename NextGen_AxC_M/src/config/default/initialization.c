@@ -223,7 +223,12 @@ void SYS_Initialize ( void* data )
 
 
     /* MISRAC 2012 deviation block end */
-    APP_Initialize();
+    HEALTH_TASK_Initialize();
+    TMC4671_MOTION_Initialize();
+    TMC2209_MOTION_Initialize();
+    CAN_TASK_Initialize();
+    CMD_PARSER_Initialize();
+    DEBUG_LOGGER_Initialize();
 
 
     NVIC_Initialize();

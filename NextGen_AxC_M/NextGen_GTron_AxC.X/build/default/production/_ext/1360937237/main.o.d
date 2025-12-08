@@ -144,7 +144,9 @@ build/default/production/_ext/1360937237/main.o: ../src/main.c \
  ../src/third_party/rtos/FreeRTOS/Source/include/semphr.h \
  ../src/third_party/rtos/FreeRTOS/Source/include/queue.h \
  ../src/config/default/system/debug/sys_debug.h \
- ../src/config/default/system/console/sys_console.h ../src/app.h
+ ../src/config/default/system/console/sys_console.h ../src/health_task.h \
+ ../src/tmc4671_motion.h ../src/tmc2209_motion.h ../src/can_task.h \
+ ../src/cmd_parser.h ../src/debug_logger.h
 
 ../src/config/default/definitions.h:
 
@@ -442,4 +444,14 @@ build/default/production/_ext/1360937237/main.o: ../src/main.c \
 
 ../src/config/default/system/console/sys_console.h:
 
-../src/app.h:
+../src/health_task.h:
+
+../src/tmc4671_motion.h:
+
+../src/tmc2209_motion.h:
+
+../src/can_task.h:
+
+../src/cmd_parser.h:
+
+../src/debug_logger.h:

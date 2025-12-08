@@ -316,10 +316,15 @@
         <itemPath>../src/tmc2209_uart/TMC2209_Motion.h</itemPath>
         <itemPath>../src/tmc2209_uart/TMC2209_Simple_Rotation.h</itemPath>
       </logicalFolder>
-      <itemPath>../src/app.h</itemPath>
       <itemPath>../src/Global_Vars.h</itemPath>
       <itemPath>../src/Macros.h</itemPath>
       <itemPath>../src/All_Headers.h</itemPath>
+      <itemPath>../src/health_task.h</itemPath>
+      <itemPath>../src/tmc4671_motion.h</itemPath>
+      <itemPath>../src/tmc2209_motion.h</itemPath>
+      <itemPath>../src/can_task.h</itemPath>
+      <itemPath>../src/cmd_parser.h</itemPath>
+      <itemPath>../src/debug_logger.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -344,11 +349,11 @@
             </logicalFolder>
             <itemPath>NextGen_GTron_AxC_default/components/ExtFlash_IOXP_SPI/ExtFlash_IOXP_SPI.yml</itemPath>
           </logicalFolder>
-          <logicalFolder name="Group4" displayName="Group4" projectFiles="true">
+          <logicalFolder name="Ramp_Timer" displayName="Ramp_Timer" projectFiles="true">
             <logicalFolder name="components" displayName="components" projectFiles="true">
-              <itemPath>NextGen_GTron_AxC_default/components/Group4/components/tc4.yml</itemPath>
+              <itemPath>NextGen_GTron_AxC_default/components/Ramp_Timer/components/tc4.yml</itemPath>
             </logicalFolder>
-            <itemPath>NextGen_GTron_AxC_default/components/Group4/Group4.yml</itemPath>
+            <itemPath>NextGen_GTron_AxC_default/components/Ramp_Timer/Ramp_Timer.yml</itemPath>
           </logicalFolder>
           <logicalFolder name="SPI_0_4671" displayName="SPI_0_4671" projectFiles="true">
             <logicalFolder name="components" displayName="components" projectFiles="true">
@@ -563,8 +568,13 @@
         <itemPath>../src/tmc2209_uart/TMC2209_Simple_Rotation.c</itemPath>
       </logicalFolder>
       <itemPath>../src/main.c</itemPath>
-      <itemPath>../src/app.c</itemPath>
       <itemPath>../src/Global_Vars.c</itemPath>
+      <itemPath>../src/health_task.c</itemPath>
+      <itemPath>../src/tmc4671_motion.c</itemPath>
+      <itemPath>../src/tmc2209_motion.c</itemPath>
+      <itemPath>../src/can_task.c</itemPath>
+      <itemPath>../src/cmd_parser.c</itemPath>
+      <itemPath>../src/debug_logger.c</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
@@ -580,7 +590,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>noID</platformTool>
         <languageToolchain>XC32</languageToolchain>
-        <languageToolchainVersion>4.60</languageToolchainVersion>
+        <languageToolchainVersion>3.00</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <packs>
@@ -615,28 +625,168 @@
         <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
       <item path="../src/Bring_Up/CAN/IMM_CAN.c" ex="true" overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
       </item>
       <item path="../src/Bring_Up/CAN/IMM_CAN_Read.c" ex="true" overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
       </item>
       <item path="../src/Bring_Up/CAN/IMM_CAN_Write.c" ex="true" overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
       </item>
       <item path="../src/Bring_Up/CAN/MCD_v3.c" ex="true" overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
       </item>
       <item path="../src/Bring_Up/CAN/TMCL_IDE_reply.c" ex="true" overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
       </item>
       <item path="../src/Bring_Up/DBG_bring_up.c" ex="true" overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
       </item>
       <item path="../src/Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.c"
             ex="true"
             overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
       </item>
       <item path="../src/Bring_Up/IO_Expander/spi_io_expander.c"
             ex="true"
             overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
       </item>
       <item path="../src/Bring_Up/Motion/Motion.c" ex="true" overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
       </item>
       <item path="../src/motor_dev/my_Ramp/myRamp.c" ex="true" overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
       </item>
       <C32>
         <property key="additional-warnings" value="true"/>

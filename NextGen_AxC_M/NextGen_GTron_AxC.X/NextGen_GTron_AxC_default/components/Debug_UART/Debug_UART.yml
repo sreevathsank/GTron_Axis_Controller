@@ -1,6 +1,6 @@
 configVersion: 1.0.0
 componentName: Group3
-coreVersion: 5.8.2
+coreVersion: 5.8.3
 device: ATSAMC21N18A
 library: []
 dependency:
@@ -38,8 +38,8 @@ data:
     - children:
       - attributes:
           id: Group3
-          x: '33'
-          y: '176'
+          x: '159'
+          y: '152'
         type: ElementPosition
       type: ElementPositions
     type: ComponentGraph

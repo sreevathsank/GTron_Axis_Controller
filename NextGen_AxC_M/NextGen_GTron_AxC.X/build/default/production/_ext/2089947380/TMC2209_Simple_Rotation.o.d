@@ -150,8 +150,10 @@ build/default/production/_ext/2089947380/TMC2209_Simple_Rotation.o: \
  ../src/third_party/rtos/FreeRTOS/Source/include/semphr.h \
  ../src/third_party/rtos/FreeRTOS/Source/include/queue.h \
  ../src/config/default/system/debug/sys_debug.h \
- ../src/config/default/system/console/sys_console.h ../src/app.h \
- ../src/Macros.h ../src/Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h \
+ ../src/config/default/system/console/sys_console.h ../src/health_task.h \
+ ../src/tmc4671_motion.h ../src/tmc2209_motion.h ../src/can_task.h \
+ ../src/cmd_parser.h ../src/debug_logger.h ../src/Macros.h \
+ ../src/Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h \
  ../src/All_Headers.h ../src/Macros.h \
  ../src/config/default/system/debug/sys_debug.h \
  ../src/Bring_Up/DBG_bring_up.h \
@@ -491,7 +493,17 @@ build/default/production/_ext/2089947380/TMC2209_Simple_Rotation.o: \
 
 ../src/config/default/system/console/sys_console.h:
 
-../src/app.h:
+../src/health_task.h:
+
+../src/tmc4671_motion.h:
+
+../src/tmc2209_motion.h:
+
+../src/can_task.h:
+
+../src/cmd_parser.h:
+
+../src/debug_logger.h:
 
 ../src/Macros.h:
 

@@ -1,6 +1,6 @@
 configVersion: 1.0.0
 componentName: dfp
-coreVersion: 5.8.2
+coreVersion: 5.8.3
 device: ATSAMC21N18A
 library: []
 dependency:
@@ -22,7 +22,7 @@ data:
     - children:
       - attributes:
           id: dfp
-          x: '601'
+          x: '619'
           y: '5'
         type: ElementPosition
       type: ElementPositions

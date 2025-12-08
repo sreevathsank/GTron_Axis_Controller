@@ -1,9 +1,8 @@
 configVersion: 1.0.0
-coreVersion: 5.8.2
-spaHostVersion: 1.0.0
+coreVersion: 5.8.3
+spaHostVersion: 1.2.0
 device: ATSAMC21N18A
-deviceLibrary:
-  className: null
+deviceLibrary: {}
 groupModules:
 - group: Group0
   modules:
@@ -39,10 +38,14 @@ modules:
 - rstc
 - sys_console_0
 generatedFileHashHistoryMap:
-- file: ..\src\app.c
-  hash: 632c78c323cb9f8c6359f20337440c08f8461eb4b0304552b6a3cfd5c4052620
-- file: ..\src\app.h
-  hash: 8e35d8509552a4d1d6e6f123ad75694cf784a707f7dac592ed33b55121aa8e28
+- file: ..\src\can_task.c
+  hash: dccc3dd7bf2bff3b197f8a6475ef289b1c90b6480f720ace0c08b66e5ca14e6a
+- file: ..\src\can_task.h
+  hash: 6a00bbd54aacb3701d994f3cc325e1d83474cafa297fe85670e79989f74004a2
+- file: ..\src\cmd_parser.c
+  hash: 4e0ee73fa030ea92b018f43a409b29d83120d3d7c836815f1e8f5cd57011f653
+- file: ..\src\cmd_parser.h
+  hash: 40d8b53290671e9d75662844e222ffb87a7563cf18ecd865ce791b9011345c34
 - file: ..\src\config\default\ATSAMC21N18A.ld
   hash: 17aa307fe1688044e7c8f6b700fbd7d38ab51c9db7fda3f8a156f31531b5ae44
 - file: ..\src\config\default\FreeRTOSConfig.h
@@ -50,7 +53,7 @@ generatedFileHashHistoryMap:
 - file: ..\src\config\default\configuration.h
   hash: c161fbdd976a0a4a18cc17881edcaccdfa8a7f21831c88b102459f96587a01ca
 - file: ..\src\config\default\definitions.h
-  hash: cdf82636984c59faaed13abee18a9b552481a2e969c2f0cf119ad7e4d7a7d8af
+  hash: a5c8b6becb04c1fcf2bce8cc892e90b1a870816c4d6c7dc501f8ae6cfa28b0ea
 - file: ..\src\config\default\device.h
   hash: 27c4489785a0dc0d30b84aa5e0ea6097342d0f02035cf68c068136991e205455
 - file: ..\src\config\default\device_cache.h
@@ -66,7 +69,7 @@ generatedFileHashHistoryMap:
 - file: ..\src\config\default\freertos_hooks.c
   hash: c97b8f92ad60ff513a27ac7a27b3c6824b75005eb8f7b85fe5ae18deaf568c4e
 - file: ..\src\config\default\initialization.c
-  hash: 253b6ef5bf74800ad624c9607cd9dfd3ea4f9f0a9e81f67d48fdc385584c1ecb
+  hash: eb35c08d8f0c7b1e02b03a46ea4a06c2c7c9d2f676695d7603f9df12fbf6a217
 - file: ..\src\config\default\interrupts.c
   hash: f59bec0bd76579df652ab919ad44d8c605b55cc0a94ecee7aed7675c914eadeb
 - file: ..\src\config\default\interrupts.h
@@ -162,7 +165,7 @@ generatedFileHashHistoryMap:
 - file: ..\src\config\default\stdio\xc32_monitor.c
   hash: 858f8710d4287200a5ee7f3b3ad7c24f505aed9c05c16956ab0ff9f7bb162a6a
 - file: ..\src\config\default\sys_tasks.h
-  hash: 8e1a48dc226e9af26c57fc69ba76d2de0279f4bbc96e071a57fd0911a782545d
+  hash: 3b525b0bf03adb97ae2ecf1eb29631bb89df32305c4a44203b6611486e1297c1
 - file: ..\src\config\default\system\console\src\sys_console.c
   hash: 622a27844a650b4fa265c7a4739ba3768a76e4148600be42e44eec2e0673d7c6
 - file: ..\src\config\default\system\console\src\sys_console_local.h
@@ -194,11 +197,19 @@ generatedFileHashHistoryMap:
 - file: ..\src\config\default\system\system_module.h
   hash: 96c74368801b0a7aaa25aec3ec2cb0d483250385f103ffc1ff64089b4ca2c6d9
 - file: ..\src\config\default\tasks.c
-  hash: 20003ad0c15bb62e6516bddd1bed7aad4e49a11eedcdbba7bf099dd3fb932d53
+  hash: bbfb1e742a4c2c02904339fceb3db755a27b38391f0b8e07482e51e69093991b
 - file: ..\src\config\default\toolchain_specifics.h
   hash: a4f1774c6f1f8c6cd522567536c9e9d75ca63259b868015ac9b0fb0aeeffe1f4
 - file: ..\src\config\default\user.h
   hash: 451e0878e9fcf6cf9fab046c1452ea662757988346c7f39e6bc98478ca25f995
+- file: ..\src\debug_logger.c
+  hash: 71e155cf626d4bba9f73f86b2991e07ef259e775d0ef9ed7ff0125863aeb25dd
+- file: ..\src\debug_logger.h
+  hash: a82e99d45e1a60629d17e590c63d6b1cfd1926cf00a75a688aecfa790bd2e5ac
+- file: ..\src\health_task.c
+  hash: f330b1e20d514432eb8f71440365eaa26778d7cb580dfa406b2d8206123e92b8
+- file: ..\src\health_task.h
+  hash: b76314778e2a5ba2a029884e3d0e88b4d5753296084766f09d324011aae2e524
 - file: ..\src\main.c
   hash: d3c233d419e6304bfacbafc18cc68c0f5c26e365f23b20ea40ccfac458f664c5
 - file: ..\src\packs\ATSAMC21N18A_DFP\component\ac.h
@@ -447,3 +458,11 @@ generatedFileHashHistoryMap:
   hash: 121def826654fe8741ac93d2bbda1203851f42ed4c602061d8c1c01a64624b14
 - file: ..\src\third_party\rtos\FreeRTOS\Source\timers.c
   hash: 5a9060e28436b0c58b60f678e1eeb552b4142930cef4641dce262839334ae3f3
+- file: ..\src\tmc2209_motion.c
+  hash: b5acf71baf575ec6314c601daa5abe1af5e2b78b8ca5508b4cc424c7788d7428
+- file: ..\src\tmc2209_motion.h
+  hash: 8f2dbdb0e2ca843f85b7f2c7ceeaca1f8e8e126e297d4eaac343ba24cdf62754
+- file: ..\src\tmc4671_motion.c
+  hash: ac901bd8911d43155f1dbe0bb3d416866d14d0d810b5b934788a6d33ce3c0b34
+- file: ..\src\tmc4671_motion.h
+  hash: f19f01828d5128029bd103b6bea559b891b44b1597d34e9a7891f3d570ae0af5
