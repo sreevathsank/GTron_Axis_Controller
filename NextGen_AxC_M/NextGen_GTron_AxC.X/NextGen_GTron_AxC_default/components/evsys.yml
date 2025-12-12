@@ -22,15 +22,48 @@ data:
     - children:
       - attributes:
           id: evsys
-          x: '496'
-          y: '76'
+          x: '692'
+          y: '16'
         type: ElementPosition
       type: ElementPositions
     type: ComponentGraph
   symbols:
-    EVSYS_CHANNEL_8_GENERATOR_ACTIVE:
+    EVSYS_CHANNEL_0_GENERATOR_ACTIVE:
       attributes:
-        id: EVSYS_CHANNEL_8_GENERATOR_ACTIVE
+        id: EVSYS_CHANNEL_0_GENERATOR_ACTIVE
+      children:
+      - children:
+        - attributes:
+            id: evsys
+            value: 'false'
+          type: Dynamic
+        type: Values
+      type: Boolean
+    EVSYS_CHANNEL_10_GENERATOR_ACTIVE:
+      attributes:
+        id: EVSYS_CHANNEL_10_GENERATOR_ACTIVE
+      children:
+      - children:
+        - attributes:
+            id: evsys
+            value: 'false'
+          type: Dynamic
+        type: Values
+      type: Boolean
+    EVSYS_CHANNEL_11_GENERATOR_ACTIVE:
+      attributes:
+        id: EVSYS_CHANNEL_11_GENERATOR_ACTIVE
+      children:
+      - children:
+        - attributes:
+            id: evsys
+            value: 'false'
+          type: Dynamic
+        type: Values
+      type: Boolean
+    EVSYS_CHANNEL_1_GENERATOR_ACTIVE:
+      attributes:
+        id: EVSYS_CHANNEL_1_GENERATOR_ACTIVE
       children:
       - children:
         - attributes:
@@ -61,31 +94,9 @@ data:
           type: Dynamic
         type: Values
       type: Boolean
-    EVSYS_CHANNEL_7_GENERATOR_ACTIVE:
+    EVSYS_CHANNEL_4_GENERATOR_ACTIVE:
       attributes:
-        id: EVSYS_CHANNEL_7_GENERATOR_ACTIVE
-      children:
-      - children:
-        - attributes:
-            id: evsys
-            value: 'false'
-          type: Dynamic
-        type: Values
-      type: Boolean
-    EVSYS_CHANNEL_9_GENERATOR_ACTIVE:
-      attributes:
-        id: EVSYS_CHANNEL_9_GENERATOR_ACTIVE
-      children:
-      - children:
-        - attributes:
-            id: evsys
-            value: 'false'
-          type: Dynamic
-        type: Values
-      type: Boolean
-    EVSYS_CHANNEL_6_GENERATOR_ACTIVE:
-      attributes:
-        id: EVSYS_CHANNEL_6_GENERATOR_ACTIVE
+        id: EVSYS_CHANNEL_4_GENERATOR_ACTIVE
       children:
       - children:
         - attributes:
@@ -105,9 +116,9 @@ data:
           type: Dynamic
         type: Values
       type: Boolean
-    EVSYS_CHANNEL_1_GENERATOR_ACTIVE:
+    EVSYS_CHANNEL_6_GENERATOR_ACTIVE:
       attributes:
-        id: EVSYS_CHANNEL_1_GENERATOR_ACTIVE
+        id: EVSYS_CHANNEL_6_GENERATOR_ACTIVE
       children:
       - children:
         - attributes:
@@ -116,9 +127,9 @@ data:
           type: Dynamic
         type: Values
       type: Boolean
-    EVSYS_CHANNEL_4_GENERATOR_ACTIVE:
+    EVSYS_CHANNEL_7_GENERATOR_ACTIVE:
       attributes:
-        id: EVSYS_CHANNEL_4_GENERATOR_ACTIVE
+        id: EVSYS_CHANNEL_7_GENERATOR_ACTIVE
       children:
       - children:
         - attributes:
@@ -127,9 +138,9 @@ data:
           type: Dynamic
         type: Values
       type: Boolean
-    EVSYS_CHANNEL_10_GENERATOR_ACTIVE:
+    EVSYS_CHANNEL_8_GENERATOR_ACTIVE:
       attributes:
-        id: EVSYS_CHANNEL_10_GENERATOR_ACTIVE
+        id: EVSYS_CHANNEL_8_GENERATOR_ACTIVE
       children:
       - children:
         - attributes:
@@ -138,9 +149,9 @@ data:
           type: Dynamic
         type: Values
       type: Boolean
-    EVSYS_CHANNEL_0_GENERATOR_ACTIVE:
+    EVSYS_CHANNEL_9_GENERATOR_ACTIVE:
       attributes:
-        id: EVSYS_CHANNEL_0_GENERATOR_ACTIVE
+        id: EVSYS_CHANNEL_9_GENERATOR_ACTIVE
       children:
       - children:
         - attributes:
@@ -149,53 +160,9 @@ data:
           type: Dynamic
         type: Values
       type: Boolean
-    EVSYS_CHANNEL_11_GENERATOR_ACTIVE:
+    GENERATOR_EIC_EXTINT_13_ACTIVE:
       attributes:
-        id: EVSYS_CHANNEL_11_GENERATOR_ACTIVE
-      children:
-      - children:
-        - attributes:
-            id: evsys
-            value: 'false'
-          type: Dynamic
-        type: Values
-      type: Boolean
-    GENERATOR_EIC_EXTINT_1_ACTIVE:
-      attributes:
-        id: GENERATOR_EIC_EXTINT_1_ACTIVE
-      children:
-      - children:
-        - attributes:
-            id: eic
-            value: 'false'
-          type: Dynamic
-        type: Values
-      type: Boolean
-    GENERATOR_EIC_EXTINT_2_ACTIVE:
-      attributes:
-        id: GENERATOR_EIC_EXTINT_2_ACTIVE
-      children:
-      - children:
-        - attributes:
-            id: eic
-            value: 'false'
-          type: Dynamic
-        type: Values
-      type: Boolean
-    GENERATOR_EIC_EXTINT_3_ACTIVE:
-      attributes:
-        id: GENERATOR_EIC_EXTINT_3_ACTIVE
-      children:
-      - children:
-        - attributes:
-            id: eic
-            value: 'false'
-          type: Dynamic
-        type: Values
-      type: Boolean
-    GENERATOR_EIC_EXTINT_5_ACTIVE:
-      attributes:
-        id: GENERATOR_EIC_EXTINT_5_ACTIVE
+        id: GENERATOR_EIC_EXTINT_13_ACTIVE
       children:
       - children:
         - attributes:
@@ -207,61 +174,6 @@ data:
     GENERATOR_EIC_EXTINT_7_ACTIVE:
       attributes:
         id: GENERATOR_EIC_EXTINT_7_ACTIVE
-      children:
-      - children:
-        - attributes:
-            id: eic
-            value: 'false'
-          type: Dynamic
-        type: Values
-      type: Boolean
-    GENERATOR_EIC_EXTINT_8_ACTIVE:
-      attributes:
-        id: GENERATOR_EIC_EXTINT_8_ACTIVE
-      children:
-      - children:
-        - attributes:
-            id: eic
-            value: 'false'
-          type: Dynamic
-        type: Values
-      type: Boolean
-    GENERATOR_EIC_EXTINT_9_ACTIVE:
-      attributes:
-        id: GENERATOR_EIC_EXTINT_9_ACTIVE
-      children:
-      - children:
-        - attributes:
-            id: eic
-            value: 'false'
-          type: Dynamic
-        type: Values
-      type: Boolean
-    GENERATOR_EIC_EXTINT_10_ACTIVE:
-      attributes:
-        id: GENERATOR_EIC_EXTINT_10_ACTIVE
-      children:
-      - children:
-        - attributes:
-            id: eic
-            value: 'false'
-          type: Dynamic
-        type: Values
-      type: Boolean
-    GENERATOR_EIC_EXTINT_12_ACTIVE:
-      attributes:
-        id: GENERATOR_EIC_EXTINT_12_ACTIVE
-      children:
-      - children:
-        - attributes:
-            id: eic
-            value: 'false'
-          type: Dynamic
-        type: Values
-      type: Boolean
-    GENERATOR_EIC_EXTINT_13_ACTIVE:
-      attributes:
-        id: GENERATOR_EIC_EXTINT_13_ACTIVE
       children:
       - children:
         - attributes:

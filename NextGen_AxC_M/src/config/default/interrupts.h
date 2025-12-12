@@ -61,10 +61,6 @@ void NonMaskableInt_Handler (void);
 void HardFault_Handler (void);
 void xPortSysTickHandler (void);
 void EIC_InterruptHandler (void);
-void SERCOM7_USART_InterruptHandler (void);
-void SERCOM5_USART_InterruptHandler (void);
-void TC2_TimerInterruptHandler (void);
-void TC4_TimerInterruptHandler (void);
 
 
 

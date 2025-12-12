@@ -57,23 +57,8 @@
 // Section: RTOS "Tasks" Handles
 // *****************************************************************************
 // *****************************************************************************
-/* Declaration of  HEALTH_TASK_Tasks task handle */
-extern TaskHandle_t xHEALTH_TASK_Tasks;
-
-/* Declaration of  TMC4671_MOTION_Tasks task handle */
-extern TaskHandle_t xTMC4671_MOTION_Tasks;
-
-/* Declaration of  TMC2209_MOTION_Tasks task handle */
-extern TaskHandle_t xTMC2209_MOTION_Tasks;
-
-/* Declaration of  CAN_TASK_Tasks task handle */
-extern TaskHandle_t xCAN_TASK_Tasks;
-
-/* Declaration of  CMD_PARSER_Tasks task handle */
-extern TaskHandle_t xCMD_PARSER_Tasks;
-
-/* Declaration of  DEBUG_LOGGER_Tasks task handle */
-extern TaskHandle_t xDEBUG_LOGGER_Tasks;
+/* Declaration of  APP_Tasks task handle */
+extern TaskHandle_t xAPP_Tasks;
 
 
 

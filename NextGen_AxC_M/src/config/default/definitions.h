@@ -48,35 +48,21 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
-#include "peripheral/sercom/spi_master/plib_sercom3_spi_master.h"
+#include <stdio.h>
 #include "peripheral/nvmctrl/plib_nvmctrl.h"
 #include "peripheral/evsys/plib_evsys.h"
-#include "peripheral/sercom/spi_master/plib_sercom0_spi_master.h"
-#include "peripheral/can/plib_can1.h"
 #include "peripheral/sercom/usart/plib_sercom7_usart.h"
 #include "peripheral/port/plib_port.h"
 #include "peripheral/clock/plib_clock.h"
 #include "peripheral/nvic/plib_nvic.h"
-#include "peripheral/wdt/plib_wdt.h"
 #include "peripheral/sercom/usart/plib_sercom5_usart.h"
 #include "peripheral/eic/plib_eic.h"
-#include "peripheral/rstc/plib_rstc.h"
-#include "peripheral/tc/plib_tc2.h"
-#include "peripheral/tc/plib_tc4.h"
-#include "peripheral/adc/plib_adc0.h"
-#include "system/console/sys_console.h"
-#include "system/console/src/sys_console_uart_definitions.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "system/int/sys_int.h"
 #include "osal/osal.h"
 #include "system/debug/sys_debug.h"
-#include "health_task.h"
-#include "tmc4671_motion.h"
-#include "tmc2209_motion.h"
-#include "can_task.h"
-#include "cmd_parser.h"
-#include "debug_logger.h"
+#include "app.h"
 
 
 
@@ -207,11 +193,7 @@ Remarks:
 
 typedef struct
 {
-    SYS_MODULE_OBJ  sysDebug;
-
-    SYS_MODULE_OBJ  sysConsole0;
-
-
+    char reserved;
 } SYSTEM_OBJECTS;
 
 // *****************************************************************************

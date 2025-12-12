@@ -61,81 +61,16 @@
 // *****************************************************************************
 // *****************************************************************************
 
-/* Handle for the HEALTH_TASK_Tasks. */
-TaskHandle_t xHEALTH_TASK_Tasks;
+/* Handle for the APP_Tasks. */
+TaskHandle_t xAPP_Tasks;
 
 
 
-static void lHEALTH_TASK_Tasks(  void *pvParameters  )
+static void lAPP_Tasks(  void *pvParameters  )
 {   
     while(true)
     {
-        HEALTH_TASK_Tasks();
-    }
-}
-
-/* Handle for the TMC4671_MOTION_Tasks. */
-TaskHandle_t xTMC4671_MOTION_Tasks;
-
-
-
-static void lTMC4671_MOTION_Tasks(  void *pvParameters  )
-{   
-    while(true)
-    {
-        TMC4671_MOTION_Tasks();
-    }
-}
-
-/* Handle for the TMC2209_MOTION_Tasks. */
-TaskHandle_t xTMC2209_MOTION_Tasks;
-
-
-
-static void lTMC2209_MOTION_Tasks(  void *pvParameters  )
-{   
-    while(true)
-    {
-        TMC2209_MOTION_Tasks();
-    }
-}
-
-/* Handle for the CAN_TASK_Tasks. */
-TaskHandle_t xCAN_TASK_Tasks;
-
-
-
-static void lCAN_TASK_Tasks(  void *pvParameters  )
-{   
-    while(true)
-    {
-        CAN_TASK_Tasks();
-    }
-}
-
-/* Handle for the CMD_PARSER_Tasks. */
-TaskHandle_t xCMD_PARSER_Tasks;
-
-
-
-static void lCMD_PARSER_Tasks(  void *pvParameters  )
-{   
-    while(true)
-    {
-        CMD_PARSER_Tasks();
-    }
-}
-
-/* Handle for the DEBUG_LOGGER_Tasks. */
-TaskHandle_t xDEBUG_LOGGER_Tasks;
-
-
-
-static void lDEBUG_LOGGER_Tasks(  void *pvParameters  )
-{   
-    while(true)
-    {
-        DEBUG_LOGGER_Tasks();
+        APP_Tasks();
     }
 }
 
@@ -160,7 +95,6 @@ void SYS_Tasks ( void )
     /* Maintain system services */
     
 
-
     /* Maintain Device Drivers */
     
 
@@ -169,59 +103,14 @@ void SYS_Tasks ( void )
 
     /* Maintain the application's state machine. */
     
-    /* Create OS Thread for HEALTH_TASK_Tasks. */
+    /* Create OS Thread for APP_Tasks. */
     (void) xTaskCreate(
-           (TaskFunction_t) lHEALTH_TASK_Tasks,
-           "HEALTH_TASK_Tasks",
-           128,
-           NULL,
-           4U ,
-           &xHEALTH_TASK_Tasks);
-
-    /* Create OS Thread for TMC4671_MOTION_Tasks. */
-    (void) xTaskCreate(
-           (TaskFunction_t) lTMC4671_MOTION_Tasks,
-           "TMC4671_MOTION_Tasks",
-           128,
-           NULL,
-           3U ,
-           &xTMC4671_MOTION_Tasks);
-
-    /* Create OS Thread for TMC2209_MOTION_Tasks. */
-    (void) xTaskCreate(
-           (TaskFunction_t) lTMC2209_MOTION_Tasks,
-           "TMC2209_MOTION_Tasks",
-           128,
-           NULL,
-           3U ,
-           &xTMC2209_MOTION_Tasks);
-
-    /* Create OS Thread for CAN_TASK_Tasks. */
-    (void) xTaskCreate(
-           (TaskFunction_t) lCAN_TASK_Tasks,
-           "CAN_TASK_Tasks",
-           128,
-           NULL,
-           2U ,
-           &xCAN_TASK_Tasks);
-
-    /* Create OS Thread for CMD_PARSER_Tasks. */
-    (void) xTaskCreate(
-           (TaskFunction_t) lCMD_PARSER_Tasks,
-           "CMD_PARSER_Tasks",
-           128,
-           NULL,
-           2U ,
-           &xCMD_PARSER_Tasks);
-
-    /* Create OS Thread for DEBUG_LOGGER_Tasks. */
-    (void) xTaskCreate(
-           (TaskFunction_t) lDEBUG_LOGGER_Tasks,
-           "DEBUG_LOGGER_Tasks",
+           (TaskFunction_t) lAPP_Tasks,
+           "APP_Tasks",
            128,
            NULL,
            1U ,
-           &xDEBUG_LOGGER_Tasks);
+           &xAPP_Tasks);
 
 
 

@@ -6,54 +6,33 @@ deviceLibrary: {}
 groupModules:
 - group: Group0
   modules:
-  - sercom0
+  - sercom7
+  - stdio
 - group: Group1
   modules:
-  - sercom3
-- group: Group2
-  modules:
   - sercom5
-- group: Group3
-  modules:
-  - sercom7
-  - sys_console
-  - sys_debug
-- group: Group4
-  modules:
-  - tc4
-- group: Group5
-  modules:
-  - tc2
 modules:
 - FreeRTOS
 - HarmonyCore
-- adc0
-- can1
 - cmsis
 - core
 - dfp
 - eic
 - evsys
 - nvmctrl
-- rstc
-- sys_console_0
 generatedFileHashHistoryMap:
-- file: ..\src\can_task.c
-  hash: dccc3dd7bf2bff3b197f8a6475ef289b1c90b6480f720ace0c08b66e5ca14e6a
-- file: ..\src\can_task.h
-  hash: 6a00bbd54aacb3701d994f3cc325e1d83474cafa297fe85670e79989f74004a2
-- file: ..\src\cmd_parser.c
-  hash: 4e0ee73fa030ea92b018f43a409b29d83120d3d7c836815f1e8f5cd57011f653
-- file: ..\src\cmd_parser.h
-  hash: 40d8b53290671e9d75662844e222ffb87a7563cf18ecd865ce791b9011345c34
+- file: ..\src\app.c
+  hash: 632c78c323cb9f8c6359f20337440c08f8461eb4b0304552b6a3cfd5c4052620
+- file: ..\src\app.h
+  hash: 8e35d8509552a4d1d6e6f123ad75694cf784a707f7dac592ed33b55121aa8e28
 - file: ..\src\config\default\ATSAMC21N18A.ld
   hash: 17aa307fe1688044e7c8f6b700fbd7d38ab51c9db7fda3f8a156f31531b5ae44
 - file: ..\src\config\default\FreeRTOSConfig.h
-  hash: 3161507e0b2e53b811e7e52581b7054522a5f4241d792c88046235a025af9219
+  hash: d326bc2790d98a558832a8062edb535ec06104aee2a024866418c62abd2410dc
 - file: ..\src\config\default\configuration.h
-  hash: c161fbdd976a0a4a18cc17881edcaccdfa8a7f21831c88b102459f96587a01ca
+  hash: 321175fed312776d5e0da9d63da1fca0673933ab0298c1d9a4aeb32cf5873639
 - file: ..\src\config\default\definitions.h
-  hash: a5c8b6becb04c1fcf2bce8cc892e90b1a870816c4d6c7dc501f8ae6cfa28b0ea
+  hash: 206bd400ad1863e1c557043d66e40b3afcec3421adf4cbaa90bd55aca1382714
 - file: ..\src\config\default\device.h
   hash: 27c4489785a0dc0d30b84aa5e0ea6097342d0f02035cf68c068136991e205455
 - file: ..\src\config\default\device_cache.h
@@ -69,11 +48,11 @@ generatedFileHashHistoryMap:
 - file: ..\src\config\default\freertos_hooks.c
   hash: c97b8f92ad60ff513a27ac7a27b3c6824b75005eb8f7b85fe5ae18deaf568c4e
 - file: ..\src\config\default\initialization.c
-  hash: eb35c08d8f0c7b1e02b03a46ea4a06c2c7c9d2f676695d7603f9df12fbf6a217
+  hash: e5433a62e5be10fa701189ced4871788437c187d9ec6ba46b61fd0aa148ca022
 - file: ..\src\config\default\interrupts.c
-  hash: f59bec0bd76579df652ab919ad44d8c605b55cc0a94ecee7aed7675c914eadeb
+  hash: 12f9865d99a09cfa9f3eacb43aecb0ecc70ecd1512ce16a3183462730595a27f
 - file: ..\src\config\default\interrupts.h
-  hash: bc9b1ce6758bdfe4ff55803008cdc04d2e823ec927f19877ebbe0a92210c2a7d
+  hash: cfa334b2dd3468c10fb949d52f045623818a7cd5223727e64778d7db0a1e0b54
 - file: ..\src\config\default\libc_syscalls.c
   hash: 88bb2e34c939601b5b7ad076556e3ee0fcedf388436b8cddb6d6fd3e9d07472f
 - file: ..\src\config\default\osal\osal.h
@@ -84,32 +63,20 @@ generatedFileHashHistoryMap:
   hash: 565c6dc54044f91bfd235f3f240e2ddf0ff49189d692fe5be50862d2b6c296f0
 - file: ..\src\config\default\osal\osal_freertos.h
   hash: f9d8c97ce37bbb7516242ec37c4b0db387090cfed54580af683bc0ce126094e0
-- file: ..\src\config\default\peripheral\adc\plib_adc0.c
-  hash: ba163cdba337511102c695c03c6be930c2a6e6ca0e879f9d3fb004ebe07a326c
-- file: ..\src\config\default\peripheral\adc\plib_adc0.h
-  hash: cea1d95751212e42a22fd26a1a37f5aba58d6cd7506a5da1fca4d0e4059793bd
-- file: ..\src\config\default\peripheral\adc\plib_adc_common.h
-  hash: 29cf37d90df15cba7325b7802f9a23eee18d6c9d3bb7d0b373f3f2247b42996e
-- file: ..\src\config\default\peripheral\can\plib_can1.c
-  hash: 3ca54e0f22b5496c8f5f954dd4aa62f8b81f87180722315ec7ac5b9b407726ca
-- file: ..\src\config\default\peripheral\can\plib_can1.h
-  hash: 75eb09c4cdc09dd18a9c4e8c090a23c3747b8a800ba92b14e462a657119ff901
-- file: ..\src\config\default\peripheral\can\plib_can_common.h
-  hash: e0e3b54f69be9d8811bbe507f91daa443ae7bff5dc724ac51baebc160097b2d6
 - file: ..\src\config\default\peripheral\clock\plib_clock.c
-  hash: 0eecff050c50c27c52a3065f5a6fcf67d4e1f3de31c15788c8a027c2a14888a2
+  hash: 7b7171c51f7b7f7b097187774bb645d711f94072667cc96863c121b4b3b36205
 - file: ..\src\config\default\peripheral\clock\plib_clock.h
   hash: 01c269741541514e997ef61546f4dbb0e23f66e27c6a957162557f13b4638baf
 - file: ..\src\config\default\peripheral\eic\plib_eic.c
-  hash: adc7156ace3eb61f60ef1af5cb6e137e78a983f0feace7ff3caab9dc53dc3ffd
+  hash: deee70626b7aee2060d0630a8229dbb3f51da8e3118c3e0aa42c88dc045b2a34
 - file: ..\src\config\default\peripheral\eic\plib_eic.h
-  hash: 985988c335792b0e1d4dd3b045bb72da71cfabbb7d1e17d04163df71cf1c461c
+  hash: bf9cb21751b1be2162ba1eccdda826a449f29a92e31f31eaa77509cdca6b04ea
 - file: ..\src\config\default\peripheral\evsys\plib_evsys.c
   hash: 7bb3bc0d60c4cf18638d76d3dfe9e5b13d2915d09e6a8a7bc4b5faae870c8f48
 - file: ..\src\config\default\peripheral\evsys\plib_evsys.h
   hash: f7d08eb8162f271ce1db384c082586a6624e506aa7f502c64c4ab5a1aadac47d
 - file: ..\src\config\default\peripheral\nvic\plib_nvic.c
-  hash: e612bf410a7aa48cc01f8744bdf766466719ec35211d7d49779131520d91e985
+  hash: f400a6d52a23c306aed82dfd2523b7ec5a9c185903c33defd67a1a4afc3681f1
 - file: ..\src\config\default\peripheral\nvic\plib_nvic.h
   hash: 9936ac782115af41003255283fa2f603f4ff2212d16275b7c80ea8d067a9e208
 - file: ..\src\config\default\peripheral\nvmctrl\plib_nvmctrl.c
@@ -117,71 +84,27 @@ generatedFileHashHistoryMap:
 - file: ..\src\config\default\peripheral\nvmctrl\plib_nvmctrl.h
   hash: a2f572d8ba174971959f4a9319fc61b460c00432512d38e19e28e2dfddf6cde5
 - file: ..\src\config\default\peripheral\port\plib_port.c
-  hash: c44a65daee689605fc8455299b672dbefea9cf989e5796fd9fb119b386963352
+  hash: a0fb7bdaac08eb84d3af29184abaaf3ba6a99d092dd244b2ba39697fe982aa86
 - file: ..\src\config\default\peripheral\port\plib_port.h
-  hash: e5f7326fc9568f4b1495f05af641a2c75407f7ece4bbb7f4843eee4341559c08
-- file: ..\src\config\default\peripheral\rstc\plib_rstc.c
-  hash: 8ecdc07b01d576d30384c0a0370b97ac7dae835168106d04ba82cbbc7fc3c660
-- file: ..\src\config\default\peripheral\rstc\plib_rstc.h
-  hash: 4bbc26611359ba011196747f94bed5a1ed18db49fa5baf9fbd1d2b5fb28d1f73
-- file: ..\src\config\default\peripheral\sercom\spi_master\plib_sercom0_spi_master.c
-  hash: 9114977389d7441f691c599ff28ea0c74cf91c8a4e9cec554a395f64d4265b4b
-- file: ..\src\config\default\peripheral\sercom\spi_master\plib_sercom0_spi_master.h
-  hash: ba05e93084a1c5acf38f58dad7aa7b9091e2e4d2fb487fbc12fba4c5d26d52be
-- file: ..\src\config\default\peripheral\sercom\spi_master\plib_sercom3_spi_master.c
-  hash: bfc2c3c946e9bec1c4e4e9cf20b0874f06bca76ab97567946a9b1473970c954e
-- file: ..\src\config\default\peripheral\sercom\spi_master\plib_sercom3_spi_master.h
-  hash: 46e24aa20de86d98eba6fec8bfb01041409588b642fbe9f2a00e1a0412aa1621
-- file: ..\src\config\default\peripheral\sercom\spi_master\plib_sercom_spi_master_common.h
-  hash: 06e3c7813e1608b5008e3c8955569f9cff04bef321a34c35421f7979368a4ada
+  hash: bab1ca37cbce0ba5124ab1f3f9d301f22c69ab0afa07f1c213ef8bcf4c8a4b8b
 - file: ..\src\config\default\peripheral\sercom\usart\plib_sercom5_usart.c
-  hash: fdd91a05829cc6ae9afe2d8df101e136f21c05257650b5a7a543ffd790259cde
+  hash: dec36966e07e807056fa3d025acb523550b7b2112b65f5a6e5bcce95721e23a3
 - file: ..\src\config\default\peripheral\sercom\usart\plib_sercom5_usart.h
-  hash: 84807f9ba1e8f0b8cfa1e11b3daf4e7c253df66890ee94f98b2c14874ce40265
+  hash: 6199a53d33d0db4eae0df327b00b41b8733621c2ca6e25f5ba62bab29057d0d0
 - file: ..\src\config\default\peripheral\sercom\usart\plib_sercom7_usart.c
-  hash: a01e28af4251c8fb797d6621c5798547f980cf528d51f15e3b86b092b503fde7
+  hash: c3b6fe31706d798ca12727e98527b48a2a9ea37546eba9452de6f0db0aca543a
 - file: ..\src\config\default\peripheral\sercom\usart\plib_sercom7_usart.h
-  hash: 40550de42a2060c779788924cfdfc43a3a2a68832ea7f774fc168068e47939eb
+  hash: 404e0a5d833bd4aef302077bcfcd6769bdc47ccc5dfba3c60a58c1f8e2fa950b
 - file: ..\src\config\default\peripheral\sercom\usart\plib_sercom_usart_common.h
   hash: 3653b66472c558c50f7037a1dd25d2678e9a13aa718f3c53a2195e6f3919ea48
-- file: ..\src\config\default\peripheral\tc\plib_tc2.c
-  hash: 79dc270b5fa2e86a4a0153bb999d3f1ad93125e1ae987d3dcd80d55654bd77cb
-- file: ..\src\config\default\peripheral\tc\plib_tc2.h
-  hash: 41bebe853e11b23588613e3c186b6a8b1a845efd340d0a6178067427cfd93515
-- file: ..\src\config\default\peripheral\tc\plib_tc4.c
-  hash: 8747bf44d0c9c467aa4d9dd2b16eae918c120b11f355c1bb6b235737cef9a7cc
-- file: ..\src\config\default\peripheral\tc\plib_tc4.h
-  hash: 53a95a6e6ff977c1ca1400cd22608ff2606a6c7ef7f47917696e41a543bc8e52
-- file: ..\src\config\default\peripheral\tc\plib_tc_common.h
-  hash: 487b4f489229b8e16b24ab48ddc1f414b095585439f0e10d53b2285fc3979f63
-- file: ..\src\config\default\peripheral\wdt\plib_wdt.c
-  hash: 8141b251001b8b8bb15d7702b42d513005a158b30629d0d2a3d4091ccf646afa
-- file: ..\src\config\default\peripheral\wdt\plib_wdt.h
-  hash: d4bb429b750e4e2970fe12d9c4eea02d2e0b1f1d30279577033555379f94e1a0
 - file: ..\src\config\default\pin_configurations.csv
-  hash: bafbd88ca140c80fcf397b24864501b7aeeee3fc5a40af8293db6b59b0e0cd28
+  hash: 699534302cc179832b59ef2d8abcf3407982a8faf31ebd1e4a35acfe74fa2979
 - file: ..\src\config\default\startup_xc32.c
   hash: e6227d89e36b74af1bc21e00e80b390502c97aaaa65796291f63b2d96cf0678e
 - file: ..\src\config\default\stdio\xc32_monitor.c
-  hash: 858f8710d4287200a5ee7f3b3ad7c24f505aed9c05c16956ab0ff9f7bb162a6a
+  hash: d003ea20a9da45c95facd649dc54c6fa415f5fa53af3e0e302171d3299820dfb
 - file: ..\src\config\default\sys_tasks.h
-  hash: 3b525b0bf03adb97ae2ecf1eb29631bb89df32305c4a44203b6611486e1297c1
-- file: ..\src\config\default\system\console\src\sys_console.c
-  hash: 622a27844a650b4fa265c7a4739ba3768a76e4148600be42e44eec2e0673d7c6
-- file: ..\src\config\default\system\console\src\sys_console_local.h
-  hash: 024a0b50ea2fea72b964b8209fb256b5df6693badd320485821e7912c5eebb25
-- file: ..\src\config\default\system\console\src\sys_console_uart.c
-  hash: ff3d1854f469e4fc41d96adce6f7ec38afad5d1b076c295eb4777936777673d0
-- file: ..\src\config\default\system\console\src\sys_console_uart.h
-  hash: 690c74d55c9204f3e3d621635257df1de1c89f097671a678c359f5e24461589a
-- file: ..\src\config\default\system\console\src\sys_console_uart_definitions.h
-  hash: bf403c11673266a5a861fd99253c377030c1a7f9e912eef446101e416b4f8c9a
-- file: ..\src\config\default\system\console\sys_console.h
-  hash: cc82ba93f8d69bf31a9dfcfe1e425de3924bcf9e4e4b31f7efad9c2d062dcbf6
-- file: ..\src\config\default\system\debug\src\sys_debug.c
-  hash: 474ee981d4285453a2ae9f1e4735c40129281931b89f579c3c413acdff1d8d26
-- file: ..\src\config\default\system\debug\src\sys_debug_local.h
-  hash: d14855e54d4929ec6c9c3ea1e9de3fdc1711bb278fc27ab39079e9f16ecc87d5
+  hash: 8e1a48dc226e9af26c57fc69ba76d2de0279f4bbc96e071a57fd0911a782545d
 - file: ..\src\config\default\system\debug\sys_debug.h
   hash: 4162d9e1fab93b8b33f6c8a24726f5dc287ea05c31e3ab984c3c920c725d0882
 - file: ..\src\config\default\system\int\src\sys_int.c
@@ -197,19 +120,11 @@ generatedFileHashHistoryMap:
 - file: ..\src\config\default\system\system_module.h
   hash: 96c74368801b0a7aaa25aec3ec2cb0d483250385f103ffc1ff64089b4ca2c6d9
 - file: ..\src\config\default\tasks.c
-  hash: bbfb1e742a4c2c02904339fceb3db755a27b38391f0b8e07482e51e69093991b
+  hash: ece93f908b4758e58dff427d1fe4707a6e5324dc4017cf5ec5ef7401fe31009d
 - file: ..\src\config\default\toolchain_specifics.h
   hash: a4f1774c6f1f8c6cd522567536c9e9d75ca63259b868015ac9b0fb0aeeffe1f4
 - file: ..\src\config\default\user.h
   hash: 451e0878e9fcf6cf9fab046c1452ea662757988346c7f39e6bc98478ca25f995
-- file: ..\src\debug_logger.c
-  hash: 71e155cf626d4bba9f73f86b2991e07ef259e775d0ef9ed7ff0125863aeb25dd
-- file: ..\src\debug_logger.h
-  hash: a82e99d45e1a60629d17e590c63d6b1cfd1926cf00a75a688aecfa790bd2e5ac
-- file: ..\src\health_task.c
-  hash: f330b1e20d514432eb8f71440365eaa26778d7cb580dfa406b2d8206123e92b8
-- file: ..\src\health_task.h
-  hash: b76314778e2a5ba2a029884e3d0e88b4d5753296084766f09d324011aae2e524
 - file: ..\src\main.c
   hash: d3c233d419e6304bfacbafc18cc68c0f5c26e365f23b20ea40ccfac458f664c5
 - file: ..\src\packs\ATSAMC21N18A_DFP\component\ac.h
@@ -458,11 +373,3 @@ generatedFileHashHistoryMap:
   hash: 121def826654fe8741ac93d2bbda1203851f42ed4c602061d8c1c01a64624b14
 - file: ..\src\third_party\rtos\FreeRTOS\Source\timers.c
   hash: 5a9060e28436b0c58b60f678e1eeb552b4142930cef4641dce262839334ae3f3
-- file: ..\src\tmc2209_motion.c
-  hash: b5acf71baf575ec6314c601daa5abe1af5e2b78b8ca5508b4cc424c7788d7428
-- file: ..\src\tmc2209_motion.h
-  hash: 8f2dbdb0e2ca843f85b7f2c7ceeaca1f8e8e126e297d4eaac343ba24cdf62754
-- file: ..\src\tmc4671_motion.c
-  hash: ac901bd8911d43155f1dbe0bb3d416866d14d0d810b5b934788a6d33ce3c0b34
-- file: ..\src\tmc4671_motion.h
-  hash: f19f01828d5128029bd103b6bea559b891b44b1597d34e9a7891f3d570ae0af5

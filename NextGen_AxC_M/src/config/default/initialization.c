@@ -107,44 +107,6 @@ SYSTEM_OBJECTS sysObj;
 // *****************************************************************************
 // *****************************************************************************
 
-static const SYS_DEBUG_INIT debugInit =
-{
-    .moduleInit = {0},
-    .errorLevel = SYS_DEBUG_GLOBAL_ERROR_LEVEL,
-    .consoleIndex = 0,
-};
-
-
-// <editor-fold defaultstate="collapsed" desc="SYS_CONSOLE Instance 0 Initialization Data">
-
-
-static const SYS_CONSOLE_UART_PLIB_INTERFACE sysConsole0UARTPlibAPI =
-{
-    .read_t = (SYS_CONSOLE_UART_PLIB_READ)SERCOM7_USART_Read,
-    .readCountGet = (SYS_CONSOLE_UART_PLIB_READ_COUNT_GET)SERCOM7_USART_ReadCountGet,
-    .readFreeBufferCountGet = (SYS_CONSOLE_UART_PLIB_READ_FREE_BUFFFER_COUNT_GET)SERCOM7_USART_ReadFreeBufferCountGet,
-    .write_t = (SYS_CONSOLE_UART_PLIB_WRITE)SERCOM7_USART_Write,
-    .writeCountGet = (SYS_CONSOLE_UART_PLIB_WRITE_COUNT_GET)SERCOM7_USART_WriteCountGet,
-    .writeFreeBufferCountGet = (SYS_CONSOLE_UART_PLIB_WRITE_FREE_BUFFER_COUNT_GET)SERCOM7_USART_WriteFreeBufferCountGet,
-};
-
-static const SYS_CONSOLE_UART_INIT_DATA sysConsole0UARTInitData =
-{
-    .uartPLIB = &sysConsole0UARTPlibAPI,
-};
-
-static const SYS_CONSOLE_INIT sysConsole0Init =
-{
-    .deviceInitData = (const void*)&sysConsole0UARTInitData,
-    .consDevDesc = &sysConsoleUARTDevDesc,
-    .deviceIndex = 0,
-};
-
-
-
-// </editor-fold>
-
-
 
 
 // *****************************************************************************
@@ -152,6 +114,26 @@ static const SYS_CONSOLE_INIT sysConsole0Init =
 // Section: Local initialization functions
 // *****************************************************************************
 // *****************************************************************************
+
+/*******************************************************************************
+  Function:
+    void STDIO_BufferModeSet ( void )
+
+  Summary:
+    Sets the buffering mode for stdin and stdout
+
+  Remarks:
+ ********************************************************************************/
+static void STDIO_BufferModeSet(void)
+{
+    /* MISRAC 2012 deviation block start */
+    /* MISRA C-2012 Rule 21.6 deviated 1 times in this file.  Deviation record ID -  H3_MISRAC_2012_R_21_6_DR_3 */
+
+    /* Make stdin unbuffered */
+    setbuf(stdin, NULL);
+    /* MISRAC 2012 deviation block end */
+}
+
 
 /* MISRAC 2012 deviation block end */
 
@@ -173,6 +155,9 @@ void SYS_Initialize ( void* data )
 
     NVMCTRL_REGS->NVMCTRL_CTRLB = NVMCTRL_CTRLB_RWS(3UL);
 
+    STDIO_BufferModeSet();
+
+
   
     PORT_Initialize();
 
@@ -181,15 +166,9 @@ void SYS_Initialize ( void* data )
 
 
 
-    SERCOM3_SPI_Initialize();
-
     NVMCTRL_Initialize( );
 
     EVSYS_Initialize();
-
-    SERCOM0_SPI_Initialize();
-
-    CAN1_Initialize();
 
     SERCOM7_USART_Initialize();
 
@@ -197,38 +176,8 @@ void SYS_Initialize ( void* data )
 
     EIC_Initialize();
 
-    TC2_TimerInitialize();
 
-    TC4_TimerInitialize();
-
-
-    ADC0_Initialize();
-
-    /* MISRAC 2012 deviation block start */
-    /* Following MISRA-C rules deviated in this block  */
-    /* MISRA C-2012 Rule 11.3 - Deviation record ID - H3_MISRAC_2012_R_11_3_DR_1 */
-    /* MISRA C-2012 Rule 11.8 - Deviation record ID - H3_MISRAC_2012_R_11_8_DR_1 */
-
-
-    /* MISRA C-2012 Rule 11.3, 11.8 deviated below. Deviation record ID -  
-     H3_MISRAC_2012_R_11_3_DR_1 & H3_MISRAC_2012_R_11_8_DR_1*/
-        
-    sysObj.sysDebug = SYS_DEBUG_Initialize(SYS_DEBUG_INDEX_0, (SYS_MODULE_INIT*)&debugInit);
-
-    /* MISRAC 2012 deviation block end */
-    /* MISRA C-2012 Rule 11.3, 11.8 deviated below. Deviation record ID -  
-     H3_MISRAC_2012_R_11_3_DR_1 & H3_MISRAC_2012_R_11_8_DR_1*/
-        sysObj.sysConsole0 = SYS_CONSOLE_Initialize(SYS_CONSOLE_INDEX_0, (SYS_MODULE_INIT *)&sysConsole0Init);
-   /* MISRAC 2012 deviation block end */
-
-
-    /* MISRAC 2012 deviation block end */
-    HEALTH_TASK_Initialize();
-    TMC4671_MOTION_Initialize();
-    TMC2209_MOTION_Initialize();
-    CAN_TASK_Initialize();
-    CMD_PARSER_Initialize();
-    DEBUG_LOGGER_Initialize();
+    APP_Initialize();
 
 
     NVIC_Initialize();

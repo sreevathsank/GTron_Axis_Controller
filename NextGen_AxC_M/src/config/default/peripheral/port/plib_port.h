@@ -65,97 +65,6 @@
 // *****************************************************************************
 // *****************************************************************************
 
-/*** Macros for DVC_ADDR pin ***/
-#define DVC_ADDR_Get()               (((PORT_REGS->GROUP[2].PORT_IN >> 1U)) & 0x01U)
-#define DVC_ADDR_PIN                  PORT_PIN_PC01
-
-/*** Macros for IOXP_CS pin ***/
-#define IOXP_CS_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = ((uint32_t)1U << 3U))
-#define IOXP_CS_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = ((uint32_t)1U << 3U))
-#define IOXP_CS_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = ((uint32_t)1U << 3U))
-#define IOXP_CS_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = ((uint32_t)1U << 3U))
-#define IOXP_CS_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = ((uint32_t)1U << 3U))
-#define IOXP_CS_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 3U)) & 0x01U)
-#define IOXP_CS_PIN                  PORT_PIN_PA03
-
-/*** Macros for STATUS_4671 pin ***/
-#define STATUS_4671_Set()               (PORT_REGS->GROUP[1].PORT_OUTSET = ((uint32_t)1U << 4U))
-#define STATUS_4671_Clear()             (PORT_REGS->GROUP[1].PORT_OUTCLR = ((uint32_t)1U << 4U))
-#define STATUS_4671_Toggle()            (PORT_REGS->GROUP[1].PORT_OUTTGL = ((uint32_t)1U << 4U))
-#define STATUS_4671_OutputEnable()      (PORT_REGS->GROUP[1].PORT_DIRSET = ((uint32_t)1U << 4U))
-#define STATUS_4671_InputEnable()       (PORT_REGS->GROUP[1].PORT_DIRCLR = ((uint32_t)1U << 4U))
-#define STATUS_4671_Get()               (((PORT_REGS->GROUP[1].PORT_IN >> 4U)) & 0x01U)
-#define STATUS_4671_PIN                  PORT_PIN_PB04
-
-/*** Macros for FLASH_SPI_nCS pin ***/
-#define FLASH_SPI_nCS_Set()               (PORT_REGS->GROUP[1].PORT_OUTSET = ((uint32_t)1U << 7U))
-#define FLASH_SPI_nCS_Clear()             (PORT_REGS->GROUP[1].PORT_OUTCLR = ((uint32_t)1U << 7U))
-#define FLASH_SPI_nCS_Toggle()            (PORT_REGS->GROUP[1].PORT_OUTTGL = ((uint32_t)1U << 7U))
-#define FLASH_SPI_nCS_OutputEnable()      (PORT_REGS->GROUP[1].PORT_DIRSET = ((uint32_t)1U << 7U))
-#define FLASH_SPI_nCS_InputEnable()       (PORT_REGS->GROUP[1].PORT_DIRCLR = ((uint32_t)1U << 7U))
-#define FLASH_SPI_nCS_Get()               (((PORT_REGS->GROUP[1].PORT_IN >> 7U)) & 0x01U)
-#define FLASH_SPI_nCS_PIN                  PORT_PIN_PB07
-
-/*** Macros for EN_4671 pin ***/
-#define EN_4671_Set()               (PORT_REGS->GROUP[1].PORT_OUTSET = ((uint32_t)1U << 8U))
-#define EN_4671_Clear()             (PORT_REGS->GROUP[1].PORT_OUTCLR = ((uint32_t)1U << 8U))
-#define EN_4671_Toggle()            (PORT_REGS->GROUP[1].PORT_OUTTGL = ((uint32_t)1U << 8U))
-#define EN_4671_OutputEnable()      (PORT_REGS->GROUP[1].PORT_DIRSET = ((uint32_t)1U << 8U))
-#define EN_4671_InputEnable()       (PORT_REGS->GROUP[1].PORT_DIRCLR = ((uint32_t)1U << 8U))
-#define EN_4671_Get()               (((PORT_REGS->GROUP[1].PORT_IN >> 8U)) & 0x01U)
-#define EN_4671_PIN                  PORT_PIN_PB08
-
-/*** Macros for RST_4671 pin ***/
-#define RST_4671_Set()               (PORT_REGS->GROUP[1].PORT_OUTSET = ((uint32_t)1U << 9U))
-#define RST_4671_Clear()             (PORT_REGS->GROUP[1].PORT_OUTCLR = ((uint32_t)1U << 9U))
-#define RST_4671_Toggle()            (PORT_REGS->GROUP[1].PORT_OUTTGL = ((uint32_t)1U << 9U))
-#define RST_4671_OutputEnable()      (PORT_REGS->GROUP[1].PORT_DIRSET = ((uint32_t)1U << 9U))
-#define RST_4671_InputEnable()       (PORT_REGS->GROUP[1].PORT_DIRCLR = ((uint32_t)1U << 9U))
-#define RST_4671_Get()               (((PORT_REGS->GROUP[1].PORT_IN >> 9U)) & 0x01U)
-#define RST_4671_PIN                  PORT_PIN_PB09
-
-/*** Macros for SPI0_MOSI pin ***/
-#define SPI0_MOSI_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 4U)) & 0x01U)
-#define SPI0_MOSI_PIN                  PORT_PIN_PA04
-
-/*** Macros for SPI0_SCK pin ***/
-#define SPI0_SCK_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 5U)) & 0x01U)
-#define SPI0_SCK_PIN                  PORT_PIN_PA05
-
-/*** Macros for SPI0_MISO pin ***/
-#define SPI0_MISO_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 6U)) & 0x01U)
-#define SPI0_MISO_PIN                  PORT_PIN_PA06
-
-/*** Macros for nCS_4671 pin ***/
-#define nCS_4671_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = ((uint32_t)1U << 7U))
-#define nCS_4671_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = ((uint32_t)1U << 7U))
-#define nCS_4671_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = ((uint32_t)1U << 7U))
-#define nCS_4671_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = ((uint32_t)1U << 7U))
-#define nCS_4671_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = ((uint32_t)1U << 7U))
-#define nCS_4671_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 7U)) & 0x01U)
-#define nCS_4671_PIN                  PORT_PIN_PA07
-
-/*** Macros for DBG_LED3 pin ***/
-#define DBG_LED3_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = ((uint32_t)1U << 9U))
-#define DBG_LED3_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = ((uint32_t)1U << 9U))
-#define DBG_LED3_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = ((uint32_t)1U << 9U))
-#define DBG_LED3_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = ((uint32_t)1U << 9U))
-#define DBG_LED3_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = ((uint32_t)1U << 9U))
-#define DBG_LED3_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 9U)) & 0x01U)
-#define DBG_LED3_PIN                  PORT_PIN_PA09
-
-/*** Macros for CLK25M pin ***/
-#define CLK25M_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 10U)) & 0x01U)
-#define CLK25M_PIN                  PORT_PIN_PA10
-
-/*** Macros for CAN1_TX pin ***/
-#define CAN1_TX_Get()               (((PORT_REGS->GROUP[1].PORT_IN >> 14U)) & 0x01U)
-#define CAN1_TX_PIN                  PORT_PIN_PB14
-
-/*** Macros for CAN1_RX pin ***/
-#define CAN1_RX_Get()               (((PORT_REGS->GROUP[1].PORT_IN >> 15U)) & 0x01U)
-#define CAN1_RX_PIN                  PORT_PIN_PB15
-
 /*** Macros for UART_DBG_TX pin ***/
 #define UART_DBG_TX_Get()               (((PORT_REGS->GROUP[2].PORT_IN >> 12U)) & 0x01U)
 #define UART_DBG_TX_PIN                  PORT_PIN_PC12
@@ -164,51 +73,17 @@
 #define UART_DBG_RX_Get()               (((PORT_REGS->GROUP[2].PORT_IN >> 15U)) & 0x01U)
 #define UART_DBG_RX_PIN                  PORT_PIN_PC15
 
-/*** Macros for DBG_LED2 pin ***/
-#define DBG_LED2_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = ((uint32_t)1U << 14U))
-#define DBG_LED2_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = ((uint32_t)1U << 14U))
-#define DBG_LED2_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = ((uint32_t)1U << 14U))
-#define DBG_LED2_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = ((uint32_t)1U << 14U))
-#define DBG_LED2_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = ((uint32_t)1U << 14U))
-#define DBG_LED2_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 14U)) & 0x01U)
-#define DBG_LED2_PIN                  PORT_PIN_PA14
-
-/*** Macros for DBG_LED1 pin ***/
-#define DBG_LED1_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = ((uint32_t)1U << 15U))
-#define DBG_LED1_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = ((uint32_t)1U << 15U))
-#define DBG_LED1_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = ((uint32_t)1U << 15U))
-#define DBG_LED1_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = ((uint32_t)1U << 15U))
-#define DBG_LED1_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = ((uint32_t)1U << 15U))
-#define DBG_LED1_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 15U)) & 0x01U)
-#define DBG_LED1_PIN                  PORT_PIN_PA15
-
-/*** Macros for ROTENC_DIR pin ***/
-#define ROTENC_DIR_Get()               (((PORT_REGS->GROUP[2].PORT_IN >> 16U)) & 0x01U)
-#define ROTENC_DIR_PIN                  PORT_PIN_PC16
-
-/*** Macros for ROTENC_Z pin ***/
-#define ROTENC_Z_Get()               (((PORT_REGS->GROUP[2].PORT_IN >> 17U)) & 0x01U)
-#define ROTENC_Z_PIN                  PORT_PIN_PC17
-
-/*** Macros for LIM_RT pin ***/
-#define LIM_RT_Get()               (((PORT_REGS->GROUP[2].PORT_IN >> 18U)) & 0x01U)
-#define LIM_RT_PIN                  PORT_PIN_PC18
-
-/*** Macros for LIM_LFT pin ***/
-#define LIM_LFT_Get()               (((PORT_REGS->GROUP[2].PORT_IN >> 20U)) & 0x01U)
-#define LIM_LFT_PIN                  PORT_PIN_PC20
-
 /*** Macros for DIAG pin ***/
 #define DIAG_Get()               (((PORT_REGS->GROUP[2].PORT_IN >> 21U)) & 0x01U)
 #define DIAG_PIN                  PORT_PIN_PC21
 
-/*** Macros for FOC_UART_TX pin ***/
-#define FOC_UART_TX_Get()               (((PORT_REGS->GROUP[1].PORT_IN >> 16U)) & 0x01U)
-#define FOC_UART_TX_PIN                  PORT_PIN_PB16
+/*** Macros for UART_2209_TX pin ***/
+#define UART_2209_TX_Get()               (((PORT_REGS->GROUP[1].PORT_IN >> 16U)) & 0x01U)
+#define UART_2209_TX_PIN                  PORT_PIN_PB16
 
-/*** Macros for FOC_UART_RX pin ***/
-#define FOC_UART_RX_Get()               (((PORT_REGS->GROUP[1].PORT_IN >> 17U)) & 0x01U)
-#define FOC_UART_RX_PIN                  PORT_PIN_PB17
+/*** Macros for UART_2209_RX pin ***/
+#define UART_2209_RX_Get()               (((PORT_REGS->GROUP[1].PORT_IN >> 17U)) & 0x01U)
+#define UART_2209_RX_PIN                  PORT_PIN_PB17
 
 /*** Macros for INDEX_SEL pin ***/
 #define INDEX_SEL_Set()               (PORT_REGS->GROUP[1].PORT_OUTSET = ((uint32_t)1U << 19U))
@@ -219,43 +94,9 @@
 #define INDEX_SEL_Get()               (((PORT_REGS->GROUP[1].PORT_IN >> 19U)) & 0x01U)
 #define INDEX_SEL_PIN                  PORT_PIN_PB19
 
-/*** Macros for FLASH_CS pin ***/
-#define FLASH_CS_Set()               (PORT_REGS->GROUP[1].PORT_OUTSET = ((uint32_t)1U << 20U))
-#define FLASH_CS_Clear()             (PORT_REGS->GROUP[1].PORT_OUTCLR = ((uint32_t)1U << 20U))
-#define FLASH_CS_Toggle()            (PORT_REGS->GROUP[1].PORT_OUTTGL = ((uint32_t)1U << 20U))
-#define FLASH_CS_OutputEnable()      (PORT_REGS->GROUP[1].PORT_DIRSET = ((uint32_t)1U << 20U))
-#define FLASH_CS_InputEnable()       (PORT_REGS->GROUP[1].PORT_DIRCLR = ((uint32_t)1U << 20U))
-#define FLASH_CS_Get()               (((PORT_REGS->GROUP[1].PORT_IN >> 20U)) & 0x01U)
-#define FLASH_CS_PIN                  PORT_PIN_PB20
-
-/*** Macros for IOXP_INT pin ***/
-#define IOXP_INT_Get()               (((PORT_REGS->GROUP[1].PORT_IN >> 21U)) & 0x01U)
-#define IOXP_INT_PIN                  PORT_PIN_PB21
-
-/*** Macros for EXP_MISO pin ***/
-#define EXP_MISO_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 22U)) & 0x01U)
-#define EXP_MISO_PIN                  PORT_PIN_PA22
-
-/*** Macros for EXP_SCLK pin ***/
-#define EXP_SCLK_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 23U)) & 0x01U)
-#define EXP_SCLK_PIN                  PORT_PIN_PA23
-
-/*** Macros for EXP_MOSI pin ***/
-#define EXP_MOSI_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 24U)) & 0x01U)
-#define EXP_MOSI_PIN                  PORT_PIN_PA24
-
 /*** Macros for INDEX pin ***/
 #define INDEX_Get()               (((PORT_REGS->GROUP[1].PORT_IN >> 23U)) & 0x01U)
 #define INDEX_PIN                  PORT_PIN_PB23
-
-/*** Macros for REELER_INT pin ***/
-#define REELER_INT_Set()               (PORT_REGS->GROUP[1].PORT_OUTSET = ((uint32_t)1U << 30U))
-#define REELER_INT_Clear()             (PORT_REGS->GROUP[1].PORT_OUTCLR = ((uint32_t)1U << 30U))
-#define REELER_INT_Toggle()            (PORT_REGS->GROUP[1].PORT_OUTTGL = ((uint32_t)1U << 30U))
-#define REELER_INT_OutputEnable()      (PORT_REGS->GROUP[1].PORT_DIRSET = ((uint32_t)1U << 30U))
-#define REELER_INT_InputEnable()       (PORT_REGS->GROUP[1].PORT_DIRCLR = ((uint32_t)1U << 30U))
-#define REELER_INT_Get()               (((PORT_REGS->GROUP[1].PORT_IN >> 30U)) & 0x01U)
-#define REELER_INT_PIN                  PORT_PIN_PB30
 
 // *****************************************************************************
 /* PORT Group

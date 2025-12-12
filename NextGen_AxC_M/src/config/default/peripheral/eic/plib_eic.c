@@ -85,50 +85,46 @@ void EIC_Initialize (void)
     EIC_REGS->EIC_CONFIG[0] =  EIC_CONFIG_SENSE0_NONE  |
                               EIC_CONFIG_SENSE1_NONE  |
                               EIC_CONFIG_SENSE2_NONE  |
-                              EIC_CONFIG_SENSE3_RISE  |
+                              EIC_CONFIG_SENSE3_NONE  |
                               EIC_CONFIG_SENSE4_NONE  |
-                              EIC_CONFIG_SENSE5_RISE  |
+                              EIC_CONFIG_SENSE5_NONE  |
                               EIC_CONFIG_SENSE6_NONE  |
                               EIC_CONFIG_SENSE7_RISE  ;
 
     /* Interrupt sense type and filter control for EXTINT channels 8 to 15 */
-    EIC_REGS->EIC_CONFIG[1] =  EIC_CONFIG_SENSE0_BOTH 
-         |  EIC_CONFIG_SENSE1_RISE  
-         |  EIC_CONFIG_SENSE2_RISE  
+    EIC_REGS->EIC_CONFIG[1] =  EIC_CONFIG_SENSE0_NONE 
+         |  EIC_CONFIG_SENSE1_NONE  
+         |  EIC_CONFIG_SENSE2_NONE  
          |  EIC_CONFIG_SENSE3_NONE  
-         |  EIC_CONFIG_SENSE4_RISE  
-         |  EIC_CONFIG_SENSE5_RISE  
+         |  EIC_CONFIG_SENSE4_NONE  
+         |  EIC_CONFIG_SENSE5_BOTH  
          |  EIC_CONFIG_SENSE6_NONE  
          |  EIC_CONFIG_SENSE7_NONE   ;
 
 
     /* External Interrupt Asynchronous Mode enable */
-    EIC_REGS->EIC_ASYNCH = 0x37a8U;
-
-    /* Debouncer enable */
-    EIC_REGS->EIC_DEBOUNCEN = 0x37a8U;
+    EIC_REGS->EIC_ASYNCH = 0x2080U;
 
 
-    /* Debouncer Setting */
-    EIC_REGS->EIC_DPRESCALER = EIC_DPRESCALER_PRESCALER0(0UL) | EIC_DPRESCALER_PRESCALER1(0UL) | EIC_DPRESCALER_STATES0_Msk | EIC_DPRESCALER_STATES1_Msk;
+
 
     /* External Interrupt enable*/
-    EIC_REGS->EIC_INTENSET = 0x37a8U;
+    EIC_REGS->EIC_INTENSET = 0x2080U;
 
     /* Callbacks for enabled interrupts */
     eicCallbackObject[0].eicPinNo = EIC_PIN_MAX;
-    eicCallbackObject[1].eicPinNo = EIC_PIN_1;
-    eicCallbackObject[2].eicPinNo = EIC_PIN_2;
-    eicCallbackObject[3].eicPinNo = EIC_PIN_3;
+    eicCallbackObject[1].eicPinNo = EIC_PIN_MAX;
+    eicCallbackObject[2].eicPinNo = EIC_PIN_MAX;
+    eicCallbackObject[3].eicPinNo = EIC_PIN_MAX;
     eicCallbackObject[4].eicPinNo = EIC_PIN_MAX;
-    eicCallbackObject[5].eicPinNo = EIC_PIN_5;
+    eicCallbackObject[5].eicPinNo = EIC_PIN_MAX;
     eicCallbackObject[6].eicPinNo = EIC_PIN_MAX;
     eicCallbackObject[7].eicPinNo = EIC_PIN_7;
-    eicCallbackObject[8].eicPinNo = EIC_PIN_8;
-    eicCallbackObject[9].eicPinNo = EIC_PIN_9;
-    eicCallbackObject[10].eicPinNo = EIC_PIN_10;
+    eicCallbackObject[8].eicPinNo = EIC_PIN_MAX;
+    eicCallbackObject[9].eicPinNo = EIC_PIN_MAX;
+    eicCallbackObject[10].eicPinNo = EIC_PIN_MAX;
     eicCallbackObject[11].eicPinNo = EIC_PIN_MAX;
-    eicCallbackObject[12].eicPinNo = EIC_PIN_12;
+    eicCallbackObject[12].eicPinNo = EIC_PIN_MAX;
     eicCallbackObject[13].eicPinNo = EIC_PIN_13;
     eicCallbackObject[14].eicPinNo = EIC_PIN_MAX;
     eicCallbackObject[15].eicPinNo = EIC_PIN_MAX;

@@ -49,13 +49,13 @@ data:
               id: targetComponentID
             children:
             - type: Value
-              value: sys_console_0
+              value: stdio
             type: String
           - attributes:
               id: targetAttachmentID
             children:
             - type: Value
-              value: sys_console_UART_dependency
+              value: UART
             type: String
           type: Attributes
         type: DirectCapability
@@ -63,13 +63,13 @@ data:
     type: sercom7
   elementPosition:
     attributes:
-      id: Group3
+      id: Group0
     children:
     - children:
       - attributes:
           id: sercom7
-          x: '184'
-          y: '183'
+          x: '124'
+          y: '221'
         type: ElementPosition
       type: ElementPositions
     type: ComponentGraph
@@ -85,6 +85,75 @@ data:
           type: Dynamic
         type: Values
       type: Hex
+    RECEIVE_DATA_REGISTER:
+      attributes:
+        id: RECEIVE_DATA_REGISTER
+      children:
+      - children:
+        - attributes:
+            id: sercom7
+            value: '&(SERCOM7_REGS->USART_INT.SERCOM_DATA)'
+          type: Dynamic
+        type: Values
+      type: String
+    SERCOM_MODE:
+      attributes:
+        id: SERCOM_MODE
+      children:
+      - children:
+        - attributes:
+            id: readOnly
+          children:
+          - type: Value
+            value: 'true'
+          type: Boolean
+        type: Attributes
+      - children:
+        - attributes:
+            id: sercom7
+            value: '0'
+          type: Dynamic
+        type: Values
+      type: KeyValueSet
+    SERCOM_USART_COMMON_HEADER:
+      attributes:
+        id: SERCOM_USART_COMMON_HEADER
+      children:
+      - children:
+        - attributes:
+            id: enabled
+          children:
+          - type: Value
+            value: 'true'
+          type: Boolean
+        type: Attributes
+      type: File
+    SERCOM_USART_HEADER:
+      attributes:
+        id: SERCOM_USART_HEADER
+      children:
+      - children:
+        - attributes:
+            id: enabled
+          children:
+          - type: Value
+            value: 'true'
+          type: Boolean
+        type: Attributes
+      type: File
+    SERCOM_USART_SOURCE:
+      attributes:
+        id: SERCOM_USART_SOURCE
+      children:
+      - children:
+        - attributes:
+            id: enabled
+          children:
+          - type: Value
+            value: 'true'
+          type: Boolean
+        type: Attributes
+      type: File
     SPI_BAUD_REG_VALUE:
       attributes:
         id: SPI_BAUD_REG_VALUE
@@ -94,6 +163,38 @@ data:
             id: sercom7
             value: '23'
           type: Dynamic
+        type: Values
+      type: Integer
+    TRANSMIT_DATA_REGISTER:
+      attributes:
+        id: TRANSMIT_DATA_REGISTER
+      children:
+      - children:
+        - attributes:
+            id: sercom7
+            value: '&(SERCOM7_REGS->USART_INT.SERCOM_DATA)'
+          type: Dynamic
+        type: Values
+      type: String
+    USART_7816_BAUD_VALUE:
+      attributes:
+        id: USART_7816_BAUD_VALUE
+      children:
+      - children:
+        - attributes:
+            id: sercom7
+            value: '-1'
+          type: Dynamic
+        type: Values
+      type: Integer
+    USART_BAUD_RATE:
+      attributes:
+        id: USART_BAUD_RATE
+      children:
+      - children:
+        - attributes:
+            value: '2000000'
+          type: User
         type: Values
       type: Integer
     USART_BAUD_VALUE:
@@ -107,6 +208,17 @@ data:
           type: Dynamic
         type: Values
       type: Integer
+    USART_INTERRUPT_MODE_ENABLE:
+      attributes:
+        id: USART_INTERRUPT_MODE_ENABLE
+      children:
+      - children:
+        - attributes:
+            id: sercom7
+            value: 'false'
+          type: Dynamic
+        type: Values
+      type: Boolean
     USART_LIN_MASTER_SUPPORTED:
       attributes:
         id: USART_LIN_MASTER_SUPPORTED
@@ -118,6 +230,56 @@ data:
           type: Dynamic
         type: Values
       type: Boolean
+    USART_OPERATING_MODE:
+      attributes:
+        id: USART_OPERATING_MODE
+      children:
+      - children:
+        - attributes:
+            id: readOnly
+          children:
+          - type: Value
+            value: 'true'
+          type: Boolean
+        type: Attributes
+      - children:
+        - attributes:
+            id: sercom7
+            value: '0'
+          type: Dynamic
+        type: Values
+      type: KeyValueSet
+    USART_RING_BUFFER_MODE_ENABLE:
+      attributes:
+        id: USART_RING_BUFFER_MODE_ENABLE
+      children:
+      - children:
+        - attributes:
+            id: sercom7
+            value: 'false'
+          type: Dynamic
+        type: Values
+      type: Boolean
+    USART_RUNSTDBY:
+      attributes:
+        id: USART_RUNSTDBY
+      children:
+      - children:
+        - attributes:
+            value: 'true'
+          type: User
+        type: Values
+      type: Boolean
+    USART_RXPO:
+      attributes:
+        id: USART_RXPO
+      children:
+      - children:
+        - attributes:
+            value: '3'
+          type: User
+        type: Values
+      type: KeyValueSet
     USART_SAMPLE_COUNT:
       attributes:
         id: USART_SAMPLE_COUNT
@@ -151,158 +313,4 @@ data:
           type: Dynamic
         type: Values
       type: Boolean
-    TRANSMIT_DATA_REGISTER:
-      attributes:
-        id: TRANSMIT_DATA_REGISTER
-      children:
-      - children:
-        - attributes:
-            id: sercom7
-            value: '&(SERCOM7_REGS->USART_INT.SERCOM_DATA)'
-          type: Dynamic
-        type: Values
-      type: String
-    RECEIVE_DATA_REGISTER:
-      attributes:
-        id: RECEIVE_DATA_REGISTER
-      children:
-      - children:
-        - attributes:
-            id: sercom7
-            value: '&(SERCOM7_REGS->USART_INT.SERCOM_DATA)'
-          type: Dynamic
-        type: Values
-      type: String
-    SERCOM_USART_HEADER:
-      attributes:
-        id: SERCOM_USART_HEADER
-      children:
-      - children:
-        - attributes:
-            id: enabled
-          children:
-          - type: Value
-            value: 'true'
-          type: Boolean
-        - attributes:
-            id: source
-          children:
-          - type: Value
-            value: ../peripheral/sercom_u2201/templates/plib_sercom_usart_ring_buffer.h.ftl
-          type: String
-        type: Attributes
-      type: File
-    SERCOM_USART_SOURCE:
-      attributes:
-        id: SERCOM_USART_SOURCE
-      children:
-      - children:
-        - attributes:
-            id: enabled
-          children:
-          - type: Value
-            value: 'true'
-          type: Boolean
-        - attributes:
-            id: source
-          children:
-          - type: Value
-            value: ../peripheral/sercom_u2201/templates/plib_sercom_usart_ring_buffer.c.ftl
-          type: String
-        type: Attributes
-      type: File
-    SERCOM_USART_COMMON_HEADER:
-      attributes:
-        id: SERCOM_USART_COMMON_HEADER
-      children:
-      - children:
-        - attributes:
-            id: enabled
-          children:
-          - type: Value
-            value: 'true'
-          type: Boolean
-        type: Attributes
-      type: File
-    SERCOM_MODE:
-      attributes:
-        id: SERCOM_MODE
-      children:
-      - children:
-        - attributes:
-            id: readOnly
-          children:
-          - type: Value
-            value: 'true'
-          type: Boolean
-        type: Attributes
-      - children:
-        - attributes:
-            id: sercom7
-            value: '0'
-          type: Dynamic
-        type: Values
-      type: KeyValueSet
-    USART_INTERRUPT_MODE_ENABLE:
-      attributes:
-        id: USART_INTERRUPT_MODE_ENABLE
-      children:
-      - children:
-        - attributes:
-            id: sercom7
-            value: 'true'
-          type: Dynamic
-        type: Values
-      type: Boolean
-    USART_RING_BUFFER_MODE_ENABLE:
-      attributes:
-        id: USART_RING_BUFFER_MODE_ENABLE
-      children:
-      - children:
-        - attributes:
-            id: sercom7
-            value: 'true'
-          type: Dynamic
-        type: Values
-      type: Boolean
-    USART_OPERATING_MODE:
-      attributes:
-        id: USART_OPERATING_MODE
-      children:
-      - children:
-        - attributes:
-            id: readOnly
-          children:
-          - type: Value
-            value: 'true'
-          type: Boolean
-        type: Attributes
-      - children:
-        - attributes:
-            id: sercom7
-            value: '2'
-          type: Dynamic
-        type: Values
-      type: KeyValueSet
-    USART_7816_BAUD_VALUE:
-      attributes:
-        id: USART_7816_BAUD_VALUE
-      children:
-      - children:
-        - attributes:
-            id: sercom7
-            value: '-1'
-          type: Dynamic
-        type: Values
-      type: Integer
-    USART_BAUD_RATE:
-      attributes:
-        id: USART_BAUD_RATE
-      children:
-      - children:
-        - attributes:
-            value: '2000000'
-          type: User
-        type: Values
-      type: Integer
   userData: {}

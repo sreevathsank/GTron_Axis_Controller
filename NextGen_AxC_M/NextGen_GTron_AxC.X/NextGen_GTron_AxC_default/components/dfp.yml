@@ -22,8 +22,8 @@ data:
     - children:
       - attributes:
           id: dfp
-          x: '619'
-          y: '5'
+          x: '517'
+          y: '43'
         type: ElementPosition
       type: ElementPositions
     type: ComponentGraph

@@ -4,13 +4,11 @@
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
             <name>NextGen_GTron_AxC</name>
-            <creation-uuid>95dcc6ef-cc88-401a-a1e3-5257c119bce5</creation-uuid>
+            <creation-uuid>f9c15a6b-ecec-43c3-943e-8868ea0582e1</creation-uuid>
             <make-project-type>0</make-project-type>
             <sourceEncoding>ISO-8859-1</sourceEncoding>
             <make-dep-projects/>
-            <sourceRootList>
-                <sourceRootElem>../src</sourceRootElem>
-            </sourceRootList>
+            <sourceRootList/>
             <confList>
                 <confElem>
                     <name>default</name>

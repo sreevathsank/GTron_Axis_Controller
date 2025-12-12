@@ -75,42 +75,34 @@ void SERCOM7_USART_Enable( void );
 
 void SERCOM7_USART_Disable( void );
 
+void SERCOM7_USART_TransmitterEnable( void );
+
+void SERCOM7_USART_TransmitterDisable( void );
+
+bool SERCOM7_USART_Write( void *buffer, const size_t size );
+
+bool SERCOM7_USART_TransmitComplete( void );
+
+
+bool SERCOM7_USART_TransmitterIsReady( void );
+
+void SERCOM7_USART_WriteByte( int data );
+
+
+void SERCOM7_USART_ReceiverEnable( void );
+
+void SERCOM7_USART_ReceiverDisable( void );
+
+bool SERCOM7_USART_Read( void *buffer, const size_t size );
+
+bool SERCOM7_USART_ReceiverIsReady( void );
+
+int SERCOM7_USART_ReadByte( void );
+
 USART_ERROR SERCOM7_USART_ErrorGet( void );
 
 uint32_t SERCOM7_USART_FrequencyGet( void );
 
-
-bool SERCOM7_USART_TransmitComplete( void );
-
-size_t SERCOM7_USART_Write(uint8_t* pWrBuffer, const size_t size );
-
-size_t SERCOM7_USART_WriteCountGet(void);
-
-size_t SERCOM7_USART_WriteFreeBufferCountGet(void);
-
-size_t SERCOM7_USART_WriteBufferSizeGet(void);
-
-bool SERCOM7_USART_WriteNotificationEnable(bool isEnabled, bool isPersistent);
-
-void SERCOM7_USART_WriteThresholdSet(uint32_t nBytesThreshold);
-
-void SERCOM7_USART_WriteCallbackRegister( SERCOM_USART_RING_BUFFER_CALLBACK callback, uintptr_t context);
-
-
-
-size_t SERCOM7_USART_Read(uint8_t* pRdBuffer, const size_t size);
-
-size_t SERCOM7_USART_ReadCountGet(void);
-
-size_t SERCOM7_USART_ReadFreeBufferCountGet(void);
-
-size_t SERCOM7_USART_ReadBufferSizeGet(void);
-
-bool SERCOM7_USART_ReadNotificationEnable(bool isEnabled, bool isPersistent);
-
-void SERCOM7_USART_ReadThresholdSet(uint32_t nBytesThreshold);
-
-void SERCOM7_USART_ReadCallbackRegister( SERCOM_USART_RING_BUFFER_CALLBACK callback, uintptr_t context);
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility

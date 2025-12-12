@@ -22,8 +22,8 @@ data:
     - children:
       - attributes:
           id: HarmonyCore
-          x: '455'
-          y: '130'
+          x: '505'
+          y: '79'
         type: ElementPosition
       type: ElementPositions
     type: ComponentGraph
@@ -39,12 +39,6 @@ data:
           - type: Value
             value: 'true'
           type: Boolean
-        - attributes:
-            id: name
-          children:
-          - type: Value
-            value: health_task.c
-          type: String
         type: Attributes
       type: File
     APP0_H:
@@ -58,12 +52,6 @@ data:
           - type: Value
             value: 'true'
           type: Boolean
-        - attributes:
-            id: name
-          children:
-          - type: Value
-            value: health_task.h
-          type: String
         type: Attributes
       type: File
     CONFIGURATION_H:
@@ -114,6 +102,9 @@ data:
             id: HarmonyCore
             value: 'true'
           type: Dynamic
+        - attributes:
+            value: 'true'
+          type: User
         type: Values
       type: Boolean
     ENABLE_DRV_COMMON:
@@ -122,17 +113,8 @@ data:
       children:
       - children:
         - attributes:
-            id: readOnly
-          children:
-          - type: Value
             value: 'true'
-          type: Boolean
-        type: Attributes
-      - children:
-        - attributes:
-            id: HarmonyCore
-            value: 'true'
-          type: Dynamic
+          type: User
         type: Values
       type: Boolean
     ENABLE_OSAL:
@@ -182,17 +164,8 @@ data:
       children:
       - children:
         - attributes:
-            id: readOnly
-          children:
-          - type: Value
             value: 'true'
-          type: Boolean
-        type: Attributes
-      - children:
-        - attributes:
-            id: HarmonyCore
-            value: 'true'
-          type: Dynamic
+          type: User
         type: Values
       type: Boolean
     ENABLE_SYS_INT:
@@ -1058,314 +1031,4 @@ data:
           type: Boolean
         type: Attributes
       type: File
-    APP1_C:
-      attributes:
-        id: APP1_C
-      children:
-      - children:
-        - attributes:
-            id: enabled
-          children:
-          - type: Value
-            value: 'true'
-          type: Boolean
-        - attributes:
-            id: name
-          children:
-          - type: Value
-            value: tmc4671_motion.c
-          type: String
-        type: Attributes
-      type: File
-    APP2_C:
-      attributes:
-        id: APP2_C
-      children:
-      - children:
-        - attributes:
-            id: enabled
-          children:
-          - type: Value
-            value: 'true'
-          type: Boolean
-        - attributes:
-            id: name
-          children:
-          - type: Value
-            value: tmc2209_motion.c
-          type: String
-        type: Attributes
-      type: File
-    APP3_C:
-      attributes:
-        id: APP3_C
-      children:
-      - children:
-        - attributes:
-            id: enabled
-          children:
-          - type: Value
-            value: 'true'
-          type: Boolean
-        - attributes:
-            id: name
-          children:
-          - type: Value
-            value: can_task.c
-          type: String
-        type: Attributes
-      type: File
-    APP4_C:
-      attributes:
-        id: APP4_C
-      children:
-      - children:
-        - attributes:
-            id: enabled
-          children:
-          - type: Value
-            value: 'true'
-          type: Boolean
-        - attributes:
-            id: name
-          children:
-          - type: Value
-            value: cmd_parser.c
-          type: String
-        type: Attributes
-      type: File
-    APP5_C:
-      attributes:
-        id: APP5_C
-      children:
-      - children:
-        - attributes:
-            id: enabled
-          children:
-          - type: Value
-            value: 'true'
-          type: Boolean
-        - attributes:
-            id: name
-          children:
-          - type: Value
-            value: debug_logger.c
-          type: String
-        type: Attributes
-      type: File
-    APP1_H:
-      attributes:
-        id: APP1_H
-      children:
-      - children:
-        - attributes:
-            id: enabled
-          children:
-          - type: Value
-            value: 'true'
-          type: Boolean
-        - attributes:
-            id: name
-          children:
-          - type: Value
-            value: tmc4671_motion.h
-          type: String
-        type: Attributes
-      type: File
-    APP2_H:
-      attributes:
-        id: APP2_H
-      children:
-      - children:
-        - attributes:
-            id: enabled
-          children:
-          - type: Value
-            value: 'true'
-          type: Boolean
-        - attributes:
-            id: name
-          children:
-          - type: Value
-            value: tmc2209_motion.h
-          type: String
-        type: Attributes
-      type: File
-    APP3_H:
-      attributes:
-        id: APP3_H
-      children:
-      - children:
-        - attributes:
-            id: enabled
-          children:
-          - type: Value
-            value: 'true'
-          type: Boolean
-        - attributes:
-            id: name
-          children:
-          - type: Value
-            value: can_task.h
-          type: String
-        type: Attributes
-      type: File
-    APP4_H:
-      attributes:
-        id: APP4_H
-      children:
-      - children:
-        - attributes:
-            id: enabled
-          children:
-          - type: Value
-            value: 'true'
-          type: Boolean
-        - attributes:
-            id: name
-          children:
-          - type: Value
-            value: cmd_parser.h
-          type: String
-        type: Attributes
-      type: File
-    APP5_H:
-      attributes:
-        id: APP5_H
-      children:
-      - children:
-        - attributes:
-            id: enabled
-          children:
-          - type: Value
-            value: 'true'
-          type: Boolean
-        - attributes:
-            id: name
-          children:
-          - type: Value
-            value: debug_logger.h
-          type: String
-        type: Attributes
-      type: File
-    GEN_APP_TASK_COUNT:
-      attributes:
-        id: GEN_APP_TASK_COUNT
-      children:
-      - children:
-        - attributes:
-            value: '6'
-          type: User
-        type: Values
-      type: Integer
-    GEN_APP_TASK_NAME_0:
-      attributes:
-        id: GEN_APP_TASK_NAME_0
-      children:
-      - children:
-        - attributes:
-            value: health_task
-          type: User
-        type: Values
-      type: String
-    GEN_APP_TASK_NAME_1:
-      attributes:
-        id: GEN_APP_TASK_NAME_1
-      children:
-      - children:
-        - attributes:
-            value: tmc4671_motion
-          type: User
-        type: Values
-      type: String
-    GEN_APP_TASK_NAME_2:
-      attributes:
-        id: GEN_APP_TASK_NAME_2
-      children:
-      - children:
-        - attributes:
-            value: tmc2209_motion
-          type: User
-        type: Values
-      type: String
-    GEN_APP_TASK_NAME_3:
-      attributes:
-        id: GEN_APP_TASK_NAME_3
-      children:
-      - children:
-        - attributes:
-            value: can_task
-          type: User
-        type: Values
-      type: String
-    GEN_APP_TASK_NAME_4:
-      attributes:
-        id: GEN_APP_TASK_NAME_4
-      children:
-      - children:
-        - attributes:
-            value: cmd_parser
-          type: User
-        type: Values
-      type: String
-    GEN_APP_TASK_NAME_5:
-      attributes:
-        id: GEN_APP_TASK_NAME_5
-      children:
-      - children:
-        - attributes:
-            value: debug_logger
-          type: User
-        type: Values
-      type: String
-    GEN_APP_RTOS_TASK_0_PRIO:
-      attributes:
-        id: GEN_APP_RTOS_TASK_0_PRIO
-      children:
-      - children:
-        - attributes:
-            value: '4'
-          type: User
-        type: Values
-      type: Integer
-    GEN_APP_RTOS_TASK_1_PRIO:
-      attributes:
-        id: GEN_APP_RTOS_TASK_1_PRIO
-      children:
-      - children:
-        - attributes:
-            value: '3'
-          type: User
-        type: Values
-      type: Integer
-    GEN_APP_RTOS_TASK_2_PRIO:
-      attributes:
-        id: GEN_APP_RTOS_TASK_2_PRIO
-      children:
-      - children:
-        - attributes:
-            value: '3'
-          type: User
-        type: Values
-      type: Integer
-    GEN_APP_RTOS_TASK_3_PRIO:
-      attributes:
-        id: GEN_APP_RTOS_TASK_3_PRIO
-      children:
-      - children:
-        - attributes:
-            value: '2'
-          type: User
-        type: Values
-      type: Integer
-    GEN_APP_RTOS_TASK_4_PRIO:
-      attributes:
-        id: GEN_APP_RTOS_TASK_4_PRIO
-      children:
-      - children:
-        - attributes:
-            value: '2'
-          type: User
-        type: Values
-      type: Integer
   userData: {}

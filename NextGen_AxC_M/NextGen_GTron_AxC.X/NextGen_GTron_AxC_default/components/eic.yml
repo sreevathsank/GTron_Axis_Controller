@@ -22,34 +22,12 @@ data:
     - children:
       - attributes:
           id: eic
-          x: '330'
-          y: '94'
+          x: '684'
+          y: '163'
         type: ElementPosition
       type: ElementPositions
     type: ComponentGraph
   symbols:
-    EIC_INT:
-      attributes:
-        id: EIC_INT
-      children:
-      - children:
-        - attributes:
-            id: eic
-            value: '14248'
-          type: Dynamic
-        type: Values
-      type: Hex
-    EIC_EXTINTEO:
-      attributes:
-        id: EIC_EXTINTEO
-      children:
-      - children:
-        - attributes:
-            id: eic
-            value: '0'
-          type: Dynamic
-        type: Values
-      type: Hex
     EIC_ASYNCH:
       attributes:
         id: EIC_ASYNCH
@@ -57,54 +35,33 @@ data:
       - children:
         - attributes:
             id: eic
-            value: '14248'
+            value: '8320'
           type: Dynamic
         type: Values
       type: Hex
-    EIC_DEBOUNCEN:
+    EIC_ASYNCH_13:
       attributes:
-        id: EIC_DEBOUNCEN
+        id: EIC_ASYNCH_13
       children:
       - children:
         - attributes:
-            id: eic
-            value: '14248'
-          type: Dynamic
-        type: Values
-      type: Hex
-    EIC_CHAN_1:
-      attributes:
-        id: EIC_CHAN_1
-      children:
-      - children:
-        - attributes:
-            value: 'true'
+            value: '1'
           type: User
         type: Values
-      type: Boolean
-    EIC_CHAN_2:
+      type: KeyValueSet
+    EIC_ASYNCH_7:
       attributes:
-        id: EIC_CHAN_2
+        id: EIC_ASYNCH_7
       children:
       - children:
         - attributes:
-            value: 'true'
+            value: '1'
           type: User
         type: Values
-      type: Boolean
-    EIC_CHAN_3:
+      type: KeyValueSet
+    EIC_CHAN_13:
       attributes:
-        id: EIC_CHAN_3
-      children:
-      - children:
-        - attributes:
-            value: 'true'
-          type: User
-        type: Values
-      type: Boolean
-    EIC_CHAN_5:
-      attributes:
-        id: EIC_CHAN_5
+        id: EIC_CHAN_13
       children:
       - children:
         - attributes:
@@ -122,189 +79,13 @@ data:
           type: User
         type: Values
       type: Boolean
-    EIC_CHAN_8:
+    EIC_CONFIG_SENSE_13:
       attributes:
-        id: EIC_CHAN_8
+        id: EIC_CONFIG_SENSE_13
       children:
       - children:
         - attributes:
-            value: 'true'
-          type: User
-        type: Values
-      type: Boolean
-    EIC_CHAN_9:
-      attributes:
-        id: EIC_CHAN_9
-      children:
-      - children:
-        - attributes:
-            value: 'true'
-          type: User
-        type: Values
-      type: Boolean
-    EIC_CHAN_10:
-      attributes:
-        id: EIC_CHAN_10
-      children:
-      - children:
-        - attributes:
-            value: 'true'
-          type: User
-        type: Values
-      type: Boolean
-    EIC_CHAN_12:
-      attributes:
-        id: EIC_CHAN_12
-      children:
-      - children:
-        - attributes:
-            value: 'true'
-          type: User
-        type: Values
-      type: Boolean
-    EIC_CHAN_13:
-      attributes:
-        id: EIC_CHAN_13
-      children:
-      - children:
-        - attributes:
-            value: 'true'
-          type: User
-        type: Values
-      type: Boolean
-    EIC_INT_3:
-      attributes:
-        id: EIC_INT_3
-      children:
-      - children:
-        - attributes:
-            value: 'true'
-          type: User
-        type: Values
-      type: Boolean
-    EIC_ASYNCH_3:
-      attributes:
-        id: EIC_ASYNCH_3
-      children:
-      - children:
-        - attributes:
-            value: '1'
-          type: User
-        type: Values
-      type: KeyValueSet
-    EIC_CONFIG_SENSE_3:
-      attributes:
-        id: EIC_CONFIG_SENSE_3
-      children:
-      - children:
-        - attributes:
-            value: '1'
-          type: User
-        type: Values
-      type: KeyValueSet
-    EIC_DEBOUNCEN_3:
-      attributes:
-        id: EIC_DEBOUNCEN_3
-      children:
-      - children:
-        - attributes:
-            id: visible
-          children:
-          - type: Value
-            value: 'true'
-          type: Boolean
-        type: Attributes
-      - children:
-        - attributes:
-            value: 'true'
-          type: User
-        type: Values
-      type: Boolean
-    EIC_DEBOUNCER_NO_STATES_0:
-      attributes:
-        id: EIC_DEBOUNCER_NO_STATES_0
-      children:
-      - children:
-        - attributes:
-            value: '1'
-          type: User
-        type: Values
-      type: KeyValueSet
-    EIC_DEBOUNCER_NO_STATES_1:
-      attributes:
-        id: EIC_DEBOUNCER_NO_STATES_1
-      children:
-      - children:
-        - attributes:
-            value: '1'
-          type: User
-        type: Values
-      type: KeyValueSet
-    EIC_INT_5:
-      attributes:
-        id: EIC_INT_5
-      children:
-      - children:
-        - attributes:
-            value: 'true'
-          type: User
-        type: Values
-      type: Boolean
-    EIC_ASYNCH_5:
-      attributes:
-        id: EIC_ASYNCH_5
-      children:
-      - children:
-        - attributes:
-            value: '1'
-          type: User
-        type: Values
-      type: KeyValueSet
-    EIC_CONFIG_SENSE_5:
-      attributes:
-        id: EIC_CONFIG_SENSE_5
-      children:
-      - children:
-        - attributes:
-            value: '1'
-          type: User
-        type: Values
-      type: KeyValueSet
-    EIC_DEBOUNCEN_5:
-      attributes:
-        id: EIC_DEBOUNCEN_5
-      children:
-      - children:
-        - attributes:
-            id: visible
-          children:
-          - type: Value
-            value: 'true'
-          type: Boolean
-        type: Attributes
-      - children:
-        - attributes:
-            value: 'true'
-          type: User
-        type: Values
-      type: Boolean
-    EIC_INT_7:
-      attributes:
-        id: EIC_INT_7
-      children:
-      - children:
-        - attributes:
-            value: 'true'
-          type: User
-        type: Values
-      type: Boolean
-    EIC_ASYNCH_7:
-      attributes:
-        id: EIC_ASYNCH_7
-      children:
-      - children:
-        - attributes:
-            value: '1'
+            value: '3'
           type: User
         type: Values
       type: KeyValueSet
@@ -318,216 +99,39 @@ data:
           type: User
         type: Values
       type: KeyValueSet
-    EIC_DEBOUNCEN_7:
+    EIC_DEBOUNCEN:
       attributes:
-        id: EIC_DEBOUNCEN_7
+        id: EIC_DEBOUNCEN
       children:
       - children:
         - attributes:
-            id: visible
-          children:
-          - type: Value
-            value: 'true'
-          type: Boolean
-        type: Attributes
-      - children:
-        - attributes:
-            value: 'true'
-          type: User
+            id: eic
+            value: '0'
+          type: Dynamic
         type: Values
-      type: Boolean
-    EIC_INT_8:
+      type: Hex
+    EIC_EXTINTEO:
       attributes:
-        id: EIC_INT_8
+        id: EIC_EXTINTEO
       children:
       - children:
         - attributes:
-            value: 'true'
-          type: User
+            id: eic
+            value: '0'
+          type: Dynamic
         type: Values
-      type: Boolean
-    EIC_ASYNCH_8:
+      type: Hex
+    EIC_INT:
       attributes:
-        id: EIC_ASYNCH_8
+        id: EIC_INT
       children:
       - children:
         - attributes:
-            value: '1'
-          type: User
+            id: eic
+            value: '8320'
+          type: Dynamic
         type: Values
-      type: KeyValueSet
-    EIC_CONFIG_SENSE_8:
-      attributes:
-        id: EIC_CONFIG_SENSE_8
-      children:
-      - children:
-        - attributes:
-            value: '3'
-          type: User
-        type: Values
-      type: KeyValueSet
-    EIC_DEBOUNCEN_8:
-      attributes:
-        id: EIC_DEBOUNCEN_8
-      children:
-      - children:
-        - attributes:
-            id: visible
-          children:
-          - type: Value
-            value: 'true'
-          type: Boolean
-        type: Attributes
-      - children:
-        - attributes:
-            value: 'true'
-          type: User
-        type: Values
-      type: Boolean
-    EIC_INT_9:
-      attributes:
-        id: EIC_INT_9
-      children:
-      - children:
-        - attributes:
-            value: 'true'
-          type: User
-        type: Values
-      type: Boolean
-    EIC_ASYNCH_9:
-      attributes:
-        id: EIC_ASYNCH_9
-      children:
-      - children:
-        - attributes:
-            value: '1'
-          type: User
-        type: Values
-      type: KeyValueSet
-    EIC_CONFIG_SENSE_9:
-      attributes:
-        id: EIC_CONFIG_SENSE_9
-      children:
-      - children:
-        - attributes:
-            value: '1'
-          type: User
-        type: Values
-      type: KeyValueSet
-    EIC_DEBOUNCEN_9:
-      attributes:
-        id: EIC_DEBOUNCEN_9
-      children:
-      - children:
-        - attributes:
-            id: visible
-          children:
-          - type: Value
-            value: 'true'
-          type: Boolean
-        type: Attributes
-      - children:
-        - attributes:
-            value: 'true'
-          type: User
-        type: Values
-      type: Boolean
-    EIC_INT_10:
-      attributes:
-        id: EIC_INT_10
-      children:
-      - children:
-        - attributes:
-            value: 'true'
-          type: User
-        type: Values
-      type: Boolean
-    EIC_ASYNCH_10:
-      attributes:
-        id: EIC_ASYNCH_10
-      children:
-      - children:
-        - attributes:
-            value: '1'
-          type: User
-        type: Values
-      type: KeyValueSet
-    EIC_CONFIG_SENSE_10:
-      attributes:
-        id: EIC_CONFIG_SENSE_10
-      children:
-      - children:
-        - attributes:
-            value: '1'
-          type: User
-        type: Values
-      type: KeyValueSet
-    EIC_DEBOUNCEN_10:
-      attributes:
-        id: EIC_DEBOUNCEN_10
-      children:
-      - children:
-        - attributes:
-            id: visible
-          children:
-          - type: Value
-            value: 'true'
-          type: Boolean
-        type: Attributes
-      - children:
-        - attributes:
-            value: 'true'
-          type: User
-        type: Values
-      type: Boolean
-    EIC_INT_12:
-      attributes:
-        id: EIC_INT_12
-      children:
-      - children:
-        - attributes:
-            value: 'true'
-          type: User
-        type: Values
-      type: Boolean
-    EIC_ASYNCH_12:
-      attributes:
-        id: EIC_ASYNCH_12
-      children:
-      - children:
-        - attributes:
-            value: '1'
-          type: User
-        type: Values
-      type: KeyValueSet
-    EIC_CONFIG_SENSE_12:
-      attributes:
-        id: EIC_CONFIG_SENSE_12
-      children:
-      - children:
-        - attributes:
-            value: '1'
-          type: User
-        type: Values
-      type: KeyValueSet
-    EIC_DEBOUNCEN_12:
-      attributes:
-        id: EIC_DEBOUNCEN_12
-      children:
-      - children:
-        - attributes:
-            id: visible
-          children:
-          - type: Value
-            value: 'true'
-          type: Boolean
-        type: Attributes
-      - children:
-        - attributes:
-            value: 'true'
-          type: User
-        type: Values
-      type: Boolean
+      type: Hex
     EIC_INT_13:
       attributes:
         id: EIC_INT_13
@@ -538,38 +142,10 @@ data:
           type: User
         type: Values
       type: Boolean
-    EIC_ASYNCH_13:
+    EIC_INT_7:
       attributes:
-        id: EIC_ASYNCH_13
+        id: EIC_INT_7
       children:
-      - children:
-        - attributes:
-            value: '1'
-          type: User
-        type: Values
-      type: KeyValueSet
-    EIC_CONFIG_SENSE_13:
-      attributes:
-        id: EIC_CONFIG_SENSE_13
-      children:
-      - children:
-        - attributes:
-            value: '1'
-          type: User
-        type: Values
-      type: KeyValueSet
-    EIC_DEBOUNCEN_13:
-      attributes:
-        id: EIC_DEBOUNCEN_13
-      children:
-      - children:
-        - attributes:
-            id: visible
-          children:
-          - type: Value
-            value: 'true'
-          type: Boolean
-        type: Attributes
       - children:
         - attributes:
             value: 'true'

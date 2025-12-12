@@ -38,7 +38,9 @@ int main ( void )
 {
     /* Initialize all modules */
     SYS_Initialize ( NULL );
-
+    
+    printf("NextGen GTron AxC\n");
+    
     while ( true )
     {
         /* Maintain state machines of all polled MPLAB Harmony modules. */

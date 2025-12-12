@@ -97,32 +97,8 @@
 */
 
 
-    /* External Interrupt Controller Pin 1 */
-#define    EIC_PIN_1   (1U)
-
-    /* External Interrupt Controller Pin 2 */
-#define    EIC_PIN_2   (2U)
-
-    /* External Interrupt Controller Pin 3 */
-#define    EIC_PIN_3   (3U)
-
-    /* External Interrupt Controller Pin 5 */
-#define    EIC_PIN_5   (5U)
-
     /* External Interrupt Controller Pin 7 */
 #define    EIC_PIN_7   (7U)
-
-    /* External Interrupt Controller Pin 8 */
-#define    EIC_PIN_8   (8U)
-
-    /* External Interrupt Controller Pin 9 */
-#define    EIC_PIN_9   (9U)
-
-    /* External Interrupt Controller Pin 10 */
-#define    EIC_PIN_10   (10U)
-
-    /* External Interrupt Controller Pin 12 */
-#define    EIC_PIN_12   (12U)
 
     /* External Interrupt Controller Pin 13 */
 #define    EIC_PIN_13   (13U)

@@ -78,7 +78,7 @@ void __attribute__((optimize("-O1"), long_call, noreturn, used))Dummy_Handler(vo
 }
 
 /* MISRAC 2012 deviation block start */
-/* MISRA C-2012 Rule 8.6 deviated 26 times.  Deviation record ID -  H3_MISRAC_2012_R_8_6_DR_1 */
+/* MISRA C-2012 Rule 8.6 deviated 30 times.  Deviation record ID -  H3_MISRAC_2012_R_8_6_DR_1 */
 /* Device vectors list dummy definition*/
 extern void SYSTEM_Handler             ( void ) __attribute__((weak, alias("Dummy_Handler"),noreturn));
 extern void WDT_Handler                ( void ) __attribute__((weak, alias("Dummy_Handler"),noreturn));
@@ -89,9 +89,11 @@ extern void NVMCTRL_Handler            ( void ) __attribute__((weak, alias("Dumm
 extern void DMAC_Handler               ( void ) __attribute__((weak, alias("Dummy_Handler"),noreturn));
 extern void EVSYS_Handler              ( void ) __attribute__((weak, alias("Dummy_Handler"),noreturn));
 extern void SERCOM0_6_Handler          ( void ) __attribute__((weak, alias("Dummy_Handler"),noreturn));
+extern void SERCOM1_7_Handler          ( void ) __attribute__((weak, alias("Dummy_Handler"),noreturn));
 extern void SERCOM2_Handler            ( void ) __attribute__((weak, alias("Dummy_Handler"),noreturn));
 extern void SERCOM3_Handler            ( void ) __attribute__((weak, alias("Dummy_Handler"),noreturn));
 extern void SERCOM4_Handler            ( void ) __attribute__((weak, alias("Dummy_Handler"),noreturn));
+extern void SERCOM5_Handler            ( void ) __attribute__((weak, alias("Dummy_Handler"),noreturn));
 extern void CAN0_Handler               ( void ) __attribute__((weak, alias("Dummy_Handler"),noreturn));
 extern void CAN1_Handler               ( void ) __attribute__((weak, alias("Dummy_Handler"),noreturn));
 extern void TCC0_Handler               ( void ) __attribute__((weak, alias("Dummy_Handler"),noreturn));
@@ -99,7 +101,9 @@ extern void TCC1_Handler               ( void ) __attribute__((weak, alias("Dumm
 extern void TCC2_Handler               ( void ) __attribute__((weak, alias("Dummy_Handler"),noreturn));
 extern void TC0_5_Handler              ( void ) __attribute__((weak, alias("Dummy_Handler"),noreturn));
 extern void TC1_6_Handler              ( void ) __attribute__((weak, alias("Dummy_Handler"),noreturn));
+extern void TC2_7_Handler              ( void ) __attribute__((weak, alias("Dummy_Handler"),noreturn));
 extern void TC3_Handler                ( void ) __attribute__((weak, alias("Dummy_Handler"),noreturn));
+extern void TC4_Handler                ( void ) __attribute__((weak, alias("Dummy_Handler"),noreturn));
 extern void ADC0_Handler               ( void ) __attribute__((weak, alias("Dummy_Handler"),noreturn));
 extern void ADC1_Handler               ( void ) __attribute__((weak, alias("Dummy_Handler"),noreturn));
 extern void AC_Handler                 ( void ) __attribute__((weak, alias("Dummy_Handler"),noreturn));
@@ -111,16 +115,6 @@ extern void PTC_Handler                ( void ) __attribute__((weak, alias("Dumm
 /* MISRAC 2012 deviation block end */
 
 /* Multiple handlers for vector */
-static void SERCOM1_7_Handler( void )
-{
-    SERCOM7_USART_InterruptHandler();
-}
-
-static void TC2_7_Handler( void )
-{
-    TC2_TimerInterruptHandler();
-}
-
 
 
 
@@ -150,7 +144,7 @@ const H3DeviceVectors exception_table=
     .pfnSERCOM2_Handler            = SERCOM2_Handler,
     .pfnSERCOM3_Handler            = SERCOM3_Handler,
     .pfnSERCOM4_Handler            = SERCOM4_Handler,
-    .pfnSERCOM5_Handler            = SERCOM5_USART_InterruptHandler,
+    .pfnSERCOM5_Handler            = SERCOM5_Handler,
     .pfnCAN0_Handler               = CAN0_Handler,
     .pfnCAN1_Handler               = CAN1_Handler,
     .pfnTCC0_Handler               = TCC0_Handler,
@@ -160,7 +154,7 @@ const H3DeviceVectors exception_table=
     .pfnTC1_6_Handler              = TC1_6_Handler,
     .pfnTC2_7_Handler              = TC2_7_Handler,
     .pfnTC3_Handler                = TC3_Handler,
-    .pfnTC4_Handler                = TC4_TimerInterruptHandler,
+    .pfnTC4_Handler                = TC4_Handler,
     .pfnADC0_Handler               = ADC0_Handler,
     .pfnADC1_Handler               = ADC1_Handler,
     .pfnAC_Handler                 = AC_Handler,

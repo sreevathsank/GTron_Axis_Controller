@@ -21,17 +21,18 @@ PATH:=D:/MPLAB X IDE/v6.25/mplab_platform/platform/../mplab_ide/modules/../../bi
 # Path to java used to run MPLAB X when this makefile was created
 MP_JAVA_PATH="D:\MPLAB X IDE\v6.25\sys\java\zulu8.80.0.17-ca-fx-jre8.0.422-win_x64/bin/"
 OS_CURRENT="$(shell uname -s)"
-MP_CC="D:\MPLAB X IDE\xcompilers\bin\xc32-gcc.exe"
-MP_CPPC="D:\MPLAB X IDE\xcompilers\bin\xc32-g++.exe"
+MP_CC="D:\MPLAB X IDE\xc32_v5.00\bin\xc32-gcc.exe"
+MP_CPPC="D:\MPLAB X IDE\xc32_v5.00\bin\xc32-g++.exe"
 # MP_BC is not defined
-MP_AS="D:\MPLAB X IDE\xcompilers\bin\xc32-as.exe"
-MP_LD="D:\MPLAB X IDE\xcompilers\bin\xc32-ld.exe"
-MP_AR="D:\MPLAB X IDE\xcompilers\bin\xc32-ar.exe"
+MP_AS="D:\MPLAB X IDE\xc32_v5.00\bin\xc32-as.exe"
+MP_LD="D:\MPLAB X IDE\xc32_v5.00\bin\xc32-ld.exe"
+MP_AR="D:\MPLAB X IDE\xc32_v5.00\bin\xc32-ar.exe"
 DEP_GEN=${MP_JAVA_PATH}java -jar "D:/MPLAB X IDE/v6.25/mplab_platform/platform/../mplab_ide/modules/../../bin/extractobjectdependencies.jar"
-MP_CC_DIR="D:\MPLAB X IDE\xcompilers\bin"
-MP_CPPC_DIR="D:\MPLAB X IDE\xcompilers\bin"
+MP_CC_DIR="D:\MPLAB X IDE\xc32_v5.00\bin"
+MP_CPPC_DIR="D:\MPLAB X IDE\xc32_v5.00\bin"
 # MP_BC_DIR is not defined
-MP_AS_DIR="D:\MPLAB X IDE\xcompilers\bin"
-MP_LD_DIR="D:\MPLAB X IDE\xcompilers\bin"
-MP_AR_DIR="D:\MPLAB X IDE\xcompilers\bin"
+MP_AS_DIR="D:\MPLAB X IDE\xc32_v5.00\bin"
+MP_LD_DIR="D:\MPLAB X IDE\xc32_v5.00\bin"
+MP_AR_DIR="D:\MPLAB X IDE\xc32_v5.00\bin"
 DFP_DIR=C:/Users/sreevathsank/.mchp_packs/Microchip/SAMC21_DFP/3.9.248
+CMSIS_DIR=C:/Users/sreevathsank/.mchp_packs/ARM/CMSIS/6.2.0

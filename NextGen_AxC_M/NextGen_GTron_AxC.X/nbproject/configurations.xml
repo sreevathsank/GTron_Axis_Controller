@@ -4,34 +4,6 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <logicalFolder name="Bring_Up" displayName="Bring_Up" projectFiles="true">
-        <logicalFolder name="CAN" displayName="CAN" projectFiles="true">
-          <itemPath>../src/Bring_Up/CAN/IMM_CAN.h</itemPath>
-          <itemPath>../src/Bring_Up/CAN/IMM_CAN_Message_Id.h</itemPath>
-          <itemPath>../src/Bring_Up/CAN/IMM_CAN_Read.h</itemPath>
-          <itemPath>../src/Bring_Up/CAN/IMM_CAN_Write.h</itemPath>
-          <itemPath>../src/Bring_Up/CAN/MCD_v3.h</itemPath>
-          <itemPath>../src/Bring_Up/CAN/TMCL_IDE_reply.h</itemPath>
-        </logicalFolder>
-        <logicalFolder name="GTron_Cmd_Parser"
-                       displayName="GTron_Cmd_Parser"
-                       projectFiles="true">
-          <itemPath>../src/Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h</itemPath>
-        </logicalFolder>
-        <logicalFolder name="IO_Expander" displayName="IO_Expander" projectFiles="true">
-          <itemPath>../src/Bring_Up/IO_Expander/spi_io_expander.h</itemPath>
-        </logicalFolder>
-        <logicalFolder name="Motion" displayName="Motion" projectFiles="true">
-          <itemPath>../src/Bring_Up/Motion/Motion.h</itemPath>
-        </logicalFolder>
-        <itemPath>../src/Bring_Up/DBG_bring_up.h</itemPath>
-        <itemPath>../src/Bring_Up/spi.h</itemPath>
-      </logicalFolder>
-      <logicalFolder name="Code_Dump" displayName="Code_Dump" projectFiles="true">
-        <itemPath>../src/Code_Dump/tlv_flash.h</itemPath>
-        <itemPath>../src/Code_Dump/McuSwReset.h</itemPath>
-        <itemPath>../src/Code_Dump/ext_flash.h</itemPath>
-      </logicalFolder>
       <logicalFolder name="config" displayName="config" projectFiles="true">
         <logicalFolder name="default" displayName="default" projectFiles="true">
           <logicalFolder name="driver" displayName="driver" projectFiles="true">
@@ -44,14 +16,6 @@
             <itemPath>../src/config/default/osal/osal_freertos.h</itemPath>
           </logicalFolder>
           <logicalFolder name="peripheral" displayName="peripheral" projectFiles="true">
-            <logicalFolder name="adc" displayName="adc" projectFiles="true">
-              <itemPath>../src/config/default/peripheral/adc/plib_adc_common.h</itemPath>
-              <itemPath>../src/config/default/peripheral/adc/plib_adc0.h</itemPath>
-            </logicalFolder>
-            <logicalFolder name="can" displayName="can" projectFiles="true">
-              <itemPath>../src/config/default/peripheral/can/plib_can_common.h</itemPath>
-              <itemPath>../src/config/default/peripheral/can/plib_can1.h</itemPath>
-            </logicalFolder>
             <logicalFolder name="clock" displayName="clock" projectFiles="true">
               <itemPath>../src/config/default/peripheral/clock/plib_clock.h</itemPath>
             </logicalFolder>
@@ -70,41 +34,16 @@
             <logicalFolder name="port" displayName="port" projectFiles="true">
               <itemPath>../src/config/default/peripheral/port/plib_port.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="rstc" displayName="rstc" projectFiles="true">
-              <itemPath>../src/config/default/peripheral/rstc/plib_rstc.h</itemPath>
-            </logicalFolder>
             <logicalFolder name="sercom" displayName="sercom" projectFiles="true">
-              <logicalFolder name="spi_master" displayName="spi_master" projectFiles="true">
-                <itemPath>../src/config/default/peripheral/sercom/spi_master/plib_sercom3_spi_master.h</itemPath>
-                <itemPath>../src/config/default/peripheral/sercom/spi_master/plib_sercom_spi_master_common.h</itemPath>
-                <itemPath>../src/config/default/peripheral/sercom/spi_master/plib_sercom0_spi_master.h</itemPath>
-              </logicalFolder>
               <logicalFolder name="usart" displayName="usart" projectFiles="true">
                 <itemPath>../src/config/default/peripheral/sercom/usart/plib_sercom7_usart.h</itemPath>
                 <itemPath>../src/config/default/peripheral/sercom/usart/plib_sercom_usart_common.h</itemPath>
                 <itemPath>../src/config/default/peripheral/sercom/usart/plib_sercom5_usart.h</itemPath>
               </logicalFolder>
             </logicalFolder>
-            <logicalFolder name="tc" displayName="tc" projectFiles="true">
-              <itemPath>../src/config/default/peripheral/tc/plib_tc_common.h</itemPath>
-              <itemPath>../src/config/default/peripheral/tc/plib_tc2.h</itemPath>
-              <itemPath>../src/config/default/peripheral/tc/plib_tc4.h</itemPath>
-            </logicalFolder>
-            <logicalFolder name="wdt" displayName="wdt" projectFiles="true">
-              <itemPath>../src/config/default/peripheral/wdt/plib_wdt.h</itemPath>
-            </logicalFolder>
           </logicalFolder>
           <logicalFolder name="system" displayName="system" projectFiles="true">
-            <logicalFolder name="console" displayName="console" projectFiles="true">
-              <itemPath>../src/config/default/system/console/sys_console.h</itemPath>
-              <itemPath>../src/config/default/system/console/src/sys_console_local.h</itemPath>
-              <itemPath>../src/config/default/system/console/src/sys_console_uart.h</itemPath>
-              <itemPath>../src/config/default/system/console/src/sys_console_uart_definitions.h</itemPath>
-              <itemPath>../src/config/default/system/console/src/sys_console_usb_cdc.h</itemPath>
-              <itemPath>../src/config/default/system/console/src/sys_console_usb_cdc_definitions.h</itemPath>
-            </logicalFolder>
             <logicalFolder name="debug" displayName="debug" projectFiles="true">
-              <itemPath>../src/config/default/system/debug/src/sys_debug_local.h</itemPath>
               <itemPath>../src/config/default/system/debug/sys_debug.h</itemPath>
             </logicalFolder>
             <logicalFolder name="int" displayName="int" projectFiles="true">
@@ -147,7 +86,6 @@
             <itemPath>../src/third_party/rtos/FreeRTOS/Source/include/mpu_syscall_numbers.h</itemPath>
             <itemPath>../src/third_party/rtos/FreeRTOS/Source/include/stream_buffer.h</itemPath>
             <itemPath>../src/third_party/rtos/FreeRTOS/Source/include/message_buffer.h</itemPath>
-            <itemPath>../src/freertos_daemon.h</itemPath>
           </logicalFolder>
           <logicalFolder name="portable" displayName="portable" projectFiles="true">
             <logicalFolder name="GCC" displayName="GCC" projectFiles="true">
@@ -157,11 +95,6 @@
               </logicalFolder>
             </logicalFolder>
           </logicalFolder>
-        </logicalFolder>
-      </logicalFolder>
-      <logicalFolder name="motor_dev" displayName="motor_dev" projectFiles="true">
-        <logicalFolder name="my_Ramp" displayName="my_Ramp" projectFiles="true">
-          <itemPath>../src/motor_dev/my_Ramp/myRamp.h</itemPath>
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="packs" displayName="packs" projectFiles="true">
@@ -278,53 +211,7 @@
           </logicalFolder>
         </logicalFolder>
       </logicalFolder>
-      <logicalFolder name="TMC-API" displayName="TMC-API" projectFiles="true">
-        <logicalFolder name="tmc" displayName="tmc" projectFiles="true">
-          <logicalFolder name="helpers" displayName="helpers" projectFiles="true">
-            <itemPath>../src/TMC-API/tmc/helpers/API_Header.h</itemPath>
-            <itemPath>../src/TMC-API/tmc/helpers/Bits.h</itemPath>
-            <itemPath>../src/TMC-API/tmc/helpers/Config.h</itemPath>
-            <itemPath>../src/TMC-API/tmc/helpers/Constants.h</itemPath>
-            <itemPath>../src/TMC-API/tmc/helpers/CRC.h</itemPath>
-            <itemPath>../src/TMC-API/tmc/helpers/Functions.h</itemPath>
-            <itemPath>../src/TMC-API/tmc/helpers/Macros.h</itemPath>
-            <itemPath>../src/TMC-API/tmc/helpers/RegisterAccess.h</itemPath>
-            <itemPath>../src/TMC-API/tmc/helpers/Types.h</itemPath>
-          </logicalFolder>
-          <logicalFolder name="ic" displayName="ic" projectFiles="true">
-            <logicalFolder name="TMC4671" displayName="TMC4671" projectFiles="true">
-              <itemPath>../src/TMC-API/tmc/ic/TMC4671/TMC4671.h</itemPath>
-              <itemPath>../src/TMC-API/tmc/ic/TMC4671/TMC4671_Constants.h</itemPath>
-              <itemPath>../src/TMC-API/tmc/ic/TMC4671/TMC4671_Fields.h</itemPath>
-              <itemPath>../src/TMC-API/tmc/ic/TMC4671/TMC4671_Register.h</itemPath>
-              <itemPath>../src/TMC-API/tmc/ic/TMC4671/TMC4671_Variants.h</itemPath>
-            </logicalFolder>
-          </logicalFolder>
-          <logicalFolder name="ramp" displayName="ramp" projectFiles="true">
-            <itemPath>../src/TMC-API/tmc/ramp/LinearRamp.h</itemPath>
-            <itemPath>../src/TMC-API/tmc/ramp/LinearRamp1.h</itemPath>
-            <itemPath>../src/TMC-API/tmc/ramp/Ramp.h</itemPath>
-          </logicalFolder>
-        </logicalFolder>
-      </logicalFolder>
-      <logicalFolder name="tmc2209_uart"
-                     displayName="tmc2209_uart"
-                     projectFiles="true">
-        <itemPath>../src/tmc2209_uart/Step_Counter.h</itemPath>
-        <itemPath>../src/tmc2209_uart/TMC2209.h</itemPath>
-        <itemPath>../src/tmc2209_uart/TMC2209_HW_Abstraction.h</itemPath>
-        <itemPath>../src/tmc2209_uart/TMC2209_Motion.h</itemPath>
-        <itemPath>../src/tmc2209_uart/TMC2209_Simple_Rotation.h</itemPath>
-      </logicalFolder>
-      <itemPath>../src/Global_Vars.h</itemPath>
-      <itemPath>../src/Macros.h</itemPath>
-      <itemPath>../src/All_Headers.h</itemPath>
-      <itemPath>../src/health_task.h</itemPath>
-      <itemPath>../src/tmc4671_motion.h</itemPath>
-      <itemPath>../src/tmc2209_motion.h</itemPath>
-      <itemPath>../src/can_task.h</itemPath>
-      <itemPath>../src/cmd_parser.h</itemPath>
-      <itemPath>../src/debug_logger.h</itemPath>
+      <itemPath>../src/app.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -336,30 +223,9 @@
           <logicalFolder name="Debug_UART" displayName="Debug_UART" projectFiles="true">
             <logicalFolder name="components" displayName="components" projectFiles="true">
               <itemPath>NextGen_GTron_AxC_default/components/Debug_UART/components/sercom7.yml</itemPath>
-              <itemPath>NextGen_GTron_AxC_default/components/Debug_UART/components/sys_console.yml</itemPath>
-              <itemPath>NextGen_GTron_AxC_default/components/Debug_UART/components/sys_debug.yml</itemPath>
+              <itemPath>NextGen_GTron_AxC_default/components/Debug_UART/components/stdio.yml</itemPath>
             </logicalFolder>
             <itemPath>NextGen_GTron_AxC_default/components/Debug_UART/Debug_UART.yml</itemPath>
-          </logicalFolder>
-          <logicalFolder name="ExtFlash_IOXP_SPI"
-                         displayName="ExtFlash_IOXP_SPI"
-                         projectFiles="true">
-            <logicalFolder name="components" displayName="components" projectFiles="true">
-              <itemPath>NextGen_GTron_AxC_default/components/ExtFlash_IOXP_SPI/components/sercom3.yml</itemPath>
-            </logicalFolder>
-            <itemPath>NextGen_GTron_AxC_default/components/ExtFlash_IOXP_SPI/ExtFlash_IOXP_SPI.yml</itemPath>
-          </logicalFolder>
-          <logicalFolder name="Ramp_Timer" displayName="Ramp_Timer" projectFiles="true">
-            <logicalFolder name="components" displayName="components" projectFiles="true">
-              <itemPath>NextGen_GTron_AxC_default/components/Ramp_Timer/components/tc4.yml</itemPath>
-            </logicalFolder>
-            <itemPath>NextGen_GTron_AxC_default/components/Ramp_Timer/Ramp_Timer.yml</itemPath>
-          </logicalFolder>
-          <logicalFolder name="SPI_0_4671" displayName="SPI_0_4671" projectFiles="true">
-            <logicalFolder name="components" displayName="components" projectFiles="true">
-              <itemPath>NextGen_GTron_AxC_default/components/SPI_0_4671/components/sercom0.yml</itemPath>
-            </logicalFolder>
-            <itemPath>NextGen_GTron_AxC_default/components/SPI_0_4671/SPI_0_4671.yml</itemPath>
           </logicalFolder>
           <logicalFolder name="TMC2209_UART"
                          displayName="TMC2209_UART"
@@ -369,24 +235,14 @@
             </logicalFolder>
             <itemPath>NextGen_GTron_AxC_default/components/TMC2209_UART/TMC2209_UART.yml</itemPath>
           </logicalFolder>
-          <logicalFolder name="VEL_TIMER" displayName="VEL_TIMER" projectFiles="true">
-            <logicalFolder name="components" displayName="components" projectFiles="true">
-              <itemPath>NextGen_GTron_AxC_default/components/VEL_TIMER/components/tc2.yml</itemPath>
-            </logicalFolder>
-            <itemPath>NextGen_GTron_AxC_default/components/VEL_TIMER/VEL_TIMER.yml</itemPath>
-          </logicalFolder>
           <itemPath>NextGen_GTron_AxC_default/components/HarmonyCore.yml</itemPath>
           <itemPath>NextGen_GTron_AxC_default/components/core.yml</itemPath>
           <itemPath>NextGen_GTron_AxC_default/components/evsys.yml</itemPath>
           <itemPath>NextGen_GTron_AxC_default/components/nvmctrl.yml</itemPath>
           <itemPath>NextGen_GTron_AxC_default/components/FreeRTOS.yml</itemPath>
-          <itemPath>NextGen_GTron_AxC_default/components/can1.yml</itemPath>
           <itemPath>NextGen_GTron_AxC_default/components/cmsis.yml</itemPath>
-          <itemPath>NextGen_GTron_AxC_default/components/rstc.yml</itemPath>
-          <itemPath>NextGen_GTron_AxC_default/components/eic.yml</itemPath>
-          <itemPath>NextGen_GTron_AxC_default/components/sys_console_0.yml</itemPath>
           <itemPath>NextGen_GTron_AxC_default/components/dfp.yml</itemPath>
-          <itemPath>NextGen_GTron_AxC_default/components/adc0.yml</itemPath>
+          <itemPath>NextGen_GTron_AxC_default/components/eic.yml</itemPath>
         </logicalFolder>
         <itemPath>NextGen_GTron_AxC_default/mcc-config.mc4</itemPath>
       </logicalFolder>
@@ -409,45 +265,12 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <logicalFolder name="Bring_Up" displayName="Bring_Up" projectFiles="true">
-        <logicalFolder name="CAN" displayName="CAN" projectFiles="true">
-          <itemPath>../src/Bring_Up/CAN/IMM_CAN.c</itemPath>
-          <itemPath>../src/Bring_Up/CAN/IMM_CAN_Read.c</itemPath>
-          <itemPath>../src/Bring_Up/CAN/IMM_CAN_Write.c</itemPath>
-          <itemPath>../src/Bring_Up/CAN/MCD_v3.c</itemPath>
-          <itemPath>../src/Bring_Up/CAN/TMCL_IDE_reply.c</itemPath>
-        </logicalFolder>
-        <logicalFolder name="GTron_Cmd_Parser"
-                       displayName="GTron_Cmd_Parser"
-                       projectFiles="true">
-          <itemPath>../src/Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.c</itemPath>
-        </logicalFolder>
-        <logicalFolder name="IO_Expander" displayName="IO_Expander" projectFiles="true">
-          <itemPath>../src/Bring_Up/IO_Expander/spi_io_expander.c</itemPath>
-        </logicalFolder>
-        <logicalFolder name="Motion" displayName="Motion" projectFiles="true">
-          <itemPath>../src/Bring_Up/Motion/Motion.c</itemPath>
-        </logicalFolder>
-        <itemPath>../src/Bring_Up/DBG_bring_up.c</itemPath>
-        <itemPath>../src/Bring_Up/spi.c</itemPath>
-      </logicalFolder>
-      <logicalFolder name="Code_Dump" displayName="Code_Dump" projectFiles="true">
-        <itemPath>../src/Code_Dump/ext_flash.c</itemPath>
-        <itemPath>../src/Code_Dump/McuSwReset.c</itemPath>
-        <itemPath>../src/Code_Dump/tlv_flash.c</itemPath>
-      </logicalFolder>
       <logicalFolder name="config" displayName="config" projectFiles="true">
         <logicalFolder name="default" displayName="default" projectFiles="true">
           <logicalFolder name="osal" displayName="osal" projectFiles="true">
             <itemPath>../src/config/default/osal/osal_freertos.c</itemPath>
           </logicalFolder>
           <logicalFolder name="peripheral" displayName="peripheral" projectFiles="true">
-            <logicalFolder name="adc" displayName="adc" projectFiles="true">
-              <itemPath>../src/config/default/peripheral/adc/plib_adc0.c</itemPath>
-            </logicalFolder>
-            <logicalFolder name="can" displayName="can" projectFiles="true">
-              <itemPath>../src/config/default/peripheral/can/plib_can1.c</itemPath>
-            </logicalFolder>
             <logicalFolder name="clock" displayName="clock" projectFiles="true">
               <itemPath>../src/config/default/peripheral/clock/plib_clock.c</itemPath>
             </logicalFolder>
@@ -466,39 +289,17 @@
             <logicalFolder name="port" displayName="port" projectFiles="true">
               <itemPath>../src/config/default/peripheral/port/plib_port.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="rstc" displayName="rstc" projectFiles="true">
-              <itemPath>../src/config/default/peripheral/rstc/plib_rstc.c</itemPath>
-            </logicalFolder>
             <logicalFolder name="sercom" displayName="sercom" projectFiles="true">
-              <logicalFolder name="spi_master" displayName="spi_master" projectFiles="true">
-                <itemPath>../src/config/default/peripheral/sercom/spi_master/plib_sercom3_spi_master.c</itemPath>
-                <itemPath>../src/config/default/peripheral/sercom/spi_master/plib_sercom0_spi_master.c</itemPath>
-              </logicalFolder>
               <logicalFolder name="usart" displayName="usart" projectFiles="true">
                 <itemPath>../src/config/default/peripheral/sercom/usart/plib_sercom7_usart.c</itemPath>
                 <itemPath>../src/config/default/peripheral/sercom/usart/plib_sercom5_usart.c</itemPath>
               </logicalFolder>
-            </logicalFolder>
-            <logicalFolder name="tc" displayName="tc" projectFiles="true">
-              <itemPath>../src/config/default/peripheral/tc/plib_tc2.c</itemPath>
-              <itemPath>../src/config/default/peripheral/tc/plib_tc4.c</itemPath>
-            </logicalFolder>
-            <logicalFolder name="wdt" displayName="wdt" projectFiles="true">
-              <itemPath>../src/config/default/peripheral/wdt/plib_wdt.c</itemPath>
             </logicalFolder>
           </logicalFolder>
           <logicalFolder name="stdio" displayName="stdio" projectFiles="true">
             <itemPath>../src/config/default/stdio/xc32_monitor.c</itemPath>
           </logicalFolder>
           <logicalFolder name="system" displayName="system" projectFiles="true">
-            <logicalFolder name="console" displayName="console" projectFiles="true">
-              <itemPath>../src/config/default/system/console/src/sys_console.c</itemPath>
-              <itemPath>../src/config/default/system/console/src/sys_console_uart.c</itemPath>
-              <itemPath>../src/config/default/system/console/src/sys_console_usb_cdc.c</itemPath>
-            </logicalFolder>
-            <logicalFolder name="debug" displayName="debug" projectFiles="true">
-              <itemPath>../src/config/default/system/debug/src/sys_debug.c</itemPath>
-            </logicalFolder>
             <logicalFolder name="int" displayName="int" projectFiles="true">
               <itemPath>../src/config/default/system/int/src/sys_int.c</itemPath>
             </logicalFolder>
@@ -532,54 +333,12 @@
           <itemPath>../src/third_party/rtos/FreeRTOS/Source/timers.c</itemPath>
           <itemPath>../src/third_party/rtos/FreeRTOS/Source/event_groups.c</itemPath>
           <itemPath>../src/third_party/rtos/FreeRTOS/Source/stream_buffer.c</itemPath>
-          <itemPath>../src/freertos_daemon.c</itemPath>
         </logicalFolder>
-      </logicalFolder>
-      <logicalFolder name="motor_dev" displayName="motor_dev" projectFiles="true">
-        <logicalFolder name="my_Ramp" displayName="my_Ramp" projectFiles="true">
-          <itemPath>../src/motor_dev/my_Ramp/myRamp.c</itemPath>
-        </logicalFolder>
-        <itemPath>../src/motor_dev/my_spi_func.c</itemPath>
-      </logicalFolder>
-      <logicalFolder name="TMC-API" displayName="TMC-API" projectFiles="true">
-        <logicalFolder name="tmc" displayName="tmc" projectFiles="true">
-          <logicalFolder name="helpers" displayName="helpers" projectFiles="true">
-            <itemPath>../src/TMC-API/tmc/helpers/CRC.c</itemPath>
-            <itemPath>../src/TMC-API/tmc/helpers/Functions.c</itemPath>
-          </logicalFolder>
-          <logicalFolder name="ic" displayName="ic" projectFiles="true">
-            <logicalFolder name="TMC4671" displayName="TMC4671" projectFiles="true">
-              <itemPath>../src/TMC-API/tmc/ic/TMC4671/TMC4671.c</itemPath>
-            </logicalFolder>
-          </logicalFolder>
-          <logicalFolder name="ramp" displayName="ramp" projectFiles="true">
-            <itemPath>../src/TMC-API/tmc/ramp/LinearRamp.c</itemPath>
-            <itemPath>../src/TMC-API/tmc/ramp/LinearRamp1.c</itemPath>
-            <itemPath>../src/TMC-API/tmc/ramp/Ramp.c</itemPath>
-          </logicalFolder>
-        </logicalFolder>
-      </logicalFolder>
-      <logicalFolder name="tmc2209_uart"
-                     displayName="tmc2209_uart"
-                     projectFiles="true">
-        <itemPath>../src/tmc2209_uart/Step_Counter.c</itemPath>
-        <itemPath>../src/tmc2209_uart/TMC2209.c</itemPath>
-        <itemPath>../src/tmc2209_uart/TMC2209_motion.c</itemPath>
-        <itemPath>../src/tmc2209_uart/TMC2209_Simple_Rotation.c</itemPath>
       </logicalFolder>
       <itemPath>../src/main.c</itemPath>
-      <itemPath>../src/Global_Vars.c</itemPath>
-      <itemPath>../src/health_task.c</itemPath>
-      <itemPath>../src/tmc4671_motion.c</itemPath>
-      <itemPath>../src/tmc2209_motion.c</itemPath>
-      <itemPath>../src/can_task.c</itemPath>
-      <itemPath>../src/cmd_parser.c</itemPath>
-      <itemPath>../src/debug_logger.c</itemPath>
+      <itemPath>../src/app.c</itemPath>
     </logicalFolder>
   </logicalFolder>
-  <sourceRootList>
-    <Elem>../src</Elem>
-  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="default" type="2">
@@ -588,14 +347,14 @@
         <targetDevice>ATSAMC21N18A</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>noID</platformTool>
+        <platformTool>AtmelIceTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
-        <languageToolchainVersion>3.00</languageToolchainVersion>
+        <languageToolchainVersion>5.00</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="CMSIS" vendor="ARM" version="6.2.0"/>
         <pack name="SAMC21_DFP" vendor="Microchip" version="3.9.248"/>
+        <pack name="CMSIS" vendor="ARM" version="6.2.0"/>
       </packs>
       <ScriptingSettings>
       </ScriptingSettings>
@@ -624,172 +383,8 @@
         <makeCustomizationEnableLongLines>false</makeCustomizationEnableLongLines>
         <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
-      <item path="../src/Bring_Up/CAN/IMM_CAN.c" ex="true" overriding="false">
-        <C32>
-        </C32>
-        <C32-AR>
-        </C32-AR>
-        <C32-AS>
-        </C32-AS>
-        <C32-CO>
-        </C32-CO>
-        <C32-LD>
-        </C32-LD>
-        <C32CPP>
-        </C32CPP>
-        <C32Global>
-        </C32Global>
-      </item>
-      <item path="../src/Bring_Up/CAN/IMM_CAN_Read.c" ex="true" overriding="false">
-        <C32>
-        </C32>
-        <C32-AR>
-        </C32-AR>
-        <C32-AS>
-        </C32-AS>
-        <C32-CO>
-        </C32-CO>
-        <C32-LD>
-        </C32-LD>
-        <C32CPP>
-        </C32CPP>
-        <C32Global>
-        </C32Global>
-      </item>
-      <item path="../src/Bring_Up/CAN/IMM_CAN_Write.c" ex="true" overriding="false">
-        <C32>
-        </C32>
-        <C32-AR>
-        </C32-AR>
-        <C32-AS>
-        </C32-AS>
-        <C32-CO>
-        </C32-CO>
-        <C32-LD>
-        </C32-LD>
-        <C32CPP>
-        </C32CPP>
-        <C32Global>
-        </C32Global>
-      </item>
-      <item path="../src/Bring_Up/CAN/MCD_v3.c" ex="true" overriding="false">
-        <C32>
-        </C32>
-        <C32-AR>
-        </C32-AR>
-        <C32-AS>
-        </C32-AS>
-        <C32-CO>
-        </C32-CO>
-        <C32-LD>
-        </C32-LD>
-        <C32CPP>
-        </C32CPP>
-        <C32Global>
-        </C32Global>
-      </item>
-      <item path="../src/Bring_Up/CAN/TMCL_IDE_reply.c" ex="true" overriding="false">
-        <C32>
-        </C32>
-        <C32-AR>
-        </C32-AR>
-        <C32-AS>
-        </C32-AS>
-        <C32-CO>
-        </C32-CO>
-        <C32-LD>
-        </C32-LD>
-        <C32CPP>
-        </C32CPP>
-        <C32Global>
-        </C32Global>
-      </item>
-      <item path="../src/Bring_Up/DBG_bring_up.c" ex="true" overriding="false">
-        <C32>
-        </C32>
-        <C32-AR>
-        </C32-AR>
-        <C32-AS>
-        </C32-AS>
-        <C32-CO>
-        </C32-CO>
-        <C32-LD>
-        </C32-LD>
-        <C32CPP>
-        </C32CPP>
-        <C32Global>
-        </C32Global>
-      </item>
-      <item path="../src/Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.c"
-            ex="true"
-            overriding="false">
-        <C32>
-        </C32>
-        <C32-AR>
-        </C32-AR>
-        <C32-AS>
-        </C32-AS>
-        <C32-CO>
-        </C32-CO>
-        <C32-LD>
-        </C32-LD>
-        <C32CPP>
-        </C32CPP>
-        <C32Global>
-        </C32Global>
-      </item>
-      <item path="../src/Bring_Up/IO_Expander/spi_io_expander.c"
-            ex="true"
-            overriding="false">
-        <C32>
-        </C32>
-        <C32-AR>
-        </C32-AR>
-        <C32-AS>
-        </C32-AS>
-        <C32-CO>
-        </C32-CO>
-        <C32-LD>
-        </C32-LD>
-        <C32CPP>
-        </C32CPP>
-        <C32Global>
-        </C32Global>
-      </item>
-      <item path="../src/Bring_Up/Motion/Motion.c" ex="true" overriding="false">
-        <C32>
-        </C32>
-        <C32-AR>
-        </C32-AR>
-        <C32-AS>
-        </C32-AS>
-        <C32-CO>
-        </C32-CO>
-        <C32-LD>
-        </C32-LD>
-        <C32CPP>
-        </C32CPP>
-        <C32Global>
-        </C32Global>
-      </item>
-      <item path="../src/motor_dev/my_Ramp/myRamp.c" ex="true" overriding="false">
-        <C32>
-        </C32>
-        <C32-AR>
-        </C32-AR>
-        <C32-AS>
-        </C32-AS>
-        <C32-CO>
-        </C32-CO>
-        <C32-LD>
-        </C32-LD>
-        <C32CPP>
-        </C32CPP>
-        <C32Global>
-        </C32Global>
-      </item>
       <C32>
-        <property key="additional-warnings" value="true"/>
+        <property key="additional-warnings" value="false"/>
         <property key="addresss-attribute-use" value="false"/>
         <property key="appendMe" value=""/>
         <property key="cast-align" value="false"/>
@@ -806,7 +401,7 @@
         <property key="exclude-floating-point" value="false"/>
         <property key="expand-pragma-config" value="false"/>
         <property key="extra-include-directories"
-                  value="../NextGen_GTron_AxC.X;../src;../src/config/default;../src/packs/ATSAMC21N18A_DFP;../src/packs/CMSIS/;../src/packs/CMSIS/CMSIS/Core/Include;../src/third_party/rtos/FreeRTOS/Source/include;../src/third_party/rtos/FreeRTOS/Source/portable/GCC/ARM_CM0;D:\pendrive_stuff\git_repos\gtron-axis-controller-fw\NextGen_AxC_M;D:\pendrive_stuff\git_repos\gtron-axis-controller-fw\NextGen_AxC_M\NextGen_GTron_AxC.X;D:\pendrive_stuff\git_repos\gtron-axis-controller-fw\NextGen_AxC_M\src"/>
+                  value="../src;../src/config/default;../src/packs/ATSAMC21N18A_DFP;../src/packs/CMSIS/;../src/packs/CMSIS/CMSIS/Core/Include;../src/third_party/rtos/FreeRTOS/Source/include;../src/third_party/rtos/FreeRTOS/Source/portable/GCC/ARM_CM0"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>
@@ -829,7 +424,7 @@
         <property key="scalar-model" value="default"/>
         <property key="strict-ansi" value="false"/>
         <property key="support-ansi" value="false"/>
-        <property key="tentative-definitions" value="${tentative.default}"/>
+        <property key="tentative-definitions" value="-fno-common"/>
         <property key="toplevel-reordering" value=""/>
         <property key="unaligned-access" value=""/>
         <property key="use-cci" value="false"/>

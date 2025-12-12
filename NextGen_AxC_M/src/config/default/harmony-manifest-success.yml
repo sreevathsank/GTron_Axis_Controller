@@ -4,14 +4,14 @@
 
 
 project: NextGen_GTron_AxC
-creation_date: 2025-12-08T12:14:42.162+05:30[Asia/Calcutta]    # ISO 8601 format: https://www.w3.org/TR/NOTE-datetime
+creation_date: 2025-12-12T10:40:38.903+05:30[Asia/Calcutta]    # ISO 8601 format: https://www.w3.org/TR/NOTE-datetime
 operating_system: Windows 11
 mcc_mode: IDE            # [IDE|Standalone|Headless]
 mcc_version: v5.6.3
 mcc_core_version: v5.8.3
 mplabx_version: v6.25        # if MPLAB X plugin only
 harmony_version: v5.6.3
-compiler: XC32 3.00
+compiler: XC32 5.00
 
 modules:
     - {name: "csp", version: "v3.23.0"}
