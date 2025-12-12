@@ -9,6 +9,10 @@ dependency:
   type: module
   version: ''
 - dependencyPackage: ''
+  name: CMSIS_5
+  type: package
+  version: 5.9.1-dev
+- dependencyPackage: ''
   name: FreeRTOS-Kernel
   type: package
   version: V11.2.0
@@ -16,6 +20,10 @@ dependency:
   name: core
   type: package
   version: v3.15.5
+- dependencyPackage: ''
+  name: csp
+  type: package
+  version: v3.23.0
 customDataClassName: com.microchip.utils_mh3.utils.persistence.CustomModuleData
 data:
   attachments: {}

@@ -126,7 +126,11 @@ build/default/production/_ext/1360937237/main.o: ../src/main.c \
  ../src/config/default/system/system_module.h \
  ../src/config/default/system/system_common.h \
  ../src/config/default/configuration.h ../src/config/default/user.h \
- ../src/app.h
+ ../src/app.h ../src/TMC2209_Library/TMC2209.h \
+ ../src/TMC2209_Library/TMC2209_HW_Abstraction.h \
+ ../src/TMC2209_Library/TMC2209_Simple_Rotation.h \
+ ../src/TMC2209_Library/TMC2209.h \
+ ../src/../src/config/default/peripheral/sercom/usart/plib_sercom5_usart.h
 ../src/config/default/definitions.h:
 ../src/config/default/peripheral/nvmctrl/plib_nvmctrl.h:
 ../src/config/default/device.h:
@@ -257,3 +261,8 @@ build/default/production/_ext/1360937237/main.o: ../src/main.c \
 ../src/config/default/configuration.h:
 ../src/config/default/user.h:
 ../src/app.h:
+../src/TMC2209_Library/TMC2209.h:
+../src/TMC2209_Library/TMC2209_HW_Abstraction.h:
+../src/TMC2209_Library/TMC2209_Simple_Rotation.h:
+../src/TMC2209_Library/TMC2209.h:
+../src/../src/config/default/peripheral/sercom/usart/plib_sercom5_usart.h:

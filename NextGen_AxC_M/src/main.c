@@ -27,6 +27,7 @@
 #include <stdlib.h>                     // Defines EXIT_FAILURE
 #include "definitions.h"                // SYS function prototypes
 
+#include "TMC2209_Library/TMC2209.h"
 
 // *****************************************************************************
 // *****************************************************************************
@@ -40,6 +41,14 @@ int main ( void )
     SYS_Initialize ( NULL );
     
     printf("NextGen GTron AxC\n");
+    
+    // TMC2209 UART Communication Test START
+    uint32_t rd_val = 0x00;
+    tmc2209_writeRegister(0x00, TMC2209_GCONF, 0x00000060);         // DEC 104.
+    printf("\nWritten 0x60 to GCONF\n");
+    rd_val = tmc2209_readRegister(0x00, TMC2209_GCONF);
+    printf("\nRead 0x%x from GCONF\n", rd_val);
+    // TMC2209 UART Communication Test END
     
     while ( true )
     {
