@@ -203,7 +203,7 @@ void align_Rotor_ABNEnc(uint8_t motor, uint16_t startVoltage)
 			tmc4671_writeInt(motor, TMC4671_ABN_DECODER_MODE, rot_enc_dir);		// Spring Setup -> Reverse | Proto1 9030 -> Reverse | Proto2 9010 -> Forward | Proto3 9010 -> Forward | Prod 1 9010 -> 
 		break;
 		case GTRON_AXC_TOP:
-			tmc4671_writeInt(MOTOR, TMC4671_ABN_DECODER_MODE, rot_enc_dir);		// For v3 Table. v5 -> forward. | Proto1 -> Reverse |
+			tmc4671_writeInt(MOTOR, TMC4671_ABN_DECODER_MODE, rot_enc_dir | USE_ABN_AS_N);		// For v3 Table. v5 -> forward. | Proto1 -> Reverse |
 			tmc4671_writeInt(motor, TMC4671_ABN_DECODER_PPR, axis_params.rot_enc_res);		// 0x2000 -> 8192 | 0x4000 -> 16384	// For v3 Table.
 		break;
 		default: break;
@@ -262,7 +262,7 @@ void do_homing_sequence( void )
 	gpio_set_pin_level(EN_4671, HIGH);
  	tmc4671_setModeMotion(MOTOR, POSITION_MODE);
 	
-	(motor_dir_rev) ? tmc4671_setAbsolutTargetPosition(MOTOR, POSITION_LOW) : tmc4671_setAbsolutTargetPosition(MOTOR, POSITION_HIGH);
+	//(motor_dir_rev) ? tmc4671_setAbsolutTargetPosition(MOTOR, POSITION_LOW) : tmc4671_setAbsolutTargetPosition(MOTOR, POSITION_HIGH);
 	
 	// If RF is enabled for the current axis, return from the function, else continue with limit based homing.
 	if(axis_params.rotary_axis_enabled)
@@ -275,7 +275,9 @@ void do_homing_sequence( void )
 		limit_variables.left_limit_position  = 0;
 		limit_variables.right_limit_position = 0;
 		
-		tmc4671_setAbsolutTargetPosition(MOTOR, POSITION_LOW);
+		tmc4671_setActualPosition(MOTOR, 0);
+		tmc4671_setRelativeTargetPosition(MOTOR, 66666);
+		tmc4671_setVelocityLimit(MOTOR, axis_params.home_search_vel);
 		tmc4671_setModeMotion(MOTOR, POSITION_MODE);
 		return;
 	}
@@ -598,40 +600,22 @@ void check_Limit_Flags(void)
  */
 void rot_Enc_Z_Pulse_Interrupt_Callback(void)
 {
-	if(limit_variables.rot_enc_z_first_hit)
-	{
-		/*tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
-		tmc4671_setVelocityLimit(MOTOR, 0);
-		tmc4671_writeInt(MOTOR, TMC4671_ABN_DECODER_COUNT, ZERO_HEX);
-		tmc4671_setActualPosition(MOTOR, ZERO_HEX);
-		tmc4671_setAbsolutTargetPosition(MOTOR, ZERO_HEX);
-		limit_variables.rot_enc_z_first_hit = false;
-		limit_variables.homing = false;
-		move_given_s_ramp = false;
-		move_given_trapezoidal_ramp = false;*/
-		ext_irq_disable(ROTENC_Z);
-	}
-	else if(limit_variables.rot_enc_z_first_hit == false)
-	{
-		tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
-		tmc4671_setVelocityLimit(MOTOR, 0);
-		move_given_s_ramp = false;
-		move_given_trapezoidal_ramp = false;
-		int32_t current_position = tmc4671_getActualPosition(MOTOR);
-		
-		move_With_S_Ramp(0, 30, MOVE_TO);
-		
-		limit_variables.rot_enc_z_first_hit = true;
-		limit_variables.homing = false;
-		ext_irq_disable(ROTENC_Z);
-		
-		message_Id = CAN_REPLY_TOP_RACK_ID;
-		can_tx_frame.data[0] = REELER_MOTOR;
-		can_tx_frame.data[1] = AXC_HOMING;
-		can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
-		
-		PRINTF_DEBUG ? printf("\nReeler Homing Done\n"): 0;
-	}
+	ext_irq_disable(ROTENC_Z);
+	tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
+	tmc4671_setActualPosition(MOTOR, 0x00);
+	tmc4671_setAbsolutTargetPosition(MOTOR, tmc4671_getActualPosition(MOTOR));
+	homing_v = 0;
+	if(!limit_variables.homing) { return; }
+	// GTron Reeler Logic
+	
+	tmc4671_setVelocityLimit(MOTOR, 0);
+	move_given_s_ramp = false;
+	move_given_trapezoidal_ramp = false;
+	
+	//limit_vars.rot_enc_z_first_hit = true;
+	limit_variables.homing = false;
+	
+	//delay_ms(500);
 	
 	switch(axis_id)
 	{
@@ -639,7 +623,14 @@ void rot_Enc_Z_Pulse_Interrupt_Callback(void)
 		case Y_AXIS:  printf("\nY | Rotary Encoder Z Pulse Edge Detected\n");  break;
 		case Z_AXIS:  printf("\nZ | Rotary Encoder Z Pulse Edge Detected\n");  break;
 		case RF_AXIS: printf("\nRF | Rotary Encoder Z Pulse Edge Detected\n"); break;
+		case GTRON_AXC_TOP: printf("\nGTron Top AxC | Rotary Encoder Z Pulse Edge Detected\n"); break;
 	}
+	message_Id = CAN_REPLY_TOP_RACK_ID;
+	can_tx_frame.data[0] = REELER_MOTOR;
+	can_tx_frame.data[1] = AXC_HOMING;
+	can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
+	
+	PRINTF_DEBUG ? printf("\nReeler Homing Done\n"): 0;
 	return;
 }
 
@@ -725,7 +716,7 @@ void homing_Ramp(void)
 	//	homing_v += (HOMING_RAMP_DELTA * 10);
 	//	tmc4671_setVelocityLimit(MOTOR, homing_v);
 	//}
-	tmc4671_setVelocityLimit(MOTOR, axis_params.home_search_vel);
+	//tmc4671_setVelocityLimit(MOTOR, axis_params.home_search_vel);
 	return;
 }
 

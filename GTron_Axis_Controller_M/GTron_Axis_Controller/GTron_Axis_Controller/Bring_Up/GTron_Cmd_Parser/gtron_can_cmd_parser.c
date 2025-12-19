@@ -42,12 +42,13 @@ static void reeler_Home( void )
 	// Check whether to do firmware limit based homing.
 	if( limit_variables.homing )
 	{
+		do_homing_sequence();
 		if(axis_params.rotary_axis_enabled)
 		{
 			limit_variables.rot_enc_z_first_hit = false;
 			ext_irq_enable(ROTENC_Z);
 		}
-		do_homing_sequence();
+		
 	}
 	PRINTF_DEBUG ? printf("\nReeler Homing Cmd Rxcvd\n"): 0;
 	return;
@@ -92,6 +93,8 @@ static void reeler_Set_Velocity(int32_t reeler_target_velocity)
 {
 	reeler_info.velocity.limit = reeler_target_velocity;
 	tmc4671_setVelocityLimit(MOTOR, reeler_info.velocity.limit);
+	reeler_info.position.current = tmc4671_getActualPosition(MOTOR);
+	tmc4671_setAbsolutTargetPosition(MOTOR, reeler_info.position.current);
 	PRINTF_DEBUG ? printf("\nReeler Set Velocity %ld rpm\n", reeler_info.velocity.limit): 0;
 	return;
 }
@@ -106,6 +109,8 @@ static void reeler_Set_Velocity(int32_t reeler_target_velocity)
 static void reeler_Set_Teeth(uint32_t trig_step_size)
 {
 	reeler_info.position.trig_step_size = trig_step_size;
+	reeler_info.position.current = tmc4671_getActualPosition(MOTOR);
+	tmc4671_setAbsolutTargetPosition(MOTOR, reeler_info.position.current);
 	PRINTF_DEBUG ? printf("\nReeler Set Teeth Number or Trigger Step Size as %ld\n", reeler_info.position.trig_step_size ): 0;
 	return;
 }
@@ -170,6 +175,7 @@ static void reeler_Stop_Motor( void )
 	trig_no = 0;
 	prev_trig_no = 0;
 	reeler_info.position.current = tmc4671_getActualPosition(MOTOR);
+	tmc4671_setAbsolutTargetPosition(MOTOR, reeler_info.position.current);
 	PRINTF_DEBUG ? printf("\nReeler Stop Motor\n"): 0;
 	return;
 }

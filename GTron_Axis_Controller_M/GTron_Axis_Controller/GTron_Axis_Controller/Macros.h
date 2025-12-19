@@ -221,6 +221,10 @@
 #define STATE_RUN_1					2
 #define STATE_RUN_2					3
 
+#define USE_ABN_AS_N				0x08			// If the 3rd bit of the 0x25 ABN_DECODER_MODE register is set, it only detects the N/Z pulse
+													// of the rotary encoder only if both it satisfies N and A and B (all 3 signals should be 1)
+
+
 #define UD_EXT						3202
 
 #define PID_POSITION_WINDOW			24					//Error Window for Move Done Signal.

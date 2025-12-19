@@ -438,6 +438,8 @@ void reset_TMC4671(void)
  */
 void define_All_Global_Variables(void)
 {
+	can_rx_int = 0;
+	
 	// Open Loop Variables.
 	open_loop.acceleration = 0x00000064;
 	open_loop.velocity = -1 * 0x00000064;

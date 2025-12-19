@@ -15,9 +15,9 @@ int main(void)
 	call_All_Init_Functions();
 	switch(axis_id)
 	{
-		case X_AXIS: PRINTF_DEBUG ? printf("\nAxC - X Axis\n"): 0; break;
-		case GTRON_AXC_TOP: PRINTF_DEBUG ? printf("\nAxC - GTron TOP\n"): 0; break;
-		case GTRON_AXC_BOT: PRINTF_DEBUG ? printf("\nAxC - GTron BOTTOM\n"): 0; break;
+		case X_AXIS: PRINTF_DEBUG?printf("\nAxC - X Axis\n"):0; break;
+		case GTRON_AXC_TOP: PRINTF_DEBUG?printf("\nAxC - GTron TOP\n"):0; break;
+		case GTRON_AXC_BOT: PRINTF_DEBUG?printf("\nAxC - GTron BOTTOM\n"):0; break;
 		default: break;
 	}
 	led_Blink(2, 100);
@@ -78,7 +78,7 @@ int main(void)
 										{ update_TMC2209_Step_Tracking(p_guide_info);	}
 		
 		// For TMC4671 Homing Ramp.
-		if(limit_variables.homing)		{ homing_Ramp();								}
+		//if(limit_variables.homing)		{ homing_Ramp();								}
 			
 		// For checking if the Motor has reached its target position TMC4671.
 		if(check_move_done)				{ check_For_Move_Done();						}
