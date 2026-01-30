@@ -14,7 +14,8 @@
  */
 void init_tmc2209_motor(uint16_t icID)
 {
-    tmc2209_writeRegister(icID, TMC2209_GCONF, 0x00000060);         // DEC 104.
+	// GCONF is set in multipe locations.
+    tmc2209_writeRegister(icID, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
     
     tmc2209_writeRegister(icID, TMC2209_TPOWERDOWN, 0x00000014);    // DEC 20.
     

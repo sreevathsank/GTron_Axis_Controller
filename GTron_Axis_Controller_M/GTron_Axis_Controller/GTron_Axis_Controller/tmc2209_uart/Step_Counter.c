@@ -69,9 +69,20 @@ void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info)
 		diff += MSCNT_MAX;
 	}
 	
-	// Update totals.
-	motor_info->step_tracker.total_steps += diff;
-	motor_info->step_tracker.total_dist += abs(diff);
+	// Calculate magnitude of change
+	int32_t step_delta = abs(diff);
+
+	// Update totals based on commanded direction to ensure coordinate alignment
+	if (motor_info->flags.direction == COUNT_UP)
+	{
+		motor_info->step_tracker.total_steps += step_delta;
+	}
+	else
+	{
+		motor_info->step_tracker.total_steps -= step_delta;
+	}
+	
+	motor_info->step_tracker.total_dist += step_delta;
 	
 	// Store the current reading for next iteration.
 	motor_info->step_tracker.prev_mscnt = current_mscnt;
@@ -81,16 +92,20 @@ void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info)
 	{
 		int32_t pos_diff = motor_info->position.target - motor_info->step_tracker.total_steps;
 		bool diff_zero = false;
-		if( (motor_info->flags.direction == COUNT_UP ) && (pos_diff < 0) )
+		if( (motor_info->flags.direction == COUNT_UP ) && (pos_diff <= 0) )
 		{
 			diff_zero = true;
 		}
-		else if( (motor_info->flags.direction == COUNT_DOWN ) && (pos_diff > 0) )
+		else if( (motor_info->flags.direction == COUNT_DOWN ) && (pos_diff >= 0) )
 		{
 			diff_zero = true;
 		}
 		
 		//printf("\n%ld\n", pos_diff );
+		if( diff_zero )
+		{
+			
+		}
 		if( diff_zero )
 		{
 			motor_info->flags.move_given = false;
@@ -120,9 +135,17 @@ void check_tmc2209_move_done(Motor_Info_t *motor_info)
 void tmc2209_set_velocity(uint16_t icID, Motor_Info_t *motor_info, int32_t velocity)
 {
 	// Set the direction of motion according the velocity given.
-	if( velocity > 0 ) { motor_info->flags.direction = COUNT_UP; }
-	else if( velocity < 0 ) { motor_info->flags.direction = COUNT_DOWN; }
-		
+	if( velocity > 0 ) 
+	{ 
+		motor_info->flags.direction = COUNT_UP; 
+		PRINTF_DEBUG?printf("\nVelocity > 0 | Count UP + 1\n"):0;
+	}
+	else if( velocity < 0 ) 
+	{ 
+		motor_info->flags.direction = COUNT_DOWN; 
+		PRINTF_DEBUG?printf("\nVelocity < 0 | Count DOWN - 1\n"):0;
+	}
+	
 	tmc2209_writeRegister(icID, TMC2209_VACTUAL, velocity);
 	
 	return;

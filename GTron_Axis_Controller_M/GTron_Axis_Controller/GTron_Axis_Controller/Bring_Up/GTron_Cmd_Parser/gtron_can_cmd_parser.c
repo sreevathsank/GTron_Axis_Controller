@@ -78,7 +78,7 @@ static void reeler_Move(int32_t target_position, bool move_to_by)
 								: tmc4671_setRelativeTargetPosition(MOTOR, target_position);
 	}
 	(move_to_by == MOVE_TO) ? PRINTF_DEBUG ? printf("\nReeler Move To %ld steps\n", target_position): 0 \
-	: PRINTF_DEBUG ? printf("\nReeler Move By %ld steps\n", target_position): 0;
+							: PRINTF_DEBUG ? printf("\nReeler Move By %ld steps\n", target_position): 0;
 	return;
 }
 
@@ -145,6 +145,7 @@ static void reeler_Start_Motor( void )
 	{
 		timer_start(&VEL_TIMER);
 	}
+	tmc4671_setVelocityTarget(MOTOR, reeler_info.velocity.limit);
 	PRINTF_DEBUG ? printf("\nReeler Start Motor with Velocity %ld rpm\n", reeler_info.velocity.limit): 0;
 	return;
 }
@@ -195,7 +196,7 @@ static void guide_VArrestor_Move(Guide_or_VArrestor_t guide_varrestor, int32_t t
 {
 	p_guide_info->flags.move_given = true;
 	p_guide_info->position.current = p_guide_info->step_tracker.total_steps;
-	p_guide_info->velocity.target  = 4000; 
+	p_guide_info->velocity.target  = 1000; 
 	
 	if(move_to_by == MOVE_TO) { p_guide_info->position.target = target_position; }					// Absolute Move.
 															   
@@ -205,6 +206,7 @@ static void guide_VArrestor_Move(Guide_or_VArrestor_t guide_varrestor, int32_t t
 		if(move_to_by == MOVE_BY)  
 		{ p_guide_info->position.target = p_guide_info->position.current + target_position; }
 			
+		tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
 		tmc2209_set_velocity(TMC2209_GUIDE_ADDR, p_guide_info, p_guide_info->velocity.target);
 		PRINTF_DEBUG ? printf("\nMove To: Current Pos = %ld | Target Pos = %ld | Velocity = %ld ustep/s\n", \
 								p_guide_info->position.current, target_position, p_guide_info->velocity.target): 0;
@@ -213,7 +215,8 @@ static void guide_VArrestor_Move(Guide_or_VArrestor_t guide_varrestor, int32_t t
 	{
 		if(move_to_by == MOVE_BY)
 		{ p_guide_info->position.target = p_guide_info->position.current - target_position; }
-			
+		
+		tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
 		tmc2209_set_velocity(TMC2209_GUIDE_ADDR, p_guide_info, (-p_guide_info->velocity.target) );
 		PRINTF_DEBUG ? printf("\nMove To: Current Pos = %ld | Target Pos = %ld | Velocity = %ld ustep/s\n", \
 								p_guide_info->position.current, target_position, (-p_guide_info->velocity.target) ): 0;
@@ -234,7 +237,20 @@ static void guide_VArrestor_Move(Guide_or_VArrestor_t guide_varrestor, int32_t t
  **/
 static void guide_Move_To_Open_Limit( void )
 {
-	tmc2209_set_velocity(TMC2209_GUIDE_ADDR, p_guide_info, 0xFFFFF060);
+	uint8_t limit_status = 0;
+	IOXP_Read_Byte(IOXP_REG_GPIO, &limit_status);
+	if(MSK_GUIDE_R_LIM(limit_status)) {
+		PRINTF_DEBUG ? printf("\nAlready in Open Limit. Not moving towards Open Limit\n"): 0;
+		
+		// Send the CAN Command
+		message_Id = CAN_REPLY_TOP_RACK_ID;
+		can_tx_frame.data[0] = GUIDE_OPEN_LIMIT;
+		can_tx_frame.data[1] = AXC_PRESSED;
+		can_Write(message_Id, can_tx_frame.data_64bit);
+		return;
+	}
+	tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
+	tmc2209_set_velocity(TMC2209_GUIDE_ADDR, p_guide_info, 0x00000FA0);
 	guide_info.flags.move_to_open_lim = true;
 	PRINTF_DEBUG ? printf("\nGuide Move To Open Limit Cmd Rxcvd\n"): 0;
 	return;
@@ -249,7 +265,20 @@ static void guide_Move_To_Open_Limit( void )
  **/
 static void guide_Move_To_Close_Limit( void )
 {
-	tmc2209_set_velocity(TMC2209_GUIDE_ADDR, p_guide_info, 0x00000FA0);
+	uint8_t limit_status = 0;
+	IOXP_Read_Byte(IOXP_REG_GPIO, &limit_status);
+	if(MSK_GUIDE_L_LIM(limit_status)) {
+		PRINTF_DEBUG ? printf("\nAlready in Close Limit. Not moving towards Close Limit\n"): 0;
+		
+		// Send the CAN Command
+		message_Id = CAN_REPLY_TOP_RACK_ID;
+		can_tx_frame.data[0] = GUIDE_CLOSE_LIMIT;
+		can_tx_frame.data[1] = AXC_PRESSED;
+		can_Write(message_Id, can_tx_frame.data_64bit);
+		return;
+	}
+	tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
+	tmc2209_set_velocity(TMC2209_GUIDE_ADDR, p_guide_info, 0xFFFFF060);
 	guide_info.flags.move_to_close_lim = true;
 	PRINTF_DEBUG ? printf("\nGuide Move to Close Limit Cmd Rxcvd\n"): 0;
 	return;
@@ -325,6 +354,7 @@ static void guide_VArrestor_Stop_Motor(Guide_or_VArrestor_t guide_varrestor)
 static void guide_Limits_Status_Check(/*uint8_t limit*/ void)
 {
 	uint8_t limit_reg_value = 0;
+	tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
 	IOXP_Read_Byte(IOXP_REG_GPIO, &limit_reg_value);
 	if(axis_id == GTRON_AXC_TOP) { message_Id = CAN_REPLY_TOP_RACK_ID; }
 	else if(axis_id == GTRON_AXC_BOT) { message_Id = CAN_REPLY_BOT_RACK_ID; }
@@ -411,6 +441,7 @@ void parse_GTron_CAN_Msg_Data( void )
 						prev_trig_no = 0;
 						timer_start(&VEL_TIMER);
 						tmc4671_setVelocityLimit(MOTOR, reeler_info.velocity.limit);
+						tmc4671_setVelocityTarget(MOTOR, reeler_info.velocity.limit);
 					}
 					PRINTF_DEBUG ? printf("\nSag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Rotate.\n"): 0;
 					break;

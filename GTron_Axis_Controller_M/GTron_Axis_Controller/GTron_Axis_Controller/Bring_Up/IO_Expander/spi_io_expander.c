@@ -44,8 +44,6 @@ void ioxp_Interrupt_Callback( void )
 				
 				// Write to the Guide Step Counter TCC Counter Register as 0.
 				update_TMC2209_Step_Tracking(p_guide_info);
-				p_guide_info->step_tracker.total_steps	= 0;
-				p_guide_info->step_tracker.total_dist	= 0;
 				p_guide_info->position.right_open_limit	= p_guide_info->step_tracker.total_steps;
 				
 				// Send the CAN Command
@@ -69,6 +67,8 @@ void ioxp_Interrupt_Callback( void )
 				
 				// Get the current position as the stroke length of the Guide setup.
 				update_TMC2209_Step_Tracking(p_guide_info);
+				p_guide_info->step_tracker.total_steps	= 0;
+				p_guide_info->step_tracker.total_dist	= 0;
 				p_guide_info->position.left_close_limit	= p_guide_info->step_tracker.total_steps;
 				
 				// Send the CAN Command
