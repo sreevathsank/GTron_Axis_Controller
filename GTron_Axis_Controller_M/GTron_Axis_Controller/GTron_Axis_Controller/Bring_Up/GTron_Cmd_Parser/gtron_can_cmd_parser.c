@@ -7,14 +7,14 @@
 
 #include "Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h"
 
-Motor_Info_t guide_info;
-Motor_Info_t *p_guide_info = &guide_info;
+volatile Motor_Info_t guide_info;
+volatile Motor_Info_t *p_guide_info = &guide_info;
 
-Motor_Info_t reeler_info;
-Motor_Info_t *p_reeler_info = &reeler_info;
+volatile Motor_Info_t reeler_info;
+volatile Motor_Info_t *p_reeler_info = &reeler_info;
 
-Motor_Info_t varrest_info;
-Motor_Info_t *p_varrest_info = &varrest_info;
+volatile Motor_Info_t varrest_info;
+volatile Motor_Info_t *p_varrest_info = &varrest_info;
 
 Can_Cmd_Info_t rx_can_cmd_info;
 

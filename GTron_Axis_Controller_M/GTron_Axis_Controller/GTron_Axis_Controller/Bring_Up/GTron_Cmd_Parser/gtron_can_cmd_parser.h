@@ -49,25 +49,22 @@ typedef struct
 	int32_t value;
 }Can_Cmd_Info_t;
 
-typedef enum
-{
-	GUIDE_STRUCT	= 0,
-	REELER_STRUCT	= 1,
-	VARREST_STRUCT	= 2,
+typedef enum {
+	MOTOR_GUIDE		= 0,
+	MOTOR_REELER	= 1,
+	MOTOR_VARREST	= 2,
 	NO_OF_MOTOR_NAME	
 }Motor_Name_Enum_t;
 
-typedef struct
-{
+typedef struct {
 	Motor_Name_Enum_t motor_name;
-	struct  
-	{
+	struct {
 		int32_t target;
 		int32_t current;
 		uint32_t limit;
 	}velocity;
-	struct
-	{
+	
+	struct {
 		int32_t target;
 		int32_t current;
 		int32_t right_open_limit;
@@ -76,30 +73,31 @@ typedef struct
 		uint32_t trig_step_size;
 		uint32_t counter_value;
 	}position;
-	struct 
-	{
+	
+	struct {
 		int32_t total_steps;
-		uint16_t prev_mscnt;
 		int32_t total_dist;
+		uint16_t prev_mscnt;
 	}step_tracker;
-	struct
-	{
-		uint32_t homing					: 1;	// 1
-		uint32_t move_to_open_lim		: 1;	// 2
-		uint32_t move_to_close_lim		: 1;	// 3
-		uint32_t move_given				: 1;	// 4
-		uint32_t rotate_vel_mode		: 1;	// 5
-		uint32_t sag_enabled			: 1;	// 6
-		uint32_t vel_timer				: 1;	// 7
-		uint32_t direction				: 1;	// 8
-		uint32_t mscnt_first_reading	: 1;	// 9
-		uint32_t reserved				: 23;
+	
+	struct {
+		uint32_t homing					: 1;	// 0
+		uint32_t move_to_open_lim		: 1;	// 1
+		uint32_t move_to_close_lim		: 1;	// 2
+		uint32_t move_given				: 1;	// 3
+		uint32_t rotate_vel_mode		: 1;	// 4
+		uint32_t sag_enabled			: 1;	// 5
+		uint32_t vel_timer				: 1;	// 6
+		uint32_t direction				: 1;	// 7
+		uint32_t mscnt_first_reading	: 1;	// 8
+		uint32_t sensor_trigger			: 1;	// 9
+		uint32_t reserved				: 22;
 	}flags;
 }Motor_Info_t;
 
-extern Motor_Info_t *p_guide_info;
+extern volatile Motor_Info_t *p_guide_info;
 
-extern Motor_Info_t *p_reeler_info;
+extern volatile Motor_Info_t *p_reeler_info;
 
 extern Can_Cmd_Info_t rx_can_cmd_info;
 

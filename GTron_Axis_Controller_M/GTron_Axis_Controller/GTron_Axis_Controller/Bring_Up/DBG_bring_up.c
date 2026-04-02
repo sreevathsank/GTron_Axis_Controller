@@ -360,7 +360,7 @@ void read_Set_Parameters_From_Flash(void)
 			axis_params.velocity_i			= read_tlv_flash(tlv_ptr, VELOCITY_I_FLASH, tlv_traversal);//5000;  //300;
 			axis_params.velocity_p			= read_tlv_flash(tlv_ptr, VELOCITY_P_FLASH, tlv_traversal);//2500;  //1000;
 			axis_params.position_i			= read_tlv_flash(tlv_ptr, POSITION_I_FLASH, tlv_traversal);//0;
-			axis_params.position_p			= read_tlv_flash(tlv_ptr, POSITION_P_FLASH, tlv_traversal);//2000;	 //500;
+			axis_params.position_p			= 100;//read_tlv_flash(tlv_ptr, POSITION_P_FLASH, tlv_traversal);//2000;	 //500;
 			axis_params.home_search_vel		= read_tlv_flash(tlv_ptr, HOMING_VELOCITY_FLASH, tlv_traversal);//160;
 			axis_params.home_switch_vel		= (axis_params.home_search_vel / 10);
 			axis_params.endurance_vel		= read_tlv_flash(tlv_ptr, ENDURACE_VELOCTIY_FLASH, tlv_traversal);////1000;
@@ -561,10 +561,10 @@ void call_All_Init_Functions(void)
 	init_Basics(MOTOR);
 	init_PosMode(MOTOR);
 	read_4671_ADC_Raw();
-	init_Motor_Struct(p_reeler_info, REELER_STRUCT);
+	init_Motor_Struct(p_reeler_info, MOTOR_REELER);
 	
 	// Tmc2209 related inits
-	init_Motor_Struct(p_guide_info, GUIDE_STRUCT);
+	init_Motor_Struct(p_guide_info, MOTOR_GUIDE);
 	init_tmc2209_motor(TMC2209_GUIDE_ADDR);
 	
 	init_timers();

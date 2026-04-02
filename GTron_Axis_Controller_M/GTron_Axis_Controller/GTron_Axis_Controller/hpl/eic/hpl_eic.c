@@ -209,6 +209,7 @@ int32_t _ext_irq_enable(const uint32_t pin, const bool enable)
 	}
 
 	if (enable) {
+		hri_eic_clear_INTFLAG_reg(EIC, 1ul << extint);
 		hri_eic_set_INTEN_reg(EIC, 1ul << extint);
 	} else {
 		hri_eic_clear_INTEN_reg(EIC, 1ul << extint);

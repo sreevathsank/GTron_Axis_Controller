@@ -600,19 +600,19 @@ void check_Limit_Flags(void)
  */
 void rot_Enc_Z_Pulse_Interrupt_Callback(void)
 {
+	if(!limit_variables.homing) { return; }
+	delay_ms(50);
 	ext_irq_disable(ROTENC_Z);
 	tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
 	tmc4671_setActualPosition(MOTOR, 0x00);
 	tmc4671_setAbsolutTargetPosition(MOTOR, tmc4671_getActualPosition(MOTOR));
 	homing_v = 0;
-	if(!limit_variables.homing) { return; }
+	
 	// GTron Reeler Logic
 	
 	tmc4671_setVelocityLimit(MOTOR, 0);
 	move_given_s_ramp = false;
 	move_given_trapezoidal_ramp = false;
-	
-	//limit_vars.rot_enc_z_first_hit = true;
 	limit_variables.homing = false;
 	
 	//delay_ms(500);
@@ -641,16 +641,9 @@ void rot_Enc_Z_Pulse_Interrupt_Callback(void)
  * @return void
  */
 void left_Limit_Interrupt_Callback(void)
-{
-	limit_variables.flags.left_limit_flag = 1;
-	tmc4671_setVelocityLimit(MOTOR, 0);
-	tmc4671_setVelocityTarget(MOTOR, 0);
-	vel_struct.flags.reeler_rotate = false;
-	tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
-	
-	printf("\nLeft Limit HIT!\n");
-	
-	timer_stop(&TIMER_0);
+{	
+	p_reeler_info->flags.sensor_trigger = true;
+	printf("\n Reeler Left Limit Sensor Edge Detected!\n");
 	return;
 }
 
@@ -662,15 +655,6 @@ void left_Limit_Interrupt_Callback(void)
  */
 void right_Limit_Interrupt_Callback(void)
 {
-	limit_variables.flags.right_limit_flag = 1;
-	tmc4671_setVelocityLimit(MOTOR, 0);
-	tmc4671_setVelocityTarget(MOTOR, 0);
-	vel_struct.flags.reeler_rotate = false;
-	tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
-	
-	printf("\nRight Limit HIT!\n");
-	
-	timer_stop(&TIMER_0);
 	return;
 }
 
@@ -682,7 +666,7 @@ void right_Limit_Interrupt_Callback(void)
  */
 void init_ext_irq_limits(void)
 {
-	//ext_irq_register(LIM_LFT, left_Limit_Interrupt_Callback);
+	ext_irq_register(LIM_LFT, left_Limit_Interrupt_Callback);
 	//ext_irq_register(LIM_RT, right_Limit_Interrupt_Callback);
 	ext_irq_register(ROTENC_Z, rot_Enc_Z_Pulse_Interrupt_Callback);
 	ext_irq_register(IOXP_INT, ioxp_Interrupt_Callback);

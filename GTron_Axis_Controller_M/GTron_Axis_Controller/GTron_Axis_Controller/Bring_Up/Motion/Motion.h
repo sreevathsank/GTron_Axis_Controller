@@ -65,7 +65,7 @@ void init_ext_irq_limits(void);
 
 void left_Limit_Interrupt_Callback(void);
 
-void right_Limit_Interrupt_Callback(void);
+void sensor_Interrupt_Callback(void);
 
 void homing_Ramp(void);
 

@@ -222,7 +222,7 @@
 // <2=> Reject
 // <id> can_gfc_anfs
 #ifndef CONF_CAN1_GFC_ANFS
-#define CONF_CAN1_GFC_ANFS 0
+#define CONF_CAN1_GFC_ANFS 2
 #endif
 
 // <o> Accept Non-matching Frames Extended
@@ -233,7 +233,7 @@
 // <2=> Reject
 // <id> can_gfc_anfe
 #ifndef CONF_CAN1_GFC_ANFE
-#define CONF_CAN1_GFC_ANFE 0
+#define CONF_CAN1_GFC_ANFE 2
 #endif
 
 // <o> Reject Remote Frames Standard

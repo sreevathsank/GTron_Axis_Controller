@@ -51,11 +51,9 @@ int main(void)
 		}
 	}
 	
-	//move_guide_motor(10);
-	
 	// Enable Homing Flag if RF is enabled for X, Y or Z axis or repeat_ramp is greater than 0.
 	limit_variables.homing = ( repeat_ramp > 0 ) ? true : false;
-	
+	if(axis_params.rotary_axis_enabled) { limit_variables.homing = true; }
 	// Check whether to do firmware limit based homing.
 	if( limit_variables.homing )
 	{
