@@ -568,6 +568,12 @@
     <Compile Include="Bring_Up\IO_Expander\spi_io_expander.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="Bring_Up\Motion\Hybrid_Trigger.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Bring_Up\Motion\Hybrid_Trigger.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="Bring_Up\Motion\Motion.c">
       <SubType>compile</SubType>
     </Compile>

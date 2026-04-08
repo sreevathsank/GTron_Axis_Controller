@@ -655,6 +655,8 @@ void left_Limit_Interrupt_Callback(void)
  */
 void right_Limit_Interrupt_Callback(void)
 {
+	p_reeler_info->flags.sensor_trigger = true;
+	printf("\n Reeler Right imit Sensor Edge Detected!\n");
 	return;
 }
 
@@ -667,7 +669,7 @@ void right_Limit_Interrupt_Callback(void)
 void init_ext_irq_limits(void)
 {
 	ext_irq_register(LIM_LFT, left_Limit_Interrupt_Callback);
-	//ext_irq_register(LIM_RT, right_Limit_Interrupt_Callback);
+	ext_irq_register(LIM_RT, right_Limit_Interrupt_Callback);
 	ext_irq_register(ROTENC_Z, rot_Enc_Z_Pulse_Interrupt_Callback);
 	ext_irq_register(IOXP_INT, ioxp_Interrupt_Callback);
 	ext_irq_register(INDEX, index_Interrupt_Callback);
@@ -1201,8 +1203,7 @@ void run_Velocity_Ramp(void)
 	static int32_t prev_trig_pos = 0;
 	
 	vel_struct.flags.reeler_vel_timer = false;
-	
-	// Check for the NULL pointer.
+
 	if(!p_reeler_info) { return; }
 		
 	int32_t current_velocity = tmc4671_getVelocityTarget(MOTOR);
@@ -1210,38 +1211,35 @@ void run_Velocity_Ramp(void)
 
 	// Check if the Motor's current Mode Motion is in Velocity Mode or not.
 	int32_t mode_motion = tmc4671_getModeMotion(MOTOR);
-	if(mode_motion != VELOCITY_MODE)
-	{
+	if(mode_motion != VELOCITY_MODE) {
 		tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
 	}
 	
 	static uint32_t prev_time = 0, current_time;
 	current_time = millis();
-	// For Encoder based Triggering.
-	int32_t current_position = tmc4671_getActualPosition(MOTOR);
-	if( (p_reeler_info->position.trig_step_size != 0) && ramping
-	    && (abs(prev_trig_pos - current_position) >= p_reeler_info->position.trig_step_size) )
-	{
+
+	if(p_reeler_info->flags.is_hybrid_trig_enabled) {
+		check_For_Hybrid_Trigger();
+	} else if( (p_reeler_info->position.trig_step_size != 0) && ramping
+	    && (abs(prev_trig_pos - current_position) >= p_reeler_info->position.trig_step_size) ) {
+		int32_t current_position = tmc4671_getActualPosition(MOTOR);
 		gpio_set_pin_level(REELER_INT, HIGH);
 		delay_us(1);
 		gpio_toggle_pin_level(DBGLED3);
 		gpio_set_pin_level(REELER_INT, LOW);
 		printf("\nT%ld", ++trig_no);
-		if(current_time - prev_time >= 30000)	// 60 seconds.
-		{ 
+		if(current_time - prev_time >= 30000) { 
 			PRINTF_DEBUG ? printf("\n#-----No. of triggers after 30 seconds is %ld-----#\n", (trig_no - prev_trig_no) ):0; 
 			prev_trig_no = trig_no;
 			prev_time = current_time;
 		}
 		prev_trig_pos = current_position;
 	}
-	if(!ramping)
-	{
+	if(!ramping) {
 		vel = current_velocity;
 		prev_trig_pos = tmc4671_getActualPosition(MOTOR);
 		// This is the velocity limit threshold that cannot be crossed in Position Mode as well as Velocity Mode.
 		tmc4671_setVelocityLimit(MOTOR, 1000);
-		
 		ramping = true;
 	}
 	
@@ -1257,17 +1255,12 @@ void run_Velocity_Ramp(void)
 	bool is_greater = (current_velocity > target_velocity);
 	
 	// Depending on the boolean is_greater, increase or decrease the value of vel.
-	if(is_greater)
-	{
-		if(vel > target_velocity)
-		{
+	if(is_greater) {
+		if(vel > target_velocity) {
 			vel -= axis_params.acceleration_delta;
 		}
-	}
-	else 
-	{
-		if(vel < target_velocity)
-		{
+	} else {
+		if(vel < target_velocity) {
 			vel += axis_params.acceleration_delta;
 		}	
 	}			   

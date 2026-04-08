@@ -14,6 +14,7 @@
 #include "Bring_Up/IO_Expander/spi_io_expander.h"
 #include "Bring_Up/CAN/IMM_CAN_Message_Id.h"
 #include "Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h"
+#include "Hybrid_Trigger.h"
 
 void init_PosMode(uint8_t motor);
 

@@ -358,52 +358,19 @@ static void guide_Limits_Status_Check(/*uint8_t limit*/ void)
 	IOXP_Read_Byte(IOXP_REG_GPIO, &limit_reg_value);
 	if(axis_id == GTRON_AXC_TOP) { message_Id = CAN_REPLY_TOP_RACK_ID; }
 	else if(axis_id == GTRON_AXC_BOT) { message_Id = CAN_REPLY_BOT_RACK_ID; }
-	if( (limit_reg_value >> GUIDE_R_LIM_BIT & 1) )
-	{
+	if( (limit_reg_value >> GUIDE_R_LIM_BIT & 1) ) {
 		can_tx_frame.data[0] = GUIDE_MOTOR;
 		can_tx_frame.data[1] = AXC_PRESSED;
 		for(int32_t i = 2; i < 8; i++) { can_tx_frame.data[i] = 0x00; }
 		can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
 		PRINTF_DEBUG ? printf("\nGuide Open Right Limit is HIT!\n"): 0;
-	}
-	else
-	{
+	} else {
 		can_tx_frame.data[0] = GUIDE_MOTOR;
 		can_tx_frame.data[1] = AXC_NOT_PRESSED;
 		for(int32_t i = 2; i < 8; i++) { can_tx_frame.data[i] = 0x00; }
 		can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
 		PRINTF_DEBUG ? printf("\nGuide Open Right Limit is not HIT!\n"): 0;
 	}
-	/*switch(limit)
-	{
-		case GUIDE_OPEN_LIMIT:
-			IOXP_Read_Byte(IOXP_REG_GPIO, &limit_reg_value);
-			if( (limit_reg_value >> GUIDE_R_LIM_BIT & 1) )
-			{
-				// CAN Message Reply.
-				PRINTF_DEBUG ? printf("\nGuide Open Right Limit is HIT!\n"): 0;
-			}
-			else
-			{
-				// CAN Message Reply.
-				PRINTF_DEBUG ? printf("\nGuide Open Right Limit is not HIT!\n"): 0;
-			}
-		break;
-		case GUIDE_CLOSE_LIMIT:
-			IOXP_Read_Byte(IOXP_REG_GPIO, &limit_reg_value);
-			if( (limit_reg_value >> GUIDE_L_LIM_BIT & 1) )
-			{
-				// CAN Message Reply.
-				PRINTF_DEBUG ? printf("\nGuide Close Left Limit is HIT!\n"): 0;
-			}
-			else
-			{
-				// CAN Message Reply.
-				PRINTF_DEBUG ? printf("\nGuide Close Left Limit is not HIT!\n"): 0;
-			}
-		break;
-		default: break;
-	}*/
 	return;	
 }
 
@@ -420,23 +387,21 @@ void parse_GTron_CAN_Msg_Data( void )
 	{
 		case CAN_TOP_RACK_ID: 
 			rack_id = TOP_RACK; 
-			PRINTF_DEBUG ? printf("\nTOP Rack Message ID Rxcvd\n"): 0;
+			PRINTF_DEBUG ? printf("\nTOP Rack Message ID Rxcvd from MI\n"): 0;
 		break;
 		case CAN_BOT_RACK_ID: 
 			rack_id = BOT_RACK; 
-			PRINTF_DEBUG ? printf("\nBOTTOM Rack Message ID Rxcvd\n"): 0;
+			PRINTF_DEBUG ? printf("\nBOTTOM Rack Message ID Rxcvd from MI\n"): 0;
 		break;
 		case CAN_TOP_SAG_REELER_ID:
 			rack_id = TOP_RACK;
-			PRINTF_DEBUG ? printf("\nTOP Sag Reeler Message ID Rxcvd\n"): 0;
+			PRINTF_DEBUG ? printf("\nTOP Sag Reeler Message ID Rxcvd from Sys Ctrl\n"): 0;
 			if(!reeler_info.flags.rotate_vel_mode) { break; }
 			switch(rx_can_cmd_info.data[0])
 			{
-				case 1:
-				{
+				case 1: {
 					reeler_info.flags.sag_enabled = true;
-					if(reeler_info.flags.sag_enabled & reeler_info.flags.rotate_vel_mode)
-					{
+					if(reeler_info.flags.sag_enabled & reeler_info.flags.rotate_vel_mode) {
 						trig_no = 0;
 						prev_trig_no = 0;
 						timer_start(&VEL_TIMER);
@@ -446,11 +411,9 @@ void parse_GTron_CAN_Msg_Data( void )
 					PRINTF_DEBUG ? printf("\nSag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Rotate.\n"): 0;
 					break;
 				}
-				case 0:
-				{
+				case 0: {
 					reeler_info.flags.sag_enabled = false;
-					if(!reeler_info.flags.sag_enabled || !reeler_info.flags.rotate_vel_mode)
-					{
+					if(!reeler_info.flags.sag_enabled || !reeler_info.flags.rotate_vel_mode) {
 						trig_no = 0;
 						prev_trig_no = 0;
 						timer_stop(&VEL_TIMER);
@@ -459,12 +422,12 @@ void parse_GTron_CAN_Msg_Data( void )
 					PRINTF_DEBUG ? printf("\nSag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Stop.\n"): 0;
 					break;
 				}
-				default: PRINTF_DEBUG ? printf("\nSag Sensor Invalid Operation Rxcvd\n"): 0;					break;
+				default: PRINTF_DEBUG ? printf("\nSag Sensor Invalid Operation Rxcvd\n"): 0; break;
 			}
 		break;
 		case CAN_BOT_SAG_REELER_ID:
 			rack_id = BOT_RACK;
-			PRINTF_DEBUG ? printf("\nBOTTOM Sag Reeler Message ID Rxcvd\n"): 0;
+			PRINTF_DEBUG ? printf("\nBOTTOM Sag Reeler Message ID Rxcvd from Sys Ctrl\n"): 0;
 			if(!reeler_info.flags.rotate_vel_mode) { break; }
 			switch(rx_can_cmd_info.data[0])
 			{
@@ -489,21 +452,28 @@ void parse_GTron_CAN_Msg_Data( void )
 			}
 		break;
 		case CAN_BOARD_ACTIVE_PING_ID:
-			if( (axis_id == GTRON_AXC_TOP) && (can_rx_frame.data[0] == TOP_AXC_BOARD_ID) )
-			{
+			if( (axis_id == GTRON_AXC_TOP) && (can_rx_frame.data[0] == TOP_AXC_BOARD_ID) ) {
 				message_Id = CAN_REPLY_BOARD_ACTIVE_PING_ID;
 				can_tx_frame.data[0] = TOP_AXC_BOARD_ID;
 				can_Write(message_Id, can_tx_frame.data_64bit);
 				PRINTF_DEBUG ? printf("\nGTron Top AxC Board Active Ping Rxcvd\t Board Active Ping Reply Sent\n"): 0;
-			}
-			else if( (axis_id == GTRON_AXC_BOT) && (can_rx_frame.data[0] == BOT_AXC_BOARD_ID) )
-			{
+			} else if( (axis_id == GTRON_AXC_BOT) && (can_rx_frame.data[0] == BOT_AXC_BOARD_ID) ) {
 				message_Id = CAN_REPLY_BOARD_ACTIVE_PING_ID;
 				can_tx_frame.data[0] = BOT_AXC_BOARD_ID;
 				can_Write(message_Id, can_tx_frame.data_64bit);
 				PRINTF_DEBUG ? printf("\nGTron Bottom AxC Board Active Ping Rxcvd\t Board Active Ping Reply Sent\n"): 0;
 			}
 		break;
+		case CAN_IO_TO_TOP_AXC_ID: {
+			rack_id = TOP_RACK;
+			PRINTF_DEBUG ? printf("\nTOP Rack Message ID Rxcvd from IO Ctrl\n"): 0;
+			break;
+		}
+		case CAN_IO_TO_BOT_AXC_ID: {
+			rack_id = BOT_RACK;
+			PRINTF_DEBUG ? printf("\nBOT Rack Message ID Rxcvd from IO Ctrl\n"): 0;
+			break;
+		}
 		default: break;
 	}	
 	
@@ -597,6 +567,22 @@ void parse_GTron_CAN_Msg_Data( void )
 					default: PRINTF_DEBUG ? printf("\nGuide Encoder Invalid Operation Rxcvd\n"): 0;					break;
 				}
 			break;
+			case HYBRID_TRIGGER: {
+				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
+				{
+					case AXC_ENABLE: {
+						p_reeler_info->flags.is_hybrid_trig_enabled = true;
+						PRINTF_DEBUG?printf("\nHybrid Trigger flag Enabled\n"):0;
+						break;
+					}
+					case AXC_DISABLE: {
+						p_reeler_info->flags.is_hybrid_trig_enabled = false;
+						PRINTF_DEBUG?printf("\nHybrid Trigger flag Disabled\n"):0;
+						break;
+					}
+					default: PRINTF_DEBUG ? printf("\nHybrid Trigger Invalid Operation Rxcvd\n"): 0; break;
+				}
+			}
 			default: break;
 		}
 	}

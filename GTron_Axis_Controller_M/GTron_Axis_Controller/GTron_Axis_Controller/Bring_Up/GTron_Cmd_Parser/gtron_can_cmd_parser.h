@@ -91,7 +91,8 @@ typedef struct {
 		uint32_t direction				: 1;	// 7
 		uint32_t mscnt_first_reading	: 1;	// 8
 		uint32_t sensor_trigger			: 1;	// 9
-		uint32_t reserved				: 22;
+		uint32_t is_hybrid_trig_enabled : 1;	// 10
+		uint32_t reserved				: 21;
 	}flags;
 }Motor_Info_t;
 

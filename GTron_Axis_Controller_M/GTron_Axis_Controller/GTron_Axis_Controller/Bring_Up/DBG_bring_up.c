@@ -539,15 +539,12 @@ void call_All_Init_Functions(void)
 	TMC2209_UART_enable();
 	adc_sync_enable_channel(&ADC_0, 0);
 	check_Current_Axis_ADC();
-	if(!check_4671_version_spi()) 
-	{
+	if(!check_4671_version_spi()) {
 		PRINTF_DEBUG && printf("\n--------TMC4671 SPI Check Failed--------\n");
-		return;
 	}
 	gpio_set_pin_level(IOXP_CS, HIGH);
 	
-	if(check_passive_flash_spi())
-	{
+	if(check_passive_flash_spi()) {
 		PRINTF_DEBUG && printf("\n------Passive Flash SPI Check Failed-----\n");
 	}
 	gpio_set_pin_level(IOXP_CS, HIGH);

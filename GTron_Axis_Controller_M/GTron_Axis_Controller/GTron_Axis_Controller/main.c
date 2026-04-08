@@ -13,8 +13,7 @@ int main(void)
 	
 	define_All_Global_Variables();
 	call_All_Init_Functions();
-	switch(axis_id)
-	{
+	switch(axis_id) {
 		case X_AXIS: PRINTF_DEBUG?printf("\nAxC - X Axis\n"):0; break;
 		case GTRON_AXC_TOP: PRINTF_DEBUG?printf("\nAxC - GTron TOP\n"):0; break;
 		case GTRON_AXC_BOT: PRINTF_DEBUG?printf("\nAxC - GTron BOTTOM\n"):0; break;
@@ -30,17 +29,14 @@ int main(void)
 	 * To enable only homing, set the repeat_ramp to 4.
 	 *vvvvvvvvv*/
 	repeat_ramp = read_tlv_flash(tlv_ptr, REPEAT_RAMP_FLASH, tlv_traversal);
-	switch(repeat_ramp)
-	{
+	switch(repeat_ramp) {
 		case 0: PRINTF_DEBUG ? printf("\nrepeat_ramp = 0 | No Endurance Run | No Homing\n"): 0;	break;
 		case 2: PRINTF_DEBUG ? printf("\nrepeat_ramp = 2 | Endurance Run | Homing\n"): 0;		break;
 		case 4: PRINTF_DEBUG ? printf("\nrepeat_ramp = 4 | No Endurance Run | Homing\n"): 0;	break;
 		default: break;
 	}
-	if(axis_params.rotary_axis_enabled)
-	{
-		switch(axis_id)
-		{
+	if(axis_params.rotary_axis_enabled) {
+		switch(axis_id) {
 			case X_AXIS: PRINTF_DEBUG ? printf("\nX Rotary Axis Enabled!\n"): 0; break;
 			case Y_AXIS: PRINTF_DEBUG ? printf("\nY Rotary Axis Enabled!\n"): 0; break;
 			case Z_AXIS: PRINTF_DEBUG ? printf("\nZ Rotary Axis Enabled!\n"): 0; break;
@@ -55,20 +51,17 @@ int main(void)
 	limit_variables.homing = ( repeat_ramp > 0 ) ? true : false;
 	if(axis_params.rotary_axis_enabled) { limit_variables.homing = true; }
 	// Check whether to do firmware limit based homing.
-	if( limit_variables.homing )
-	{
-		if(axis_params.rotary_axis_enabled)
-		{
+	if( limit_variables.homing ) {
+		if(axis_params.rotary_axis_enabled) {
 			limit_variables.rot_enc_z_first_hit = false;
 			ext_irq_enable(ROTENC_Z);
 		}
 		do_homing_sequence();
 	}
 	else { limit_variables.switch_seq_flag = false; }	// No need for Switching Sequence if Homing Sequence is disabled...
-
+	p_reeler_info->flags.is_hybrid_trig_enabled = true;
 	/* Replace with your application code */
-	for ever
-	{
+	for(;;) {
 		// TMC2209 Step Tracker and Move Done.
 		if( p_guide_info->flags.homing || p_guide_info->flags.move_given || \
 		    p_guide_info->flags.move_to_open_lim || p_guide_info->flags.move_to_close_lim \
