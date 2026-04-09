@@ -14,9 +14,9 @@ int main(void)
 	define_All_Global_Variables();
 	call_All_Init_Functions();
 	switch(axis_id) {
-		case X_AXIS: PRINTF_DEBUG?printf("\nAxC - X Axis\n"):0; break;
-		case GTRON_AXC_TOP: PRINTF_DEBUG?printf("\nAxC - GTron TOP\n"):0; break;
-		case GTRON_AXC_BOT: PRINTF_DEBUG?printf("\nAxC - GTron BOTTOM\n"):0; break;
+		case X_AXIS: PRINTF_DEBUG?printf("\nAxC - X Axis\n"):0;					break;
+		case GTRON_AXC_TOP: PRINTF_DEBUG?printf("\nAxC - GTron TOP\n"):0;		break;
+		case GTRON_AXC_BOT: PRINTF_DEBUG?printf("\nAxC - GTron BOTTOM\n"):0;	break;
 		default: break;
 	}
 	led_Blink(2, 100);
@@ -59,7 +59,7 @@ int main(void)
 		do_homing_sequence();
 	}
 	else { limit_variables.switch_seq_flag = false; }	// No need for Switching Sequence if Homing Sequence is disabled...
-	p_reeler_info->flags.is_hybrid_trig_enabled = true;
+	//p_reeler_info->flags.is_hybrid_trig_enabled = true;
 	/* Replace with your application code */
 	for(;;) {
 		// TMC2209 Step Tracker and Move Done.

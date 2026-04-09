@@ -20,6 +20,8 @@ Bring_Up\GTron_Cmd_Parser\gtron_can_cmd_parser.c
 
 Bring_Up\IO_Expander\spi_io_expander.c
 
+Bring_Up\Motion\Hybrid_Trigger.c
+
 Bring_Up\Motion\Motion.c
 
 Bring_Up\spi.c

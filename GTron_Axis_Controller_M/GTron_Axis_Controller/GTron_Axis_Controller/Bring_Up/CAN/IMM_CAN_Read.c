@@ -1432,8 +1432,7 @@ void can_Message_Process_GTron_Message_Data()
  */ 
 void can_Message_Decode(uint32_t message_Id, int32_t data)
 {
-	if(can_Message_Crc_Check(message_Id, data))
-	{
+	if(can_Message_Crc_Check(message_Id, data)) {
 		//can_Message_Handshake_Tmcl_Ide(message_Id, data);
 	}
 	switch(axis_id)

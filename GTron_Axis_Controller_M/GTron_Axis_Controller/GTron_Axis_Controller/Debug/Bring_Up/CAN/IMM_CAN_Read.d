@@ -189,6 +189,7 @@ Bring_Up/CAN/IMM_CAN_Read.d Bring_Up/CAN/IMM_CAN_Read.o: \
  ../Bring_Up/CAN/MCD_v3.h ../SysTick/Systick.h \
  ../Bring_Up/Motion/Motion.h \
  ../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h \
+ ../Bring_Up/Motion/Hybrid_Trigger.h ../TMC-API/tmc/ic/TMC4671/TMC4671.h \
  ../Code_Dump/McuSwReset.h ../Code_Dump/tlv_flash.h \
  ../Code_Dump/ext_flash.h ../driver_init.h ../hpl/spi/spi_lite.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\string.h \
@@ -704,6 +705,10 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../Bring_Up/Motion/Motion.h:
 
 ../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h:
+
+../Bring_Up/Motion/Hybrid_Trigger.h:
+
+../TMC-API/tmc/ic/TMC4671/TMC4671.h:
 
 ../Code_Dump/McuSwReset.h:
 

@@ -34,11 +34,15 @@ void check_For_Hybrid_Trigger(void)
 {
 	int32_t current_pos = tmc4671_getActualPosition(MOTOR);
 	uint32_t diff_pos = abs(prev_trig_pos - current_position);
+	
 	if(p_reeler_info->flags.sensor_trigger && (diff_pos >= p_reeler_info->position.trig_step_size) ) {
 		trigger_Camera_Line();
 		p_reeler_info->flags.sensor_trigger = false;
 		prev_trig_time_ms = millis();
-		PRINTF_DEBUG?printf("\nT%ld => Step Size = %ld | Curr - Prev Pos = %ld", ++trig_no, p_reeler_info->position.trig_step_size, diff_pos):0;
+		
+		PRINTF_DEBUG?printf("\nT%ld => Step Size = %ld | Curr - Prev Pos = %ld | Error = %ld\n", ++trig_no, p_reeler_info->position.trig_step_size, diff_pos,
+		(diff_pos - p_reeler_info->position.trig_step_size)):0;
+		
 		prev_trig_pos = current_position;
 	}
 	return;

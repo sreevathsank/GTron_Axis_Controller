@@ -28,7 +28,6 @@ uint8_t rack_id;
  * \brief reeler_Home - Homes the Reeler Motor with Rotary Encoder Z pulse as Zero Reference Position.
  *
  * @param	void 
- *
  * @return	void
  **/
 static void reeler_Home( void )
