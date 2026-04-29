@@ -207,7 +207,7 @@
           <AcmeProjectActionInfo Action="File" Source="atmel_start.c" IsConfig="false" Hash="lom1/YOY9m/TDACgnyb3yA" />
           <AcmeProjectActionInfo Action="File" Source="config/hpl_adc_config.h" IsConfig="true" Hash="dqzITiKPXQEV9h5NdjJ6Rg" />
           <AcmeProjectActionInfo Action="File" Source="config/hpl_can_config.h" IsConfig="true" Hash="k9m7056l0VskAMXmrf8OEw" />
-          <AcmeProjectActionInfo Action="File" Source="config/hpl_dmac_config.h" IsConfig="true" Hash="FVBa5+m2dElV1O7IF+cxMw" />
+          <AcmeProjectActionInfo Action="File" Source="config/hpl_dmac_config.h" IsConfig="true" Hash="Kq5nU1GK95GvCb/a9+KAzQ" />
           <AcmeProjectActionInfo Action="File" Source="config/hpl_eic_config.h" IsConfig="true" Hash="Bx584voO455acelaX348oA" />
           <AcmeProjectActionInfo Action="File" Source="config/hpl_gclk_config.h" IsConfig="true" Hash="g6ArhmGAVyBE+xtMZ2Y4og" />
           <AcmeProjectActionInfo Action="File" Source="config/hpl_mclk_config.h" IsConfig="true" Hash="9ry0ZAt2ygApPQG871aBmQ" />
@@ -267,6 +267,7 @@
   <armgcc.compiler.directories.IncludePaths>
     <ListValues>
       <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
+      <Value>../Bring_Up/Debug</Value>
       <Value>../Config</Value>
       <Value>../</Value>
       <Value>../examples</Value>
@@ -389,6 +390,7 @@
   <armgcc.compiler.directories.IncludePaths>
     <ListValues>
       <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
+      <Value>../Bring_Up/Debug</Value>
       <Value>../Config</Value>
       <Value>../</Value>
       <Value>../examples</Value>
@@ -554,6 +556,21 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Bring_Up\DBG_bring_up.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Bring_Up\Debug\dbg_print.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Bring_Up\Debug\dbg_print.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Bring_Up\Debug\dbg_print_config.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Bring_Up\Debug\dbg_transport.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Bring_Up\Debug\dbg_transport.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Bring_Up\GTron_Cmd_Parser\gtron_can_cmd_parser.c">
@@ -1211,6 +1228,7 @@
   <ItemGroup>
     <Folder Include="Bring_Up\" />
     <Folder Include="Bring_Up\CAN\" />
+    <Folder Include="Bring_Up\Debug\" />
     <Folder Include="Bring_Up\Motion\" />
     <Folder Include="Bring_Up\IO_Expander" />
     <Folder Include="Bring_Up\GTron_Cmd_Parser" />

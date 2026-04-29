@@ -5,14 +5,18 @@
 #include <atmel_start.h>
 #include "All_Headers.h"
 #include "Bring_Up/CAN/IMM_CAN_Read.h"
+#include "Bring_Up/Debug/dbg_transport.h"
 
 int main(void)
 {
 	atmel_start_init();
+	DBG_TransportInit();              /* Configure DMA ch0 -> SERCOM7 USART. */
+	DBG_Init(DBG_TransportGet());     /* Wire dbg_print to the transport.    */
 	SYSTICK_INIT();
-	
+
 	define_All_Global_Variables();
 	call_All_Init_Functions();
+	DBG_Printf(ERR_LVL_INFO, "AxC dbg_print online @ 2 Mbaud, axis=%d\n", axis_id);
 	switch(axis_id) {
 		case X_AXIS: PRINTF_DEBUG?printf("\nAxC - X Axis\n"):0;					break;
 		case GTRON_AXC_TOP: PRINTF_DEBUG?printf("\nAxC - GTron TOP\n"):0;		break;

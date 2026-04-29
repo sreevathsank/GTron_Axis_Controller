@@ -156,7 +156,7 @@ drivers:
       dmac_channel_7_settings: false
       dmac_channel_8_settings: false
       dmac_channel_9_settings: false
-      dmac_dbgrun: false
+      dmac_dbgrun: true
       dmac_dstinc_0: false
       dmac_dstinc_1: false
       dmac_dstinc_10: false
@@ -173,7 +173,7 @@ drivers:
       dmac_dstinc_7: false
       dmac_dstinc_8: false
       dmac_dstinc_9: false
-      dmac_enable: false
+      dmac_enable: true
       dmac_enable_0: false
       dmac_enable_1: false
       dmac_enable_10: false
@@ -270,18 +270,18 @@ drivers:
       dmac_lvl_7: Channel priority 0
       dmac_lvl_8: Channel priority 0
       dmac_lvl_9: Channel priority 0
-      dmac_lvlen0: false
-      dmac_lvlen1: false
-      dmac_lvlen2: false
-      dmac_lvlen3: false
+      dmac_lvlen0: true
+      dmac_lvlen1: true
+      dmac_lvlen2: true
+      dmac_lvlen3: true
       dmac_lvlpri0: 0
       dmac_lvlpri1: 0
       dmac_lvlpri2: 0
       dmac_lvlpri3: 0
-      dmac_rrlvlen0: Static arbitration scheme for channel with priority 0
-      dmac_rrlvlen1: Static arbitration scheme for channel with priority 1
-      dmac_rrlvlen2: Static arbitration scheme for channel with priority 2
-      dmac_rrlvlen3: Static arbitration scheme for channel with priority 3
+      dmac_rrlvlen0: Round-robin arbitration scheme for channel with priority 0
+      dmac_rrlvlen1: Round-robin arbitration scheme for channel with priority 1
+      dmac_rrlvlen2: Round-robin arbitration scheme for channel with priority 2
+      dmac_rrlvlen3: Round-robin arbitration scheme for channel with priority 3
       dmac_runstdby_0: false
       dmac_runstdby_1: false
       dmac_runstdby_10: false

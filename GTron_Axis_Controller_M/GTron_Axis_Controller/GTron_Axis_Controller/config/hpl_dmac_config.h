@@ -8,14 +8,14 @@
 // <i> Indicates whether dmac is enabled or not
 // <id> dmac_enable
 #ifndef CONF_DMAC_ENABLE
-#define CONF_DMAC_ENABLE 0
+#define CONF_DMAC_ENABLE 1
 #endif
 
 // <q> Priority Level 0
 // <i> Indicates whether Priority Level 0 is enabled or not
 // <id> dmac_lvlen0
 #ifndef CONF_DMAC_LVLEN0
-#define CONF_DMAC_LVLEN0 0
+#define CONF_DMAC_LVLEN0 1
 #endif
 
 // <o> Level 0 Round-Robin Arbitration
@@ -24,7 +24,7 @@
 // <i> Defines Level 0 Arbitration for DMA channels
 // <id> dmac_rrlvlen0
 #ifndef CONF_DMAC_RRLVLEN0
-#define CONF_DMAC_RRLVLEN0 0
+#define CONF_DMAC_RRLVLEN0 1
 #endif
 
 // <o> Level 0 Channel Priority Number <0x00-0xFF>
@@ -37,7 +37,7 @@
 // <i> Indicates whether Priority Level 1 is enabled or not
 // <id> dmac_lvlen1
 #ifndef CONF_DMAC_LVLEN1
-#define CONF_DMAC_LVLEN1 0
+#define CONF_DMAC_LVLEN1 1
 #endif
 
 // <o> Level 1 Round-Robin Arbitration
@@ -46,7 +46,7 @@
 // <i> Defines Level 1 Arbitration for DMA channels
 // <id> dmac_rrlvlen1
 #ifndef CONF_DMAC_RRLVLEN1
-#define CONF_DMAC_RRLVLEN1 0
+#define CONF_DMAC_RRLVLEN1 1
 #endif
 
 // <o> Level 1 Channel Priority Number <0x00-0xFF>
@@ -59,7 +59,7 @@
 // <i> Indicates whether Priority Level 2 is enabled or not
 // <id> dmac_lvlen2
 #ifndef CONF_DMAC_LVLEN2
-#define CONF_DMAC_LVLEN2 0
+#define CONF_DMAC_LVLEN2 1
 #endif
 
 // <o> Level 2 Round-Robin Arbitration
@@ -68,7 +68,7 @@
 // <i> Defines Level 2 Arbitration for DMA channels
 // <id> dmac_rrlvlen2
 #ifndef CONF_DMAC_RRLVLEN2
-#define CONF_DMAC_RRLVLEN2 0
+#define CONF_DMAC_RRLVLEN2 1
 #endif
 
 // <o> Level 2 Channel Priority Number <0x00-0xFF>
@@ -81,7 +81,7 @@
 // <i> Indicates whether Priority Level 3 is enabled or not
 // <id> dmac_lvlen3
 #ifndef CONF_DMAC_LVLEN3
-#define CONF_DMAC_LVLEN3 0
+#define CONF_DMAC_LVLEN3 1
 #endif
 
 // <o> Level 3 Round-Robin Arbitration
@@ -90,7 +90,7 @@
 // <i> Defines Level 3 Arbitration for DMA channels
 // <id> dmac_rrlvlen3
 #ifndef CONF_DMAC_RRLVLEN3
-#define CONF_DMAC_RRLVLEN3 0
+#define CONF_DMAC_RRLVLEN3 1
 #endif
 
 // <o> Level 3 Channel Priority Number <0x00-0xFF>
@@ -103,7 +103,7 @@
 // <i> Indicates whether Debug Run is enabled or not
 // <id> dmac_dbgrun
 #ifndef CONF_DMAC_DBGRUN
-#define CONF_DMAC_DBGRUN 0
+#define CONF_DMAC_DBGRUN 1
 #endif
 
 // <e> Channel 0 settings
