@@ -49,7 +49,7 @@ static void reeler_Home( void )
 		}
 		
 	}
-	PRINTF_DEBUG ? printf("\nReeler Homing Cmd Rxcvd\n"): 0;
+	DBG_Printf(ERR_LVL_INFO, "\nReeler Homing Cmd Rxcvd\n");
 	return;
 }
 
@@ -65,19 +65,22 @@ static void reeler_Move(int32_t target_position, bool move_to_by)
 {
 	check_move_done = true;
 	//reeler_info.position.trig_step_size = 0;
-	if( (abs(tmc4671_getActualPosition(MOTOR) - target_position) > MIN_DISTANCE_RAMP ) )
-	{
+	if( (abs(tmc4671_getActualPosition(MOTOR) - target_position) > MIN_DISTANCE_RAMP ) ) {
 		(move_to_by == MOVE_TO) ? move_With_S_Ramp(target_position, reeler_info.velocity.limit, MOVE_TO) \
 								: move_With_S_Ramp(target_position, reeler_info.velocity.limit, MOVE_BY);	
-	}
-	else
-	{
+	} else {
 		tmc4671_setVelocityLimit(MOTOR, reeler_info.velocity.limit);
 		(move_to_by == MOVE_TO) ? tmc4671_setAbsolutTargetPosition(MOTOR, target_position) \
 								: tmc4671_setRelativeTargetPosition(MOTOR, target_position);
 	}
-	(move_to_by == MOVE_TO) ? PRINTF_DEBUG ? printf("\nReeler Move To %ld steps\n", target_position): 0 \
-							: PRINTF_DEBUG ? printf("\nReeler Move By %ld steps\n", target_position): 0;
+	
+	if(p_reeler_info->hybrid.mode == HYBRID_MODE_ONE_SHOT) {
+		p_reeler_info->flags.sensor_trigger		= false;
+		p_reeler_info->hybrid.one_shot_armed	= true;
+		DBG_Printf(ERR_LVL_DEBUG, "[HYB] One-Shot armed for this move\n");
+	}
+	(move_to_by == MOVE_TO) ?	DBG_Printf(ERR_LVL_INFO, "\nReeler Move To %ld steps\n", target_position) \
+							:	DBG_Printf(ERR_LVL_INFO, "\nReeler Move By %ld steps\n", target_position);
 	return;
 }
 
@@ -138,14 +141,33 @@ static void reeler_Set_Initial_Position(int32_t reeler_initial_position)
  **/
 static void reeler_Start_Motor( void )
 {
+	if(p_reeler_info->flags.is_paused)	{
+		p_reeler_info->flags.sensor_trigger = false;
+		tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
+		p_reeler_info->flags.rotate_vel_mode = true;
+		if(reeler_info.flags.sag_enabled && reeler_info.flags.rotate_vel_mode) {
+			timer_start(&VEL_TIMER);
+			DBG_Printf(ERR_LVL_DEBUG, "Reeler Start: VEL_TIMER Started | Sag and Rotate Vel Mode Enabled");
+		}
+		p_reeler_info->flags.is_paused = false;
+		DBG_Printf(ERR_LVL_DEBUG, "[HYB] Reeler Resumed\n");
+		return;
+	}
 	tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
-	reeler_info.flags.rotate_vel_mode = true;
-	if(reeler_info.flags.sag_enabled & reeler_info.flags.rotate_vel_mode)
-	{
+	p_reeler_info->flags.rotate_vel_mode = true;
+	p_reeler_info->flags.is_paused = false;
+	if(reeler_info.flags.sag_enabled && reeler_info.flags.rotate_vel_mode) {
 		timer_start(&VEL_TIMER);
+		DBG_Printf(ERR_LVL_DEBUG, "Reeler Start: VEL_TIMER Started | Sag and Rotate Vel Mode Enabled");
+	}
+	if(p_reeler_info->hybrid.mode == HYBRID_MODE_INSPECTION) {
+		p_reeler_info->hybrid.first_trigger_skip	= true;
+		p_reeler_info->hybrid.consecutive_failures	= 0;
+		p_reeler_info->hybrid.cycle_armed			= false;
+		p_reeler_info->flags.sensor_trigger			= false;
 	}
 	tmc4671_setVelocityTarget(MOTOR, reeler_info.velocity.limit);
-	PRINTF_DEBUG ? printf("\nReeler Start Motor with Velocity %ld rpm\n", reeler_info.velocity.limit): 0;
+	DBG_Printf(ERR_LVL_DEBUG,"\nReeler Start Motor with Velocity %ld rpm\n", reeler_info.velocity.limit);
 	return;
 }
 
@@ -161,11 +183,17 @@ static void reeler_Stop_Motor( void )
 	tmc4671_setVelocityLimit(MOTOR, 0);
 	tmc4671_setVelocityTarget(MOTOR, 0);
 	tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
-	move_given_trapezoidal_ramp = false;
-	move_given_s_ramp = false; 
-	check_move_done = false;
-	reeler_info.flags.rotate_vel_mode = false;
-	reeler_info.flags.sag_enabled = false;
+	move_given_trapezoidal_ramp					= false;
+	move_given_s_ramp							= false; 
+	check_move_done								= false;
+	reeler_info.flags.rotate_vel_mode			= false;
+	reeler_info.flags.sag_enabled				= false;
+	p_reeler_info->hybrid.one_shot_armed		= false;
+	p_reeler_info->flags.is_paused				= false;
+	p_reeler_info->hybrid.cycle_armed			= false;
+	p_reeler_info->hybrid.first_trigger_skip	= true;
+	p_reeler_info->hybrid.consecutive_failures	= 0;
+	p_reeler_info->flags.is_paused				= false;
 	//reeler_info.position.trig_step_size = 0;
 	homing_v = 0;
 	//if(!reeler_info.flags.sag_enabled || !reeler_info.flags.rotate_vel_mode)
@@ -176,10 +204,47 @@ static void reeler_Stop_Motor( void )
 	prev_trig_no = 0;
 	reeler_info.position.current = tmc4671_getActualPosition(MOTOR);
 	tmc4671_setAbsolutTargetPosition(MOTOR, reeler_info.position.current);
-	PRINTF_DEBUG ? printf("\nReeler Stop Motor\n"): 0;
+	DBG_Printf(ERR_LVL_INFO, "\nReeler Stop Motor\n");
 	return;
 }
 
+/** 
+ * \brief
+ *
+ * @param
+ *
+ * @return
+ **/
+void reeler_Pause_Motor( void )
+{
+	tmc4671_setVelocityLimit(MOTOR, 0);
+	tmc4671_setVelocityTarget(MOTOR, 0);
+	tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
+	move_given_trapezoidal_ramp = false;
+	move_given_s_ramp = false; 
+	check_move_done = false;
+	reeler_info.flags.rotate_vel_mode = false;
+	reeler_info.flags.sag_enabled = false;
+	homing_v = 0;
+	timer_stop(&VEL_TIMER);
+	trig_no = 0;
+	prev_trig_no = 0;
+	reeler_info.position.current = tmc4671_getActualPosition(MOTOR);
+	tmc4671_setAbsolutTargetPosition(MOTOR, reeler_info.position.current);
+	tmc4671_setVelocityLimit(MOTOR, 2);
+	tmc4671_setModeMotion(MOTOR, POSITION_MODE);
+	p_reeler_info->flags.is_paused = true;
+	DBG_Printf(ERR_LVL_INFO, "Reeler Pause Motor\n");
+	return;
+}
+
+static void reeler_Get_Position( void )
+{
+	int32_t reeler_position = tmc4671_getActualPosition(MOTOR);
+	DBG_Printf(ERR_LVL_DEBUG, "The current Reeler Position is = %ld usteps", reeler_position);
+	can_AxC_Write(CAN_REPLY_TOP_RACK_ID, REELER_MOTOR, AXC_CURRENT_POSITION, reeler_position);
+	return;
+}
 /************************************************************************/
 /* Guide Vertical Arrestor Functions                                    */
 /************************************************************************/
@@ -495,8 +560,10 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_MOVE_BY:			reeler_Move((int32_t)rx_can_cmd_info.value, MOVE_BY);			break;
 					case AXC_TEETH:				reeler_Set_Teeth((uint32_t)rx_can_cmd_info.value);				break;
 					case AXC_INITIAL_POSITION:	reeler_Set_Initial_Position((int32_t)rx_can_cmd_info.value);	break;
+					case AXC_CURRENT_POSITION:	reeler_Get_Position();											break;
 					case AXC_HOMING:			reeler_Home();													break;
-					default: PRINTF_DEBUG ? printf("\nReeler Motor Invalid Operation Rxcvd\n"): 0;				break;
+					case AXC_PAUSE:				reeler_Pause_Motor();											break;
+					default: DBG_Printf(ERR_LVL_DEBUG, "Reeler Motor Invalid Operation Rxcvd\n");				break;
 				}
 			break;
 			case GUIDE_MOTOR:
@@ -511,10 +578,10 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_MOVE_TO_CLOSE_LIMIT:	guide_Move_To_Close_Limit();													break;
 					case AXC_INITIAL_POSITION:		guide_VArrestor_Set_Initial_Position(GUIDE, (int32_t)rx_can_cmd_info.value);	break;
 					case AXC_STATUS_CHECK:			guide_Limits_Status_Check();													break;
-					default: PRINTF_DEBUG ? printf("\nGuide Motor Invalid Operation Rxcvd\n"): 0;								break;
+					default: DBG_Printf(ERR_LVL_DEBUG,"Guide Motor Invalid Operation Rxcvd\n");									break;
 				}
 			break;
-			case VERITCAL_ARRESTOR_MOTOR:
+			case VERITCAL_ARRESTOR_MOTOR1:
 				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
 				{
 					case AXC_STOP:			   guide_VArrestor_Stop_Motor(VARRESTOR);											break;
@@ -544,43 +611,61 @@ void parse_GTron_CAN_Msg_Data( void )
 					default: PRINTF_DEBUG ? printf("\nGuide Close Limit Invalid Operation Rxcvd\n"): 0;					break;
 				}
 			break;
-			case REELER_ENCODER:
-				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
-				{
-					case AXC_INITIALIZE: break;
-					case AXC_START: break;
-					case AXC_STOP: break;
-					case AXC_ENABLE: break;
-					case AXC_DISABLE: break;
-					default: PRINTF_DEBUG ? printf("\nReeler Encoder Invalid Operation Rxcvd\n"): 0;					break;
-				}
-			break;
-			case GUIDE_ENCODER:
-				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
-				{
-					case AXC_INITIALIZE: break;
-					case AXC_START: break;
-					case AXC_STOP: break;
-					case AXC_ENABLE: break;
-					case AXC_DISABLE: break;
-					default: PRINTF_DEBUG ? printf("\nGuide Encoder Invalid Operation Rxcvd\n"): 0;					break;
-				}
-			break;
-			case HYBRID_TRIGGER: {
+			case HYBRID_TRIGGER_INSPECTION: {
 				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
 				{
 					case AXC_ENABLE: {
+						p_reeler_info->hybrid.mode					= HYBRID_MODE_INSPECTION;
+						p_reeler_info->hybrid.first_trigger_skip	= true;
+						p_reeler_info->hybrid.consecutive_failures	= 0;
+						p_reeler_info->hybrid.cycle_armed			= false;
+						p_reeler_info->flags.sensor_trigger			= false;
 						p_reeler_info->flags.is_hybrid_trig_enabled = true;
-						PRINTF_DEBUG?printf("\nHybrid Trigger flag Enabled\n"):0;
+						DBG_Printf(ERR_LVL_INFO, "[HYB] Hybrid Trigger flag Enabled\n");
+						break;
+					}
+					case AXC_DISABLE: {
+						p_reeler_info->hybrid.mode					= HYBRID_MODE_OFF;
+						p_reeler_info->hybrid.cycle_armed			= false;
+						p_reeler_info->flags.is_hybrid_trig_enabled = false;
+						DBG_Printf(ERR_LVL_INFO, "[HYB] Hybrid Trigger flag Disabled\n");
+						break;
+					}
+					case AXC_PAUSE: {
+						p_reeler_info->flags.is_paused = true;
+						DBG_Printf(ERR_LVL_INFO, "[HYB] Hybrid Inspection PAUSED\n");	
+						break;
+					}
+					default: DBG_Printf(ERR_LVL_INFO, "\nHybrid Trigger Invalid Operation Rxcvd\n"); break;
+				}
+				break;
+			}
+			case HYBRID_TRIGGER_ONE_SHOT: {
+				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
+				{
+					case AXC_ENABLE: {
+						p_reeler_info->hybrid.mode					= HYBRID_MODE_ONE_SHOT;
+						p_reeler_info->flags.is_hybrid_trig_enabled = true;
+						//p_reeler_info->hybrid.one_shot_armed		= true;
+						DBG_Printf(ERR_LVL_INFO, "Hybrid Trigger One Shot flag Enabled\n");
 						break;
 					}
 					case AXC_DISABLE: {
 						p_reeler_info->flags.is_hybrid_trig_enabled = false;
-						PRINTF_DEBUG?printf("\nHybrid Trigger flag Disabled\n"):0;
+						DBG_Printf(ERR_LVL_INFO, "\nHybrid Trigger one shot flag Disabled\n");
 						break;
 					}
-					default: PRINTF_DEBUG ? printf("\nHybrid Trigger Invalid Operation Rxcvd\n"): 0; break;
+					case AXC_PAUSE: {
+						if(p_reeler_info->hybrid.one_shot_armed) {
+							DBG_Printf(ERR_LVL_INFO, "[HYB] PAUSE on ONE_SHOT ignored - One-Shot move active\n");
+						} else {
+							p_reeler_info->flags.is_paused = true;
+						}
+						break;
+					}
+					default: DBG_Printf(ERR_LVL_INFO, "\nHybrid Trigger Invalid Operation Rxcvd\n"); break;
 				}
+				break;
 			}
 			default: break;
 		}

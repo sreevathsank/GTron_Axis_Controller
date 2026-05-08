@@ -14,7 +14,20 @@
 #include "Global_Vars.h"
 #include "All_Headers.h"
 
+/** 
+ * \brief Abstraction over can_Write.
+ *
+ *@param	message_Id 29 bit CAN Message ID
+ *@param	peripheral byte
+ *@param	operation byte
+ *@param	value 4 bytes
+ *
+ *@return   false/0 -> Success | true/1 ->  Failure.
+ */
+bool can_AxC_Write(uint32_t msg_id, uint8_t peripheral, uint8_t operation, int32_t value);
+
 void can_Tx_Cb(void);
-void can_Write(uint32_t message_Id, int32_t data);
+ 
+bool can_Write(uint32_t message_Id, int32_t data);
 
 #endif /* IMM_CAN_WRITE_H_ */

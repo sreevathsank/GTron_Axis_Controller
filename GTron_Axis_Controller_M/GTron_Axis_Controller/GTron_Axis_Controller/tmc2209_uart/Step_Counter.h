@@ -10,7 +10,6 @@
 #define STEP_COUNTER_H_
 
 #include "All_Headers.h"
-#include "Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h"
 
 #define READSYNC					0x04		
 #define SYNCBUSY_COUNT_bit			4

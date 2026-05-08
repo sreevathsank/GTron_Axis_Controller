@@ -145,7 +145,7 @@ void can_set_rxcb(struct can_async_descriptor * descr , FUNC_PTR cb)
 Function Name: can_send
 Task:          Send the can frame data
 */
-void can_send(struct can_async_descriptor * descr , unsigned int ID, unsigned char ext_flag, unsigned char dlc, can_union_type can_frame)
+bool can_send(struct can_async_descriptor * descr , unsigned int ID, unsigned char ext_flag, unsigned char dlc, can_union_type can_frame)
 {
 	struct can_message tx_msg;
 	//int32_t can_status = 10 ;	
@@ -159,7 +159,7 @@ void can_send(struct can_async_descriptor * descr , unsigned int ID, unsigned ch
 		tx_msg.fmt  = CAN_FMT_STDID;
 	
 	can_status = can_async_write(descr , &tx_msg); // ASF 4 Can write API.	
-
+	return (bool)can_status;
 }
 
 /*

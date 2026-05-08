@@ -69,7 +69,7 @@ int main(void)
 		// TMC2209 Step Tracker and Move Done.
 		if( p_guide_info->flags.homing || p_guide_info->flags.move_given || \
 		    p_guide_info->flags.move_to_open_lim || p_guide_info->flags.move_to_close_lim \
-			&& !gtron_limits.interrupt_raised)
+			&& !gtron_limits.interrupt_raised )
 										{ update_TMC2209_Step_Tracking(p_guide_info);	}
 		
 		// For TMC4671 Homing Ramp.

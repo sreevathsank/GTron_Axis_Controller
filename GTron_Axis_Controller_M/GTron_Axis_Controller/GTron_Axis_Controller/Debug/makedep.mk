@@ -16,6 +16,10 @@ Bring_Up\CAN\TMCL_IDE_reply.c
 
 Bring_Up\DBG_bring_up.c
 
+Bring_Up\Debug\dbg_print.c
+
+Bring_Up\Debug\dbg_transport.c
+
 Bring_Up\GTron_Cmd_Parser\gtron_can_cmd_parser.c
 
 Bring_Up\IO_Expander\spi_io_expander.c

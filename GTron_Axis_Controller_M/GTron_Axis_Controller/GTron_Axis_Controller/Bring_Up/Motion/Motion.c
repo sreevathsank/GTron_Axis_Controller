@@ -643,6 +643,7 @@ void rot_Enc_Z_Pulse_Interrupt_Callback(void)
 void left_Limit_Interrupt_Callback(void)
 {	
 	p_reeler_info->flags.sensor_trigger = true;
+	p_reeler_info->time_ms.sens_trig = millis();
 	printf("\n Reeler Left Limit Sensor Edge Detected!\n");
 	return;
 }
@@ -669,7 +670,7 @@ void right_Limit_Interrupt_Callback(void)
 void init_ext_irq_limits(void)
 {
 	ext_irq_register(LIM_LFT, left_Limit_Interrupt_Callback);
-	ext_irq_register(LIM_RT, right_Limit_Interrupt_Callback);
+	//ext_irq_register(LIM_RT, right_Limit_Interrupt_Callback);
 	ext_irq_register(ROTENC_Z, rot_Enc_Z_Pulse_Interrupt_Callback);
 	ext_irq_register(IOXP_INT, ioxp_Interrupt_Callback);
 	ext_irq_register(INDEX, index_Interrupt_Callback);
@@ -1106,6 +1107,15 @@ bool camera_Trigger(void)
  */
 void check_For_Move_Done(void)
 {
+	// Hybrid Trigger One Shot polling...
+	if( p_reeler_info->hybrid.mode == HYBRID_MODE_ONE_SHOT &&
+		p_reeler_info->hybrid.one_shot_armed) {
+		check_For_Hybrid_Trigger();
+		if(!check_move_done){
+			return;
+		}
+	}
+	
 	// For Move Done.
 	if( (abs(tmc4671_getErrorPosition(MOTOR)) <= PID_POSITION_WINDOW) )
 	{
@@ -1119,6 +1129,14 @@ void check_For_Move_Done(void)
 		move_given_s_ramp = false;
 		move_given_trapezoidal_ramp = false;
 		autofocus_variables.both_received = false;
+		
+		if( p_reeler_info->hybrid.mode == HYBRID_MODE_ONE_SHOT &&
+			p_reeler_info->hybrid.one_shot_armed) {
+			p_reeler_info->hybrid.one_shot_armed		= false;
+			p_reeler_info->hybrid.mode					= HYBRID_MODE_OFF;
+			p_reeler_info->flags.is_hybrid_trig_enabled	= false;
+			DBG_Printf(ERR_LVL_DEBUG, "[HYB] One-Shot move done with no edge; auto-disabled\n");
+		}
 		
 		// Send RHD command as a Move Done command.
 		message_Id = CAN_REPLY_TOP_RACK_ID;
@@ -1136,7 +1154,7 @@ void check_For_Move_Done(void)
 			move_given_s_ramp = true;
 		}
 		else { timer_stop(&TIMER_0); }
-		//reeler_Move_Done();
+		
 	}
 	return;
 }
@@ -1223,10 +1241,7 @@ void run_Velocity_Ramp(void)
 	} else if( (p_reeler_info->position.trig_step_size != 0) && ramping
 	    && (abs(prev_trig_pos - current_position) >= p_reeler_info->position.trig_step_size) ) {
 		int32_t current_position = tmc4671_getActualPosition(MOTOR);
-		gpio_set_pin_level(REELER_INT, HIGH);
-		delay_us(1);
-		gpio_toggle_pin_level(DBGLED3);
-		gpio_set_pin_level(REELER_INT, LOW);
+		trigger_Camera_Line();
 		printf("\nT%ld", ++trig_no);
 		if(current_time - prev_time >= 30000) { 
 			PRINTF_DEBUG ? printf("\n#-----No. of triggers after 30 seconds is %ld-----#\n", (trig_no - prev_trig_no) ):0; 
