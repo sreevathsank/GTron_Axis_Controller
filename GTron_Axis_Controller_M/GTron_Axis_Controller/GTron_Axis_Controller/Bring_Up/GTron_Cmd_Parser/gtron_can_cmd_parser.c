@@ -153,11 +153,13 @@ static void reeler_Start_Motor( void )
 		DBG_Printf(ERR_LVL_DEBUG, "[HYB] Reeler Resumed\n");
 		return;
 	}
-	tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
+	
 	p_reeler_info->flags.rotate_vel_mode = true;
 	p_reeler_info->flags.is_paused = false;
 	if(reeler_info.flags.sag_enabled && reeler_info.flags.rotate_vel_mode) {
 		timer_start(&VEL_TIMER);
+		tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
+		tmc4671_setVelocityTarget(MOTOR, reeler_info.velocity.limit);
 		DBG_Printf(ERR_LVL_DEBUG, "Reeler Start: VEL_TIMER Started | Sag and Rotate Vel Mode Enabled");
 	}
 	if(p_reeler_info->hybrid.mode == HYBRID_MODE_INSPECTION) {
@@ -166,7 +168,7 @@ static void reeler_Start_Motor( void )
 		p_reeler_info->hybrid.cycle_armed			= false;
 		p_reeler_info->flags.sensor_trigger			= false;
 	}
-	tmc4671_setVelocityTarget(MOTOR, reeler_info.velocity.limit);
+	
 	DBG_Printf(ERR_LVL_DEBUG,"\nReeler Start Motor with Velocity %ld rpm\n", reeler_info.velocity.limit);
 	return;
 }
