@@ -1108,7 +1108,7 @@ bool camera_Trigger(void)
 void check_For_Move_Done(void)
 {
 	// Hybrid Trigger One Shot polling...
-	if( p_reeler_info->hybrid.mode == HYBRID_MODE_ONE_SHOT &&
+	if( p_reeler_info->hybrid.mode == HYBRID_MODE_N_SHOT &&
 		p_reeler_info->hybrid.one_shot_armed) {
 		check_For_Hybrid_Trigger();
 		if(!check_move_done){
@@ -1130,7 +1130,7 @@ void check_For_Move_Done(void)
 		move_given_trapezoidal_ramp = false;
 		autofocus_variables.both_received = false;
 		
-		if( p_reeler_info->hybrid.mode == HYBRID_MODE_ONE_SHOT &&
+		if( p_reeler_info->hybrid.mode == HYBRID_MODE_N_SHOT &&
 			p_reeler_info->hybrid.one_shot_armed) {
 			p_reeler_info->hybrid.one_shot_armed		= false;
 			p_reeler_info->hybrid.mode					= HYBRID_MODE_OFF;

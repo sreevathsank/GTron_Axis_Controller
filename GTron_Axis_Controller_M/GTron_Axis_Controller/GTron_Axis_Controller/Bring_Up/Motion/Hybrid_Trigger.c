@@ -44,16 +44,17 @@ static void handle_inspection_tick( void )
 		}
 		
 		// Slip / spurious trigger detection (anchor-to-anchor delta)
-		uint32_t actual			= (uint32_t)labs(new_anchor -H->prev_anchor_pos);
+		uint32_t actual			= (uint32_t)labs(new_anchor - H->prev_anchor_pos);
 		uint32_t expected		= step;
 		uint32_t tolerance		= (expected * HYBRID_SLIP_TOLERANCE_PCT) / 100u;
 		uint32_t deviation		= (actual > expected) ? (actual - expected) : (expected - actual);
 		
 		if(deviation > tolerance) {
-			H->consecutive_failures += 1;
-			if(H->consecutive_failures >= HYBRID_ALERT_THRESHOLD) {
+			// Slipped.
+			H->consecutive_slips += 1;
+			if(H->consecutive_slips >= HYBRID_ALERT_THRESHOLD) {
 				DBG_Printf(ERR_LVL_WARNING, "[HYB] slip threshold: fail=%d exp=%ld act=%ld\n", 
-							H->consecutive_failures, 
+							H->consecutive_slips, 
 							expected, actual);
 				bool can_ret_status;
 				//can_ret_status = can_AxC_Write( CAN_REPLY_TOP_RACK_ERR_ID,
@@ -61,7 +62,7 @@ static void handle_inspection_tick( void )
 				//								SLIP_ERR ) ;
 			}
 		} else {
-			H->consecutive_failures = 0;
+			H->consecutive_slips = 0;
 		}
 		
 		H->prev_anchor_pos	= new_anchor;
@@ -112,6 +113,107 @@ static void handle_one_shot_tick()
 	return;
 }
 
+static void handle_n_shot_tick()
+{
+	volatile Hybrid_t *H = &p_reeler_info->hybrid;
+	uint32_t step = p_reeler_info->position.trig_step_size;
+	uint32_t term_pitch = H->term_width;
+	
+	// If no sensor trigger has happened for about 1 rotation, stop the motor and inform the error.
+	if( (labs(tmc4671_getActualPosition(MOTOR) - H->prev_anchor_pos) > TMC4671_ROTATION_INT) &&
+		!p_reeler_info->flags.sensor_trigger) 
+	{
+		DBG_Printf(ERR_LVL_ERROR, "No sensor trigger was received for 1 rotation or 65536 usteps.\nStopping the motor and informing the error.");
+		//can_AxC_Write(	CAN_REPLY_TOP_RACK_ID,
+		//				HYBRID_TRIGGER_INSPECTION,
+		//				SLIP_ERR);
+	}
+	
+	// If sensor trigger is received but the cycle is still armed, ignore the sensor trigger.
+	if(p_reeler_info->flags.sensor_trigger && H->cycle_armed) {
+		DBG_Printf(ERR_LVL_WARNING, "Spurious Sensor Trigger rxcvd while cycle armed. Ignoring...\n");
+		p_reeler_info->flags.sensor_trigger = false;
+	}
+	
+	// If sensor trigger is received while cycle is not armed, it is a valid trigger.
+	if(p_reeler_info->flags.sensor_trigger) {
+		p_reeler_info->flags.sensor_trigger = false;
+		int32_t new_anchor = tmc4671_getActualPosition(MOTOR);
+		
+		if(H->first_trigger_skip) {
+			H->first_trigger_skip	= false;
+			H->prev_anchor_pos		= new_anchor;
+			H->anchor_pos			= new_anchor;
+			H->cycle_armed			= true;
+			DBG_Printf(ERR_LVL_DEBUG, "First Trigger Skipped | Arming for next cycle.\n");
+			return;
+		}
+	
+		//H->term_width = (10320 * 2);
+		//// Slip / Spurious Trigger Detection (anchor to achor delta).
+		//uint32_t actual			= (uint32_t)labs(new_anchor - H->prev_anchor_pos);
+		//uint32_t expected		= H->term_width;
+		//uint32_t tolerance		= (expected * HYBRID_SLIP_TOLERANCE_PCT) / 100u;
+		//uint32_t deviation		= (actual > expected) ? (actual - expected) : (expected - actual);
+		//
+		//if(deviation > tolerance) {
+		//	// Slipped.
+		//	if(++H->consecutive_slips >= H->total_slips) {
+		//		DBG_Printf(ERR_LVL_WARNING, "Slipped: Fail %d | Expected = %ld | Actual = %ld\n", 
+		//					H->consecutive_slips,
+		//					expected, actual);
+		//		//can_AxC_Write(	CAN_REPLY_TOP_RACK_ID,
+		//		//				HYBRID_TRIGGER_INSPECTION,
+		//		//				SLIP_ERR);
+		//	}
+		//} else {
+		//	H->consecutive_slips = 0;
+		//}
+		
+		H->prev_anchor_pos		= new_anchor;
+		H->anchor_pos			= new_anchor;
+		H->cycle_armed			= true;
+		return;					// do not poll and fire in the same tick;
+	}
+	
+	// Valid sensor trigger was received and the cycle is armed to execute camera line.
+	if(H->cycle_armed) {
+		int32_t cur_pos = tmc4671_getActualPosition(MOTOR);
+		
+		switch(H->total_n_shots) {
+			// Inspection.
+			case 0: {
+				if((uint32_t)labs(cur_pos - H->anchor_pos) >= step) {
+					trigger_Camera_Line();
+					H->gc += 1;
+					H->cycle_armed = false;
+				}
+				break;
+			}
+			default: {
+				if((uint32_t)labs(cur_pos - H->anchor_pos) >= step) {
+					if(++H->curr_n_shots < H->total_n_shots) {
+						trigger_Camera_Line();
+						H->cycle_armed		= false;
+						DBG_Printf(ERR_LVL_DEBUG, "[HYB] (%ld) N-Shots fired out of %ld\n", H->curr_n_shots, H->total_n_shots);
+					} else {
+						reeler_Pause_Motor();
+						trigger_Camera_Line();
+						
+						DBG_Printf(ERR_LVL_DEBUG, "[HYB] (%ld) N-Shots fired out of %ld | Disabling N Shot Mode\n", H->curr_n_shots, H->total_n_shots);
+						H->cycle_armed		= false;
+						H->mode				= HYBRID_MODE_OFF;
+						H->curr_n_shots		= 0;
+						p_reeler_info->flags.is_hybrid_trig_enabled = false;
+					}
+				}
+				break;
+			}
+		}
+	}
+	return;
+}
+
 /** 
  * \brief	The function that checks motor position wrt to sensor trigger flag received from EIC whether to trigger camera or not.
  *
@@ -126,11 +228,12 @@ void check_For_Hybrid_Trigger(void)
 	
 	switch(p_reeler_info->hybrid.mode) {
 		case HYBRID_MODE_INSPECTION: { 
-			handle_inspection_tick();
+			//handle_inspection_tick();
+			handle_n_shot_tick();
 			break;
 		}
-		case HYBRID_MODE_ONE_SHOT:{ 
-			handle_one_shot_tick();
+		case HYBRID_MODE_N_SHOT: { 
+			handle_n_shot_tick();
 			break;
 		}
 		case HYBRID_MODE_OFF:

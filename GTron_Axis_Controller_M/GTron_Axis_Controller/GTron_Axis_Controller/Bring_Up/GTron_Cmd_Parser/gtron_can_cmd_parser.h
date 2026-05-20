@@ -91,12 +91,17 @@ typedef struct {
 	int32_t			anchor_pos;				// Latched Reeler Position when Sensor Trigger is received.
 	int32_t			prev_anchor_pos;		// For detecting Slip / Spurious Anchor-to-Anchor delta.
 	uint32_t		unhandled_edges;		// diagnostic: edges seen with mode == OFF.
+	uint32_t		total_n_shots;			// Total No of N Shots to execute.
+	uint32_t		curr_n_shots;			// Current No of N Shots executed.
+	uint32_t		term_width;				// Pitch/Width of the Terminal in usteps. Used for Slip Detection.
 	
+	uint16_t		total_slips;			// Total no. of tolerable slips.		
+	uint16_t		consecutive_slips;	// Slip / Spurious Trigger counter.
 	uint16_t		gc;						// Global Counter for Inspection.
+	
 	bool			cycle_armed;			// Anchor Valid; Awaiting offset to fire (Inspection).
 	bool			first_trigger_skip;		// skip first edge after Inspection enable / fresh start.
 	bool			one_shot_armed;			// One-Shot armed for the current Move-To / Move-By.
-	uint8_t			consecutive_failures;	// Slip / Spurious Trigger counter.
 }Hybrid_t;
 
 typedef struct {
@@ -185,6 +190,8 @@ extern volatile Motor_Info_t *p_guide_info;
 extern volatile Motor_Info_t *p_reeler_info;
 
 extern Can_Cmd_Info_t rx_can_cmd_info;
+
+void reeler_Stop_Motor( void );
 
 void reeler_Pause_Motor( void );
 

@@ -100,7 +100,8 @@
 /* TMC4671 Motor based Macros                                           */
 /************************************************************************/
 #define TMC4671_ROTATION			65536.00f								// No. of steps in one full rotation for the TMC4671 Motor Driver. uint16 MAX value.
-																			// One Rotation = 65536 steps = 6.35mm in iMM Axis.
+#define TMC4671_ROTATION_INT		65536UL									// One Rotation = 65536 steps = 6.35mm in iMM Axis.
+																			
 #define TMC4671_ONE_MM_STEPS		10320.63f								// No. of steps required to move the iMM Axis Motor for a distance of 1mm. (65536 steps / 6.35 mm)
 #define TMC4671_MOVE_MM(mm)			(TMC4671_ONE_MM_STEPS * (mm))			// Distance mm to steps conversion. MOVE_MM(2) means 2mm or 20641.26 steps.
 

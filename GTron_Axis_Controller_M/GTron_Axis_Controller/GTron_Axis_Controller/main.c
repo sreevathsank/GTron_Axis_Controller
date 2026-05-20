@@ -10,8 +10,8 @@
 int main(void)
 {
 	atmel_start_init();
-	DBG_TransportInit();              /* Configure DMA ch0 -> SERCOM7 USART. */
-	DBG_Init(DBG_TransportGet());     /* Wire dbg_print to the transport.    */
+	DBG_TransportInit();              // Configure DMA ch0 -> SERCOM7 USART.
+	DBG_Init(DBG_TransportGet());     // Wire dbg_print to the transport.
 	SYSTICK_INIT();
 
 	define_All_Global_Variables();
@@ -64,6 +64,7 @@ int main(void)
 	}
 	else { limit_variables.switch_seq_flag = false; }	// No need for Switching Sequence if Homing Sequence is disabled...
 	//p_reeler_info->flags.is_hybrid_trig_enabled = true;
+	
 	/* Replace with your application code */
 	for(;;) {
 		// TMC2209 Step Tracker and Move Done.

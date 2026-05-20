@@ -66,15 +66,15 @@ static void reeler_Move(int32_t target_position, bool move_to_by)
 	check_move_done = true;
 	//reeler_info.position.trig_step_size = 0;
 	if( (abs(tmc4671_getActualPosition(MOTOR) - target_position) > MIN_DISTANCE_RAMP ) ) {
-		(move_to_by == MOVE_TO) ? move_With_S_Ramp(target_position, reeler_info.velocity.limit, MOVE_TO) \
-								: move_With_S_Ramp(target_position, reeler_info.velocity.limit, MOVE_BY);	
+		(move_to_by == MOVE_TO) ? move_With_S_Ramp(target_position, p_reeler_info->velocity.limit, MOVE_TO) \
+								: move_With_S_Ramp(target_position, p_reeler_info->velocity.limit, MOVE_BY);	
 	} else {
-		tmc4671_setVelocityLimit(MOTOR, reeler_info.velocity.limit);
+		tmc4671_setVelocityLimit(MOTOR, p_reeler_info->velocity.limit);
 		(move_to_by == MOVE_TO) ? tmc4671_setAbsolutTargetPosition(MOTOR, target_position) \
 								: tmc4671_setRelativeTargetPosition(MOTOR, target_position);
 	}
 	
-	if(p_reeler_info->hybrid.mode == HYBRID_MODE_ONE_SHOT) {
+	if(p_reeler_info->hybrid.mode == HYBRID_MODE_N_SHOT) {
 		p_reeler_info->flags.sensor_trigger		= false;
 		p_reeler_info->hybrid.one_shot_armed	= true;
 		DBG_Printf(ERR_LVL_DEBUG, "[HYB] One-Shot armed for this move\n");
@@ -93,11 +93,11 @@ static void reeler_Move(int32_t target_position, bool move_to_by)
  **/
 static void reeler_Set_Velocity(int32_t reeler_target_velocity)
 {
-	reeler_info.velocity.limit = reeler_target_velocity;
-	tmc4671_setVelocityLimit(MOTOR, reeler_info.velocity.limit);
-	reeler_info.position.current = tmc4671_getActualPosition(MOTOR);
-	tmc4671_setAbsolutTargetPosition(MOTOR, reeler_info.position.current);
-	PRINTF_DEBUG ? printf("\nReeler Set Velocity %ld rpm\n", reeler_info.velocity.limit): 0;
+	p_reeler_info->velocity.limit = reeler_target_velocity;
+	tmc4671_setVelocityLimit(MOTOR, p_reeler_info->velocity.limit);
+	p_reeler_info->position.current = tmc4671_getActualPosition(MOTOR);
+	tmc4671_setAbsolutTargetPosition(MOTOR, p_reeler_info->position.current);
+	PRINTF_DEBUG ? printf("\nReeler Set Velocity %ld rpm\n", p_reeler_info->velocity.limit): 0;
 	return;
 }
 
@@ -110,10 +110,10 @@ static void reeler_Set_Velocity(int32_t reeler_target_velocity)
  **/
 static void reeler_Set_Teeth(uint32_t trig_step_size)
 {
-	reeler_info.position.trig_step_size = trig_step_size;
-	reeler_info.position.current = tmc4671_getActualPosition(MOTOR);
-	tmc4671_setAbsolutTargetPosition(MOTOR, reeler_info.position.current);
-	PRINTF_DEBUG ? printf("\nReeler Set Teeth Number or Trigger Step Size as %ld\n", reeler_info.position.trig_step_size ): 0;
+	p_reeler_info->position.trig_step_size = trig_step_size;
+	p_reeler_info->position.current = tmc4671_getActualPosition(MOTOR);
+	tmc4671_setAbsolutTargetPosition(MOTOR, p_reeler_info->position.current);
+	PRINTF_DEBUG ? printf("\nReeler Set Teeth Number or Trigger Step Size as %ld\n", p_reeler_info->position.trig_step_size ): 0;
 	return;
 }
 
@@ -126,9 +126,9 @@ static void reeler_Set_Teeth(uint32_t trig_step_size)
  **/
 static void reeler_Set_Initial_Position(int32_t reeler_initial_position)
 {
-	reeler_info.position.initial = reeler_initial_position;
-	reeler_Move(reeler_info.position.initial, MOVE_TO);
-	PRINTF_DEBUG ? printf("\nReeler Set Initial Position to %ld steps\n", reeler_info.position.initial): 0;
+	p_reeler_info->position.initial = reeler_initial_position;
+	reeler_Move(p_reeler_info->position.initial, MOVE_TO);
+	PRINTF_DEBUG ? printf("\nReeler Set Initial Position to %ld steps\n", p_reeler_info->position.initial): 0;
 	return;
 }
 
@@ -145,7 +145,7 @@ static void reeler_Start_Motor( void )
 		p_reeler_info->flags.sensor_trigger = false;
 		tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
 		p_reeler_info->flags.rotate_vel_mode = true;
-		if(reeler_info.flags.sag_enabled && reeler_info.flags.rotate_vel_mode) {
+		if(p_reeler_info->flags.sag_enabled && p_reeler_info->flags.rotate_vel_mode) {
 			timer_start(&VEL_TIMER);
 			DBG_Printf(ERR_LVL_DEBUG, "Reeler Start: VEL_TIMER Started | Sag and Rotate Vel Mode Enabled");
 		}
@@ -153,23 +153,22 @@ static void reeler_Start_Motor( void )
 		DBG_Printf(ERR_LVL_DEBUG, "[HYB] Reeler Resumed\n");
 		return;
 	}
-	
 	p_reeler_info->flags.rotate_vel_mode = true;
 	p_reeler_info->flags.is_paused = false;
-	if(reeler_info.flags.sag_enabled && reeler_info.flags.rotate_vel_mode) {
+	if(p_reeler_info->flags.sag_enabled && p_reeler_info->flags.rotate_vel_mode) {
 		timer_start(&VEL_TIMER);
 		tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
-		tmc4671_setVelocityTarget(MOTOR, reeler_info.velocity.limit);
+		tmc4671_setVelocityTarget(MOTOR, p_reeler_info->velocity.limit);
 		DBG_Printf(ERR_LVL_DEBUG, "Reeler Start: VEL_TIMER Started | Sag and Rotate Vel Mode Enabled");
 	}
 	if(p_reeler_info->hybrid.mode == HYBRID_MODE_INSPECTION) {
 		p_reeler_info->hybrid.first_trigger_skip	= true;
-		p_reeler_info->hybrid.consecutive_failures	= 0;
+		p_reeler_info->hybrid.consecutive_slips		= 0;
 		p_reeler_info->hybrid.cycle_armed			= false;
 		p_reeler_info->flags.sensor_trigger			= false;
 	}
 	
-	DBG_Printf(ERR_LVL_DEBUG,"\nReeler Start Motor with Velocity %ld rpm\n", reeler_info.velocity.limit);
+	DBG_Printf(ERR_LVL_DEBUG,"\nReeler Start Motor with Velocity %ld rpm\n", p_reeler_info->velocity.limit);
 	return;
 }
 
@@ -180,7 +179,7 @@ static void reeler_Start_Motor( void )
  *
  * @return
  **/
-static void reeler_Stop_Motor( void )
+void reeler_Stop_Motor( void )
 {
 	tmc4671_setVelocityLimit(MOTOR, 0);
 	tmc4671_setVelocityTarget(MOTOR, 0);
@@ -188,13 +187,13 @@ static void reeler_Stop_Motor( void )
 	move_given_trapezoidal_ramp					= false;
 	move_given_s_ramp							= false; 
 	check_move_done								= false;
-	reeler_info.flags.rotate_vel_mode			= false;
-	reeler_info.flags.sag_enabled				= false;
+	p_reeler_info->flags.rotate_vel_mode		= false;
+	p_reeler_info->flags.sag_enabled			= false;
 	p_reeler_info->hybrid.one_shot_armed		= false;
 	p_reeler_info->flags.is_paused				= false;
 	p_reeler_info->hybrid.cycle_armed			= false;
 	p_reeler_info->hybrid.first_trigger_skip	= true;
-	p_reeler_info->hybrid.consecutive_failures	= 0;
+	p_reeler_info->hybrid.consecutive_slips		= 0;
 	p_reeler_info->flags.is_paused				= false;
 	//reeler_info.position.trig_step_size = 0;
 	homing_v = 0;
@@ -619,7 +618,7 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_ENABLE: {
 						p_reeler_info->hybrid.mode					= HYBRID_MODE_INSPECTION;
 						p_reeler_info->hybrid.first_trigger_skip	= true;
-						p_reeler_info->hybrid.consecutive_failures	= 0;
+						p_reeler_info->hybrid.consecutive_slips	= 0;
 						p_reeler_info->hybrid.cycle_armed			= false;
 						p_reeler_info->flags.sensor_trigger			= false;
 						p_reeler_info->flags.is_hybrid_trig_enabled = true;
@@ -633,27 +632,63 @@ void parse_GTron_CAN_Msg_Data( void )
 						DBG_Printf(ERR_LVL_INFO, "[HYB] Hybrid Trigger flag Disabled\n");
 						break;
 					}
+					case AXC_TOLERABLE_SLIPS: {
+						p_reeler_info->hybrid.total_slips = (uint16_t)rx_can_cmd_info.value;
+						DBG_Printf(ERR_LVL_INFO, "Tolerable Slips received = %d\n", p_reeler_info->hybrid.total_slips);
+						break;
+					}
 					case AXC_PAUSE: {
 						p_reeler_info->flags.is_paused = true;
 						DBG_Printf(ERR_LVL_INFO, "[HYB] Hybrid Inspection PAUSED\n");	
+						break;
+					}
+					case AXC_TERMINAL_WIDTH: {
+						p_reeler_info->hybrid.term_width = (uint32_t)rx_can_cmd_info.value;
+						DBG_Printf(ERR_LVL_INFO, "Hybrid Terminal Width received = %ld usptes", p_reeler_info->hybrid.term_width);
 						break;
 					}
 					default: DBG_Printf(ERR_LVL_INFO, "\nHybrid Trigger Invalid Operation Rxcvd\n"); break;
 				}
 				break;
 			}
-			case HYBRID_TRIGGER_ONE_SHOT: {
+			case HYBRID_TRIGGER_N_SHOT: {
 				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
 				{
 					case AXC_ENABLE: {
-						p_reeler_info->hybrid.mode					= HYBRID_MODE_ONE_SHOT;
-						p_reeler_info->flags.is_hybrid_trig_enabled = true;
-						//p_reeler_info->hybrid.one_shot_armed		= true;
-						DBG_Printf(ERR_LVL_INFO, "Hybrid Trigger One Shot flag Enabled\n");
+						p_reeler_info->hybrid.total_n_shots = (uint32_t)rx_can_cmd_info.value;
+						if(p_reeler_info->hybrid.total_n_shots == 0) {
+							DBG_Printf(ERR_LVL_INFO, "Total N Shots = %ld | Inspection\n", p_reeler_info->hybrid.total_n_shots);
+							p_reeler_info->hybrid.mode					= HYBRID_MODE_INSPECTION;
+							p_reeler_info->hybrid.first_trigger_skip	= true;
+							p_reeler_info->hybrid.consecutive_slips		= 0;
+							p_reeler_info->hybrid.cycle_armed			= false;
+							p_reeler_info->flags.sensor_trigger			= false;
+							p_reeler_info->flags.is_hybrid_trig_enabled = true;
+							p_reeler_info->hybrid.prev_anchor_pos		= tmc4671_getActualPosition(MOTOR);
+							DBG_Printf(ERR_LVL_INFO, "[HYB] Hybrid Trigger flag Enabled for Inspection\n");
+						} else {
+							DBG_Printf(ERR_LVL_INFO, "Hybrid Trigger N Shot flag Enabled | No of N Shots = %ld\n", p_reeler_info->hybrid.total_n_shots);
+							p_reeler_info->hybrid.mode					= HYBRID_MODE_N_SHOT;
+							p_reeler_info->flags.is_hybrid_trig_enabled = true;
+							p_reeler_info->hybrid.consecutive_slips		= 0;
+							p_reeler_info->flags.is_paused				= false;
+							p_reeler_info->flags.sag_enabled			= true;
+							p_reeler_info->hybrid.cycle_armed			= false;
+							p_reeler_info->flags.rotate_vel_mode		= true;
+							p_reeler_info->hybrid.curr_n_shots			= 0;
+							p_reeler_info->hybrid.prev_anchor_pos		= tmc4671_getActualPosition(MOTOR);
+							if(p_reeler_info->flags.sag_enabled && p_reeler_info->flags.rotate_vel_mode) {
+								timer_start(&VEL_TIMER);
+								tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
+								tmc4671_setVelocityTarget(MOTOR, reeler_info.velocity.limit);
+								DBG_Printf(ERR_LVL_DEBUG, "Reeler Start: VEL_TIMER Started | Sag and Rotate Vel Mode Enabled\n");
+							}
+						}
 						break;
 					}
 					case AXC_DISABLE: {
 						p_reeler_info->flags.is_hybrid_trig_enabled = false;
+						p_reeler_info->flags.rotate_vel_mode = false;
 						DBG_Printf(ERR_LVL_INFO, "\nHybrid Trigger one shot flag Disabled\n");
 						break;
 					}

@@ -16,7 +16,7 @@
 typedef enum {
 	HYBRID_MODE_OFF			= 0,
 	HYBRID_MODE_INSPECTION	= 1,
-	HYBRID_MODE_ONE_SHOT	= 2,
+	HYBRID_MODE_N_SHOT		= 2,
 	NO_OF_HYBRID_STATES
 }Hybrid_Mode_t;	
 
