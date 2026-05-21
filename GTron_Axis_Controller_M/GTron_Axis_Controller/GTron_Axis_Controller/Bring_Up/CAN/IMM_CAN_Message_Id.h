@@ -156,6 +156,13 @@ typedef enum
 	NO_OF_AXC_OPERAITONS
 }AxC_Operations_t;
 
+typedef enum {
+	AXC_ERR_NONE			= 0,
+	AXC_ERR_SLIP			= 1,
+	AXC_ERR_TRIGGER_FAIL	= 2,
+	NO_OF_AXC_ERR
+}AxC_Errors_t;
+
 /** 
  * GTron AxC Message IDs.
  **/
@@ -173,6 +180,9 @@ typedef enum
 
 #define CAN_BOARD_ACTIVE_PING_ID				0x10E
 #define CAN_REPLY_BOARD_ACTIVE_PING_ID			0x10F	
+
+#define CAN_ERR_REPLY_TOP_RACK_ID				0x402
+
 
 /** 
  * Knob Messages

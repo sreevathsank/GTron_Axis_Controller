@@ -657,7 +657,7 @@ void parse_GTron_CAN_Msg_Data( void )
 							p_reeler_info->flags.is_hybrid_trig_enabled = true;
 							p_reeler_info->hybrid.prev_anchor_pos		= tmc4671_getActualPosition(MOTOR);
 							DBG_Printf(ERR_LVL_INFO, "[HYB] Hybrid Trigger N Shot flag Enabled for Inspection\n");
-							} else {
+						} else {
 							DBG_Printf(ERR_LVL_INFO, "Hybrid Trigger N Shot flag Enabled | No of N Shots = %ld\n", p_reeler_info->hybrid.total_n_shots);
 							p_reeler_info->hybrid.mode					= HYBRID_MODE_N_SHOT;
 							p_reeler_info->flags.is_hybrid_trig_enabled = true;
@@ -675,11 +675,15 @@ void parse_GTron_CAN_Msg_Data( void )
 								DBG_Printf(ERR_LVL_DEBUG, "Reeler Start: VEL_TIMER Started | Sag and Rotate Vel Mode Enabled\n");
 							}
 						}
+						p_reeler_info->hybrid.total_slips = (p_reeler_info->hybrid.total_slips == 0)
+															? HYBRID_ALERT_THRESHOLD
+															: p_reeler_info->hybrid.total_slips;
+						DBG_Printf(ERR_LVL_DEBUG, "Total Tolerable Continuous Slips set as %d\n", p_reeler_info->hybrid.total_slips);
 						break;
 					}
 					case AXC_TERMINAL_WIDTH: {
 						p_reeler_info->hybrid.term_width = (uint32_t)rx_can_cmd_info.value;
-						DBG_Printf(ERR_LVL_INFO, "Hybrid Terminal Width received = %ld usptes", p_reeler_info->hybrid.term_width);
+						DBG_Printf(ERR_LVL_INFO, "Hybrid Terminal Width received = %ld usteps", p_reeler_info->hybrid.term_width);
 						break;
 					}
 					default: DBG_Printf(ERR_LVL_INFO, "\nHybrid Trigger Invalid Operation Rxcvd\n"); break;

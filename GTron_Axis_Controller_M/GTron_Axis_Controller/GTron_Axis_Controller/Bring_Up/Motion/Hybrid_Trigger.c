@@ -124,10 +124,11 @@ static void handle_n_shot_tick()
 	if( (abs(tmc4671_getActualPosition(MOTOR) - H->prev_anchor_pos) > TMC4671_ROTATION_INT) &&
 		!p_reeler_info->flags.sensor_trigger) 
 	{
-		DBG_Printf(ERR_LVL_ERROR, "No sensor trigger was received for 1 rotation or 65536 usteps.\nStopping the motor and informing the error.");
-		//can_AxC_Write(	CAN_REPLY_TOP_RACK_ID,
-		//				HYBRID_TRIGGER_INSPECTION,
-		//				SLIP_ERR);
+		DBG_Printf(ERR_LVL_ERROR, "No sensor trigger was received for 1 rotation or 65536 usteps.\nPausing the motor and informing the error.");
+		can_AxC_Write(	CAN_ERR_REPLY_TOP_RACK_ID,
+						HYBRID_TRIGGER_INSPECTION,
+						AXC_ERR_TRIGGER_FAIL, 0);
+		reeler_Pause_Motor();
 	}
 	
 	// If sensor trigger is received but the cycle is still armed, ignore the sensor trigger.
@@ -152,7 +153,7 @@ static void handle_n_shot_tick()
 		
 		p_reeler_info->flags.is_paused = false;
 	
-		// Slip / Spurious Trigger Detection (anchor to achor delta).
+		// Slip / Spurious Trigger Detection (anchor to anchor delta).
 		uint32_t actual			= (uint32_t)abs(new_anchor - H->prev_anchor_pos);
 		uint32_t expected		= H->term_width;
 		uint32_t tolerance		= (expected * HYBRID_SLIP_TOLERANCE_PCT) / 100u;
@@ -166,9 +167,9 @@ static void handle_n_shot_tick()
 							(expected - tolerance),
 							(expected + tolerance),
 							expected, actual);
-				//can_AxC_Write(	CAN_REPLY_TOP_RACK_ID,
-				//				HYBRID_TRIGGER_INSPECTION,
-				//				SLIP_ERR);
+				can_AxC_Write(	CAN_ERR_REPLY_TOP_RACK_ID,
+								HYBRID_TRIGGER_INSPECTION,
+								AXC_ERR_SLIP, 0 );
 			}
 		} else {
 			H->consecutive_slips = 0;
