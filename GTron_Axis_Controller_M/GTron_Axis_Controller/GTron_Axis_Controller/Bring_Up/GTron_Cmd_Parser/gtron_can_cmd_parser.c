@@ -242,8 +242,9 @@ void reeler_Pause_Motor( void )
 static void reeler_Get_Position( void )
 {
 	int32_t reeler_position = tmc4671_getActualPosition(MOTOR);
-	DBG_Printf(ERR_LVL_DEBUG, "The current Reeler Position is = %ld usteps", reeler_position);
-	can_AxC_Write(CAN_REPLY_TOP_RACK_ID, REELER_MOTOR, AXC_CURRENT_POSITION, reeler_position);
+	int32_t reel_pos_within_rot = reeler_position & 0xFFFF;
+	DBG_Printf(ERR_LVL_DEBUG, "The current Reeler Position is = ABS %ld usteps | REL %ld usteps", reeler_position, reel_pos_within_rot);
+	can_AxC_Write(CAN_REPLY_TOP_RACK_ID, REELER_MOTOR, AXC_CURRENT_POSITION, reel_pos_within_rot);
 	return;
 }
 /************************************************************************/
@@ -618,7 +619,7 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_ENABLE: {
 						p_reeler_info->hybrid.mode					= HYBRID_MODE_INSPECTION;
 						p_reeler_info->hybrid.first_trigger_skip	= true;
-						p_reeler_info->hybrid.consecutive_slips	= 0;
+						p_reeler_info->hybrid.consecutive_slips		= 0;
 						p_reeler_info->hybrid.cycle_armed			= false;
 						p_reeler_info->flags.sensor_trigger			= false;
 						p_reeler_info->flags.is_hybrid_trig_enabled = true;
@@ -639,7 +640,41 @@ void parse_GTron_CAN_Msg_Data( void )
 					}
 					case AXC_PAUSE: {
 						p_reeler_info->flags.is_paused = true;
+						reeler_Pause_Motor();
+						p_reeler_info->hybrid.mode = HYBRID_MODE_OFF;
 						DBG_Printf(ERR_LVL_INFO, "[HYB] Hybrid Inspection PAUSED\n");	
+						break;
+					}
+					case AXC_N_SHOT: {
+						p_reeler_info->hybrid.total_n_shots = (uint32_t)rx_can_cmd_info.value;
+						if(p_reeler_info->hybrid.total_n_shots == 0) {
+							DBG_Printf(ERR_LVL_INFO, "Total N Shots = %ld | Inspection\n", p_reeler_info->hybrid.total_n_shots);
+							p_reeler_info->hybrid.mode					= HYBRID_MODE_INSPECTION;
+							p_reeler_info->hybrid.first_trigger_skip	= true;
+							p_reeler_info->hybrid.consecutive_slips		= 0;
+							p_reeler_info->hybrid.cycle_armed			= false;
+							p_reeler_info->flags.sensor_trigger			= false;
+							p_reeler_info->flags.is_hybrid_trig_enabled = true;
+							p_reeler_info->hybrid.prev_anchor_pos		= tmc4671_getActualPosition(MOTOR);
+							DBG_Printf(ERR_LVL_INFO, "[HYB] Hybrid Trigger N Shot flag Enabled for Inspection\n");
+							} else {
+							DBG_Printf(ERR_LVL_INFO, "Hybrid Trigger N Shot flag Enabled | No of N Shots = %ld\n", p_reeler_info->hybrid.total_n_shots);
+							p_reeler_info->hybrid.mode					= HYBRID_MODE_N_SHOT;
+							p_reeler_info->flags.is_hybrid_trig_enabled = true;
+							p_reeler_info->hybrid.consecutive_slips		= 0;
+							//p_reeler_info->flags.is_paused				= false;
+							p_reeler_info->flags.sag_enabled			= true;
+							p_reeler_info->hybrid.cycle_armed			= false;
+							p_reeler_info->flags.rotate_vel_mode		= true;
+							p_reeler_info->hybrid.curr_n_shots			= 0;
+							p_reeler_info->hybrid.prev_anchor_pos		= tmc4671_getActualPosition(MOTOR);
+							if(p_reeler_info->flags.sag_enabled && p_reeler_info->flags.rotate_vel_mode) {
+								timer_start(&VEL_TIMER);
+								tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
+								tmc4671_setVelocityTarget(MOTOR, reeler_info.velocity.limit);
+								DBG_Printf(ERR_LVL_DEBUG, "Reeler Start: VEL_TIMER Started | Sag and Rotate Vel Mode Enabled\n");
+							}
+						}
 						break;
 					}
 					case AXC_TERMINAL_WIDTH: {

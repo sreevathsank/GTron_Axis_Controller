@@ -594,7 +594,7 @@
 // <i> Indicates the external interrupt 10 detection mode operated synchronously or asynchronousl
 // <id> eic_arch_asynch10
 #ifndef CONF_EIC_ASYNCH10
-#define CONF_EIC_ASYNCH10 1
+#define CONF_EIC_ASYNCH10 0
 #endif
 
 // </e>
@@ -692,7 +692,7 @@
 // <i> Indicates the external interrupt 12 detection mode operated synchronously or asynchronousl
 // <id> eic_arch_asynch12
 #ifndef CONF_EIC_ASYNCH12
-#define CONF_EIC_ASYNCH12 1
+#define CONF_EIC_ASYNCH12 0
 #endif
 
 // </e>
@@ -860,7 +860,7 @@
 
 // <id> eic_arch_prescaler0
 #ifndef CONF_EIC_DPRESCALER0
-#define CONF_EIC_DPRESCALER0 EIC_DPRESCALER_PRESCALER0(0x0)
+#define CONF_EIC_DPRESCALER0 EIC_DPRESCALER_PRESCALER0(0x7)
 #endif
 
 // <o> Low frequency samples

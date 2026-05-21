@@ -22,7 +22,7 @@ void trigger_Camera_Line(void)
 	gpio_toggle_pin_level(DBGLED3);
 	gpio_set_pin_level(REELER_INT, LOW);
 	p_reeler_info->time_ms.cam_trig = millis();
-	DBG_Printf(ERR_LVL_INFO, "Camera Line REELER_INT pin toggled\n");
+	//DBG_Printf(ERR_LVL_INFO, "Camera Line REELER_INT pin toggled\n");
 	return;
 }
 
@@ -119,8 +119,9 @@ static void handle_n_shot_tick()
 	uint32_t step = p_reeler_info->position.trig_step_size;
 	uint32_t term_pitch = H->term_width;
 	
+	
 	// If no sensor trigger has happened for about 1 rotation, stop the motor and inform the error.
-	if( (labs(tmc4671_getActualPosition(MOTOR) - H->prev_anchor_pos) > TMC4671_ROTATION_INT) &&
+	if( (abs(tmc4671_getActualPosition(MOTOR) - H->prev_anchor_pos) > TMC4671_ROTATION_INT) &&
 		!p_reeler_info->flags.sensor_trigger) 
 	{
 		DBG_Printf(ERR_LVL_ERROR, "No sensor trigger was received for 1 rotation or 65536 usteps.\nStopping the motor and informing the error.");
@@ -140,7 +141,7 @@ static void handle_n_shot_tick()
 		p_reeler_info->flags.sensor_trigger = false;
 		int32_t new_anchor = tmc4671_getActualPosition(MOTOR);
 		
-		if(H->first_trigger_skip) {
+		if(H->first_trigger_skip && !p_reeler_info->flags.is_paused) {
 			H->first_trigger_skip	= false;
 			H->prev_anchor_pos		= new_anchor;
 			H->anchor_pos			= new_anchor;
@@ -148,32 +149,36 @@ static void handle_n_shot_tick()
 			DBG_Printf(ERR_LVL_DEBUG, "First Trigger Skipped | Arming for next cycle.\n");
 			return;
 		}
-	
-		//H->term_width = (10320 * 2);
-		//// Slip / Spurious Trigger Detection (anchor to achor delta).
-		//uint32_t actual			= (uint32_t)labs(new_anchor - H->prev_anchor_pos);
-		//uint32_t expected		= H->term_width;
-		//uint32_t tolerance		= (expected * HYBRID_SLIP_TOLERANCE_PCT) / 100u;
-		//uint32_t deviation		= (actual > expected) ? (actual - expected) : (expected - actual);
-		//
-		//if(deviation > tolerance) {
-		//	// Slipped.
-		//	if(++H->consecutive_slips >= H->total_slips) {
-		//		DBG_Printf(ERR_LVL_WARNING, "Slipped: Fail %d | Expected = %ld | Actual = %ld\n", 
-		//					H->consecutive_slips,
-		//					expected, actual);
-		//		//can_AxC_Write(	CAN_REPLY_TOP_RACK_ID,
-		//		//				HYBRID_TRIGGER_INSPECTION,
-		//		//				SLIP_ERR);
-		//	}
-		//} else {
-		//	H->consecutive_slips = 0;
-		//}
 		
+		p_reeler_info->flags.is_paused = false;
+	
+		// Slip / Spurious Trigger Detection (anchor to achor delta).
+		uint32_t actual			= (uint32_t)abs(new_anchor - H->prev_anchor_pos);
+		uint32_t expected		= H->term_width;
+		uint32_t tolerance		= (expected * HYBRID_SLIP_TOLERANCE_PCT) / 100u;
+		uint32_t deviation		= (actual > expected) ? (actual - expected) : (expected - actual);
+		
+		if(deviation > tolerance) {
+			// Slipped.
+			if(++H->consecutive_slips >= H->total_slips) {
+				DBG_Printf(ERR_LVL_WARNING, "Slipped: Fail %d | Expected Range = %ld to %ld | Actual = %ld\n", 
+							H->consecutive_slips, 
+							(expected - tolerance),
+							(expected + tolerance),
+							expected, actual);
+				//can_AxC_Write(	CAN_REPLY_TOP_RACK_ID,
+				//				HYBRID_TRIGGER_INSPECTION,
+				//				SLIP_ERR);
+			}
+		} else {
+			H->consecutive_slips = 0;
+		}
+		
+		DBG_Printf(ERR_LVL_DEBUG, "Delta of prev to curr anchor pos = %ld\n", abs(new_anchor - H->prev_anchor_pos));
 		H->prev_anchor_pos		= new_anchor;
 		H->anchor_pos			= new_anchor;
 		H->cycle_armed			= true;
-		return;					// do not poll and fire in the same tick;
+		//return;					// do not poll and fire in the same tick;
 	}
 	
 	// Valid sensor trigger was received and the cycle is armed to execute camera line.
@@ -183,19 +188,21 @@ static void handle_n_shot_tick()
 		switch(H->total_n_shots) {
 			// Inspection.
 			case 0: {
-				if((uint32_t)labs(cur_pos - H->anchor_pos) >= step) {
+				if((uint32_t)abs(cur_pos - H->anchor_pos) >= step) {
 					trigger_Camera_Line();
 					H->gc += 1;
 					H->cycle_armed = false;
+					DBG_Printf(ERR_LVL_DEBUG, "[HYB] curr = %ld | anchor_pos = %ld | curr - anchor_pos = %ld\n", cur_pos, H->anchor_pos, abs(cur_pos - H->anchor_pos));
 				}
 				break;
 			}
 			default: {
-				if((uint32_t)labs(cur_pos - H->anchor_pos) >= step) {
+				if((uint32_t)abs(cur_pos - H->anchor_pos) >= step) {
 					if(++H->curr_n_shots < H->total_n_shots) {
 						trigger_Camera_Line();
 						H->cycle_armed		= false;
 						DBG_Printf(ERR_LVL_DEBUG, "[HYB] (%ld) N-Shots fired out of %ld\n", H->curr_n_shots, H->total_n_shots);
+						DBG_Printf(ERR_LVL_DEBUG, "[HYB] curr = %ld | anchor_pos = %ld | curr - anchor_pos = %ld\n", cur_pos, H->anchor_pos, abs(cur_pos - H->anchor_pos));
 					} else {
 						reeler_Pause_Motor();
 						trigger_Camera_Line();

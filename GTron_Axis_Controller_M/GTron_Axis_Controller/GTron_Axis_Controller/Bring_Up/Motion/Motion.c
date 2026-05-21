@@ -643,8 +643,10 @@ void rot_Enc_Z_Pulse_Interrupt_Callback(void)
 void left_Limit_Interrupt_Callback(void)
 {	
 	p_reeler_info->flags.sensor_trigger = true;
+	//p_reeler_info->hybrid.anchor_pos = tmc4671_getActualPosition(MOTOR);
 	p_reeler_info->time_ms.sens_trig = millis();
-	printf("\n Reeler Left Limit Sensor Edge Detected!\n");
+	//printf("PosDelta = %ld\n", p_reeler_info->hybrid.anchor_pos - prev_sens_pos);
+	//prev_sens_pos = p_reeler_info->hybrid.anchor_pos;
 	return;
 }
 
@@ -1224,8 +1226,9 @@ void run_Velocity_Ramp(void)
 
 	if(!p_reeler_info) { return; }
 		
-	int32_t current_velocity = tmc4671_getVelocityTarget(MOTOR);
-	int32_t target_velocity = p_reeler_info->velocity.limit;
+	int32_t current_velocity	= tmc4671_getVelocityTarget(MOTOR);
+	int32_t target_velocity		= p_reeler_info->velocity.limit;
+	int32_t current_position	= tmc4671_getActualPosition(MOTOR);
 
 	// Check if the Motor's current Mode Motion is in Velocity Mode or not.
 	int32_t mode_motion = tmc4671_getModeMotion(MOTOR);
@@ -1238,18 +1241,17 @@ void run_Velocity_Ramp(void)
 
 	if(p_reeler_info->flags.is_hybrid_trig_enabled) {
 		check_For_Hybrid_Trigger();
-	} else if( (p_reeler_info->position.trig_step_size != 0) && ramping
-	    && (abs(prev_trig_pos - current_position) >= p_reeler_info->position.trig_step_size) ) {
-		int32_t current_position = tmc4671_getActualPosition(MOTOR);
+	}
+	
+	if( (p_reeler_info->position.trig_step_size != 0) && ramping 
+		&& !p_reeler_info->flags.is_hybrid_trig_enabled
+		&& (abs(prev_trig_pos - current_position) >= p_reeler_info->position.trig_step_size) ) 
+	{
 		trigger_Camera_Line();
-		printf("\nT%ld", ++trig_no);
-		if(current_time - prev_time >= 30000) { 
-			PRINTF_DEBUG ? printf("\n#-----No. of triggers after 30 seconds is %ld-----#\n", (trig_no - prev_trig_no) ):0; 
-			prev_trig_no = trig_no;
-			prev_time = current_time;
-		}
+		DBG_Printf(ERR_LVL_DEBUG, "\nT%ld | c%ld | e%ld", ++trig_no, abs(prev_trig_pos - current_position), p_reeler_info->position.trig_step_size);
 		prev_trig_pos = current_position;
 	}
+	
 	if(!ramping) {
 		vel = current_velocity;
 		prev_trig_pos = tmc4671_getActualPosition(MOTOR);

@@ -390,9 +390,9 @@ drivers:
     configuration:
       eic_arch_asynch0: false
       eic_arch_asynch1: false
-      eic_arch_asynch10: true
+      eic_arch_asynch10: false
       eic_arch_asynch11: true
-      eic_arch_asynch12: true
+      eic_arch_asynch12: false
       eic_arch_asynch13: true
       eic_arch_asynch14: true
       eic_arch_asynch15: false
@@ -473,7 +473,7 @@ drivers:
       eic_arch_nmiasynch: false
       eic_arch_nmifilten: false
       eic_arch_nmisense: No detection
-      eic_arch_prescaler0: Divided by 2
+      eic_arch_prescaler0: Divided by 256
       eic_arch_prescaler1: Divided by 2
       eic_arch_sense0: No detection
       eic_arch_sense1: No detection

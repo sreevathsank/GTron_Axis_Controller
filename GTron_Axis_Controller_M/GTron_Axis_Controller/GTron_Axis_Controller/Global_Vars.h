@@ -30,6 +30,8 @@ uint32_t trig_no, prev_trig_no;
 
 bool motor_dir_rev, lim_edge_detection, rfs_ping_rxvd;
 
+int32_t prev_sens_pos;
+
 /********************************************************************
  * An Enum to indicate the axis of the current Axis Controller board*
  ********************************************************************/

@@ -25,12 +25,12 @@
  */
 bool can_AxC_Write(uint32_t msg_id, uint8_t peripheral, uint8_t operation, int32_t value)
 {
-	can_tx_frame.data[0] = peripheral;
-	can_tx_frame.data[1] = operation;
-	can_tx_frame.data[2] = (uint8_t)((value >>  0) & 0xFF);  // LSB
-	can_tx_frame.data[3] = (uint8_t)((value >>  8) & 0xFF);
-	can_tx_frame.data[4] = (uint8_t)((value >> 16) & 0xFF);
-	can_tx_frame.data[5] = (uint8_t)((value >> 24) & 0xFF);  // MSB
+	can_tx_frame.data[0]	= peripheral;
+	can_tx_frame.data[1]	= operation;
+	can_tx_frame.data[2]	= (uint8_t)((value >>  24) & 0xFF);		// MSB
+	can_tx_frame.data[3]	= (uint8_t)((value >>  16) & 0xFF);
+	can_tx_frame.data[4]	= (uint8_t)((value >>   8) & 0xFF);
+	can_tx_frame.data[5]	= (uint8_t)((value >>	 0) & 0xFF);	 // LSB
 	return can_Write(msg_id, data);
 }
 

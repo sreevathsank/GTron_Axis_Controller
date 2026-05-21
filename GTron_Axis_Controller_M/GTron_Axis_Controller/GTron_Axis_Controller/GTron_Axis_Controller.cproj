@@ -208,7 +208,7 @@
           <AcmeProjectActionInfo Action="File" Source="config/hpl_adc_config.h" IsConfig="true" Hash="dqzITiKPXQEV9h5NdjJ6Rg" />
           <AcmeProjectActionInfo Action="File" Source="config/hpl_can_config.h" IsConfig="true" Hash="k9m7056l0VskAMXmrf8OEw" />
           <AcmeProjectActionInfo Action="File" Source="config/hpl_dmac_config.h" IsConfig="true" Hash="Kq5nU1GK95GvCb/a9+KAzQ" />
-          <AcmeProjectActionInfo Action="File" Source="config/hpl_eic_config.h" IsConfig="true" Hash="Bx584voO455acelaX348oA" />
+          <AcmeProjectActionInfo Action="File" Source="config/hpl_eic_config.h" IsConfig="true" Hash="ZMP7tWqLty96X40/a2yE0A" />
           <AcmeProjectActionInfo Action="File" Source="config/hpl_gclk_config.h" IsConfig="true" Hash="g6ArhmGAVyBE+xtMZ2Y4og" />
           <AcmeProjectActionInfo Action="File" Source="config/hpl_mclk_config.h" IsConfig="true" Hash="9ry0ZAt2ygApPQG871aBmQ" />
           <AcmeProjectActionInfo Action="File" Source="config/hpl_osc32kctrl_config.h" IsConfig="true" Hash="e9o/TJDK3cfkTdnVxdMDjA" />

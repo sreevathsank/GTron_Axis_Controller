@@ -137,7 +137,7 @@
 //#define VARREST_STEP_COUNTER
 
 // Hybrid Trigger Configurator
-#define HYBRID_SLIP_TOLERANCE_PCT		95u				// % of step_size; deviation band for slip detection.
+#define HYBRID_SLIP_TOLERANCE_PCT		25u				// % of step_size; deviation band for slip detection.
 #define HYBRID_ALERT_THRESHOLD			3u				// consecutive failures before warn log.
 #define HYBRID_PAUSE_HOLD_VELOCITY_RPM	2u				// TMC4671 velocity_limit during position-hold pause
 

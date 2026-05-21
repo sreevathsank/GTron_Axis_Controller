@@ -149,9 +149,10 @@ typedef enum
 	AXC_TOLERABLE_SLIPS		= 19,
 	AXC_SKIP_TRIGGER		= 20,
 	AXC_PAUSE				= 21,
-	AXC_SET					= 22,
-	AXC_GET					= 23,
-	AXC_TERMINAL_WIDTH		= 24,
+	AXC_N_SHOT				= 22,
+	AXC_SET					= 23,
+	AXC_GET					= 24,
+	AXC_TERMINAL_WIDTH		= 25,
 	NO_OF_AXC_OPERAITONS
 }AxC_Operations_t;
 
