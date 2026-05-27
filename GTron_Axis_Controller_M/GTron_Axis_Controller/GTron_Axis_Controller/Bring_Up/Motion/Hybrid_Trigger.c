@@ -121,7 +121,7 @@ static void handle_n_shot_tick()
 	
 	
 	// If no sensor trigger has happened for about 1 rotation, stop the motor and inform the error.
-	if( (abs(tmc4671_getActualPosition(MOTOR) - H->prev_anchor_pos) > TMC4671_ROTATION_INT) &&
+	if( (abs(tmc4671_getActualPosition(MOTOR) - H->prev_anchor_pos) > (p_reeler_info->hybrid.consecutive_slips * p_reeler_info->hybrid.term_width) ) &&
 		!p_reeler_info->flags.sensor_trigger) 
 	{
 		DBG_Printf(ERR_LVL_ERROR, "No sensor trigger was received for 1 rotation or 65536 usteps.\nPausing the motor and informing the error.");
@@ -170,6 +170,7 @@ static void handle_n_shot_tick()
 				can_AxC_Write(	CAN_ERR_REPLY_TOP_RACK_ID,
 								HYBRID_TRIGGER_INSPECTION,
 								AXC_ERR_SLIP, 0 );
+				reeler_Pause_Motor();
 			}
 		} else {
 			H->consecutive_slips = 0;

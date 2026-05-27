@@ -153,6 +153,7 @@ typedef enum
 	AXC_SET					= 23,
 	AXC_GET					= 24,
 	AXC_TERMINAL_WIDTH		= 25,
+	AXC_ENCODER_MODE		= 26,
 	NO_OF_AXC_OPERAITONS
 }AxC_Operations_t;
 
