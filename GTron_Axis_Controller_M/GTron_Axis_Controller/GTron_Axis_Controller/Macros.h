@@ -50,7 +50,7 @@
 /** 
  * TMC2209 Module Addresses.
  **/
-#define TMC2209_GUIDE_ADDR			0x00			// Hardware address of TMC2209 Guide Motor Driver.
+#define TMC2209_MOTOR1_ADDR			0x00			// Hardware address of TMC2209 Guide Motor Driver.
 #define TMC2209_VERT_ARREST_ADDR	0x00			// Hardware address of TMC2209 Vertical Arrestor Motor Driver.
 
 #define MOTOR_ENC					0
@@ -137,7 +137,7 @@
 //#define VARREST_STEP_COUNTER
 
 // Hybrid Trigger Configurator
-#define HYBRID_SLIP_TOLERANCE_PCT		25u				// % of step_size; deviation band for slip detection.
+#define HYBRID_SLIP_TOLERANCE_PCT		10u				// % of step_size; deviation band for slip detection.
 #define HYBRID_ALERT_THRESHOLD			3u				// consecutive failures before warn log.
 #define HYBRID_PAUSE_HOLD_VELOCITY_RPM	2u				// TMC4671 velocity_limit during position-hold pause
 

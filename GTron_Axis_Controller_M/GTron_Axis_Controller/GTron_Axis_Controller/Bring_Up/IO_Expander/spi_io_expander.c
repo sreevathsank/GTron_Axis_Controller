@@ -36,7 +36,7 @@ void ioxp_Interrupt_Callback( void )
 		PRINTF_DEBUG ? printf("\n"): 0;
 		if( MSK_GUIDE_R_LIM(gtron_limits.limit_flags) )	// Guide Right Open Limit.
 		{
-			tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_VACTUAL, 0x00000000);
+			tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_VACTUAL, 0x00000000);
 			PRINTF_DEBUG ? printf("\nInside msk right limit\n"): 0;
 			if(p_guide_info->flags.move_to_open_lim)
 			{
@@ -58,12 +58,12 @@ void ioxp_Interrupt_Callback( void )
 		}
 		else if( MSK_GUIDE_L_LIM(gtron_limits.limit_flags) )	// Guide Left Close Limit.
 		{
-			tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_VACTUAL, 0x00000000);
+			tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_VACTUAL, 0x00000000);
 			PRINTF_DEBUG ? printf("\nInside msk left limit\n"): 0;
 			if(p_guide_info->flags.move_to_close_lim)
 			{
 				p_guide_info->flags.move_to_close_lim = false;
-				tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_VACTUAL, 0x00000000);
+				tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_VACTUAL, 0x00000000);
 				
 				// Get the current position as the stroke length of the Guide setup.
 				update_TMC2209_Step_Tracking(p_guide_info);

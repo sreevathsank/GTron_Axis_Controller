@@ -26,6 +26,14 @@ void trigger_Camera_Line(void)
 	return;
 }
 
+
+/** 
+ * \brief
+ *
+ * @param
+ *
+ * @return
+ **/
 static void handle_inspection_tick( void )
 {
 	volatile Hybrid_t *H = &p_reeler_info->hybrid;
@@ -83,6 +91,14 @@ static void handle_inspection_tick( void )
 	return;
 }
 
+
+/** 
+ * \brief
+ *
+ * @param
+ *
+ * @return
+ **/
 static void handle_one_shot_tick()
 {
 	volatile Hybrid_t *H = &p_reeler_info->hybrid;
@@ -113,18 +129,29 @@ static void handle_one_shot_tick()
 	return;
 }
 
+
+/** 
+ * \brief
+ *
+ * @param
+ *
+ * @return
+ **/
 static void handle_n_shot_tick()
 {
 	volatile Hybrid_t *H = &p_reeler_info->hybrid;
 	uint32_t step = p_reeler_info->position.trig_step_size;
 	uint32_t term_pitch = H->term_width;
 	
+	if( H->total_slips == 0) {
+		H->total_slips = HYBRID_ALERT_THRESHOLD;
+	}
 	
-	// If no sensor trigger has happened for about 1 rotation, stop the motor and inform the error.
-	if( (abs(tmc4671_getActualPosition(MOTOR) - H->prev_anchor_pos) > (p_reeler_info->hybrid.consecutive_slips * p_reeler_info->hybrid.term_width) ) &&
-		!p_reeler_info->flags.sensor_trigger) 
+	// If no sensor trigger has happened for about (total slips x terminal width), stop the motor and inform the error.
+	if( (abs(tmc4671_getActualPosition(MOTOR) - H->prev_anchor_pos) > (H->total_slips * H->term_width) ) &&
+		!p_reeler_info->flags.sensor_trigger && !p_reeler_info->flags.is_encoder_mode ) 
 	{
-		DBG_Printf(ERR_LVL_ERROR, "No sensor trigger was received for 1 rotation or 65536 usteps.\nPausing the motor and informing the error.");
+		DBG_Printf(ERR_LVL_ERROR, "No sensor trigger was received for %ld usteps.\nPausing the motor and informing the error.", (H->total_slips * H->term_width));
 		can_AxC_Write(	CAN_ERR_REPLY_TOP_RACK_ID,
 						HYBRID_TRIGGER_INSPECTION,
 						AXC_ERR_TRIGGER_FAIL, 0);
@@ -132,17 +159,17 @@ static void handle_n_shot_tick()
 	}
 	
 	// If sensor trigger is received but the cycle is still armed, ignore the sensor trigger.
-	if(p_reeler_info->flags.sensor_trigger && H->cycle_armed) {
+	if(p_reeler_info->flags.sensor_trigger && H->cycle_armed && !p_reeler_info->flags.is_encoder_mode) {
 		DBG_Printf(ERR_LVL_WARNING, "Spurious Sensor Trigger rxcvd while cycle armed. Ignoring...\n");
 		p_reeler_info->flags.sensor_trigger = false;
 	}
 	
 	// If sensor trigger is received while cycle is not armed, it is a valid trigger.
-	if(p_reeler_info->flags.sensor_trigger) {
+	if(p_reeler_info->flags.sensor_trigger && !p_reeler_info->flags.is_encoder_mode) {
 		p_reeler_info->flags.sensor_trigger = false;
 		int32_t new_anchor = tmc4671_getActualPosition(MOTOR);
 		
-		if(H->first_trigger_skip && !p_reeler_info->flags.is_paused) {
+		if(H->first_trigger_skip && !p_reeler_info->flags.is_paused && !p_reeler_info->flags.is_encoder_mode) {
 			H->first_trigger_skip	= false;
 			H->prev_anchor_pos		= new_anchor;
 			H->anchor_pos			= new_anchor;
@@ -183,6 +210,11 @@ static void handle_n_shot_tick()
 		//return;					// do not poll and fire in the same tick;
 	}
 	
+	if(p_reeler_info->flags.is_encoder_mode && !H->cycle_armed) {
+		H->cycle_armed = true;
+		H->anchor_pos = tmc4671_getActualPosition(MOTOR);
+	}	
+	
 	// Valid sensor trigger was received and the cycle is armed to execute camera line.
 	if(H->cycle_armed) {
 		int32_t cur_pos = tmc4671_getActualPosition(MOTOR);
@@ -194,7 +226,11 @@ static void handle_n_shot_tick()
 					trigger_Camera_Line();
 					H->gc += 1;
 					H->cycle_armed = false;
-					DBG_Printf(ERR_LVL_DEBUG, "[HYB] curr = %ld | anchor_pos = %ld | curr - anchor_pos = %ld\n", cur_pos, H->anchor_pos, abs(cur_pos - H->anchor_pos));
+					if(p_reeler_info->flags.is_encoder_mode) {
+						DBG_Printf(ERR_LVL_DEBUG, "[ENC] curr = %ld | anchor_pos = %ld | curr - anchor_pos = %ld\n", cur_pos, H->anchor_pos, abs(cur_pos - H->anchor_pos));
+					} else {
+						DBG_Printf(ERR_LVL_DEBUG, "[HYB] curr = %ld | anchor_pos = %ld | curr - anchor_pos = %ld\n", cur_pos, H->anchor_pos, abs(cur_pos - H->anchor_pos));
+					}
 				}
 				break;
 			}
@@ -203,17 +239,29 @@ static void handle_n_shot_tick()
 					if(++H->curr_n_shots < H->total_n_shots) {
 						trigger_Camera_Line();
 						H->cycle_armed		= false;
-						DBG_Printf(ERR_LVL_DEBUG, "[HYB] (%ld) N-Shots fired out of %ld\n", H->curr_n_shots, H->total_n_shots);
-						DBG_Printf(ERR_LVL_DEBUG, "[HYB] curr = %ld | anchor_pos = %ld | curr - anchor_pos = %ld\n", cur_pos, H->anchor_pos, abs(cur_pos - H->anchor_pos));
+						if(p_reeler_info->flags.is_encoder_mode) {
+							DBG_Printf(ERR_LVL_DEBUG, "[ENC] (%ld) N-Shots fired out of %ld\n", H->curr_n_shots, H->total_n_shots);
+							DBG_Printf(ERR_LVL_DEBUG, "[ENC] curr = %ld | anchor_pos = %ld | curr - anchor_pos = %ld\n", cur_pos, H->anchor_pos, abs(cur_pos - H->anchor_pos));
+						} else {
+							DBG_Printf(ERR_LVL_DEBUG, "[HYB] (%ld) N-Shots fired out of %ld\n", H->curr_n_shots, H->total_n_shots);
+							DBG_Printf(ERR_LVL_DEBUG, "[HYB] curr = %ld | anchor_pos = %ld | curr - anchor_pos = %ld\n", cur_pos, H->anchor_pos, abs(cur_pos - H->anchor_pos));
+						}
 					} else {
 						reeler_Pause_Motor();
 						trigger_Camera_Line();
-						
-						DBG_Printf(ERR_LVL_DEBUG, "[HYB] (%ld) N-Shots fired out of %ld | Disabling N Shot Mode\n", H->curr_n_shots, H->total_n_shots);
+						if(p_reeler_info->flags.is_encoder_mode) {
+							DBG_Printf(ERR_LVL_DEBUG, "[ENC] (%ld) N-Shots fired out of %ld | Disabling N Shot Mode\n", H->curr_n_shots, H->total_n_shots);
+							p_reeler_info->flags.is_encoder_mode = false;
+						} else {
+							DBG_Printf(ERR_LVL_DEBUG, "[HYB] (%ld) N-Shots fired out of %ld | Disabling N Shot Mode\n", H->curr_n_shots, H->total_n_shots);
+						}
 						H->cycle_armed		= false;
 						H->mode				= HYBRID_MODE_OFF;
 						H->curr_n_shots		= 0;
 						p_reeler_info->flags.is_hybrid_trig_enabled = false;
+						p_reeler_info->flags.is_paused				= true;
+						p_reeler_info->flags.sag_enabled			= false;
+						p_reeler_info->flags.rotate_vel_mode		= false;
 					}
 				}
 				break;

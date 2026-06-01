@@ -27,7 +27,7 @@ void init_tmc2209_motor(uint16_t icID)
 	
 	tmc2209_writeRegister(icID, TMC2209_TPOWERDOWN, 0x00000002);
 	
-	PRINTF_DEBUG ? printf("\nTMC2209 Init Done for Guide Motor.\n"): 0;
+	DBG_Printf(ERR_LVL_DEBUG, "TMC2209 Init Done for Motor %d.\n", icID);
 	
 	gpio_set_pin_level(INDEX_SEL, LOW);
 	
@@ -42,7 +42,7 @@ void move_guide_motor(uint32_t loop_count)
 	{
 		update_TMC2209_Step_Tracking(p_guide_info);
 		PRINTF_DEBUG ? printf("\nGuide total Steps = %ld | Total Dist = %ld\n", p_guide_info->step_tracker.total_steps, p_guide_info->step_tracker.total_dist): 0;
-		tmc2209_set_velocity(TMC2209_GUIDE_ADDR, p_guide_info, 0x000003E8);
+		tmc2209_set_velocity(TMC2209_MOTOR1_ADDR, p_guide_info, 0x000003E8);
 		delay_ms(500);
 		//while(p_guide_info->step_tracker.total_steps <= TMC2209_ROTATION)
 		{
@@ -51,14 +51,14 @@ void move_guide_motor(uint32_t loop_count)
 		
 		update_TMC2209_Step_Tracking(p_guide_info);
 		PRINTF_DEBUG ? printf("\nGuide total Steps = %ld | Total Dist = %ld\n", p_guide_info->step_tracker.total_steps, p_guide_info->step_tracker.total_dist): 0;
-		tmc2209_set_velocity(TMC2209_GUIDE_ADDR, p_guide_info, 0xFFFFFC18);
+		tmc2209_set_velocity(TMC2209_MOTOR1_ADDR, p_guide_info, 0xFFFFFC18);
 		delay_ms(500);
 		//while(p_guide_info->step_tracker.total_steps >= ZERO_HEX)
 		{
 			//update_TMC2209_Step_Tracking(p_guide_info);
 		}
 	}
-	tmc2209_set_velocity(TMC2209_GUIDE_ADDR, p_guide_info, 0x00000000);
+	tmc2209_set_velocity(TMC2209_MOTOR1_ADDR, p_guide_info, 0x00000000);
 	return;
 }
 

@@ -645,6 +645,7 @@ void left_Limit_Interrupt_Callback(void)
 	p_reeler_info->flags.sensor_trigger = true;
 	//p_reeler_info->hybrid.anchor_pos = tmc4671_getActualPosition(MOTOR);
 	p_reeler_info->time_ms.sens_trig = millis();
+	gpio_toggle_pin_level(DBGLED1);
 	//printf("PosDelta = %ld\n", p_reeler_info->hybrid.anchor_pos - prev_sens_pos);
 	//prev_sens_pos = p_reeler_info->hybrid.anchor_pos;
 	return;

@@ -18,9 +18,9 @@ int main(void)
 	call_All_Init_Functions();
 	DBG_Printf(ERR_LVL_INFO, "AxC dbg_print online @ 2 Mbaud, axis=%d\n", axis_id);
 	switch(axis_id) {
-		case X_AXIS: PRINTF_DEBUG?printf("\nAxC - X Axis\n"):0;					break;
-		case GTRON_AXC_TOP: PRINTF_DEBUG?printf("\nAxC - GTron TOP\n"):0;		break;
-		case GTRON_AXC_BOT: PRINTF_DEBUG?printf("\nAxC - GTron BOTTOM\n"):0;	break;
+		case X_AXIS: DBG_Printf(ERR_LVL_DEBUG, "AxC - X Axis\n");					break;
+		case GTRON_AXC_TOP: DBG_Printf(ERR_LVL_DEBUG, "\nAxC - GTron TOP\n");		break;
+		case GTRON_AXC_BOT: DBG_Printf(ERR_LVL_DEBUG, "AxC - GTron BOTTOM\n");	break;
 		default: break;
 	}
 	led_Blink(2, 100);
@@ -34,19 +34,19 @@ int main(void)
 	 *vvvvvvvvv*/
 	repeat_ramp = read_tlv_flash(tlv_ptr, REPEAT_RAMP_FLASH, tlv_traversal);
 	switch(repeat_ramp) {
-		case 0: PRINTF_DEBUG ? printf("\nrepeat_ramp = 0 | No Endurance Run | No Homing\n"): 0;	break;
-		case 2: PRINTF_DEBUG ? printf("\nrepeat_ramp = 2 | Endurance Run | Homing\n"): 0;		break;
-		case 4: PRINTF_DEBUG ? printf("\nrepeat_ramp = 4 | No Endurance Run | Homing\n"): 0;	break;
+		case 0: DBG_Printf(ERR_LVL_DEBUG, "repeat_ramp = 0 | No Endurance Run | No Homing\n");	break;
+		case 2: DBG_Printf(ERR_LVL_DEBUG, "repeat_ramp = 2 | Endurance Run | Homing\n");		break;
+		case 4: DBG_Printf(ERR_LVL_DEBUG, "repeat_ramp = 4 | No Endurance Run | Homing\n");		break;
 		default: break;
 	}
 	if(axis_params.rotary_axis_enabled) {
 		switch(axis_id) {
-			case X_AXIS: PRINTF_DEBUG ? printf("\nX Rotary Axis Enabled!\n"): 0; break;
-			case Y_AXIS: PRINTF_DEBUG ? printf("\nY Rotary Axis Enabled!\n"): 0; break;
-			case Z_AXIS: PRINTF_DEBUG ? printf("\nZ Rotary Axis Enabled!\n"): 0; break;
-			case RF_AXIS: PRINTF_DEBUG ? printf("\nRF Rotary Axis Enabled!\n"): 0; break;
-			case GTRON_AXC_TOP: PRINTF_DEBUG ? printf("\nReeler Rotary Axis Enabled!\n"): 0; break;
-			case GTRON_AXC_BOT: PRINTF_DEBUG ? printf("\nReeler Rotary Axis Enabled!\n"): 0; break;
+			case X_AXIS:		DBG_Printf(ERR_LVL_DEBUG, "X Rotary Axis Enabled!\n");		break;
+			case Y_AXIS:		DBG_Printf(ERR_LVL_DEBUG, "Y Rotary Axis Enabled!\n");		break;
+			case Z_AXIS:		DBG_Printf(ERR_LVL_DEBUG, "Z Rotary Axis Enabled!\n");		break;
+			case RF_AXIS:		DBG_Printf(ERR_LVL_DEBUG, "RF Rotary Axis Enabled!\n");		break;
+			case GTRON_AXC_TOP: DBG_Printf(ERR_LVL_DEBUG, "Reeler Rotary Axis Enabled!\n"); break;
+			case GTRON_AXC_BOT: DBG_Printf(ERR_LVL_DEBUG, "Reeler Rotary Axis Enabled!\n"); break;
 			default: break;
 		}
 	}

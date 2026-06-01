@@ -24,7 +24,7 @@
 
 #include "Macros.h"
 
-uint8_t can_rx_int, ad, cmd, typ, mot, crc, checksum;
+volatile uint8_t can_rx_int, ad, cmd, typ, mot, crc, checksum;
 int32_t can_status, idx;
 uint32_t trig_no, prev_trig_no;
 

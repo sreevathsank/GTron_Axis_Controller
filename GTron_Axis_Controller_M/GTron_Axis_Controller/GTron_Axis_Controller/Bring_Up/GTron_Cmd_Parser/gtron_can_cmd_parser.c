@@ -49,7 +49,7 @@ static void reeler_Home( void )
 		}
 		
 	}
-	DBG_Printf(ERR_LVL_INFO, "\nReeler Homing Cmd Rxcvd\n");
+	DBG_Printf(ERR_LVL_INFO, "Reeler Homing Cmd Rxcvd\n");
 	return;
 }
 
@@ -79,8 +79,8 @@ static void reeler_Move(int32_t target_position, bool move_to_by)
 		p_reeler_info->hybrid.one_shot_armed	= true;
 		DBG_Printf(ERR_LVL_DEBUG, "[HYB] One-Shot armed for this move\n");
 	}
-	(move_to_by == MOVE_TO) ?	DBG_Printf(ERR_LVL_INFO, "\nReeler Move To %ld steps\n", target_position) \
-							:	DBG_Printf(ERR_LVL_INFO, "\nReeler Move By %ld steps\n", target_position);
+	(move_to_by == MOVE_TO) ?	DBG_Printf(ERR_LVL_INFO, "Reeler Move To %ld steps\n", target_position) \
+							:	DBG_Printf(ERR_LVL_INFO, "Reeler Move By %ld steps\n", target_position);
 	return;
 }
 
@@ -97,7 +97,7 @@ static void reeler_Set_Velocity(int32_t reeler_target_velocity)
 	tmc4671_setVelocityLimit(MOTOR, p_reeler_info->velocity.limit);
 	p_reeler_info->position.current = tmc4671_getActualPosition(MOTOR);
 	tmc4671_setAbsolutTargetPosition(MOTOR, p_reeler_info->position.current);
-	PRINTF_DEBUG ? printf("\nReeler Set Velocity %ld rpm\n", p_reeler_info->velocity.limit): 0;
+	DBG_Printf(ERR_LVL_DEBUG, "Reeler Set Velocity %ld rpm\n", p_reeler_info->velocity.limit);
 	return;
 }
 
@@ -113,7 +113,7 @@ static void reeler_Set_Teeth(uint32_t trig_step_size)
 	p_reeler_info->position.trig_step_size = trig_step_size;
 	p_reeler_info->position.current = tmc4671_getActualPosition(MOTOR);
 	tmc4671_setAbsolutTargetPosition(MOTOR, p_reeler_info->position.current);
-	PRINTF_DEBUG ? printf("\nReeler Set Teeth Number or Trigger Step Size as %ld\n", p_reeler_info->position.trig_step_size ): 0;
+	DBG_Printf(ERR_LVL_DEBUG, "Reeler Set Teeth Number or Trigger Step Size as %ld\n", p_reeler_info->position.trig_step_size );
 	return;
 }
 
@@ -128,7 +128,7 @@ static void reeler_Set_Initial_Position(int32_t reeler_initial_position)
 {
 	p_reeler_info->position.initial = reeler_initial_position;
 	reeler_Move(p_reeler_info->position.initial, MOVE_TO);
-	PRINTF_DEBUG ? printf("\nReeler Set Initial Position to %ld steps\n", p_reeler_info->position.initial): 0;
+	DBG_Printf(ERR_LVL_DEBUG, "Reeler Set Initial Position to %ld steps\n", p_reeler_info->position.initial);
 	return;
 }
 
@@ -194,7 +194,7 @@ void reeler_Stop_Motor( void )
 	p_reeler_info->hybrid.cycle_armed			= false;
 	p_reeler_info->hybrid.first_trigger_skip	= true;
 	p_reeler_info->hybrid.consecutive_slips		= 0;
-	p_reeler_info->flags.is_paused				= false;
+	p_reeler_info->flags.is_hybrid_trig_enabled = false;
 	//reeler_info.position.trig_step_size = 0;
 	homing_v = 0;
 	//if(!reeler_info.flags.sag_enabled || !reeler_info.flags.rotate_vel_mode)
@@ -239,6 +239,14 @@ void reeler_Pause_Motor( void )
 	return;
 }
 
+
+/** 
+ * \brief
+ *
+ * @param
+ *
+ * @return
+ **/
 static void reeler_Get_Position( void )
 {
 	int32_t reeler_position = tmc4671_getActualPosition(MOTOR);
@@ -247,6 +255,22 @@ static void reeler_Get_Position( void )
 	can_AxC_Write(CAN_REPLY_TOP_RACK_ID, REELER_MOTOR, AXC_CURRENT_POSITION, reel_pos_within_rot);
 	return;
 }
+
+
+/** 
+ * \brief
+ *
+ * @param
+ *
+ * @return
+ **/
+static void reeler_Set_Encoder_Mode( int32_t enc_mode ) 
+{
+	p_reeler_info->flags.is_encoder_mode = (enc_mode == 0) ? false : true;
+	DBG_Printf(ERR_LVL_DEBUG, "Set Encoder Mode | val = %ld | Encoder Mode = %d", enc_mode, p_reeler_info->flags.is_encoder_mode);
+	return;
+}
+
 /************************************************************************/
 /* Guide Vertical Arrestor Functions                                    */
 /************************************************************************/
@@ -272,8 +296,8 @@ static void guide_VArrestor_Move(Guide_or_VArrestor_t guide_varrestor, int32_t t
 		if(move_to_by == MOVE_BY)  
 		{ p_guide_info->position.target = p_guide_info->position.current + target_position; }
 			
-		tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
-		tmc2209_set_velocity(TMC2209_GUIDE_ADDR, p_guide_info, p_guide_info->velocity.target);
+		tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
+		tmc2209_set_velocity(TMC2209_MOTOR1_ADDR, p_guide_info, p_guide_info->velocity.target);
 		PRINTF_DEBUG ? printf("\nMove To: Current Pos = %ld | Target Pos = %ld | Velocity = %ld ustep/s\n", \
 								p_guide_info->position.current, target_position, p_guide_info->velocity.target): 0;
 	}
@@ -282,8 +306,8 @@ static void guide_VArrestor_Move(Guide_or_VArrestor_t guide_varrestor, int32_t t
 		if(move_to_by == MOVE_BY)
 		{ p_guide_info->position.target = p_guide_info->position.current - target_position; }
 		
-		tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
-		tmc2209_set_velocity(TMC2209_GUIDE_ADDR, p_guide_info, (-p_guide_info->velocity.target) );
+		tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
+		tmc2209_set_velocity(TMC2209_MOTOR1_ADDR, p_guide_info, (-p_guide_info->velocity.target) );
 		PRINTF_DEBUG ? printf("\nMove To: Current Pos = %ld | Target Pos = %ld | Velocity = %ld ustep/s\n", \
 								p_guide_info->position.current, target_position, (-p_guide_info->velocity.target) ): 0;
 	}
@@ -315,8 +339,8 @@ static void guide_Move_To_Open_Limit( void )
 		can_Write(message_Id, can_tx_frame.data_64bit);
 		return;
 	}
-	tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
-	tmc2209_set_velocity(TMC2209_GUIDE_ADDR, p_guide_info, 0x00000FA0);
+	tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
+	tmc2209_set_velocity(TMC2209_MOTOR1_ADDR, p_guide_info, 0x00000FA0);
 	guide_info.flags.move_to_open_lim = true;
 	PRINTF_DEBUG ? printf("\nGuide Move To Open Limit Cmd Rxcvd\n"): 0;
 	return;
@@ -343,8 +367,8 @@ static void guide_Move_To_Close_Limit( void )
 		can_Write(message_Id, can_tx_frame.data_64bit);
 		return;
 	}
-	tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
-	tmc2209_set_velocity(TMC2209_GUIDE_ADDR, p_guide_info, 0xFFFFF060);
+	tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
+	tmc2209_set_velocity(TMC2209_MOTOR1_ADDR, p_guide_info, 0xFFFFF060);
 	guide_info.flags.move_to_close_lim = true;
 	PRINTF_DEBUG ? printf("\nGuide Move to Close Limit Cmd Rxcvd\n"): 0;
 	return;
@@ -390,7 +414,7 @@ static void guide_VArrestor_Stop_Motor(Guide_or_VArrestor_t guide_varrestor)
 	{
 		case GUIDE:
 			//tmc2209_set_velocity(TMC2209_GUIDE_ADDR, 0x00000000, GUIDE_STEP_COUNTER);
-			tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_VACTUAL, 0x00000000);
+			tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_VACTUAL, 0x00000000);
 			guide_info.flags.homing = 0;
 			guide_info.flags.move_given = 0;
 			guide_info.flags.move_to_open_lim = 0;
@@ -420,7 +444,7 @@ static void guide_VArrestor_Stop_Motor(Guide_or_VArrestor_t guide_varrestor)
 static void guide_Limits_Status_Check(/*uint8_t limit*/ void)
 {
 	uint8_t limit_reg_value = 0;
-	tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
+	tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
 	IOXP_Read_Byte(IOXP_REG_GPIO, &limit_reg_value);
 	if(axis_id == GTRON_AXC_TOP) { message_Id = CAN_REPLY_TOP_RACK_ID; }
 	else if(axis_id == GTRON_AXC_BOT) { message_Id = CAN_REPLY_BOT_RACK_ID; }
@@ -556,15 +580,16 @@ void parse_GTron_CAN_Msg_Data( void )
 				{
 					case AXC_START:				reeler_Start_Motor();											break;
 					case AXC_STOP:				reeler_Stop_Motor();											break;
-					case AXC_VELOCITY:			reeler_Set_Velocity((int32_t)rx_can_cmd_info.value);			break;
-					case AXC_ROTATE:			reeler_Move( TMC4671_ROTATION, MOVE_BY);					    break;
-					case AXC_MOVE_TO:			reeler_Move((int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
-					case AXC_MOVE_BY:			reeler_Move((int32_t)rx_can_cmd_info.value, MOVE_BY);			break;
-					case AXC_TEETH:				reeler_Set_Teeth((uint32_t)rx_can_cmd_info.value);				break;
-					case AXC_INITIAL_POSITION:	reeler_Set_Initial_Position((int32_t)rx_can_cmd_info.value);	break;
+					case AXC_VELOCITY:			reeler_Set_Velocity( (int32_t)rx_can_cmd_info.value );			break;
+					case AXC_ROTATE:			reeler_Move( TMC4671_ROTATION, MOVE_BY );					    break;
+					case AXC_MOVE_TO:			reeler_Move( (int32_t)rx_can_cmd_info.value, MOVE_TO );			break;
+					case AXC_MOVE_BY:			reeler_Move( (int32_t)rx_can_cmd_info.value, MOVE_BY );			break;
+					case AXC_TEETH:				reeler_Set_Teeth( (uint32_t)rx_can_cmd_info.value );			break;
+					case AXC_INITIAL_POSITION:	reeler_Set_Initial_Position( (int32_t)rx_can_cmd_info.value );	break;
 					case AXC_CURRENT_POSITION:	reeler_Get_Position();											break;
 					case AXC_HOMING:			reeler_Home();													break;
 					case AXC_PAUSE:				reeler_Pause_Motor();											break;
+					case AXC_ENCODER_MODE:		reeler_Set_Encoder_Mode( (int32_t)rx_can_cmd_info.value );		break;
 					default: DBG_Printf(ERR_LVL_DEBUG, "Reeler Motor Invalid Operation Rxcvd\n");				break;
 				}
 			break;
@@ -647,8 +672,14 @@ void parse_GTron_CAN_Msg_Data( void )
 					}
 					case AXC_N_SHOT: {
 						p_reeler_info->hybrid.total_n_shots = (uint32_t)rx_can_cmd_info.value;
+						p_reeler_info->flags.is_paused = false;
 						if(p_reeler_info->hybrid.total_n_shots == 0) {
-							DBG_Printf(ERR_LVL_INFO, "Total N Shots = %ld | Inspection\n", p_reeler_info->hybrid.total_n_shots);
+							if(p_reeler_info->flags.is_encoder_mode) {
+								DBG_Printf(ERR_LVL_INFO, "[ENC] Total N Shots = %ld | Inspection\n", p_reeler_info->hybrid.total_n_shots);
+							} else {
+								DBG_Printf(ERR_LVL_INFO, "[HYB] Total N Shots = %ld | Inspection\n", p_reeler_info->hybrid.total_n_shots);
+							}
+							
 							p_reeler_info->hybrid.mode					= HYBRID_MODE_INSPECTION;
 							p_reeler_info->hybrid.first_trigger_skip	= true;
 							p_reeler_info->hybrid.consecutive_slips		= 0;
@@ -656,13 +687,20 @@ void parse_GTron_CAN_Msg_Data( void )
 							p_reeler_info->flags.sensor_trigger			= false;
 							p_reeler_info->flags.is_hybrid_trig_enabled = true;
 							p_reeler_info->hybrid.prev_anchor_pos		= tmc4671_getActualPosition(MOTOR);
-							DBG_Printf(ERR_LVL_INFO, "[HYB] Hybrid Trigger N Shot flag Enabled for Inspection\n");
+							if(p_reeler_info->flags.is_encoder_mode) {
+								DBG_Printf(ERR_LVL_INFO, "[ENC] Encoder Trigger flag Enabled for Inspection\n");
+							} else {
+								DBG_Printf(ERR_LVL_INFO, "[HYB] Hybrid Trigger flag Enabled for Inspection\n");
+							}
 						} else {
-							DBG_Printf(ERR_LVL_INFO, "Hybrid Trigger N Shot flag Enabled | No of N Shots = %ld\n", p_reeler_info->hybrid.total_n_shots);
+							if(p_reeler_info->flags.is_encoder_mode) {
+								DBG_Printf(ERR_LVL_INFO, "[ENC] Encoder Trigger N Shot flag Enabled | No of N Shots = %ld\n", p_reeler_info->hybrid.total_n_shots);
+							} else {
+								DBG_Printf(ERR_LVL_INFO, "[HYB] Hybrid Trigger N Shot flag Enabled | No of N Shots = %ld\n", p_reeler_info->hybrid.total_n_shots);
+							}
 							p_reeler_info->hybrid.mode					= HYBRID_MODE_N_SHOT;
 							p_reeler_info->flags.is_hybrid_trig_enabled = true;
 							p_reeler_info->hybrid.consecutive_slips		= 0;
-							//p_reeler_info->flags.is_paused				= false;
 							p_reeler_info->flags.sag_enabled			= true;
 							p_reeler_info->hybrid.cycle_armed			= false;
 							p_reeler_info->flags.rotate_vel_mode		= true;
@@ -690,60 +728,6 @@ void parse_GTron_CAN_Msg_Data( void )
 				}
 				break;
 			}
-			case HYBRID_TRIGGER_N_SHOT: {
-				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
-				{
-					case AXC_ENABLE: {
-						p_reeler_info->hybrid.total_n_shots = (uint32_t)rx_can_cmd_info.value;
-						if(p_reeler_info->hybrid.total_n_shots == 0) {
-							DBG_Printf(ERR_LVL_INFO, "Total N Shots = %ld | Inspection\n", p_reeler_info->hybrid.total_n_shots);
-							p_reeler_info->hybrid.mode					= HYBRID_MODE_INSPECTION;
-							p_reeler_info->hybrid.first_trigger_skip	= true;
-							p_reeler_info->hybrid.consecutive_slips		= 0;
-							p_reeler_info->hybrid.cycle_armed			= false;
-							p_reeler_info->flags.sensor_trigger			= false;
-							p_reeler_info->flags.is_hybrid_trig_enabled = true;
-							p_reeler_info->hybrid.prev_anchor_pos		= tmc4671_getActualPosition(MOTOR);
-							DBG_Printf(ERR_LVL_INFO, "[HYB] Hybrid Trigger flag Enabled for Inspection\n");
-						} else {
-							DBG_Printf(ERR_LVL_INFO, "Hybrid Trigger N Shot flag Enabled | No of N Shots = %ld\n", p_reeler_info->hybrid.total_n_shots);
-							p_reeler_info->hybrid.mode					= HYBRID_MODE_N_SHOT;
-							p_reeler_info->flags.is_hybrid_trig_enabled = true;
-							p_reeler_info->hybrid.consecutive_slips		= 0;
-							p_reeler_info->flags.is_paused				= false;
-							p_reeler_info->flags.sag_enabled			= true;
-							p_reeler_info->hybrid.cycle_armed			= false;
-							p_reeler_info->flags.rotate_vel_mode		= true;
-							p_reeler_info->hybrid.curr_n_shots			= 0;
-							p_reeler_info->hybrid.prev_anchor_pos		= tmc4671_getActualPosition(MOTOR);
-							if(p_reeler_info->flags.sag_enabled && p_reeler_info->flags.rotate_vel_mode) {
-								timer_start(&VEL_TIMER);
-								tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
-								tmc4671_setVelocityTarget(MOTOR, reeler_info.velocity.limit);
-								DBG_Printf(ERR_LVL_DEBUG, "Reeler Start: VEL_TIMER Started | Sag and Rotate Vel Mode Enabled\n");
-							}
-						}
-						break;
-					}
-					case AXC_DISABLE: {
-						p_reeler_info->flags.is_hybrid_trig_enabled = false;
-						p_reeler_info->flags.rotate_vel_mode = false;
-						DBG_Printf(ERR_LVL_INFO, "\nHybrid Trigger one shot flag Disabled\n");
-						break;
-					}
-					case AXC_PAUSE: {
-						if(p_reeler_info->hybrid.one_shot_armed) {
-							DBG_Printf(ERR_LVL_INFO, "[HYB] PAUSE on ONE_SHOT ignored - One-Shot move active\n");
-						} else {
-							p_reeler_info->flags.is_paused = true;
-						}
-						break;
-					}
-					default: DBG_Printf(ERR_LVL_INFO, "\nHybrid Trigger Invalid Operation Rxcvd\n"); break;
-				}
-				break;
-			}
-			default: break;
 		}
 	}
 	return;

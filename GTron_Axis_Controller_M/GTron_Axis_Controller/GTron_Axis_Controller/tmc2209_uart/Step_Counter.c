@@ -39,7 +39,7 @@ void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info)
 	uint16_t current_mscnt = 0;
 	//if(motor_info->motor_name == GUIDE_STRUCT)
 	{
-		current_mscnt = read_TMC2209_mscnt(TMC2209_GUIDE_ADDR);
+		current_mscnt = read_TMC2209_mscnt(TMC2209_MOTOR1_ADDR);
 	}
 	//if(motor_info->motor_name == VARREST_STRUCT)
 	{
@@ -109,7 +109,7 @@ void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info)
 		if( diff_zero )
 		{
 			motor_info->flags.move_given = false;
-			tmc2209_set_velocity(TMC2209_GUIDE_ADDR, motor_info, ZERO_HEX);
+			tmc2209_set_velocity(TMC2209_MOTOR1_ADDR, motor_info, ZERO_HEX);
 			motor_info->position.current = motor_info->step_tracker.total_steps;
 			message_Id = CAN_REPLY_TOP_RACK_ID;
 			can_tx_frame.data[0] = GUIDE_MOTOR;

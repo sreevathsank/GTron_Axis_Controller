@@ -106,14 +106,13 @@ void init_timers(void)
 
 static void init_Motor_Struct(Motor_Info_t *motor_info, Motor_Name_Enum_t motor_name)
 {
-	if(motor_info == NULL)
-	{
-		PRINTF_DEBUG ? printf("\ninit_Motor_Struct NULL Pointer.\n"): 0;
+	if(motor_info == NULL) {
+		DBG_Printf(ERR_LVL_ERROR, "init_Motor_Struct NULL Pointer.\n");
 		return;
 	}
-	if(motor_name > NO_OF_MOTOR_NAME)
-	{
-		PRINTF_DEBUG ? printf("\ninit_Motor_Struct Motor Name not in Motor_Name_Enum_t.\n"): 0;
+	
+	if(motor_name > NO_OF_MOTOR_NAME) {
+		DBG_Printf(ERR_LVL_WARNING, "init_Motor_Struct Motor Name not in Motor_Name_Enum_t.\n");
 		return;	
 	}
 	
@@ -213,15 +212,11 @@ void check_Current_Axis_ADC(void)
 	uint32_t adc_sum = 0, adc_result;
 	uint32_t adc_max = 0, adc_min = UINT32_MAX;
 	
-	for(int32_t iter = 0; iter < ADC_NUM_READINGS; iter++)
-	{
+	for(int32_t iter = 0; iter < ADC_NUM_READINGS; iter++) {
 		adc_sync_read_channel(&ADC_0, ADC_CHANNEL, adc_reading.adc_8bit, ADC_READ_LENGTH);
-		if(adc_reading.adc_16bit > adc_max)
-		{
+		if(adc_reading.adc_16bit > adc_max) {
 			adc_max = adc_reading.adc_16bit;
-		}
-		else if(adc_reading.adc_16bit < adc_min)
-		{
+		} else if(adc_reading.adc_16bit < adc_min) {
 			adc_min = adc_reading.adc_16bit;
 		}
 		adc_sum += adc_reading.adc_16bit;
@@ -360,7 +355,7 @@ void read_Set_Parameters_From_Flash(void)
 			axis_params.velocity_i			= read_tlv_flash(tlv_ptr, VELOCITY_I_FLASH, tlv_traversal);//5000;  //300;
 			axis_params.velocity_p			= read_tlv_flash(tlv_ptr, VELOCITY_P_FLASH, tlv_traversal);//2500;  //1000;
 			axis_params.position_i			= read_tlv_flash(tlv_ptr, POSITION_I_FLASH, tlv_traversal);//0;
-			axis_params.position_p			= 100;//read_tlv_flash(tlv_ptr, POSITION_P_FLASH, tlv_traversal);//2000;	 //500;
+			axis_params.position_p			= 80;//read_tlv_flash(tlv_ptr, POSITION_P_FLASH, tlv_traversal);//2000;	 //500;
 			axis_params.home_search_vel		= read_tlv_flash(tlv_ptr, HOMING_VELOCITY_FLASH, tlv_traversal);//160;
 			axis_params.home_switch_vel		= (axis_params.home_search_vel / 10);
 			axis_params.endurance_vel		= read_tlv_flash(tlv_ptr, ENDURACE_VELOCTIY_FLASH, tlv_traversal);////1000;
@@ -562,7 +557,7 @@ void call_All_Init_Functions(void)
 	
 	// Tmc2209 related inits
 	init_Motor_Struct(p_guide_info, MOTOR_GUIDE);
-	init_tmc2209_motor(TMC2209_GUIDE_ADDR);
+	init_tmc2209_motor(TMC2209_MOTOR1_ADDR);
 	
 	init_timers();
 	//init_Motor_Struct(p_varrest_info, VARREST_STRUCT);
