@@ -28,9 +28,17 @@ volatile uint8_t can_rx_int, ad, cmd, typ, mot, crc, checksum;
 int32_t can_status, idx;
 uint32_t trig_no, prev_trig_no;
 
-bool motor_dir_rev, lim_edge_detection, rfs_ping_rxvd;
+bool motor_dir_rev, lim_edge_detection, rfs_ping_rxvd, is_tmc2209_mot_moving;
 
 int32_t prev_sens_pos;
+
+typedef enum {
+	REELER1_GUIDE_REELERADJ1	= 0,
+	VARREST_1_2_SOLENOID		= 1,
+	REELER2_REELERADJ2_FRONTCAM	= 2,
+}SouthBridge_t;
+
+SouthBridge_t sbridge_addr;
 
 /********************************************************************
  * An Enum to indicate the axis of the current Axis Controller board*

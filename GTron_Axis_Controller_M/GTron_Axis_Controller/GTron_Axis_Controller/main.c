@@ -13,13 +13,16 @@ int main(void)
 	DBG_TransportInit();              // Configure DMA ch0 -> SERCOM7 USART.
 	DBG_Init(DBG_TransportGet());     // Wire dbg_print to the transport.
 	SYSTICK_INIT();
+	
+	// REELER1_GUIDE_REELERADJ1, VARREST_1_2_SOLENOID and REELER2_REELERADJ2_FRONTCAM.
+	sbridge_addr = VARREST_1_2_SOLENOID;
 
 	define_All_Global_Variables();
 	call_All_Init_Functions();
 	DBG_Printf(ERR_LVL_INFO, "AxC dbg_print online @ 2 Mbaud, axis=%d\n", axis_id);
 	switch(axis_id) {
-		case X_AXIS: DBG_Printf(ERR_LVL_DEBUG, "AxC - X Axis\n");					break;
-		case GTRON_AXC_TOP: DBG_Printf(ERR_LVL_DEBUG, "\nAxC - GTron TOP\n");		break;
+		case X_AXIS: DBG_Printf(ERR_LVL_DEBUG, "AxC - X Axis\n");				break;
+		case GTRON_AXC_TOP: DBG_Printf(ERR_LVL_DEBUG, "\nAxC - GTron TOP\n");	break;
 		case GTRON_AXC_BOT: DBG_Printf(ERR_LVL_DEBUG, "AxC - GTron BOTTOM\n");	break;
 		default: break;
 	}
@@ -67,23 +70,27 @@ int main(void)
 	/* Replace with your application code */
 	for(;;) {
 		// TMC2209 Step Tracker and Move Done.
-		if( p_guide_info->flags.homing || p_guide_info->flags.move_given || \
-		    p_guide_info->flags.move_to_open_lim || p_guide_info->flags.move_to_close_lim \
-			&& !gtron_limits.interrupt_raised )
-										{ update_TMC2209_Step_Tracking(p_guide_info);	}
+		//if( p_guide_info->flags.homing || p_guide_info->flags.move_given || \
+		//    p_guide_info->flags.move_to_open_lim || p_guide_info->flags.move_to_close_lim \
+		//	&& !gtron_limits.interrupt_raised )
+		//								{ update_TMC2209_Step_Tracking(p_guide_info);	}
+		if(is_tmc2209_mot_moving) {
+			check_Which_2209_Motor_Moving();
+		}
 		
-		// For TMC4671 Homing Ramp.
-		//if(limit_variables.homing)		{ homing_Ramp();								}
+		if(gtron_limits.interrupt_raised) {
+			check_Limit_Flags();
+		}
 			
 		// For checking if the Motor has reached its target position TMC4671.
 		if(check_move_done)				{ check_For_Move_Done();						}
-			
+		
 		// For Generating S Ramp profile for TMC4671.
 		if(move_given_s_ramp)			{ run_S_ramp();									}
 			
 		// For running the motor in Velocity Mode TMC4671.
-		if( (repeat_ramp != 2) && p_reeler_info->flags.rotate_vel_mode \
-			&& p_reeler_info->flags.vel_timer && p_reeler_info->flags.sag_enabled)
+		if( (repeat_ramp != 2) && p_reeler1_info->flags.rotate_vel_mode \
+			&& p_reeler1_info->flags.vel_timer && p_reeler1_info->flags.sag_enabled)
 										{ run_Velocity_Ramp();							}	
 		
 		// Check if CAN Messages were received.

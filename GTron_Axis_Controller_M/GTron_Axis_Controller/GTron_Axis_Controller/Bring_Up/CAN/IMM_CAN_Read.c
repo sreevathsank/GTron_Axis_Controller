@@ -20,8 +20,12 @@
  */
 void can_Read(void)
 {
+	if(!hri_can_read_RXF0S_F0FL_bf( (void *)CAN1) ) {
+		can_rx_int = 0;
+		return;
+	}
 	int32_t data;
-	can_rx_int--;
+	//can_rx_int--;
 	can_rx_frame.data_64bit = 0;
 	message_Id = 0;
 	ad = 0; cmd = 0; typ = 0; mot = 0;

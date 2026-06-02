@@ -34,6 +34,8 @@ void index_Interrupt_Callback( void );
 
 uint16_t read_TMC2209_mscnt(uint16_t icID);
 
+void check_Which_2209_Motor_Moving(void);
+
 void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info);
 
 void check_tmc2209_move_done(Motor_Info_t *motor_info);

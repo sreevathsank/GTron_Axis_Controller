@@ -41,6 +41,8 @@
 #define GTRON_AXC_ADC_MAX			208
 /**********************************/	
 
+
+
 #define ADC_CHANNEL					0				// ADC Channel to read from.
 #define ADC_READ_LENGTH				2				// No. of bytes to read. 8 bit = 1 | 10 and 12 bits = 2.			
 #define ADC_NUM_READINGS			50				// No. of ADC Readings to average.
@@ -72,15 +74,15 @@
 /**
  * GTron Limit Flag Masks
 **/
-#define GUIDE_R_LIM_BIT				4
-#define GUIDE_L_LIM_BIT				5
-#define VARREST_R_LIM_BIT			6
-#define VARREST_L_LIM_BIT			7
+#define MOT1_R_LIM_BIT				4
+#define MOT1_L_LIM_BIT				5
+#define MOT2_R_LIM_BIT				6
+#define MOT2_L_LIM_BIT				7
 
-#define MSK_GUIDE_R_LIM(val)		( (val >> GUIDE_R_LIM_BIT) & 1 )
-#define MSK_GUIDE_L_LIM(val)		( (val >> GUIDE_L_LIM_BIT) & 1 )
-#define MSK_VARREST_R_LIM(val)		( (val >> VARREST_R_LIM_BIT) & 1 )
-#define MSK_VARREST_L_LIM(val)		( (val >> VARREST_L_LIM_BIT) & 1 )
+#define MSK_MOT1_R_LIM(val)			( (val >> MOT1_R_LIM_BIT) & 1 )
+#define MSK_MOT1_L_LIM(val)			( (val >> MOT1_L_LIM_BIT) & 1 )
+#define MSK_MOT2_R_LIM(val)			( (val >> MOT2_R_LIM_BIT) & 1 )
+#define MSK_MOT2_L_LIM(val)			( (val >> MOT2_L_LIM_BIT) & 1 )
 
 
 #define HOMING_RAMP_DELTA			0.025f			// The Acceleration delta for increasing velocity for homing sequence.

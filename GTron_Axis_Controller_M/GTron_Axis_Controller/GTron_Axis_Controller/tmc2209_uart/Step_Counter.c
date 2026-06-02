@@ -32,6 +32,27 @@ uint16_t read_TMC2209_mscnt(uint16_t icID)
 	return (uint16_t)(mscnt_reg_val & 0x3FF);
 }
 
+void check_Which_2209_Motor_Moving(void) 
+{
+	Motor_Info_t *m = NULL;
+	Motor_Info_t *m1 = mot_array[TMC2209_MOT_ADDR1];
+	Motor_Info_t *m2 = mot_array[TMC2209_MOT_ADDR2];
+	if(m1 == NULL || m2 == NULL) {
+		DBG_Printf(ERR_LVL_ERROR, "check_Which_2209_Motor_Moving() mot_array entry NULL ptr error\n");
+		return EXIT_FAILURE;
+	}
+	if( m1->motor_state == MOTOR_MOVING_STATE) {
+		m = m1;
+	} else if(m2->motor_state == MOTOR_MOVING_STATE) {
+		m = m2;
+	}
+	if(m == NULL) {
+		DBG_Printf(ERR_LVL_ERROR, "check_Which_2209_Motor_Moving() Motor_Info_t NULL ptr error\n");
+		return EXIT_FAILURE;
+	}
+	return;	
+}
+
 void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info)
 {
 	if(motor_info == NULL) { return; }
@@ -117,6 +138,7 @@ void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info)
 			can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
 			PRINTF_DEBUG ? printf("\nGuide Move Done. Current Position = %ld usteps\n", \
 			motor_info->position.current): 0;
+			motor_info->motor_state = MOTOR_MOVE_DONE_STATE;
 		}
 	}
 	

@@ -544,52 +544,198 @@ void toggle_Limit_Led(void)
 void check_Limit_Flags(void)
 {
 	gtron_limits.interrupt_raised = false;
+	
+	uint8_t intf_rd_data = 0x00;
+	
+	// Read the INTF register and see what pins have raised an interrupt.
+	IOXP_Read_Byte(IOXP_REG_INTF, &intf_rd_data);
+	
+	// If there was an interrupt raised...
+	if(intf_rd_data)
+	{
+		DBG_Printf(ERR_LVL_DEBUG, "IOXP Interrupt Raised.\n");
+		
+		// Find which motor is currently homing.
+		Motor_Info_t *m = NULL;
+		Motor_Info_t *m1 = mot_array[TMC2209_MOTOR1];
+		Motor_Info_t *m2 = mot_array[TMC2209_MOTOR2];
+		if(m1->flags.is_tmc2209_homing) {
+			m = m1;
+			DBG_Printf(ERR_LVL_DEBUG, "TMC2209 MOTOR1 is homing\n");
+		} else if(m2->flags.is_tmc2209_homing) {
+			m = m2;
+			DBG_Printf(ERR_LVL_DEBUG, "TMC2209 MOTOR1 is homing\n");
+		}
+		
+		if(m == NULL) {
+			DBG_Printf(ERR_LVL_WARNING, "check_Limit_Flags, Motor_Info_t pointer is NULL!\n");
+		}
+		// Read the INTCAP register to get the pin states and clear the register.
+		IOXP_Read_Byte(IOXP_REG_INTCAP_RD_ONLY, &gtron_limits.limit_flags);
+		DBG_Printf(ERR_LVL_DEBUG, "\nIOXP Limit Hit, Setting Motor Velocity to 0...\n");
+		
+		if(m->comms.uart_addr = TMC2209_MOT_ADDR1) {
+			
+			// Open (Right) Limit.
+			if(MSK_MOT1_R_LIM(gtron_limits.limit_flags)) {
+				if( (m->mot_name == MOTOR_VARREST1) ||
+					(m->mot_name == MOTOR_REELERADJ1) ||
+					(m->mot_name == MOTOR_FRONT_CAM) )
+				{
+					DBG_Printf(ERR_LVL_ERROR, "OPEN (RIGHT) LIMIT DETECTED FOR SINGLE LIMIT MOTOR!\n");
+				} else {
+					tmc2209_writeRegister(m->comms.uart_addr, TMC2209_VACTUAL, 0x00000000);
+					DBG_Printf(ERR_LVL_DEBUG, "Open (Left) Limit Detected for Double Limit Motor. Set Velocity to 0.\n");
+					if(m->flags.move_to_open_lim) {
+						m->flags.move_to_open_lim = false;
+						
+						update_TMC2209_Step_Tracking(m);
+						m->position.right_open_limit = m->step_tracker.total_steps;
+						m->flags.is_tmc2209_homing = false;
+						
+						// Send CAN Commands reply.
+						message_Id = CAN_REPLY_TOP_RACK_ID;
+						can_tx_frame.data[PERIPHERAL_BYTE_IDX]	= GUIDE_OPEN_LIMIT;
+						can_tx_frame.data[OPERATION_BYTE_IDX]	= AXC_PRESSED;
+						can_Write(message_Id, can_tx_frame.data_64bit);
+						
+						DBG_Printf(ERR_LVL_DEBUG, "\nMove to Open Limit Done. Setting Current Position as %ld...\n", m->position.right_open_limit);
+					}
+				}
+			}
+			// Close (Left) Limit
+			else if(MSK_MOT1_L_LIM(gtron_limits.limit_flags)) {
+				tmc2209_writeRegister(m->comms.uart_addr, TMC2209_VACTUAL, 0x00000000);
+				DBG_Printf(ERR_LVL_DEBUG, "Open (Left) Limit Detected for Double Limit Motor. Set Velocity to 0.\n");
+				if(m->flags.move_to_close_lim) {
+					m->flags.move_to_close_lim = false;
+					
+					update_TMC2209_Step_Tracking(m);
+					m->step_tracker.total_steps		= 0;
+					m->step_tracker.total_dist		= 0;
+					m->position.left_close_limit	= m->step_tracker.total_steps;
+					m->flags.is_tmc2209_homing		= false;
+					
+					// Send CAN Commands reply.
+					message_Id = CAN_REPLY_TOP_RACK_ID;
+					can_tx_frame.data[PERIPHERAL_BYTE_IDX]	= GUIDE_CLOSE_LIMIT;
+					can_tx_frame.data[OPERATION_BYTE_IDX]	= AXC_PRESSED;
+					can_Write(message_Id, can_tx_frame.data_64bit);
+					
+					DBG_Printf(ERR_LVL_DEBUG, "\nMove to Open Limit Done. Setting Current Position as %ld...\n", m->position.right_open_limit);
+				}
+			}
+		} else if(m->comms.uart_addr = TMC2209_MOT_ADDR2) {
+			
+			// Open (Right) Limit.
+			if(MSK_MOT2_R_LIM(gtron_limits.limit_flags)) {
+				if( (m->mot_name == MOTOR_VARREST2) ||
+					(m->mot_name == MOTOR_REELERADJ2) ||
+					(m->mot_name == MOTOR_FRONT_CAM) )
+				{
+					DBG_Printf(ERR_LVL_ERROR, "OPEN (RIGHT) LIMIT DETECTED FOR SINGLE LIMIT MOTOR!\n");
+					} else {
+					tmc2209_writeRegister(m->comms.uart_addr, TMC2209_VACTUAL, 0x00000000);
+					DBG_Printf(ERR_LVL_DEBUG, "Open (Left) Limit Detected for Double Limit Motor. Set Velocity to 0.\n");
+					if(m->flags.move_to_open_lim) {
+						m->flags.move_to_open_lim = false;
+						
+						update_TMC2209_Step_Tracking(m);
+						m->position.right_open_limit = m->step_tracker.total_steps;
+						p_guide_info->flags.is_tmc2209_homing = false;
+						
+						// Send CAN Commands reply.
+						message_Id = CAN_REPLY_TOP_RACK_ID;
+						can_tx_frame.data[PERIPHERAL_BYTE_IDX]	= GUIDE_OPEN_LIMIT;
+						can_tx_frame.data[OPERATION_BYTE_IDX]	= AXC_PRESSED;
+						can_Write(message_Id, can_tx_frame.data_64bit);
+						
+						DBG_Printf(ERR_LVL_DEBUG, "\nMove to Open Limit Done. Setting Current Position as %ld...\n", m->position.right_open_limit);
+					}
+				}
+			}
+			// Close (Left) Limit
+			else if(MSK_MOT2_L_LIM(gtron_limits.limit_flags)) {
+				tmc2209_writeRegister(m->comms.uart_addr, TMC2209_VACTUAL, 0x00000000);
+				DBG_Printf(ERR_LVL_DEBUG, "Open (Left) Limit Detected for Double Limit Motor. Set Velocity to 0.\n");
+				if(m->flags.move_to_close_lim) {
+					m->flags.move_to_close_lim = false;
+					
+					update_TMC2209_Step_Tracking(m);
+					m->step_tracker.total_steps		= 0;
+					m->step_tracker.total_dist		= 0;
+					m->position.left_close_limit	= m->step_tracker.total_steps;
+					m->flags.is_tmc2209_homing		= false;
+					
+					// Send CAN Commands reply.
+					message_Id = CAN_REPLY_TOP_RACK_ID;
+					can_tx_frame.data[PERIPHERAL_BYTE_IDX]	= GUIDE_CLOSE_LIMIT;
+					can_tx_frame.data[OPERATION_BYTE_IDX]	= AXC_PRESSED;
+					can_Write(message_Id, can_tx_frame.data_64bit);
+					
+					DBG_Printf(ERR_LVL_DEBUG, "\nMove to Open Limit Done. Setting Current Position as %ld...\n", m->position.right_open_limit);
+				}
+			}
+		}
+		return;
+	}
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		/*
+		DBG_Printf(ERR_LVL_DEBUG, "\nGuide Limit Hit, Setting Guide Motor Velocity to 0...\n");
+		if( MSK_MOT1_R_LIM(gtron_limits.limit_flags) )	// Guide Right Open Limit.
+		{
+			tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_VACTUAL, 0x00000000);
+			DBG_Printf(ERR_LVL_DEBUG, "\nInside msk right limit\n");
+			if(p_guide_info->flags.move_to_open_lim)
+			{
+				p_guide_info->flags.move_to_open_lim = false;
+				
+				// Write to the Guide Step Counter TCC Counter Register as 0.
+				update_TMC2209_Step_Tracking(p_guide_info);
+				p_guide_info->position.right_open_limit	= p_guide_info->step_tracker.total_steps;
+				
+				// Send the CAN Command
+				message_Id = CAN_REPLY_TOP_RACK_ID;
+				can_tx_frame.data[PERIPHERAL_BYTE_IDX] = GUIDE_OPEN_LIMIT;
+				can_tx_frame.data[OPERATION_BYTE_IDX] = AXC_PRESSED;
+				can_Write(message_Id, can_tx_frame.data_64bit);
+				
+				DBG_Printf(ERR_LVL_DEBUG, "\nMove to Open Limit Done. Setting Current Position as %ld...\n", p_guide_info->position.right_open_limit);
+			}
+			DBG_Printf(ERR_LVL_DEBUG, "\nGuide Right Open Limit is Hit!\n");
+		}
+		else if( MSK_MOT1_L_LIM(gtron_limits.limit_flags) )	// Guide Left Close Limit.
+		{
+			tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_VACTUAL, 0x00000000);
+			DBG_Printf(ERR_LVL_DEBUG, "\nInside msk left limit\n");
+			if(p_guide_info->flags.move_to_close_lim)
+			{
+				p_guide_info->flags.move_to_close_lim = false;
+				tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_VACTUAL, 0x00000000);
+				
+				// Get the current position as the stroke length of the Guide setup.
+				update_TMC2209_Step_Tracking(p_guide_info);
+				p_guide_info->step_tracker.total_steps	= 0;
+				p_guide_info->step_tracker.total_dist	= 0;
+				p_guide_info->position.left_close_limit	= p_guide_info->step_tracker.total_steps;
+				p_guide_info->flags.is_tmc2209_homing = false;
+				
+				
+				// Send the CAN Command
+				message_Id = CAN_REPLY_TOP_RACK_ID;
+				can_tx_frame.data[PERIPHERAL_BYTE_IDX] = GUIDE_CLOSE_LIMIT;
+				can_tx_frame.data[OPERATION_BYTE_IDX] = AXC_PRESSED;
+				can_Write(message_Id, can_tx_frame.data_64bit);
+				
+				DBG_Printf(ERR_LVL_DEBUG, "\nMove to Close Limit Done. Setting Current Position as %ld...\n", p_guide_info->position.left_close_limit);
+			}
+			DBG_Printf(ERR_LVL_DEBUG, "\nGuide Left Close Limit is Hit!\n");
+		}
+	}
+	
 	PRINTF_DEBUG ? printf("\nInterrupt raised set to false\n"): 0;
-	//for(int8_t i = 7; i >= 0; i--) { PRINTF_DEBUG ? printf(" Bit %d = %d | ", i, (gtron_limits.limit_flags >> i) & 1 ): 0; }
-	
-	/*PRINTF_DEBUG ? printf("\n"): 0;
-	if( MSK_GUIDE_R_LIM(gtron_limits.limit_flags) )	// Guide Right Open Limit.
-	{
-		PRINTF_DEBUG ? printf("\nInside msk right limit\n"): 0;
-		if(p_guide_info->flags.move_to_open_lim)
-		{
-			p_guide_info->flags.move_to_open_lim = false;
-			tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_VACTUAL, 0x00000000);
-			
-			// Write to the Guide Step Counter TCC Counter Register as 0.
-			update_TMC2209_Step_Tracking(p_guide_info);
-			p_guide_info->step_tracker.total_steps	= 0;
-			p_guide_info->step_tracker.total_dist	= 0;
-			p_guide_info->position.right_open_limit	= p_guide_info->step_tracker.total_steps;
-			PRINTF_DEBUG ? printf("\nMove to Open Limit Done. Setting Current Position as %ld...\n", p_guide_info->position.right_open_limit): 0;
-		}
-		PRINTF_DEBUG ? printf("\nGuide Right Open Limit is Hit!\n"): 0;
-	}
-	else if( MSK_GUIDE_L_LIM(gtron_limits.limit_flags) )	// Guide Left Close Limit.
-	{
-		PRINTF_DEBUG ? printf("\nInside msk left limit\n"): 0;
-		if(p_guide_info->flags.move_to_close_lim)
-		{
-			p_guide_info->flags.move_to_close_lim = false;
-			tmc2209_writeRegister(TMC2209_GUIDE_ADDR, TMC2209_VACTUAL, 0x00000000);
-			
-			// Get the current position as the stroke length of the Guide setup.
-			//update_TMC2209_Step_Tracking(p_guide_info);
-			p_guide_info->position.left_close_limit	= p_guide_info->step_tracker.total_steps;
-			PRINTF_DEBUG ? printf("\nMove to Close Limit Done. Setting Current Position as %ld...\n", p_guide_info->position.left_close_limit): 0;
-		}
-		PRINTF_DEBUG ? printf("\nGuide Left Close Limit is Hit!\n"): 0;
-	}
-	else if( MSK_VARREST_R_LIM(gtron_limits.limit_flags) )
-	{
-		PRINTF_DEBUG ? printf("\nVertical Arrestor Right Limit is Hit!\n"): 0;
-	}
-	else if( MSK_VARREST_L_LIM(gtron_limits.limit_flags) )
-	{
-		PRINTF_DEBUG ? printf("\nVertical Arrestor Left Limit is Hit!\n"): 0;
-	}*/
-	
 	return;
+	*/
 }
 
 /** 
@@ -642,9 +788,9 @@ void rot_Enc_Z_Pulse_Interrupt_Callback(void)
  */
 void left_Limit_Interrupt_Callback(void)
 {	
-	p_reeler_info->flags.sensor_trigger = true;
+	p_reeler1_info->flags.sensor_trigger = true;
 	//p_reeler_info->hybrid.anchor_pos = tmc4671_getActualPosition(MOTOR);
-	p_reeler_info->time_ms.sens_trig = millis();
+	p_reeler1_info->time_ms.sens_trig = millis();
 	gpio_toggle_pin_level(DBGLED1);
 	//printf("PosDelta = %ld\n", p_reeler_info->hybrid.anchor_pos - prev_sens_pos);
 	//prev_sens_pos = p_reeler_info->hybrid.anchor_pos;
@@ -659,7 +805,7 @@ void left_Limit_Interrupt_Callback(void)
  */
 void right_Limit_Interrupt_Callback(void)
 {
-	p_reeler_info->flags.sensor_trigger = true;
+	p_reeler1_info->flags.sensor_trigger = true;
 	printf("\n Reeler Right imit Sensor Edge Detected!\n");
 	return;
 }
@@ -1111,8 +1257,8 @@ bool camera_Trigger(void)
 void check_For_Move_Done(void)
 {
 	// Hybrid Trigger One Shot polling...
-	if( p_reeler_info->hybrid.mode == HYBRID_MODE_N_SHOT &&
-		p_reeler_info->hybrid.one_shot_armed) {
+	if( p_reeler1_info->hybrid.mode == HYBRID_MODE_N_SHOT &&
+		p_reeler1_info->hybrid.one_shot_armed) {
 		check_For_Hybrid_Trigger();
 		if(!check_move_done){
 			return;
@@ -1133,11 +1279,11 @@ void check_For_Move_Done(void)
 		move_given_trapezoidal_ramp = false;
 		autofocus_variables.both_received = false;
 		
-		if( p_reeler_info->hybrid.mode == HYBRID_MODE_N_SHOT &&
-			p_reeler_info->hybrid.one_shot_armed) {
-			p_reeler_info->hybrid.one_shot_armed		= false;
-			p_reeler_info->hybrid.mode					= HYBRID_MODE_OFF;
-			p_reeler_info->flags.is_hybrid_trig_enabled	= false;
+		if( p_reeler1_info->hybrid.mode == HYBRID_MODE_N_SHOT &&
+			p_reeler1_info->hybrid.one_shot_armed) {
+			p_reeler1_info->hybrid.one_shot_armed		= false;
+			p_reeler1_info->hybrid.mode					= HYBRID_MODE_OFF;
+			p_reeler1_info->flags.is_hybrid_trig_enabled	= false;
 			DBG_Printf(ERR_LVL_DEBUG, "[HYB] One-Shot move done with no edge; auto-disabled\n");
 		}
 		
@@ -1225,10 +1371,10 @@ void run_Velocity_Ramp(void)
 	
 	vel_struct.flags.reeler_vel_timer = false;
 
-	if(!p_reeler_info) { return; }
+	if(!p_reeler1_info) { return; }
 		
 	int32_t current_velocity	= tmc4671_getVelocityTarget(MOTOR);
-	int32_t target_velocity		= p_reeler_info->velocity.limit;
+	int32_t target_velocity		= p_reeler1_info->velocity.limit;
 	int32_t current_position	= tmc4671_getActualPosition(MOTOR);
 
 	// Check if the Motor's current Mode Motion is in Velocity Mode or not.
@@ -1240,16 +1386,17 @@ void run_Velocity_Ramp(void)
 	static uint32_t prev_time = 0, current_time;
 	current_time = millis();
 
-	if(p_reeler_info->flags.is_hybrid_trig_enabled) {
+	if(p_reeler1_info->flags.is_hybrid_trig_enabled && !p_reeler1_info->flags.is_encoder_mode) {
 		check_For_Hybrid_Trigger();
 	}
 	
-	if( (p_reeler_info->position.trig_step_size != 0) && ramping 
-		&& !p_reeler_info->flags.is_hybrid_trig_enabled
-		&& (abs(prev_trig_pos - current_position) >= p_reeler_info->position.trig_step_size) ) 
+	if( (p_reeler1_info->position.trig_step_size != 0) && ramping 
+		&& !p_reeler1_info->flags.is_hybrid_trig_enabled
+		&& (abs(prev_trig_pos - current_position) >= p_reeler1_info->position.trig_step_size)
+		&& p_reeler1_info->flags.is_encoder_mode ) 
 	{
 		trigger_Camera_Line();
-		DBG_Printf(ERR_LVL_DEBUG, "\nT%ld | c%ld | e%ld", ++trig_no, abs(prev_trig_pos - current_position), p_reeler_info->position.trig_step_size);
+		DBG_Printf(ERR_LVL_DEBUG, "T%ld | c%ld | e%ld\n", ++trig_no, abs(prev_trig_pos - current_position), p_reeler1_info->position.trig_step_size);
 		prev_trig_pos = current_position;
 	}
 	

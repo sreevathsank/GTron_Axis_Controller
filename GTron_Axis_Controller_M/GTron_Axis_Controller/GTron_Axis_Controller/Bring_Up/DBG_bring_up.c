@@ -77,7 +77,7 @@ void timer_ramp_cb(void)
 
 void vel_timer_cb(void)
 {
-	p_reeler_info->flags.vel_timer = true;
+	p_reeler1_info->flags.vel_timer = true;
 	return;
 }
 
@@ -117,7 +117,9 @@ static void init_Motor_Struct(Motor_Info_t *motor_info, Motor_Name_Enum_t motor_
 	}
 	
 	// To what motor this struct belongs to.
-	motor_info->motor_name = motor_name;
+	motor_info->mot_name = motor_name;
+	
+	
 	
 	// Velocity
 	motor_info->velocity.target				= 0;
@@ -149,6 +151,11 @@ static void init_Motor_Struct(Motor_Info_t *motor_info, Motor_Name_Enum_t motor_
 	motor_info->flags.direction				= 0;
 	motor_info->flags.mscnt_first_reading	= 1;
 	motor_info->flags.reserved				= 0;
+	if( (motor_info->mot_name == MOTOR_REELER1) || (motor_info->mot_name == MOTOR_REELER2) ) {
+		motor_info->flags.is_double_limit = 1;
+	} else {
+		motor_info->flags.is_double_limit = 0;
+	}
 	return;
 }
 
@@ -553,12 +560,47 @@ void call_All_Init_Functions(void)
 	init_Basics(MOTOR);
 	init_PosMode(MOTOR);
 	read_4671_ADC_Raw();
-	init_Motor_Struct(p_reeler_info, MOTOR_REELER);
-	
-	// Tmc2209 related inits
-	init_Motor_Struct(p_guide_info, MOTOR_GUIDE);
-	init_tmc2209_motor(TMC2209_MOTOR1_ADDR);
-	
+	switch(sbridge_addr) {
+		case REELER1_GUIDE_REELERADJ1: {
+			init_Motor_Struct(p_reeler1_info, MOTOR_REELER1);
+			
+			init_Motor_Struct(p_guide_info, MOTOR_GUIDE);
+			init_tmc2209_motor(TMC2209_MOT_ADDR1);
+			
+			init_Motor_Struct(p_reeleradj1_info, MOTOR_REELERADJ1);
+			init_tmc2209_motor(TMC2209_MOT_ADDR2);
+			
+			mot_array[TMC4671_MOTOR]	= p_reeleradj1_info;
+			mot_array[TMC2209_MOTOR1]	= p_guide_info;
+			mot_array[TMC2209_MOTOR2]	= p_reeleradj1_info;
+			
+			
+			DBG_Printf(ERR_LVL_INFO, "SouthBridge Addr set to REELER1_GUIDE_REELERADJ1. Initialized REELER1, GUIDE and REELERADJ1 structs.\n");
+			break;
+		}
+		case VARREST_1_2_SOLENOID: {
+			init_Motor_Struct(p_varrest1_info, MOTOR_VARREST1);
+			init_tmc2209_motor(TMC2209_MOT_ADDR1);
+			
+			init_Motor_Struct(p_varrest2_info, MOTOR_VARREST2);
+			init_tmc2209_motor(TMC2209_MOT_ADDR2);
+			
+			mot_array[TMC4671_MOTOR]	= NULL;
+			mot_array[TMC2209_MOTOR1]	= p_varrest1_info;
+			mot_array[TMC2209_MOTOR2]	= p_varrest2_info;
+			
+			DBG_Printf(ERR_LVL_INFO, "SouthBridge Addr set to VARREST 1 2 and Solenoid. Initialized VARREST1 and 2 structs.\n");
+			break;	
+		}
+		case REELER2_REELERADJ2_FRONTCAM: {
+			mot_array[TMC4671_MOTOR]	= NULL;
+			mot_array[TMC2209_MOTOR1]	= NULL;
+			mot_array[TMC2209_MOTOR2]	= NULL;
+			DBG_Printf(ERR_LVL_INFO, "SouthBridge Addr set to REELER2_REELERADJ2_FRONTCAM. Initialized REELER2, REELERADJ2 and FRONTCAM structs.\n");
+			break;
+		}
+		default: break;
+	}
 	init_timers();
 	//init_Motor_Struct(p_varrest_info, VARREST_STRUCT);
 	can_Init();

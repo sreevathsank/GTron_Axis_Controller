@@ -45,6 +45,21 @@ typedef enum
 	NO_OF_RACK_ITEMS
 }Rack_Enum_t;
 
+typedef enum {
+	TMC4671_MOTOR	= 0,
+	TMC2209_MOTOR1	= 1,
+	TMC2209_MOTOR2	= 2,
+	NO_OF_MOT_INDICES
+}Motor_Array_Index_t;
+
+typedef enum {
+	TMC2209_MOT_ADDR1 = 0,
+	TMC2209_MOT_ADDR2 = 1,
+	TMC2209_MOT_ADDR3 = 2,
+	TMC2209_MOT_ADDR4 = 3,
+	NO_OF_UART_MOT
+}TMC2209_MOT_ADDR_t;
+
 typedef struct
 {
 	uint32_t id;
@@ -54,12 +69,26 @@ typedef struct
 
 typedef enum {
 	MOTOR_GUIDE			= 0,
-	MOTOR_REELER		= 1,
+	MOTOR_REELER1		= 1,
 	MOTOR_VARREST1		= 2,
 	MOTOR_VARREST2		= 3,
-	MOTOR_REELER_ADJ1	= 4,
+	MOTOR_REELERADJ1	= 4,
+	MOTOR_FRONT_CAM		= 5,
+	MOTOR_REELER2		= 6,
+	MOTOR_REELERADJ2	= 7,
 	NO_OF_MOTOR_NAME	
 }Motor_Name_Enum_t;
+
+typedef struct {
+	uint8_t uart_addr;
+	uint8_t can_peripheral_byte;
+}Communication_Info_t;
+
+typedef enum {
+	MOTOR_STOPPED_STATE		= 0,
+	MOTOR_MOVING_STATE		= 1,
+	MOTOR_MOVE_DONE_STATE	= 2
+}Motor_State_t;
 
 typedef struct {
 	int32_t		target;
@@ -120,22 +149,40 @@ typedef struct {
 	uint32_t is_hybrid_trig_enabled : 1;	// 10
 	uint32_t is_paused				: 1;	// 11
 	uint32_t is_encoder_mode		: 1;	// 12
-	uint32_t reserved				: 19;
+	uint32_t is_double_limit		: 1;	// 13
+	uint32_t is_tmc2209_homing		: 1;	// 14
+	uint32_t reserved				: 17;
 }Motor_Flags_t;
 
 typedef struct {
-	Motor_Name_Enum_t	motor_name;
-	Velocity_Info_t		velocity;
-	Position_Info_t		position;
-	Step_Tracker_t		step_tracker;
-	Time_MS_t			time_ms;
-	Hybrid_t			hybrid;
-	Motor_Flags_t		flags;
+	Motor_Name_Enum_t		mot_name;
+	Communication_Info_t	comms;
+	Motor_State_t			motor_state;
+	Velocity_Info_t			velocity;
+	Position_Info_t			position;
+	Step_Tracker_t			step_tracker;
+	Time_MS_t				time_ms;
+	Hybrid_t				hybrid;
+	Motor_Flags_t			flags;
 }Motor_Info_t;
 
 extern volatile Motor_Info_t *p_guide_info;
 
-extern volatile Motor_Info_t *p_reeler_info;
+extern volatile Motor_Info_t *p_reeler1_info;
+
+extern volatile Motor_Info_t *p_varrest1_info;
+
+extern volatile Motor_Info_t *p_varrest2_info;
+
+extern volatile Motor_Info_t *p_reeleradj1_info;
+
+extern volatile Motor_Info_t *p_reeleradj2_info;
+
+extern volatile Motor_Info_t *p_frontcam_info;
+
+extern volatile Motor_Info_t *p_reeler2_info;
+
+extern volatile Motor_Info_t *mot_array[];
 
 extern Can_Cmd_Info_t rx_can_cmd_info;
 
