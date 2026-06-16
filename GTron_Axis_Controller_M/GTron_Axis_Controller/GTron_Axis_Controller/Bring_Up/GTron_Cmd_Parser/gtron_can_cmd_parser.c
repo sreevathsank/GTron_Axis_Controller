@@ -412,7 +412,7 @@ static bool check_Close_Left_Limit_Status( Motor_Info_t *m )
  *
  * @return
  **/
-static void tmc2209_Move(TMC2209_MOT_ADDR_t uart_mot_addr, Motor_Info_t *motor_info, int32_t target_position, bool move_to_by)
+static void tmc2209_Move(Motor_Info_t *motor_info, int32_t target_position, bool move_to_by)
 {
 	motor_info->flags.move_given = true;
 	motor_info->position.current = motor_info->step_tracker.total_steps;
@@ -427,7 +427,7 @@ static void tmc2209_Move(TMC2209_MOT_ADDR_t uart_mot_addr, Motor_Info_t *motor_i
 		{ motor_info->position.target = motor_info->position.current + target_position; }
 			
 		//tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
-		tmc2209_set_velocity(TMC2209_MOTOR1_ADDR, motor_info, motor_info->velocity.target);
+		tmc2209_set_velocity(motor_info->comms.uart_addr, motor_info, motor_info->velocity.target);
 		DBG_Printf(ERR_LVL_DEBUG, "\nMove To: Current Pos = %ld | Target Pos = %ld | Velocity = %ld ustep/s\n", \
 								motor_info->position.current, target_position, motor_info->velocity.target);
 		motor_info->motor_state = MOTOR_MOVING_STATE;
@@ -441,7 +441,7 @@ static void tmc2209_Move(TMC2209_MOT_ADDR_t uart_mot_addr, Motor_Info_t *motor_i
 		{ motor_info->position.target = motor_info->position.current - target_position; }
 		
 		//tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
-		tmc2209_set_velocity(TMC2209_MOTOR1_ADDR, motor_info, (-motor_info->velocity.target) );
+		tmc2209_set_velocity(motor_info->comms.uart_addr, motor_info, (-motor_info->velocity.target) );
 		DBG_Printf(ERR_LVL_DEBUG, "\nMove To: Current Pos = %ld | Target Pos = %ld | Velocity = %ld ustep/s\n", \
 								motor_info->position.current, target_position, (-motor_info->velocity.target) );
 		motor_info->motor_state = MOTOR_MOVING_STATE;
@@ -463,7 +463,7 @@ static void tmc2209_Move(TMC2209_MOT_ADDR_t uart_mot_addr, Motor_Info_t *motor_i
  *
  * @return
  **/
-static void tmc2209_Move_To_Open_Limit( TMC2209_MOT_ADDR_t uart_mot_addr, Motor_Info_t *motor_info )
+static void tmc2209_Move_To_Open_Limit(Motor_Info_t *motor_info )
 {
 	uint8_t limit_status = 0;
 	IOXP_Read_Byte(IOXP_REG_GPIO, &limit_status);
@@ -492,14 +492,14 @@ static void tmc2209_Move_To_Open_Limit( TMC2209_MOT_ADDR_t uart_mot_addr, Motor_
  *
  * @return
  **/
-static void tmc2209_Move_To_Close_Limit( TMC2209_MOT_ADDR_t uart_mot_addr, Motor_Info_t *motor_info )
+static void tmc2209_Move_To_Close_Limit(Motor_Info_t *motor_info )
 {
 	uint8_t limit_status = 0;
 	IOXP_Read_Byte(IOXP_REG_GPIO, &limit_status);
 	
 	motor_info->flags.is_tmc2209_homing = true;
 	
-	if(uart_mot_addr == TMC2209_MOT_ADDR1) {
+	if(motor_info->comms.uart_addr == TMC2209_MOT_ADDR1) {
 		if(MSK_MOT1_L_LIM(limit_status)) {
 			DBG_Printf( ERR_LVL_DEBUG, "Already in Close Limit. Not moving towards Close Limit\n");
 			
@@ -536,10 +536,10 @@ static void tmc2209_Reference_Search( Motor_Info_t *m )
  *
  * @return
  **/
-static void tmc2209_Set_Velocity(TMC2209_MOT_ADDR_t uart_mot_addr, Motor_Info_t *motor_info, int32_t target_velocity)
+static void tmc2209_Set_Velocity(Motor_Info_t *motor_info, int32_t target_velocity)
 {
 	motor_info->velocity.target = target_velocity;
-	DBG_Printf(ERR_LVL_DEBUG, "\nGuide Varrest Velocity Set to %ld usteps/sec\n", p_guide_info->velocity.target);
+	DBG_Printf(ERR_LVL_DEBUG, "\nGuide Varrest Velocity Set to %ld usteps/sec\n", motor_info->velocity.target);
 	return;
 }
 
@@ -550,7 +550,7 @@ static void tmc2209_Set_Velocity(TMC2209_MOT_ADDR_t uart_mot_addr, Motor_Info_t 
  *
  * @return
  **/
-static void tmc2209_Set_Initial_Position(TMC2209_MOT_ADDR_t uart_mot_addr, Motor_Info_t *motor_info, int32_t initial_position)
+static void tmc2209_Set_Initial_Position(Motor_Info_t *motor_info, int32_t initial_position)
 {
 	
 	return;
@@ -587,7 +587,7 @@ void tmc2209_Stop_Motor(Motor_Info_t *m)
  *
  * @return
  **/
-static void tmc2209_Limits_Status_Check(TMC2209_MOT_ADDR_t uart_mot_addr, Motor_Info_t *motor_info)
+static void tmc2209_Limits_Status_Check(Motor_Info_t *motor_info)
 {
 	uint8_t limit_reg_value = 0;
 	//tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
@@ -760,29 +760,29 @@ void parse_GTron_CAN_Msg_Data( void )
 			case GUIDE_MOTOR:
 				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
 				{
-					case AXC_STOP:					tmc2209_Stop_Motor(p_guide_info);																break;
-					case AXC_VELOCITY:				tmc2209_Set_Velocity(TMC2209_MOT_ADDR1, p_guide_info, (int32_t)rx_can_cmd_info.value);			break;
-					case AXC_ROTATE:				tmc2209_Move(TMC2209_MOT_ADDR1, p_guide_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
-					case AXC_MOVE_TO:				tmc2209_Move(TMC2209_MOT_ADDR1, p_guide_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
-					case AXC_MOVE_BY:				tmc2209_Move(TMC2209_MOT_ADDR1, p_guide_info, (int32_t)rx_can_cmd_info.value, MOVE_BY);			break;
-					case AXC_MOVE_TO_OPEN_LIMIT:	tmc2209_Move_To_Open_Limit(TMC2209_MOT_ADDR1, p_guide_info);									break;
-					case AXC_MOVE_TO_CLOSE_LIMIT:	tmc2209_Move_To_Close_Limit(TMC2209_MOT_ADDR1, p_guide_info);									break;
-					case AXC_INITIAL_POSITION:		tmc2209_Set_Initial_Position(TMC2209_MOT_ADDR1, p_guide_info, (int32_t)rx_can_cmd_info.value);	break;
-					case AXC_STATUS_CHECK:			tmc2209_Limits_Status_Check(TMC2209_MOT_ADDR1, p_guide_info);									break;
-					default: DBG_Printf(ERR_LVL_DEBUG,"Guide Motor Invalid Operation Rxcvd\n");														break;
+					case AXC_STOP:					tmc2209_Stop_Motor(p_guide_info);											break;
+					case AXC_VELOCITY:				tmc2209_Set_Velocity(p_guide_info, (int32_t)rx_can_cmd_info.value);			break;
+					case AXC_ROTATE:				tmc2209_Move(p_guide_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);		break;
+					case AXC_MOVE_TO:				tmc2209_Move(p_guide_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);		break;
+					case AXC_MOVE_BY:				tmc2209_Move(p_guide_info, (int32_t)rx_can_cmd_info.value, MOVE_BY);break;
+					case AXC_MOVE_TO_OPEN_LIMIT:	tmc2209_Move_To_Open_Limit(p_guide_info);									break;
+					case AXC_MOVE_TO_CLOSE_LIMIT:	tmc2209_Move_To_Close_Limit(p_guide_info);									break;
+					case AXC_INITIAL_POSITION:		tmc2209_Set_Initial_Position(p_guide_info, (int32_t)rx_can_cmd_info.value);	break;
+					case AXC_STATUS_CHECK:			tmc2209_Limits_Status_Check(p_guide_info);									break;
+					default: DBG_Printf(ERR_LVL_DEBUG,"Guide Motor Invalid Operation Rxcvd\n");									break;
 				}
 			break;
 			case VERITCAL_ARRESTOR_MOTOR1:
 				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
 				{
-					case AXC_STOP:				tmc2209_Stop_Motor(p_varrest1_info);																break;
-					case AXC_VELOCITY:			tmc2209_Set_Velocity(TMC2209_MOT_ADDR1, p_varrest1_info, (int32_t)rx_can_cmd_info.value);			break;
-					case AXC_ROTATE:			tmc2209_Move(TMC2209_MOT_ADDR1, p_varrest1_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
-					case AXC_MOVE_TO:			tmc2209_Move(TMC2209_MOT_ADDR1, p_varrest1_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
-					case AXC_MOVE_BY:			tmc2209_Move(TMC2209_MOT_ADDR1, p_varrest1_info,(int32_t)rx_can_cmd_info.value, MOVE_BY);			break;
-					case AXC_INITIAL_POSITION:	tmc2209_Set_Initial_Position(TMC2209_MOT_ADDR1, p_varrest1_info, (int32_t)rx_can_cmd_info.value);	break;
-					case AXC_HOMING:			tmc2209_Reference_Search(p_varrest1_info);															break;
-					default: DBG_Printf(ERR_LVL_DEBUG, "\nVert Arrestor Motor Invalid Operation Rxcvd\n");											break;
+					case AXC_STOP:				tmc2209_Stop_Motor(p_varrest1_info);											break;
+					case AXC_VELOCITY:			tmc2209_Set_Velocity(p_varrest1_info, (int32_t)rx_can_cmd_info.value);			break;
+					case AXC_ROTATE:			tmc2209_Move(p_varrest1_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
+					case AXC_MOVE_TO:			tmc2209_Move(p_varrest1_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
+					case AXC_MOVE_BY:			tmc2209_Move(p_varrest1_info,(int32_t)rx_can_cmd_info.value, MOVE_BY);			break;
+					case AXC_INITIAL_POSITION:	tmc2209_Set_Initial_Position(p_varrest1_info, (int32_t)rx_can_cmd_info.value);	break;
+					case AXC_HOMING:			tmc2209_Reference_Search(p_varrest1_info);										break;
+					default: DBG_Printf(ERR_LVL_DEBUG, "\nVert Arrestor Motor Invalid Operation Rxcvd\n");						break;
 				}
 			break;
 			case GUIDE_OPEN_LIMIT:
@@ -791,7 +791,7 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_ENABLE: break;
 					case AXC_DISABLE: break;
 					case AXC_STATUS_CHECK: break;
-					default: DBG_Printf(ERR_LVL_DEBUG, "\nGuide Open Limit Invalid Operation Rxcvd\n");					break;
+					default: DBG_Printf(ERR_LVL_DEBUG, "Guide Open Limit Invalid Operation Rxcvd\n");					break;
 				}
 			break;
 			case GUIDE_CLOSE_LIMIT:
@@ -800,42 +800,42 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_ENABLE: break;
 					case AXC_DISABLE: break;
 					case AXC_STATUS_CHECK: break;
-					default: DBG_Printf(ERR_LVL_DEBUG, "\nGuide Close Limit Invalid Operation Rxcvd\n");					break;
+					default: DBG_Printf(ERR_LVL_DEBUG, "Guide Close Limit Invalid Operation Rxcvd\n");					break;
 				}
 			break;
 			case VERITCAL_ARRESTOR_MOTOR2:
 				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
 				{
-					case AXC_STOP:			   tmc2209_Stop_Motor(p_varrest2_info);																	break;
-					case AXC_VELOCITY:		   tmc2209_Set_Velocity(TMC2209_MOT_ADDR3, p_varrest2_info, (int32_t)rx_can_cmd_info.value);			break;
-					case AXC_ROTATE:		   tmc2209_Move(TMC2209_MOT_ADDR3, p_varrest2_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
-					case AXC_MOVE_TO:		   tmc2209_Move(TMC2209_MOT_ADDR3, p_varrest2_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
-					case AXC_MOVE_BY:		   tmc2209_Move(TMC2209_MOT_ADDR3, p_varrest2_info, (int32_t)rx_can_cmd_info.value, MOVE_BY);			break;
-					case AXC_INITIAL_POSITION: tmc2209_Set_Initial_Position(TMC2209_MOT_ADDR3, p_varrest2_info, (int32_t)rx_can_cmd_info.value);	break;
-					default: DBG_Printf(ERR_LVL_DEBUG, "\nVert Arrestor Motor Invalid Operation Rxcvd\n");											break;
+					case AXC_STOP:			   tmc2209_Stop_Motor(p_varrest2_info);												break;
+					case AXC_VELOCITY:		   tmc2209_Set_Velocity(p_varrest2_info, (int32_t)rx_can_cmd_info.value);			break;
+					case AXC_ROTATE:		   tmc2209_Move(p_varrest2_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
+					case AXC_MOVE_TO:		   tmc2209_Move(p_varrest2_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
+					case AXC_MOVE_BY:		   tmc2209_Move(p_varrest2_info, (int32_t)rx_can_cmd_info.value, MOVE_BY);			break;
+					case AXC_INITIAL_POSITION: tmc2209_Set_Initial_Position(p_varrest2_info, (int32_t)rx_can_cmd_info.value);	break;
+					default: DBG_Printf(ERR_LVL_DEBUG, "\nVert Arrestor Motor Invalid Operation Rxcvd\n");						break;
 				}	
 			break;
 			case REELER_ADJ_MOTOR1:
 				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
 				{
-					case AXC_STOP:			   tmc2209_Stop_Motor(p_reeleradj1_info);																break;
-					case AXC_VELOCITY:		   tmc2209_Set_Velocity(TMC2209_MOT_ADDR1, p_reeleradj1_info, (int32_t)rx_can_cmd_info.value);			break;
-					case AXC_ROTATE:		   tmc2209_Move(TMC2209_MOT_ADDR1, p_reeleradj1_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
-					case AXC_MOVE_TO:		   tmc2209_Move(TMC2209_MOT_ADDR1, p_reeleradj1_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
-					case AXC_MOVE_BY:		   tmc2209_Move(TMC2209_MOT_ADDR1, p_reeleradj1_info,(int32_t)rx_can_cmd_info.value, MOVE_BY);			break;
-					case AXC_INITIAL_POSITION: tmc2209_Set_Initial_Position(TMC2209_MOT_ADDR1, p_reeleradj1_info, (int32_t)rx_can_cmd_info.value);	break;
-					default: DBG_Printf(ERR_LVL_DEBUG, "\nVert Arrestor Motor Invalid Operation Rxcvd\n");											break;
+					case AXC_STOP:			   tmc2209_Stop_Motor(p_reeleradj1_info);											break;
+					case AXC_VELOCITY:		   tmc2209_Set_Velocity(p_reeleradj1_info, (int32_t)rx_can_cmd_info.value);			break;
+					case AXC_ROTATE:		   tmc2209_Move(p_reeleradj1_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);		break;
+					case AXC_MOVE_TO:		   tmc2209_Move(p_reeleradj1_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);		break;
+					case AXC_MOVE_BY:		   tmc2209_Move(p_reeleradj1_info,(int32_t)rx_can_cmd_info.value, MOVE_BY);			break;
+					case AXC_INITIAL_POSITION: tmc2209_Set_Initial_Position(p_reeleradj1_info, (int32_t)rx_can_cmd_info.value);	break;
+					default: DBG_Printf(ERR_LVL_DEBUG, "\nVert Arrestor Motor Invalid Operation Rxcvd\n");						break;
 				}
 			break;
 			case REELER_ADJ_MOTOR2:
 				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
 				{
-					case AXC_STOP:			   tmc2209_Stop_Motor(p_reeleradj2_info);															break;
-					case AXC_VELOCITY:		   tmc2209_Set_Velocity(TMC2209_MOT_ADDR2, p_reeleradj2_info, (int32_t)rx_can_cmd_info.value);		break;
-					case AXC_ROTATE:		   tmc2209_Move(TMC2209_MOT_ADDR2, p_reeleradj2_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);		break;
-					case AXC_MOVE_TO:		   tmc2209_Move(TMC2209_MOT_ADDR2, p_reeleradj2_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);		break;
-					case AXC_MOVE_BY:		   tmc2209_Move(TMC2209_MOT_ADDR2, p_reeleradj2_info, (int32_t)rx_can_cmd_info.value, MOVE_BY);		break;
-					case AXC_INITIAL_POSITION: tmc2209_Set_Initial_Position(TMC2209_MOT_ADDR2, p_reeleradj2_info, (int32_t)rx_can_cmd_info.value); break;
+					case AXC_STOP:			   tmc2209_Stop_Motor(p_reeleradj2_info);											break;
+					case AXC_VELOCITY:		   tmc2209_Set_Velocity(p_reeleradj2_info, (int32_t)rx_can_cmd_info.value);			break;
+					case AXC_ROTATE:		   tmc2209_Move(p_reeleradj2_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);		break;
+					case AXC_MOVE_TO:		   tmc2209_Move(p_reeleradj2_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);		break;
+					case AXC_MOVE_BY:		   tmc2209_Move(p_reeleradj2_info, (int32_t)rx_can_cmd_info.value, MOVE_BY);		break;
+					case AXC_INITIAL_POSITION: tmc2209_Set_Initial_Position(p_reeleradj2_info, (int32_t)rx_can_cmd_info.value); break;
 					default: DBG_Printf(ERR_LVL_DEBUG, "\nVert Arrestor Motor Invalid Operation Rxcvd\n");						break;
 				}
 			break;
