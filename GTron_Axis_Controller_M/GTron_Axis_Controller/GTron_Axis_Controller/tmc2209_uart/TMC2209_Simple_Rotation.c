@@ -15,11 +15,11 @@
 void init_tmc2209_motor(uint16_t icID)
 {
 	// GCONF is set in multipe locations.
-    tmc2209_writeRegister(icID, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
+    tmc2209_writeRegister(icID, TMC2209_GCONF, 0x000000E8);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
     
     tmc2209_writeRegister(icID, TMC2209_TPOWERDOWN, 0x00000014);    // DEC 20.
     
-    tmc2209_writeRegister(icID, TMC2209_IHOLD_IRUN, 0x00071700);    // DEC 464643. 0x71703
+    tmc2209_writeRegister(icID, TMC2209_IHOLD_IRUN, 0x00071100);    // DEC 464643. 0x71703 //0x71100
     
     tmc2209_writeRegister(icID, TMC2209_CHOPCONF, 0x10000053);      // DEC 268435539.
     
@@ -27,7 +27,10 @@ void init_tmc2209_motor(uint16_t icID)
 	
 	tmc2209_writeRegister(icID, TMC2209_TPOWERDOWN, 0x00000002);
 	
-	DBG_Printf(ERR_LVL_DEBUG, "TMC2209 Init Done for Motor %d.\n", icID);
+	DBG_Printf(ERR_LVL_DEBUG, "TMC2209 Init Done for Motor UART address %d.\n", icID);
+	
+	int32_t gconf_val = tmc2209_readRegister(icID, TMC2209_GCONF);
+	DBG_Printf(ERR_LVL_DEBUG, "TMC2209 GCONF val = 0x%X\n", gconf_val);
 	
 	gpio_set_pin_level(INDEX_SEL, LOW);
 	

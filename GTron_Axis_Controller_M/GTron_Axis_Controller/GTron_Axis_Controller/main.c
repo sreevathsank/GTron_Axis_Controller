@@ -13,10 +13,11 @@ int main(void)
 	DBG_TransportInit();              // Configure DMA ch0 -> SERCOM7 USART.
 	DBG_Init(DBG_TransportGet());     // Wire dbg_print to the transport.
 	SYSTICK_INIT();
+	can_Init();
 	
 	// REELER1_GUIDE_REELERADJ1, VARREST_1_2_SOLENOID and REELER2_REELERADJ2_FRONTCAM.
 	sbridge_addr = VARREST_1_2_SOLENOID;
-
+	step_count = 0;
 	define_All_Global_Variables();
 	call_All_Init_Functions();
 	DBG_Printf(ERR_LVL_INFO, "AxC dbg_print online @ 2 Mbaud, axis=%d\n", axis_id);
@@ -81,7 +82,11 @@ int main(void)
 		if(gtron_limits.interrupt_raised) {
 			check_Limit_Flags();
 		}
+		
+		// TMC2209 DIAG pin interrupt raised.
+		if(tmc2209_diag_flag) {
 			
+		}
 		// For checking if the Motor has reached its target position TMC4671.
 		if(check_move_done)				{ check_For_Move_Done();						}
 		

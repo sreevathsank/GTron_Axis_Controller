@@ -10,8 +10,31 @@
 void index_Interrupt_Callback( void )
 {
 	// Inc or Dec counter value based on the Direction of Motor Motion.
-	p_guide_info->position.counter_value += (p_guide_info->flags.direction) ? -1 : 1;
+	//p_guide_info->position.counter_value += (p_guide_info->flags.direction) ? -1 : 1;
+	step_count += (step_dir) ? -1 : 1;
 	return;	
+}
+
+void diag_Interrupt_Callback( void ) 
+{
+	tmc2209_diag_flag = true;
+	return;
+}
+
+void check_Diag_2209( void )
+{
+	volatile Motor_Info_t *m1 = mot_array[TMC2209_MOTOR1];
+	volatile Motor_Info_t *m2 = mot_array[TMC2209_MOTOR2];
+	if(m1 == NULL) {
+		DBG_Printf(ERR_LVL_ERROR, "check_Diag_2209() m1 NULL ptr\n");
+	}
+	if(m2 == NULL) {
+		DBG_Printf(ERR_LVL_ERROR, "check_Diag_2209() m2 NULL ptr\n");
+	}
+	
+	DBG_Printf(ERR_LVL_DEBUG, "Diag Interrupt Received!\n");
+	
+	return;
 }
 
 // Convert microsteps/second to rotation/second.
@@ -34,12 +57,18 @@ uint16_t read_TMC2209_mscnt(uint16_t icID)
 
 void check_Which_2209_Motor_Moving(void) 
 {
-	Motor_Info_t *m = NULL;
-	Motor_Info_t *m1 = mot_array[TMC2209_MOT_ADDR1];
-	Motor_Info_t *m2 = mot_array[TMC2209_MOT_ADDR2];
-	if(m1 == NULL || m2 == NULL) {
-		DBG_Printf(ERR_LVL_ERROR, "check_Which_2209_Motor_Moving() mot_array entry NULL ptr error\n");
-		return EXIT_FAILURE;
+	volatile Motor_Info_t *m = NULL;
+	volatile Motor_Info_t *m1 = mot_array[TMC2209_MOTOR1];
+	volatile Motor_Info_t *m2 = mot_array[TMC2209_MOTOR2];
+	if(m1 == NULL ) {
+		DBG_Printf(ERR_LVL_ERROR, "check_Which_2209_Motor_Moving() m1 mot_array entry NULL ptr error. Motor Stoppeed\n");
+		tmc2209_Stop_Motor(m);
+		return;
+	}
+	if(m2 == NULL) {
+		DBG_Printf(ERR_LVL_ERROR, "check_Which_2209_Motor_Moving() m2 mot_array entry NULL ptr error. Motor Stopped\n");
+		tmc2209_Stop_Motor(m);
+		return;
 	}
 	if( m1->motor_state == MOTOR_MOVING_STATE) {
 		m = m1;
@@ -47,9 +76,24 @@ void check_Which_2209_Motor_Moving(void)
 		m = m2;
 	}
 	if(m == NULL) {
-		DBG_Printf(ERR_LVL_ERROR, "check_Which_2209_Motor_Moving() Motor_Info_t NULL ptr error\n");
-		return EXIT_FAILURE;
+		DBG_Printf(ERR_LVL_ERROR, "check_Which_2209_Motor_Moving() Motor_Info_t NULL ptr error. Motor Stopped\n");
 	}
+	
+	if( m->flags.homing || m->flags.move_given || \
+	    m->flags.move_to_open_lim || m->flags.move_to_close_lim \
+		&& !gtron_limits.interrupt_raised )
+	{ 
+		update_TMC2209_Step_Tracking(m);
+		uint32_t diff_ms = millis() - m->time_ms.move_start;
+		if( diff_ms > (m->time_ms.theoretical_move * 1.1 ) ) {
+			//tmc2209_set_velocity(m->comms.uart_addr, m, 0);
+			tmc2209_Stop_Motor(m);
+			DBG_Printf(ERR_LVL_DEBUG, "Move Time taken more than 1.5 * theoretical time taken. Stoppping the Motor\n");
+		}
+		//uint16_t sg_result = tmc2209_readRegister(m->comms.uart_addr, TMC2209_SG_RESULT);
+		//DBG_Printf(ERR_LVL_DEBUG, "INDEX =  %ld\n", step_count);
+	}
+	
 	return;	
 }
 
@@ -57,15 +101,8 @@ void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info)
 {
 	if(motor_info == NULL) { return; }
 	
-	uint16_t current_mscnt = 0;
-	//if(motor_info->motor_name == GUIDE_STRUCT)
-	{
-		current_mscnt = read_TMC2209_mscnt(TMC2209_MOTOR1_ADDR);
-	}
-	//if(motor_info->motor_name == VARREST_STRUCT)
-	{
-		//current_mscnt = read_TMC2209_mscnt(TMC2209_VERT_ARREST_ADDR);
-	}
+	volatile uint16_t current_mscnt = read_TMC2209_mscnt(motor_info->comms.uart_addr);
+	DBG_Printf(ERR_LVL_DEBUG, "current_mscnt = %d\n", current_mscnt);
 	
 	// Skip calculation on the first reading.
 	if(motor_info->flags.mscnt_first_reading)
@@ -77,7 +114,7 @@ void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info)
 	
 	// Calculate the difference.
 	int16_t diff = (int16_t)current_mscnt - (int16_t)motor_info->step_tracker.prev_mscnt;
-	
+	DBG_Printf(ERR_LVL_DEBUG, "diff = %d\n", diff);
 	// Detect and handle wraparound.
 	if( diff > MSCNT_WRAP_THRESHOLD )
 	{
@@ -94,12 +131,9 @@ void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info)
 	int32_t step_delta = abs(diff);
 
 	// Update totals based on commanded direction to ensure coordinate alignment
-	if (motor_info->flags.direction == COUNT_UP)
-	{
+	if (motor_info->flags.direction == COUNT_UP) {
 		motor_info->step_tracker.total_steps += step_delta;
-	}
-	else
-	{
+	} else {
 		motor_info->step_tracker.total_steps -= step_delta;
 	}
 	
@@ -113,59 +147,40 @@ void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info)
 	{
 		int32_t pos_diff = motor_info->position.target - motor_info->step_tracker.total_steps;
 		bool diff_zero = false;
-		if( (motor_info->flags.direction == COUNT_UP ) && (pos_diff <= 0) )
-		{
+		if( (motor_info->flags.direction == COUNT_UP ) && (pos_diff <= 0) ) {
 			diff_zero = true;
-		}
-		else if( (motor_info->flags.direction == COUNT_DOWN ) && (pos_diff >= 0) )
-		{
+		} else if( (motor_info->flags.direction == COUNT_DOWN ) && (pos_diff >= 0) ) {
 			diff_zero = true;
 		}
 		
-		//printf("\n%ld\n", pos_diff );
-		if( diff_zero )
-		{
-			
-		}
-		if( diff_zero )
-		{
+		if( diff_zero ) {
 			motor_info->flags.move_given = false;
-			tmc2209_set_velocity(TMC2209_MOTOR1_ADDR, motor_info, ZERO_HEX);
+			tmc2209_set_velocity(motor_info->comms.uart_addr, motor_info, 0);
 			motor_info->position.current = motor_info->step_tracker.total_steps;
+			is_tmc2209_mot_moving = false;
 			message_Id = CAN_REPLY_TOP_RACK_ID;
 			can_tx_frame.data[0] = GUIDE_MOTOR;
 			can_tx_frame.data[1] = AXC_MOVE_DONE;
 			can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
-			PRINTF_DEBUG ? printf("\nGuide Move Done. Current Position = %ld usteps\n", \
-			motor_info->position.current): 0;
+			DBG_Printf(ERR_LVL_DEBUG, "\nTMC2209 Move Done. Current Position = %ld usteps | Time Taken = %ld ms\n", \
+			motor_info->position.current, millis() - motor_info->time_ms.move_start);
 			motor_info->motor_state = MOTOR_MOVE_DONE_STATE;
 		}
 	}
-	
-	//PRINTF_DEBUG ? printf("\nguide_step_counter Val = %ld\n", p_guide_info->position.counter_value): 0;
-	//PRINTF_DEBUG ? printf("\nCurrent Pos = %ld\n", p_guide_info->step_tracker.total_steps): 0;
-	
-	return;
-}
-
-void check_tmc2209_move_done(Motor_Info_t *motor_info)
-{
-	
 	return;
 }
 
 void tmc2209_set_velocity(uint16_t icID, Motor_Info_t *motor_info, int32_t velocity)
 {
 	// Set the direction of motion according the velocity given.
-	if( velocity > 0 ) 
-	{ 
+	if( velocity > 0 ) { 
 		motor_info->flags.direction = COUNT_UP; 
-		PRINTF_DEBUG?printf("\nVelocity > 0 | Count UP + 1\n"):0;
-	}
-	else if( velocity < 0 ) 
-	{ 
+		step_dir = COUNT_UP;
+		DBG_Printf(ERR_LVL_DEBUG, "\nVelocity > 0 | Count UP + 1\n");
+	} else if( velocity < 0 ) { 
 		motor_info->flags.direction = COUNT_DOWN; 
-		PRINTF_DEBUG?printf("\nVelocity < 0 | Count DOWN - 1\n"):0;
+		step_dir = COUNT_DOWN;
+		DBG_Printf(ERR_LVL_DEBUG, "\nVelocity < 0 | Count DOWN - 1\n");
 	}
 	
 	tmc2209_writeRegister(icID, TMC2209_VACTUAL, velocity);

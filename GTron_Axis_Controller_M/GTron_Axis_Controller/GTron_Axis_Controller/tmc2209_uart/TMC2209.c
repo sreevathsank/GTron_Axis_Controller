@@ -202,7 +202,7 @@ int32_t readRegisterUART(uint16_t icID, uint8_t address)
 
 	data[3] = CRC8(data, 3);
 	//tmc2209_UART_write(&data[3], 1);
-	CRITICAL_SECTION_ENTER();
+	//CRITICAL_SECTION_ENTER();
 		tmc2209_UART_write(&data, 4);
 		
 		// Reading the 4 bytes written to clear the Rx buffer.
@@ -213,7 +213,7 @@ int32_t readRegisterUART(uint16_t icID, uint8_t address)
 		
 		// Read the 8 incoming bytes.
 		tmc2209_UART_read(&data, 8);
-	CRITICAL_SECTION_LEAVE();
+	//CRITICAL_SECTION_LEAVE();
 	// Byte 0: Sync nibble correct?
 	if (data[0] != 0x05)
 	{

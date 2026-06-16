@@ -15,71 +15,71 @@
  **/
 void ioxp_Interrupt_Callback( void )
 {
-	gtron_limits.interrupt_raised = true;
-	return;
-	
-	uint8_t intf_rd_data = 0x00;
-	
-	// Read the INTF register and see what pins have raised an interrupt.
-	IOXP_Read_Byte(IOXP_REG_INTF, &intf_rd_data);
-	
-	// If there was an interrupt raised...
-	if(intf_rd_data)
-	{
-		// Read the INTCAP register to get the pin states and clear the register.
-		IOXP_Read_Byte(IOXP_REG_INTCAP_RD_ONLY, &gtron_limits.limit_flags);
-		
-		PRINTF_DEBUG ? printf("\nGuide Limit Hit, Setting Guide Motor Velocity to 0...\n"): 0;
-		PRINTF_DEBUG ? printf("\n"): 0;
-		if( MSK_MOT1_R_LIM(gtron_limits.limit_flags) )	// Guide Right Open Limit.
-		{
-			tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_VACTUAL, 0x00000000);
-			PRINTF_DEBUG ? printf("\nInside msk right limit\n"): 0;
-			if(p_guide_info->flags.move_to_open_lim)
-			{
-				p_guide_info->flags.move_to_open_lim = false;
-				
-				// Write to the Guide Step Counter TCC Counter Register as 0.
-				update_TMC2209_Step_Tracking(p_guide_info);
-				p_guide_info->position.right_open_limit	= p_guide_info->step_tracker.total_steps;
-				
-				// Send the CAN Command
-				message_Id = CAN_REPLY_TOP_RACK_ID;
-				can_tx_frame.data[0] = GUIDE_OPEN_LIMIT;
-				can_tx_frame.data[1] = AXC_PRESSED;
-				can_Write(message_Id, can_tx_frame.data_64bit);
-				
-				PRINTF_DEBUG ? printf("\nMove to Open Limit Done. Setting Current Position as %ld...\n", p_guide_info->position.right_open_limit): 0;
-			}
-			PRINTF_DEBUG ? printf("\nGuide Right Open Limit is Hit!\n"): 0;
-		}
-		else if( MSK_MOT1_L_LIM(gtron_limits.limit_flags) )	// Guide Left Close Limit.
-		{
-			tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_VACTUAL, 0x00000000);
-			PRINTF_DEBUG ? printf("\nInside msk left limit\n"): 0;
-			if(p_guide_info->flags.move_to_close_lim)
-			{
-				p_guide_info->flags.move_to_close_lim = false;
-				tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_VACTUAL, 0x00000000);
-				
-				// Get the current position as the stroke length of the Guide setup.
-				update_TMC2209_Step_Tracking(p_guide_info);
-				p_guide_info->step_tracker.total_steps	= 0;
-				p_guide_info->step_tracker.total_dist	= 0;
-				p_guide_info->position.left_close_limit	= p_guide_info->step_tracker.total_steps;
-				
-				// Send the CAN Command
-				message_Id = CAN_REPLY_TOP_RACK_ID;
-				can_tx_frame.data[0] = GUIDE_CLOSE_LIMIT;
-				can_tx_frame.data[1] = AXC_PRESSED;
-				can_Write(message_Id, can_tx_frame.data_64bit);
-				
-				PRINTF_DEBUG ? printf("\nMove to Close Limit Done. Setting Current Position as %ld...\n", p_guide_info->position.left_close_limit): 0;
-			}
-			PRINTF_DEBUG ? printf("\nGuide Left Close Limit is Hit!\n"): 0;
-		}
-		
-	}
+	//gtron_limits.interrupt_raised = true;
+	//return;
+	//
+	//uint8_t intf_rd_data = 0x00;
+	//
+	//// Read the INTF register and see what pins have raised an interrupt.
+	//IOXP_Read_Byte(IOXP_REG_INTF, &intf_rd_data);
+	//
+	//// If there was an interrupt raised...
+	//if(intf_rd_data)
+	//{
+	//	// Read the INTCAP register to get the pin states and clear the register.
+	//	IOXP_Read_Byte(IOXP_REG_INTCAP_RD_ONLY, &gtron_limits.limit_flags);
+	//	
+	//	PRINTF_DEBUG ? printf("\nGuide Limit Hit, Setting Guide Motor Velocity to 0...\n"): 0;
+	//	PRINTF_DEBUG ? printf("\n"): 0;
+	//	if( MSK_MOT1_R_LIM(gtron_limits.limit_flags) )	// Guide Right Open Limit.
+	//	{
+	//		tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_VACTUAL, 0x00000000);
+	//		PRINTF_DEBUG ? printf("\nInside msk right limit\n"): 0;
+	//		if(p_guide_info->flags.move_to_open_lim)
+	//		{
+	//			p_guide_info->flags.move_to_open_lim = false;
+	//			
+	//			// Write to the Guide Step Counter TCC Counter Register as 0.
+	//			update_TMC2209_Step_Tracking(p_guide_info);
+	//			p_guide_info->position.right_open_limit	= p_guide_info->step_tracker.total_steps;
+	//			
+	//			// Send the CAN Command
+	//			message_Id = CAN_REPLY_TOP_RACK_ID;
+	//			can_tx_frame.data[0] = GUIDE_OPEN_LIMIT;
+	//			can_tx_frame.data[1] = AXC_PRESSED;
+	//			can_Write(message_Id, can_tx_frame.data_64bit);
+	//			
+	//			PRINTF_DEBUG ? printf("\nMove to Open Limit Done. Setting Current Position as %ld...\n", p_guide_info->position.right_open_limit): 0;
+	//		}
+	//		PRINTF_DEBUG ? printf("\nGuide Right Open Limit is Hit!\n"): 0;
+	//	}
+	//	else if( MSK_MOT1_L_LIM(gtron_limits.limit_flags) )	// Guide Left Close Limit.
+	//	{
+	//		tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_VACTUAL, 0x00000000);
+	//		PRINTF_DEBUG ? printf("\nInside msk left limit\n"): 0;
+	//		if(p_guide_info->flags.move_to_close_lim)
+	//		{
+	//			p_guide_info->flags.move_to_close_lim = false;
+	//			tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_VACTUAL, 0x00000000);
+	//			
+	//			// Get the current position as the stroke length of the Guide setup.
+	//			update_TMC2209_Step_Tracking(p_guide_info);
+	//			p_guide_info->step_tracker.total_steps	= 0;
+	//			p_guide_info->step_tracker.total_dist	= 0;
+	//			p_guide_info->position.left_close_limit	= p_guide_info->step_tracker.total_steps;
+	//			
+	//			// Send the CAN Command
+	//			message_Id = CAN_REPLY_TOP_RACK_ID;
+	//			can_tx_frame.data[0] = GUIDE_CLOSE_LIMIT;
+	//			can_tx_frame.data[1] = AXC_PRESSED;
+	//			can_Write(message_Id, can_tx_frame.data_64bit);
+	//			
+	//			PRINTF_DEBUG ? printf("\nMove to Close Limit Done. Setting Current Position as %ld...\n", p_guide_info->position.left_close_limit): 0;
+	//		}
+	//		PRINTF_DEBUG ? printf("\nGuide Left Close Limit is Hit!\n"): 0;
+	//	}
+	//	
+	//}
 	return;
 }
 
@@ -135,12 +135,12 @@ bool IOXP_transfer(const uint8_t *wbuf, uint8_t *rbuf, const uint16_t length)
 	gpio_set_pin_level(IOXP_CS, 0);
 	delay_ms(1);
 	// Set the Initial Return Value
-	bool returnVal = false;
+	bool returnVal = IOXP_TRANSFER_FAIL;
 
 	IOXP_transfer_block(wbuf, rbuf, length);
 	
 	// Set the Return Value
-	returnVal = true;
+	returnVal = IOXP_TRANSFER_PASS;
 	delay_ms(1);
 	// Pull SS high to stop communication.
 	gpio_set_pin_level(IOXP_CS, 1);
@@ -156,23 +156,19 @@ bool IOXP_transfer(const uint8_t *wbuf, uint8_t *rbuf, const uint16_t length)
  *
  * @return void
  */
-void IOXP_Write_Byte( IOXP_REGISTERS_t reg_addr, uint8_t byte_to_wr )
+bool IOXP_Write_Byte( IOXP_REGISTERS_t reg_addr, uint8_t byte_to_wr )
 {
-	if( (reg_addr > NO_OF_IOXP_REGISTERS) ) { return; }
-	
+	if( (reg_addr > NO_OF_IOXP_REGISTERS) ) { 
+		return IOXP_TRANSFER_FAIL; 
+	}
+	bool retVal = IOXP_TRANSFER_FAIL;
 	uint8_t wr_buf[3] = { (uint8_t)IOXP_DEV_OPCODE_WR, (uint8_t)reg_addr, byte_to_wr };
 	uint8_t rd_buf[3];
 	
-	//#ifdef EXT_CS
-	//	gpio_set_pin_level(EXT_CS, HIGH);
-	//#endif
+	retVal = IOXP_transfer(wr_buf, rd_buf, 3);
+
 	
-	IOXP_transfer(wr_buf, rd_buf, 3);
-	
-	//PRINTF_DEBUG ? printf("\nIOXP SPI WR: Dev Opcode: 0x%x | Reg Addr: 0x%x | Byte to Write: 0x%x\n", \
-							wr_buf[0], wr_buf[1], wr_buf[2]): 0;
-	
-	return;	
+	return retVal;	
 }
 
 /**
@@ -183,10 +179,12 @@ void IOXP_Write_Byte( IOXP_REGISTERS_t reg_addr, uint8_t byte_to_wr )
  *
  * @return void
  */
-void IOXP_Read_Byte( IOXP_REGISTERS_t reg_addr, uint8_t *addr_rd_data )
+bool IOXP_Read_Byte( IOXP_REGISTERS_t reg_addr, uint8_t *addr_rd_data )
 {
-	if( (reg_addr > NO_OF_IOXP_REGISTERS) || (addr_rd_data == NULL) ) { return; }
-	
+	if( (reg_addr > NO_OF_IOXP_REGISTERS) || (addr_rd_data == NULL) ) { 
+		return IOXP_TRANSFER_FAIL; 
+	}
+	bool retVal = IOXP_TRANSFER_FAIL;
 	uint8_t wr_buf[3] = { IOXP_DEV_OPCODE_RD, (uint8_t)reg_addr, 0x00 };
 	uint8_t rd_buf[3];
 	
@@ -194,12 +192,12 @@ void IOXP_Read_Byte( IOXP_REGISTERS_t reg_addr, uint8_t *addr_rd_data )
 	//	gpio_set_pin_level(EXT_CS, HIGH);
 	//#endif
 	
-	IOXP_transfer(wr_buf, rd_buf, 3);
+	retVal = IOXP_transfer(wr_buf, rd_buf, 3);
 	
 	*addr_rd_data = rd_buf[2];
 	
-	PRINTF_DEBUG ? printf("\nIOXP SPI RD: Dev Opcode: 0x%x | Reg Addr: 0x%x | Read Byte: 0x%x\n", \
-							wr_buf[0], wr_buf[1], rd_buf[2]): 0;
+	DBG_Printf(ERR_LVL_DEBUG, "IOXP SPI RD: Dev Opcode: 0x%x | Reg Addr: 0x%x | Read Byte: 0x%x\n", \
+							wr_buf[0], wr_buf[1], rd_buf[2]);
 	
-	return;
+	return retVal;
 }

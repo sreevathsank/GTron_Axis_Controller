@@ -564,26 +564,54 @@ void check_Limit_Flags(void)
 			DBG_Printf(ERR_LVL_DEBUG, "TMC2209 MOTOR1 is homing\n");
 		} else if(m2->flags.is_tmc2209_homing) {
 			m = m2;
-			DBG_Printf(ERR_LVL_DEBUG, "TMC2209 MOTOR1 is homing\n");
+			DBG_Printf(ERR_LVL_DEBUG, "TMC2209 MOTOR2 is homing\n");
+		}
+		
+		if(m1->motor_state == MOTOR_MOVING_STATE) {
+			m = m1;
+			DBG_Printf(ERR_LVL_DEBUG, "TMC2209 MOTOR1 is Moving State!\n");
+		} else if(m2->motor_state == MOTOR_MOVING_STATE) {
+			m = m2;
+			DBG_Printf(ERR_LVL_DEBUG, "TMC2209 MOTOR2 is Moving State!\n");
 		}
 		
 		if(m == NULL) {
 			DBG_Printf(ERR_LVL_WARNING, "check_Limit_Flags, Motor_Info_t pointer is NULL!\n");
+			return;
 		}
 		// Read the INTCAP register to get the pin states and clear the register.
 		IOXP_Read_Byte(IOXP_REG_INTCAP_RD_ONLY, &gtron_limits.limit_flags);
-		DBG_Printf(ERR_LVL_DEBUG, "\nIOXP Limit Hit, Setting Motor Velocity to 0...\n");
+		DBG_Printf(ERR_LVL_DEBUG, "IOXP Limit Hit\n");
 		
-		if(m->comms.uart_addr = TMC2209_MOT_ADDR1) {
-			
+		if(m->comms.uart_addr == TMC2209_MOT_ADDR1) 
+		{	
 			// Open (Right) Limit.
-			if(MSK_MOT1_R_LIM(gtron_limits.limit_flags)) {
+			if(MSK_MOT1_R_LIM(gtron_limits.limit_flags)) 
+			{
+				DBG_Printf(ERR_LVL_DEBUG, "Inside MSK_MOT1_R_LIM\n");
 				if( (m->mot_name == MOTOR_VARREST1) ||
 					(m->mot_name == MOTOR_REELERADJ1) ||
 					(m->mot_name == MOTOR_FRONT_CAM) )
 				{
 					DBG_Printf(ERR_LVL_ERROR, "OPEN (RIGHT) LIMIT DETECTED FOR SINGLE LIMIT MOTOR!\n");
-				} else {
+					tmc2209_writeRegister(m->comms.uart_addr, TMC2209_VACTUAL, 0x00000000);
+					DBG_Printf(ERR_LVL_DEBUG, "Setting Velocity to 0. Stopping the Motor.\n");
+					m->flags.move_to_open_lim = false;
+					
+					update_TMC2209_Step_Tracking(m);
+					m->position.right_open_limit = m->step_tracker.total_steps;
+					m->flags.is_tmc2209_homing = false;
+					
+					// Send CAN Commands reply.
+					message_Id = CAN_REPLY_TOP_RACK_ID;
+					can_tx_frame.data[PERIPHERAL_BYTE_IDX]	= GUIDE_OPEN_LIMIT;
+					can_tx_frame.data[OPERATION_BYTE_IDX]	= AXC_PRESSED;
+					can_Write(message_Id, can_tx_frame.data_64bit);
+					
+					DBG_Printf(ERR_LVL_DEBUG, "\nMove to Open Limit Done. Setting Current Position as %ld...\n", m->position.right_open_limit);
+				} 
+				else 
+				{
 					tmc2209_writeRegister(m->comms.uart_addr, TMC2209_VACTUAL, 0x00000000);
 					DBG_Printf(ERR_LVL_DEBUG, "Open (Left) Limit Detected for Double Limit Motor. Set Velocity to 0.\n");
 					if(m->flags.move_to_open_lim) {
@@ -604,9 +632,11 @@ void check_Limit_Flags(void)
 				}
 			}
 			// Close (Left) Limit
-			else if(MSK_MOT1_L_LIM(gtron_limits.limit_flags)) {
+			else if(MSK_MOT1_L_LIM(gtron_limits.limit_flags)) 
+			{
+				DBG_Printf(ERR_LVL_DEBUG, "Inside MSK_MOT1_L_LIM\n");
 				tmc2209_writeRegister(m->comms.uart_addr, TMC2209_VACTUAL, 0x00000000);
-				DBG_Printf(ERR_LVL_DEBUG, "Open (Left) Limit Detected for Double Limit Motor. Set Velocity to 0.\n");
+				DBG_Printf(ERR_LVL_DEBUG, "Close (Left) Limit Detected for Double Limit Motor. Set Velocity to 0.\n");
 				if(m->flags.move_to_close_lim) {
 					m->flags.move_to_close_lim = false;
 					
@@ -625,16 +655,18 @@ void check_Limit_Flags(void)
 					DBG_Printf(ERR_LVL_DEBUG, "\nMove to Open Limit Done. Setting Current Position as %ld...\n", m->position.right_open_limit);
 				}
 			}
-		} else if(m->comms.uart_addr = TMC2209_MOT_ADDR2) {
+		} else if(m->comms.uart_addr == TMC2209_MOT_ADDR3) {
 			
 			// Open (Right) Limit.
-			if(MSK_MOT2_R_LIM(gtron_limits.limit_flags)) {
+			if(MSK_MOT2_R_LIM(gtron_limits.limit_flags)) 
+			{
+				DBG_Printf(ERR_LVL_DEBUG, "Inside MSK_MOT2_R_LIM\n");
 				if( (m->mot_name == MOTOR_VARREST2) ||
 					(m->mot_name == MOTOR_REELERADJ2) ||
 					(m->mot_name == MOTOR_FRONT_CAM) )
 				{
 					DBG_Printf(ERR_LVL_ERROR, "OPEN (RIGHT) LIMIT DETECTED FOR SINGLE LIMIT MOTOR!\n");
-					} else {
+				} else {
 					tmc2209_writeRegister(m->comms.uart_addr, TMC2209_VACTUAL, 0x00000000);
 					DBG_Printf(ERR_LVL_DEBUG, "Open (Left) Limit Detected for Double Limit Motor. Set Velocity to 0.\n");
 					if(m->flags.move_to_open_lim) {
@@ -655,7 +687,9 @@ void check_Limit_Flags(void)
 				}
 			}
 			// Close (Left) Limit
-			else if(MSK_MOT2_L_LIM(gtron_limits.limit_flags)) {
+			else if(MSK_MOT2_L_LIM(gtron_limits.limit_flags)) 
+			{
+				DBG_Printf(ERR_LVL_DEBUG, "Inside MSK_MOT2_L_LIM\n");
 				tmc2209_writeRegister(m->comms.uart_addr, TMC2209_VACTUAL, 0x00000000);
 				DBG_Printf(ERR_LVL_DEBUG, "Open (Left) Limit Detected for Double Limit Motor. Set Velocity to 0.\n");
 				if(m->flags.move_to_close_lim) {
@@ -823,6 +857,7 @@ void init_ext_irq_limits(void)
 	ext_irq_register(ROTENC_Z, rot_Enc_Z_Pulse_Interrupt_Callback);
 	ext_irq_register(IOXP_INT, ioxp_Interrupt_Callback);
 	ext_irq_register(INDEX, index_Interrupt_Callback);
+	ext_irq_register(DIAG, diag_Interrupt_Callback);
 	return;
 }
 

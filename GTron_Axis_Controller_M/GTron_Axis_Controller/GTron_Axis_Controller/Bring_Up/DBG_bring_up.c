@@ -117,8 +117,25 @@ static void init_Motor_Struct(Motor_Info_t *motor_info, Motor_Name_Enum_t motor_
 	}
 	
 	// To what motor this struct belongs to.
-	motor_info->mot_name = motor_name;
+	if(motor_name >= NO_OF_MOTOR_NAME) {
+		DBG_Printf(ERR_LVL_ERROR, "init_Motor_Struct() -> Incorrect Motor Name passed\n");
+	} else {
+		motor_info->mot_name = motor_name;
+	}
 	
+	switch(motor_info->mot_name) {
+		case MOTOR_GUIDE:
+		case MOTOR_VARREST1:
+		case MOTOR_FRONT_CAM:
+			motor_info->comms.uart_addr = TMC2209_MOT_ADDR1;
+		break;
+		case MOTOR_VARREST2:
+		case MOTOR_REELERADJ1:
+		case MOTOR_REELERADJ2:
+			motor_info->comms.uart_addr = TMC2209_MOT_ADDR3;
+		break;
+		default: break;
+	}
 	
 	
 	// Velocity
@@ -560,6 +577,7 @@ void call_All_Init_Functions(void)
 	init_Basics(MOTOR);
 	init_PosMode(MOTOR);
 	read_4671_ADC_Raw();
+	
 	switch(sbridge_addr) {
 		case REELER1_GUIDE_REELERADJ1: {
 			init_Motor_Struct(p_reeler1_info, MOTOR_REELER1);
@@ -570,7 +588,7 @@ void call_All_Init_Functions(void)
 			init_Motor_Struct(p_reeleradj1_info, MOTOR_REELERADJ1);
 			init_tmc2209_motor(TMC2209_MOT_ADDR2);
 			
-			mot_array[TMC4671_MOTOR]	= p_reeleradj1_info;
+			mot_array[TMC4671_MOTOR]	= p_reeler1_info;
 			mot_array[TMC2209_MOTOR1]	= p_guide_info;
 			mot_array[TMC2209_MOTOR2]	= p_reeleradj1_info;
 			
@@ -581,9 +599,10 @@ void call_All_Init_Functions(void)
 		case VARREST_1_2_SOLENOID: {
 			init_Motor_Struct(p_varrest1_info, MOTOR_VARREST1);
 			init_tmc2209_motor(TMC2209_MOT_ADDR1);
+			tmc2209_writeRegister(p_varrest1_info->comms.uart_addr, TMC2209_TCOOLTHRS, 500);
 			
 			init_Motor_Struct(p_varrest2_info, MOTOR_VARREST2);
-			init_tmc2209_motor(TMC2209_MOT_ADDR2);
+			init_tmc2209_motor(TMC2209_MOT_ADDR3);
 			
 			mot_array[TMC4671_MOTOR]	= NULL;
 			mot_array[TMC2209_MOTOR1]	= p_varrest1_info;
@@ -602,8 +621,6 @@ void call_All_Init_Functions(void)
 		default: break;
 	}
 	init_timers();
-	//init_Motor_Struct(p_varrest_info, VARREST_STRUCT);
-	can_Init();
 	init_ext_irq_limits();
 	return;
 }

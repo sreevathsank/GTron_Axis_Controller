@@ -115,6 +115,8 @@ typedef struct {
 typedef struct {
 	uint32_t		sens_trig;				// Time in ms when Sensor Interrupt was received.
 	uint32_t		cam_trig;				// Time in ms when Camera Line was triggered.
+	uint32_t		theoretical_move;
+	uint32_t		move_start;
 }Time_MS_t;
 
 typedef struct {
@@ -189,6 +191,8 @@ extern Can_Cmd_Info_t rx_can_cmd_info;
 void reeler_Stop_Motor( void );
 
 void reeler_Pause_Motor( void );
+
+void tmc2209_Stop_Motor(Motor_Info_t *m);
 
 /************************************************************************/
 /* Velocity Variable Checking                                           */

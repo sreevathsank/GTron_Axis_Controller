@@ -1889,3 +1889,7 @@
 [0327/090736:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
 [0327/090740:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
 [0327/090741:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0608/192942:ERROR:ipc_channel_win.cc(512)] pipe error: 232
+[0608/192942:WARNING:raw_channel_win.cc(532)] WriteFile: The pipe is being closed. (0xE8)
+[0608/192942:ERROR:ipc_channel_win.cc(512)] pipe error: 232
+[0608/192942:WARNING:channel.cc(359)] RawChannel write error

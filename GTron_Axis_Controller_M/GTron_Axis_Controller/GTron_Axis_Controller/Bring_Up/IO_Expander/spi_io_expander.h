@@ -11,6 +11,9 @@
 
 #include "All_Headers.h"
 
+#define IOXP_TRANSFER_PASS	(bool)0
+#define IOXP_TRANSFER_FAIL	(bool)1
+
 typedef enum
 {
 	IOXP_REG_IODIR = 0,
@@ -26,6 +29,7 @@ typedef enum
 	IOXP_REG_OLAT = 10,
 	NO_OF_IOXP_REGISTERS
 }IOXP_REGISTERS_t;
+
 
 #define IOXP_READ_BIT		0x01			// Bit 0: 1 => Read Operation.
 #define IOXP_WRITE_BIT		0x00			// Bit 0: 0 => Write Operation.
@@ -46,8 +50,8 @@ void ioxp_Interrupt_Callback( void );
 
 void ioxp_Init( void );
 
-void IOXP_Write_Byte( IOXP_REGISTERS_t reg_addr, uint8_t byte_to_wr );
+bool IOXP_Write_Byte( IOXP_REGISTERS_t reg_addr, uint8_t byte_to_wr );
 
-void IOXP_Read_Byte( IOXP_REGISTERS_t reg_addr, uint8_t *addr_rd_data );
+bool IOXP_Read_Byte( IOXP_REGISTERS_t reg_addr, uint8_t *addr_rd_data );
 
 #endif /* SPI_IO_EXPANDER_H_ */

@@ -27,7 +27,10 @@
 volatile uint8_t can_rx_int, ad, cmd, typ, mot, crc, checksum;
 int32_t can_status, idx;
 uint32_t trig_no, prev_trig_no;
+volatile int32_t step_count;
+uint32_t step_dir;
 
+volatile bool tmc2209_diag_flag;
 bool motor_dir_rev, lim_edge_detection, rfs_ping_rxvd, is_tmc2209_mot_moving;
 
 int32_t prev_sens_pos;
