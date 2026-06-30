@@ -15,8 +15,8 @@
  **/
 void ioxp_Interrupt_Callback( void )
 {
-	//gtron_limits.interrupt_raised = true;
-	//return;
+	gtron_limits.interrupt_raised = true;
+	return;
 	//
 	//uint8_t intf_rd_data = 0x00;
 	//
@@ -91,11 +91,11 @@ void ioxp_Interrupt_Callback( void )
  **/
 void ioxp_Init( void )
 {
-	IOXP_Write_Byte(IOXP_REG_IODIR,   0x30);	// 0b00110000. Sets the GP4 and GP5 pins as inputs.
+	IOXP_Write_Byte(IOXP_REG_IODIR,   0xF0);	// 0b11110000. Sets the GP4, GP5, GP6 and GP7 pins as inputs.
 	IOXP_Write_Byte(IOXP_REG_GPPU,    0x00);	// 0b00000000. Pull Ups Disabled.
 	IOXP_Write_Byte(IOXP_REG_IOCON,   0x02);	// 0b00000010. INTPOL bit is set to 1 i.e., INT pin will act as Active-HIGH.
-	IOXP_Write_Byte(IOXP_REG_IPOL,    0x30);	// 0b00000000. Input Pins will reflect inverted logic value. 
-	IOXP_Write_Byte(IOXP_REG_GPINTEN, 0x30);	// 0b00110000. Enable Interrupt On Change Event for pins GP4 and GP5.
+	IOXP_Write_Byte(IOXP_REG_IPOL,    0xF0);	// 0b00000000. Input Pins will reflect inverted logic value. 
+	IOXP_Write_Byte(IOXP_REG_GPINTEN, 0xF0);	// 0b11110000. Enable Interrupt On Change Event for pins GP4, GP5, GP6 and GP7.
 	
 	uint8_t ioxp_rd_data = 0x00;
 	IOXP_Read_Byte(IOXP_REG_INTCAP_RD_ONLY, &ioxp_rd_data);

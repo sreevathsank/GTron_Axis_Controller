@@ -16,7 +16,8 @@ int main(void)
 	can_Init();
 	
 	// REELER1_GUIDE_REELERADJ1, VARREST_1_2_SOLENOID and REELER2_REELERADJ2_FRONTCAM.
-	sbridge_addr = VARREST_1_2_SOLENOID;
+	//sbridge_addr = VARREST_1_2_SOLENOID;
+	sbridge_addr = REELER1_GUIDE_REELERADJ1;
 	step_count = 0;
 	define_All_Global_Variables();
 	call_All_Init_Functions();
@@ -59,14 +60,14 @@ int main(void)
 	limit_variables.homing = ( repeat_ramp > 0 ) ? true : false;
 	if(axis_params.rotary_axis_enabled) { limit_variables.homing = true; }
 	// Check whether to do firmware limit based homing.
-	if( limit_variables.homing ) {
-		if(axis_params.rotary_axis_enabled) {
-			limit_variables.rot_enc_z_first_hit = false;
-			ext_irq_enable(ROTENC_Z);
-		}
-		do_homing_sequence();
-	}
-	else { limit_variables.switch_seq_flag = false; }	// No need for Switching Sequence if Homing Sequence is disabled...
+	//if( limit_variables.homing ) {
+	//	if(axis_params.rotary_axis_enabled) {
+	//		limit_variables.rot_enc_z_first_hit = false;
+	//		ext_irq_enable(ROTENC_Z);
+	//	}
+	//	do_homing_sequence();
+	//}
+	//else { limit_variables.switch_seq_flag = false; }	// No need for Switching Sequence if Homing Sequence is disabled...
 	
 	/* Replace with your application code */
 	for(;;) {

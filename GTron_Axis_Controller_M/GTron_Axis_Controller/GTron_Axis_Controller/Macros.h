@@ -131,6 +131,10 @@
 
 #define TMC2209_MOVE_MM(mm)			(TMC2209_ONE_MM_STEPS * mm)				// MM to TMC2209 motor steps conversion.
 
+#define TMC2209_DEFAULT_SPEED		4000UL									// Default speed set for all movements of TMC2209 Motors including homing.
+
+#define SINGLE_LIM_MAX_DISTANCE		TMC2209_MOVE_MM(45)						// Max Distance that a TMC2209 Single Limit Motor can traverse from the Single Limit.
+
 /************************************************************************/
 /*TMC2209 Timer Counters for Step Counting Macros                       */
 /************************************************************************/

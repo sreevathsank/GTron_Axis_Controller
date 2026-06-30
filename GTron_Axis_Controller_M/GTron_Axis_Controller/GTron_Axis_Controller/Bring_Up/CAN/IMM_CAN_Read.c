@@ -1422,7 +1422,7 @@ void can_Message_Process_GTron_Message_Data()
 	rx_can_cmd_info.id = message_Id;
 	memcpy(rx_can_cmd_info.data, can_rx_frame.data, CAN_DATA_FIELD_LEN);
 	rx_can_cmd_info.value = decoding_GTon_CAN_Byte_Data();
-	PRINTF_DEBUG ? printf("\nCAN Data Field = 0x%x or %ld\n", rx_can_cmd_info.value, rx_can_cmd_info.value): 0;
+	PRINTF_DEBUG ? printf("\nMsgID = %x | CAN Data Field = 0x%x or %ld\n", rx_can_cmd_info.id, rx_can_cmd_info.value, rx_can_cmd_info.value): 0;
 	parse_GTron_CAN_Msg_Data();
 	return;
 }

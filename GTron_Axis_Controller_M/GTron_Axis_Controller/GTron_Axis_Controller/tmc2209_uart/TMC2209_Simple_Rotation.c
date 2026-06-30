@@ -12,20 +12,33 @@
  * Configures the registers with the right settings that are needed for rotating the motor.
  * E.g Enabling driver, setting IRUN current etc.
  */
-void init_tmc2209_motor(uint16_t icID)
+void init_tmc2209_motor(uint16_t icID, const Motor_Info_t *m)
 {
 	// GCONF is set in multipe locations.
-    tmc2209_writeRegister(icID, TMC2209_GCONF, 0x000000E8);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
-    
-    tmc2209_writeRegister(icID, TMC2209_TPOWERDOWN, 0x00000014);    // DEC 20.
-    
-    tmc2209_writeRegister(icID, TMC2209_IHOLD_IRUN, 0x00071100);    // DEC 464643. 0x71703 //0x71100
-    
-    tmc2209_writeRegister(icID, TMC2209_CHOPCONF, 0x10000053);      // DEC 268435539.
-    
-    tmc2209_writeRegister(icID, TMC2209_PWMCONF, 0xC10D0024);       // DEC 3238854692.
+    //tmc2209_writeRegister(icID, TMC2209_GCONF, 0x000000E8);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
+    //tmc2209_writeRegister(icID, TMC2209_TPOWERDOWN, 0x00000014);    // DEC 20.
+    //tmc2209_writeRegister(icID, TMC2209_IHOLD_IRUN, 0x00071000);    // DEC 464643. 0x71703 //0x71100
+	////tmc2209_writeRegister(icID, TMC2209_IHOLD_IRUN, 0x00070C04);    // DEC 464643. 0x71703 //0x71100
+    //tmc2209_writeRegister(icID, TMC2209_CHOPCONF, 0x10020054);      // DEC 268435539. // was 0x10000053
+    //tmc2209_writeRegister(icID, TMC2209_PWMCONF, 0xC40D0024);       // DEC 3238854692.
+	//tmc2209_writeRegister(icID, TMC2209_TPOWERDOWN, 0x00000002);
+	//tmc2209_writeRegister(icID, TMC2209_TPWMTHRS, 0x00000FA0);		// DEC 4000
 	
+	/////////////////////////////////////////////////////////////////////////
+	
+	if( (m->mot_name == MOTOR_VARREST2) ) {
+		tmc2209_writeRegister(icID, TMC2209_GCONF, 0x00000060);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
+	} else {
+		tmc2209_writeRegister(icID, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
+	}
+	tmc2209_writeRegister(icID, TMC2209_TPOWERDOWN, 0x00000014);    // DEC 20.
+	tmc2209_writeRegister(icID, TMC2209_IHOLD_IRUN, 0x00071700);    // DEC 464643. 0x71703
+	tmc2209_writeRegister(icID, TMC2209_CHOPCONF, 0x10020054);      // DEC 268435539. // was 0x10000053
+	//tmc2209_writeRegister(icID, TMC2209_CHOPCONF, 0x10000053);      // DEC 268435539.
+	tmc2209_writeRegister(icID, TMC2209_PWMCONF, 0xC40D0024);       // DEC 3238854692.
+	//tmc2209_writeRegister(icID, TMC2209_PWMCONF, 0xC10D0024);       // DEC 3238854692.
 	tmc2209_writeRegister(icID, TMC2209_TPOWERDOWN, 0x00000002);
+	//tmc2209_writeRegister(icID, TMC2209_TPWMTHRS, 0x00000BB8);		// DEC 4000
 	
 	DBG_Printf(ERR_LVL_DEBUG, "TMC2209 Init Done for Motor UART address %d.\n", icID);
 	

@@ -567,7 +567,7 @@ void check_Limit_Flags(void)
 			DBG_Printf(ERR_LVL_DEBUG, "TMC2209 MOTOR2 is homing\n");
 		}
 		
-		if(m1->motor_state == MOTOR_MOVING_STATE) {
+		if((m1->motor_state == MOTOR_MOVING_STATE)) {
 			m = m1;
 			DBG_Printf(ERR_LVL_DEBUG, "TMC2209 MOTOR1 is Moving State!\n");
 		} else if(m2->motor_state == MOTOR_MOVING_STATE) {
@@ -575,8 +575,23 @@ void check_Limit_Flags(void)
 			DBG_Printf(ERR_LVL_DEBUG, "TMC2209 MOTOR2 is Moving State!\n");
 		}
 		
-		if(m == NULL) {
+		if(!m) 
+		{
 			DBG_Printf(ERR_LVL_WARNING, "check_Limit_Flags, Motor_Info_t pointer is NULL!\n");
+			IOXP_Read_Byte(IOXP_REG_INTCAP_RD_ONLY, &gtron_limits.limit_flags);
+			DBG_Printf(ERR_LVL_DEBUG, "IOXP Limit Hit\n");
+			if( MSK_MOT1_R_LIM(gtron_limits.limit_flags) ) {
+				DBG_Printf(ERR_LVL_DEBUG, "Motor 1 Open Right Limit Hit!!\n");
+			}
+			if( MSK_MOT1_L_LIM(gtron_limits.limit_flags) ) {
+				DBG_Printf(ERR_LVL_DEBUG, "Motor 1 Close Left Limit Hit!!\n");
+			}
+			if( MSK_MOT2_R_LIM(gtron_limits.limit_flags) ) {
+				DBG_Printf(ERR_LVL_DEBUG, "Motor 2 Open Right Limit Hit!!\n");
+			}
+			if( MSK_MOT2_L_LIM(gtron_limits.limit_flags) ) {
+				DBG_Printf(ERR_LVL_DEBUG, "Motor 2 Close Left Limit Hit!!\n");
+			}
 			return;
 		}
 		// Read the INTCAP register to get the pin states and clear the register.
@@ -588,9 +603,11 @@ void check_Limit_Flags(void)
 			// Open (Right) Limit.
 			if(MSK_MOT1_R_LIM(gtron_limits.limit_flags)) 
 			{
+				m->move_dir.prev		= m->move_dir.curr;
+				m->move_dir.at_rlimit	= m->move_dir.curr;
 				DBG_Printf(ERR_LVL_DEBUG, "Inside MSK_MOT1_R_LIM\n");
 				if( (m->mot_name == MOTOR_VARREST1) ||
-					(m->mot_name == MOTOR_REELERADJ1) ||
+					(m->mot_name == MOTOR_REELERADJ2) ||
 					(m->mot_name == MOTOR_FRONT_CAM) )
 				{
 					DBG_Printf(ERR_LVL_ERROR, "OPEN (RIGHT) LIMIT DETECTED FOR SINGLE LIMIT MOTOR!\n");
@@ -599,12 +616,19 @@ void check_Limit_Flags(void)
 					m->flags.move_to_open_lim = false;
 					
 					update_TMC2209_Step_Tracking(m);
-					m->position.right_open_limit = m->step_tracker.total_steps;
-					m->flags.is_tmc2209_homing = false;
+					tmc2209_writeRegister(m->comms.uart_addr, TMC2209_VACTUAL, 0x00000000);
+					DBG_Printf(ERR_LVL_DEBUG, "Setting Velocity to 0. Stopping the Motor.\n");
+					m->motor_state					= MOTOR_STOPPED_STATE;
+					m->step_tracker.total_steps		= 0;
+					m->step_tracker.total_dist		= 0;
+					m->position.left_close_limit	= m->step_tracker.total_steps;
+					m->flags.is_tmc2209_homing		= false;
+					m->flags.move_given				= false;
+					is_tmc2209_mot_moving			= false;
 					
 					// Send CAN Commands reply.
 					message_Id = CAN_REPLY_TOP_RACK_ID;
-					can_tx_frame.data[PERIPHERAL_BYTE_IDX]	= GUIDE_OPEN_LIMIT;
+					can_tx_frame.data[PERIPHERAL_BYTE_IDX]	= m->comms.can_peripheral_byte;
 					can_tx_frame.data[OPERATION_BYTE_IDX]	= AXC_PRESSED;
 					can_Write(message_Id, can_tx_frame.data_64bit);
 					
@@ -614,12 +638,17 @@ void check_Limit_Flags(void)
 				{
 					tmc2209_writeRegister(m->comms.uart_addr, TMC2209_VACTUAL, 0x00000000);
 					DBG_Printf(ERR_LVL_DEBUG, "Open (Left) Limit Detected for Double Limit Motor. Set Velocity to 0.\n");
-					if(m->flags.move_to_open_lim) {
+					if(m->flags.move_to_open_lim || m->flags.homing) {
 						m->flags.move_to_open_lim = false;
 						
 						update_TMC2209_Step_Tracking(m);
+						tmc2209_writeRegister(m->comms.uart_addr, TMC2209_VACTUAL, 0x00000000);
+						DBG_Printf(ERR_LVL_DEBUG, "Setting Velocity to 0. Stopping the Motor.\n");
 						m->position.right_open_limit = m->step_tracker.total_steps;
 						m->flags.is_tmc2209_homing = false;
+						m->flags.move_given				= false;
+						is_tmc2209_mot_moving			= false;
+						m->motor_state					= MOTOR_STOPPED_STATE;
 						
 						// Send CAN Commands reply.
 						message_Id = CAN_REPLY_TOP_RACK_ID;
@@ -632,19 +661,26 @@ void check_Limit_Flags(void)
 				}
 			}
 			// Close (Left) Limit
-			else if(MSK_MOT1_L_LIM(gtron_limits.limit_flags)) 
+			if(MSK_MOT1_L_LIM(gtron_limits.limit_flags)) 
 			{
+				m->move_dir.prev		= m->move_dir.curr;
+				m->move_dir.at_rlimit	= m->move_dir.curr;
 				DBG_Printf(ERR_LVL_DEBUG, "Inside MSK_MOT1_L_LIM\n");
 				tmc2209_writeRegister(m->comms.uart_addr, TMC2209_VACTUAL, 0x00000000);
 				DBG_Printf(ERR_LVL_DEBUG, "Close (Left) Limit Detected for Double Limit Motor. Set Velocity to 0.\n");
-				if(m->flags.move_to_close_lim) {
+				if(m->flags.move_to_close_lim || m->flags.homing) {
 					m->flags.move_to_close_lim = false;
 					
 					update_TMC2209_Step_Tracking(m);
+					tmc2209_writeRegister(m->comms.uart_addr, TMC2209_VACTUAL, 0x00000000);
+					DBG_Printf(ERR_LVL_DEBUG, "Setting Velocity to 0. Stopping the Motor.\n");
+					m->motor_state					= MOTOR_STOPPED_STATE;
 					m->step_tracker.total_steps		= 0;
 					m->step_tracker.total_dist		= 0;
 					m->position.left_close_limit	= m->step_tracker.total_steps;
 					m->flags.is_tmc2209_homing		= false;
+					m->flags.move_given				= false;
+					is_tmc2209_mot_moving			= false;
 					
 					// Send CAN Commands reply.
 					message_Id = CAN_REPLY_TOP_RACK_ID;
@@ -660,12 +696,30 @@ void check_Limit_Flags(void)
 			// Open (Right) Limit.
 			if(MSK_MOT2_R_LIM(gtron_limits.limit_flags)) 
 			{
+				m->move_dir.prev		= m->move_dir.curr;
+				m->move_dir.at_rlimit	= m->move_dir.curr;
 				DBG_Printf(ERR_LVL_DEBUG, "Inside MSK_MOT2_R_LIM\n");
 				if( (m->mot_name == MOTOR_VARREST2) ||
-					(m->mot_name == MOTOR_REELERADJ2) ||
+					(m->mot_name == MOTOR_REELERADJ1) ||
 					(m->mot_name == MOTOR_FRONT_CAM) )
 				{
 					DBG_Printf(ERR_LVL_ERROR, "OPEN (RIGHT) LIMIT DETECTED FOR SINGLE LIMIT MOTOR!\n");
+					update_TMC2209_Step_Tracking(m);
+					tmc2209_writeRegister(m->comms.uart_addr, TMC2209_VACTUAL, 0x00000000);
+					DBG_Printf(ERR_LVL_DEBUG, "Setting Velocity to 0. Stopping the Motor.\n");
+					m->motor_state					= MOTOR_STOPPED_STATE;
+					m->step_tracker.total_steps		= 0;
+					m->step_tracker.total_dist		= 0;
+					m->position.left_close_limit	= m->step_tracker.total_steps;
+					m->flags.is_tmc2209_homing		= false;
+					m->flags.move_given				= false;
+					is_tmc2209_mot_moving			= false;
+					
+					// Send CAN Commands reply.
+					message_Id = CAN_REPLY_TOP_RACK_ID;
+					can_tx_frame.data[PERIPHERAL_BYTE_IDX]	= m->comms.can_peripheral_byte;
+					can_tx_frame.data[OPERATION_BYTE_IDX]	= AXC_PRESSED;
+					can_Write(message_Id, can_tx_frame.data_64bit);
 				} else {
 					tmc2209_writeRegister(m->comms.uart_addr, TMC2209_VACTUAL, 0x00000000);
 					DBG_Printf(ERR_LVL_DEBUG, "Open (Left) Limit Detected for Double Limit Motor. Set Velocity to 0.\n");
@@ -673,8 +727,13 @@ void check_Limit_Flags(void)
 						m->flags.move_to_open_lim = false;
 						
 						update_TMC2209_Step_Tracking(m);
+						tmc2209_writeRegister(m->comms.uart_addr, TMC2209_VACTUAL, 0x00000000);
+						DBG_Printf(ERR_LVL_DEBUG, "Setting Velocity to 0. Stopping the Motor.\n");
+						m->motor_state					= MOTOR_STOPPED_STATE;
 						m->position.right_open_limit = m->step_tracker.total_steps;
 						p_guide_info->flags.is_tmc2209_homing = false;
+						m->flags.move_given				= false;
+						is_tmc2209_mot_moving			= false;
 						
 						// Send CAN Commands reply.
 						message_Id = CAN_REPLY_TOP_RACK_ID;
@@ -687,19 +746,26 @@ void check_Limit_Flags(void)
 				}
 			}
 			// Close (Left) Limit
-			else if(MSK_MOT2_L_LIM(gtron_limits.limit_flags)) 
+			if(MSK_MOT2_L_LIM(gtron_limits.limit_flags)) 
 			{
+				m->move_dir.prev		= m->move_dir.curr;
+				m->move_dir.at_rlimit	= m->move_dir.curr;
 				DBG_Printf(ERR_LVL_DEBUG, "Inside MSK_MOT2_L_LIM\n");
 				tmc2209_writeRegister(m->comms.uart_addr, TMC2209_VACTUAL, 0x00000000);
-				DBG_Printf(ERR_LVL_DEBUG, "Open (Left) Limit Detected for Double Limit Motor. Set Velocity to 0.\n");
+				DBG_Printf(ERR_LVL_DEBUG, "Close (Left) Limit Detected for Double Limit Motor. Set Velocity to 0.\n");
 				if(m->flags.move_to_close_lim) {
 					m->flags.move_to_close_lim = false;
 					
 					update_TMC2209_Step_Tracking(m);
+					tmc2209_writeRegister(m->comms.uart_addr, TMC2209_VACTUAL, 0x00000000);
+					DBG_Printf(ERR_LVL_DEBUG, "Setting Velocity to 0. Stopping the Motor.\n");
+					m->motor_state					= MOTOR_STOPPED_STATE;
 					m->step_tracker.total_steps		= 0;
 					m->step_tracker.total_dist		= 0;
 					m->position.left_close_limit	= m->step_tracker.total_steps;
 					m->flags.is_tmc2209_homing		= false;
+					m->flags.move_given				= false;
+					is_tmc2209_mot_moving			= false;
 					
 					// Send CAN Commands reply.
 					message_Id = CAN_REPLY_TOP_RACK_ID;
@@ -713,63 +779,6 @@ void check_Limit_Flags(void)
 		}
 		return;
 	}
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-		/*
-		DBG_Printf(ERR_LVL_DEBUG, "\nGuide Limit Hit, Setting Guide Motor Velocity to 0...\n");
-		if( MSK_MOT1_R_LIM(gtron_limits.limit_flags) )	// Guide Right Open Limit.
-		{
-			tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_VACTUAL, 0x00000000);
-			DBG_Printf(ERR_LVL_DEBUG, "\nInside msk right limit\n");
-			if(p_guide_info->flags.move_to_open_lim)
-			{
-				p_guide_info->flags.move_to_open_lim = false;
-				
-				// Write to the Guide Step Counter TCC Counter Register as 0.
-				update_TMC2209_Step_Tracking(p_guide_info);
-				p_guide_info->position.right_open_limit	= p_guide_info->step_tracker.total_steps;
-				
-				// Send the CAN Command
-				message_Id = CAN_REPLY_TOP_RACK_ID;
-				can_tx_frame.data[PERIPHERAL_BYTE_IDX] = GUIDE_OPEN_LIMIT;
-				can_tx_frame.data[OPERATION_BYTE_IDX] = AXC_PRESSED;
-				can_Write(message_Id, can_tx_frame.data_64bit);
-				
-				DBG_Printf(ERR_LVL_DEBUG, "\nMove to Open Limit Done. Setting Current Position as %ld...\n", p_guide_info->position.right_open_limit);
-			}
-			DBG_Printf(ERR_LVL_DEBUG, "\nGuide Right Open Limit is Hit!\n");
-		}
-		else if( MSK_MOT1_L_LIM(gtron_limits.limit_flags) )	// Guide Left Close Limit.
-		{
-			tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_VACTUAL, 0x00000000);
-			DBG_Printf(ERR_LVL_DEBUG, "\nInside msk left limit\n");
-			if(p_guide_info->flags.move_to_close_lim)
-			{
-				p_guide_info->flags.move_to_close_lim = false;
-				tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_VACTUAL, 0x00000000);
-				
-				// Get the current position as the stroke length of the Guide setup.
-				update_TMC2209_Step_Tracking(p_guide_info);
-				p_guide_info->step_tracker.total_steps	= 0;
-				p_guide_info->step_tracker.total_dist	= 0;
-				p_guide_info->position.left_close_limit	= p_guide_info->step_tracker.total_steps;
-				p_guide_info->flags.is_tmc2209_homing = false;
-				
-				
-				// Send the CAN Command
-				message_Id = CAN_REPLY_TOP_RACK_ID;
-				can_tx_frame.data[PERIPHERAL_BYTE_IDX] = GUIDE_CLOSE_LIMIT;
-				can_tx_frame.data[OPERATION_BYTE_IDX] = AXC_PRESSED;
-				can_Write(message_Id, can_tx_frame.data_64bit);
-				
-				DBG_Printf(ERR_LVL_DEBUG, "\nMove to Close Limit Done. Setting Current Position as %ld...\n", p_guide_info->position.left_close_limit);
-			}
-			DBG_Printf(ERR_LVL_DEBUG, "\nGuide Left Close Limit is Hit!\n");
-		}
-	}
-	
-	PRINTF_DEBUG ? printf("\nInterrupt raised set to false\n"): 0;
-	return;
-	*/
 }
 
 /** 
@@ -806,7 +815,7 @@ void rot_Enc_Z_Pulse_Interrupt_Callback(void)
 		case GTRON_AXC_TOP: printf("\nGTron Top AxC | Rotary Encoder Z Pulse Edge Detected\n"); break;
 	}
 	message_Id = CAN_REPLY_TOP_RACK_ID;
-	can_tx_frame.data[0] = REELER_MOTOR;
+	can_tx_frame.data[0] = REELER_MOTOR_1;
 	can_tx_frame.data[1] = AXC_HOMING;
 	can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
 	
@@ -1324,7 +1333,7 @@ void check_For_Move_Done(void)
 		
 		// Send RHD command as a Move Done command.
 		message_Id = CAN_REPLY_TOP_RACK_ID;
-		can_tx_frame.data[0] = REELER_MOTOR;
+		can_tx_frame.data[0] = REELER_MOTOR_1;
 		can_tx_frame.data[1] = AXC_HOMING;
 		can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
 		

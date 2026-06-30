@@ -110,17 +110,12 @@ static void init_Motor_Struct(Motor_Info_t *motor_info, Motor_Name_Enum_t motor_
 		DBG_Printf(ERR_LVL_ERROR, "init_Motor_Struct NULL Pointer.\n");
 		return;
 	}
-	
-	if(motor_name > NO_OF_MOTOR_NAME) {
-		DBG_Printf(ERR_LVL_WARNING, "init_Motor_Struct Motor Name not in Motor_Name_Enum_t.\n");
-		return;	
-	}
-	
 	// To what motor this struct belongs to.
 	if(motor_name >= NO_OF_MOTOR_NAME) {
 		DBG_Printf(ERR_LVL_ERROR, "init_Motor_Struct() -> Incorrect Motor Name passed\n");
 	} else {
 		motor_info->mot_name = motor_name;
+		motor_info->motor_state = MOTOR_STOPPED_STATE;
 	}
 	
 	switch(motor_info->mot_name) {
@@ -137,7 +132,22 @@ static void init_Motor_Struct(Motor_Info_t *motor_info, Motor_Name_Enum_t motor_
 		default: break;
 	}
 	
+	switch(motor_info->mot_name) {
+		case MOTOR_GUIDE:		motor_info->comms.can_peripheral_byte = GUIDE_MOTOR;				break;
+		case MOTOR_REELER1:		motor_info->comms.can_peripheral_byte = REELER_MOTOR_1;				break;
+		case MOTOR_VARREST1:	motor_info->comms.can_peripheral_byte = VERITCAL_ARRESTOR_MOTOR1;	break;
+		case MOTOR_VARREST2:	motor_info->comms.can_peripheral_byte = VERITCAL_ARRESTOR_MOTOR2;	break;
+		case MOTOR_REELERADJ1:	motor_info->comms.can_peripheral_byte = REELER_ADJ_MOTOR1;			break;
+		case MOTOR_FRONT_CAM:	motor_info->comms.can_peripheral_byte = FRONT_CAMERA_MOTOR;			break;
+		case MOTOR_REELER2:		motor_info->comms.can_peripheral_byte = REELER_MOTOR_2;				break;
+		default: break;
+	}
 	
+	motor_info->move_dir.prev				= DIR_NONE;
+	motor_info->move_dir.curr				= DIR_NONE;
+	motor_info->move_dir.at_rlimit			= DIR_FORWARD;
+	motor_info->move_dir.at_llimit			= DIR_REVERSE;
+		
 	// Velocity
 	motor_info->velocity.target				= 0;
 	motor_info->velocity.current			= 0;
@@ -369,7 +379,7 @@ void read_Set_Parameters_From_Flash(void)
 			axis_params.jerk_delta			= (axis_params.jerk * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS) * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS));//(axis_params.jerk * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS) * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS));
 		break;
 		case GTRON_AXC_TOP:
-			axis_params.start_voltage		= 1000;
+			axis_params.start_voltage		= 1500;
 			axis_params.align_delay			= read_tlv_flash(tlv_ptr, ENCODER_ALIGN_DELAY_MS_FLASH, tlv_traversal);//250;
 			axis_params.torque_flux_limit	= read_tlv_flash(tlv_ptr, CURRENT_LIMIT_mA_FLASH, tlv_traversal);//1800;
 			axis_params.torque_i			= read_tlv_flash(tlv_ptr, TORQUE_I_FLASH, tlv_traversal);//20000; //3850;
@@ -583,26 +593,27 @@ void call_All_Init_Functions(void)
 			init_Motor_Struct(p_reeler1_info, MOTOR_REELER1);
 			
 			init_Motor_Struct(p_guide_info, MOTOR_GUIDE);
-			init_tmc2209_motor(TMC2209_MOT_ADDR1);
+			init_tmc2209_motor(TMC2209_MOT_ADDR1, p_guide_info);
 			
 			init_Motor_Struct(p_reeleradj1_info, MOTOR_REELERADJ1);
-			init_tmc2209_motor(TMC2209_MOT_ADDR2);
+			init_tmc2209_motor(TMC2209_MOT_ADDR3, p_reeleradj1_info);
 			
 			mot_array[TMC4671_MOTOR]	= p_reeler1_info;
 			mot_array[TMC2209_MOTOR1]	= p_guide_info;
 			mot_array[TMC2209_MOTOR2]	= p_reeleradj1_info;
-			
 			
 			DBG_Printf(ERR_LVL_INFO, "SouthBridge Addr set to REELER1_GUIDE_REELERADJ1. Initialized REELER1, GUIDE and REELERADJ1 structs.\n");
 			break;
 		}
 		case VARREST_1_2_SOLENOID: {
 			init_Motor_Struct(p_varrest1_info, MOTOR_VARREST1);
-			init_tmc2209_motor(TMC2209_MOT_ADDR1);
-			tmc2209_writeRegister(p_varrest1_info->comms.uart_addr, TMC2209_TCOOLTHRS, 500);
+			p_varrest1_info->comms.uart_addr = TMC2209_MOT_ADDR1;
+			init_tmc2209_motor(TMC2209_MOT_ADDR1, p_varrest1_info);
+			//tmc2209_writeRegister(p_varrest1_info->comms.uart_addr, TMC2209_TCOOLTHRS, 500);
 			
 			init_Motor_Struct(p_varrest2_info, MOTOR_VARREST2);
-			init_tmc2209_motor(TMC2209_MOT_ADDR3);
+			p_varrest2_info->comms.uart_addr = TMC2209_MOT_ADDR3;
+			init_tmc2209_motor(TMC2209_MOT_ADDR3, p_varrest2_info);
 			
 			mot_array[TMC4671_MOTOR]	= NULL;
 			mot_array[TMC2209_MOTOR1]	= p_varrest1_info;
@@ -615,6 +626,7 @@ void call_All_Init_Functions(void)
 			mot_array[TMC4671_MOTOR]	= NULL;
 			mot_array[TMC2209_MOTOR1]	= NULL;
 			mot_array[TMC2209_MOTOR2]	= NULL;
+			
 			DBG_Printf(ERR_LVL_INFO, "SouthBridge Addr set to REELER2_REELERADJ2_FRONTCAM. Initialized REELER2, REELERADJ2 and FRONTCAM structs.\n");
 			break;
 		}

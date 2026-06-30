@@ -109,7 +109,7 @@ typedef enum
 typedef enum
 {
 	AxC_DEFAULT					= 0,
-	REELER_MOTOR				= 1,
+	REELER_MOTOR_1				= 1,
 	GUIDE_MOTOR					= 2,
 	VERITCAL_ARRESTOR_MOTOR1	= 3,
 	GUIDE_OPEN_LIMIT			= 4,
@@ -122,6 +122,8 @@ typedef enum
 	HYBRID_TRIGGER_N_SHOT		= 11,
 	C_SENSOR					= 12,
 	GLOBAL_COUNTER				= 13,
+	FRONT_CAMERA_MOTOR			= 14,
+	REELER_MOTOR_2				= 15,
 	NO_OF_AXC_PERIPHERALS
 }AxC_Peripherals_t;
 

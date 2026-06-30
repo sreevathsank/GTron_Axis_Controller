@@ -60,14 +60,14 @@ void check_Which_2209_Motor_Moving(void)
 	volatile Motor_Info_t *m = NULL;
 	volatile Motor_Info_t *m1 = mot_array[TMC2209_MOTOR1];
 	volatile Motor_Info_t *m2 = mot_array[TMC2209_MOTOR2];
-	if(m1 == NULL ) {
+	if(!m1) {
 		DBG_Printf(ERR_LVL_ERROR, "check_Which_2209_Motor_Moving() m1 mot_array entry NULL ptr error. Motor Stoppeed\n");
-		tmc2209_Stop_Motor(m);
+		//tmc2209_Stop_Motor(m1);
 		return;
 	}
-	if(m2 == NULL) {
+	if(!m2) {
 		DBG_Printf(ERR_LVL_ERROR, "check_Which_2209_Motor_Moving() m2 mot_array entry NULL ptr error. Motor Stopped\n");
-		tmc2209_Stop_Motor(m);
+		//tmc2209_Stop_Motor(m2);
 		return;
 	}
 	if( m1->motor_state == MOTOR_MOVING_STATE) {
@@ -75,8 +75,9 @@ void check_Which_2209_Motor_Moving(void)
 	} else if(m2->motor_state == MOTOR_MOVING_STATE) {
 		m = m2;
 	}
-	if(m == NULL) {
-		DBG_Printf(ERR_LVL_ERROR, "check_Which_2209_Motor_Moving() Motor_Info_t NULL ptr error. Motor Stopped\n");
+	if(!m) {
+		DBG_Printf(ERR_LVL_ERROR, "check_Which_2209_Motor_Moving() Motor_Info_t NULL ptr error.\n");
+		return;
 	}
 	
 	if( m->flags.homing || m->flags.move_given || \
@@ -159,12 +160,23 @@ void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info)
 			motor_info->position.current = motor_info->step_tracker.total_steps;
 			is_tmc2209_mot_moving = false;
 			message_Id = CAN_REPLY_TOP_RACK_ID;
-			can_tx_frame.data[0] = GUIDE_MOTOR;
+			switch(motor_info->mot_name) {
+				case MOTOR_GUIDE:		can_tx_frame.data[0] = GUIDE_MOTOR;					break;
+				case MOTOR_REELER1:		can_tx_frame.data[0] = REELER_MOTOR_1;				break;
+				case MOTOR_VARREST1:	can_tx_frame.data[0] = VERITCAL_ARRESTOR_MOTOR1;	break;
+				case MOTOR_VARREST2:	can_tx_frame.data[0] = VERITCAL_ARRESTOR_MOTOR2;	break;
+				case MOTOR_REELERADJ1:	can_tx_frame.data[0] = REELER_ADJ_MOTOR1;			break;
+				case MOTOR_FRONT_CAM:	can_tx_frame.data[0] = FRONT_CAMERA_MOTOR;			break;
+				case MOTOR_REELER2:		can_tx_frame.data[0] = REELER_MOTOR_2;				break;
+				default: break;
+			}
+			//can_tx_frame.data[0] = motor_info->comms.can_peripheral_byte;
 			can_tx_frame.data[1] = AXC_MOVE_DONE;
 			can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
 			DBG_Printf(ERR_LVL_DEBUG, "\nTMC2209 Move Done. Current Position = %ld usteps | Time Taken = %ld ms\n", \
 			motor_info->position.current, millis() - motor_info->time_ms.move_start);
-			motor_info->motor_state = MOTOR_MOVE_DONE_STATE;
+			motor_info->motor_state		= MOTOR_MOVE_DONE_STATE;
+			motor_info->move_dir.prev	= motor_info->move_dir.curr;
 		}
 	}
 	return;
@@ -176,10 +188,12 @@ void tmc2209_set_velocity(uint16_t icID, Motor_Info_t *motor_info, int32_t veloc
 	if( velocity > 0 ) { 
 		motor_info->flags.direction = COUNT_UP; 
 		step_dir = COUNT_UP;
+		motor_info->move_dir.curr = DIR_FORWARD;
 		DBG_Printf(ERR_LVL_DEBUG, "\nVelocity > 0 | Count UP + 1\n");
 	} else if( velocity < 0 ) { 
 		motor_info->flags.direction = COUNT_DOWN; 
 		step_dir = COUNT_DOWN;
+		motor_info->move_dir.curr = DIR_REVERSE;
 		DBG_Printf(ERR_LVL_DEBUG, "\nVelocity < 0 | Count DOWN - 1\n");
 	}
 	

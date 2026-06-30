@@ -1893,3 +1893,4 @@
 [0608/192942:WARNING:raw_channel_win.cc(532)] WriteFile: The pipe is being closed. (0xE8)
 [0608/192942:ERROR:ipc_channel_win.cc(512)] pipe error: 232
 [0608/192942:WARNING:channel.cc(359)] RawChannel write error
+[0629/154840:WARNING:raw_channel_win.cc(532)] WriteFile: The pipe is being closed. (0xE8)

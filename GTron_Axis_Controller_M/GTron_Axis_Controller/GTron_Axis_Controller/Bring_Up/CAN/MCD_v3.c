@@ -77,7 +77,7 @@ void reeler_Move_Done(void)
 {
 	if(axis_id == GTRON_AXC_TOP) { message_Id = CAN_REPLY_TOP_RACK_ID; }
 	else if(axis_id == GTRON_AXC_BOT) { message_Id = CAN_REPLY_BOT_RACK_ID; }
-	can_tx_frame.data[0] = REELER_MOTOR;
+	can_tx_frame.data[0] = REELER_MOTOR_1;
 	can_tx_frame.data[1] = AXC_MOVE_DONE;
 	for(int32_t i = 2; i < 8; i++) { can_tx_frame.data[i] = 0x00; }
 	can_Write(message_Id, data);

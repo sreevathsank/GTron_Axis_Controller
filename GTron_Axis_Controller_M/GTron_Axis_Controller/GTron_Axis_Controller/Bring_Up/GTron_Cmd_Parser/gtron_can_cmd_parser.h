@@ -156,10 +156,24 @@ typedef struct {
 	uint32_t reserved				: 17;
 }Motor_Flags_t;
 
+typedef enum {
+	DIR_NONE	= 0,
+	DIR_FORWARD	= 1,
+	DIR_REVERSE	= 2
+}Direction_t;
+
+typedef struct {
+	Direction_t prev;
+	Direction_t curr;
+	Direction_t at_rlimit;	
+	Direction_t at_llimit;
+}Direction_Struct_t;
+
 typedef struct {
 	Motor_Name_Enum_t		mot_name;
 	Communication_Info_t	comms;
 	Motor_State_t			motor_state;
+	Direction_Struct_t		move_dir;
 	Velocity_Info_t			velocity;
 	Position_Info_t			position;
 	Step_Tracker_t			step_tracker;
@@ -187,6 +201,8 @@ extern volatile Motor_Info_t *p_reeler2_info;
 extern volatile Motor_Info_t *mot_array[];
 
 extern Can_Cmd_Info_t rx_can_cmd_info;
+
+void set_CAN_Motor_Address(Motor_Info_t *m);
 
 void reeler_Stop_Motor( void );
 

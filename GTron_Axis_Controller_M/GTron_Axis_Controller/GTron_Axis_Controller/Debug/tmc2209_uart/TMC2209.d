@@ -23,7 +23,8 @@ tmc2209_uart/TMC2209.d tmc2209_uart/TMC2209.o: ../tmc2209_uart/TMC2209.c \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\xlocale.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\string.h \
  ../tmc2209_uart/TMC2209_HW_Abstraction.h \
- ../tmc2209_uart/TMC2209_Simple_Rotation.h ../All_Headers.h \
+ ../tmc2209_uart/TMC2209_Simple_Rotation.h \
+ ../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h ../All_Headers.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\stdio.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\lib\gcc\arm-none-eabi\6.3.1\include\stdarg.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\types.h \
@@ -194,7 +195,6 @@ tmc2209_uart/TMC2209.d tmc2209_uart/TMC2209.o: ../tmc2209_uart/TMC2209.c \
  ../Bring_Up/CAN/IMM_CAN_Write.h ../Global_Vars.h \
  ../Bring_Up/CAN/TMCL_IDE_reply.h ../Bring_Up/CAN/MCD_v3.h \
  ../SysTick/Systick.h ../Bring_Up/Motion/Motion.h \
- ../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h \
  ../Bring_Up/Debug/dbg_transport.h ../Bring_Up/Debug/dbg_print.h \
  ../Bring_Up/Motion/Hybrid_Trigger.h ../TMC-API/tmc/ic/TMC4671/TMC4671.h \
  ../Bring_Up/Motion/Hybrid_Trigger.h ../Code_Dump/McuSwReset.h \
@@ -254,6 +254,8 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../tmc2209_uart/TMC2209_HW_Abstraction.h:
 
 ../tmc2209_uart/TMC2209_Simple_Rotation.h:
+
+../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h:
 
 ../All_Headers.h:
 
@@ -724,8 +726,6 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../SysTick/Systick.h:
 
 ../Bring_Up/Motion/Motion.h:
-
-../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h:
 
 ../Bring_Up/Debug/dbg_transport.h:
 
