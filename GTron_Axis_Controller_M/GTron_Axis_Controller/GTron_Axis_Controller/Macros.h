@@ -41,7 +41,7 @@
 #define GTRON_AXC_ADC_MAX			208
 /**********************************/	
 
-
+#define IS_DISCRETE					false
 
 #define ADC_CHANNEL					0				// ADC Channel to read from.
 #define ADC_READ_LENGTH				2				// No. of bytes to read. 8 bit = 1 | 10 and 12 bits = 2.			

@@ -12,7 +12,7 @@
 #include <hpl/spi/spi_lite.h>
 //#include <hal_spi_m_async.h>
 //#include "All_Headers.h"
-#include "string.h"
+#include <string.h>
 #include "tlv_flash.h"
 
 //struct spi_m_async_descriptor SERIALFLASH;

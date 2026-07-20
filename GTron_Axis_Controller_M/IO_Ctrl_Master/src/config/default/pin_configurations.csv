@@ -1,0 +1,85 @@
+Pin Number,Pin ID,Custom Name,Function,Mode, Direction,Latch,Pull Up,Pull Down,Drive Strength
+1,PA00,,Available,,,,,,NORMAL
+2,PA01,,Available,,,,,,NORMAL
+3,PC00,,Available,,,,,,NORMAL
+4,PC01,,Available,,,,,,NORMAL
+5,PC02,,Available,,,,,,NORMAL
+6,PC03,,Available,,,,,,NORMAL
+7,PA02,,Available,,,,,,NORMAL
+8,PA03,,Available,,,,,,NORMAL
+9,PB04,,Available,,,,,,NORMAL
+10,PB05,,Available,,,,,,NORMAL
+13,PB06,,Available,,,,,,NORMAL
+14,PB07,RUN_BTN,EIC_EXTINT7,Digital,High Impedance,n/a,No,No,NORMAL
+15,PB08,PAUSE_BTN,EIC_EXTINT8,Digital,High Impedance,n/a,No,No,NORMAL
+16,PB09,STOP_BTN,EIC_EXTINT9,Digital,High Impedance,n/a,No,No,NORMAL
+17,PA04,BZROFF_BTN,EIC_EXTINT4,Digital,High Impedance,n/a,No,No,NORMAL
+18,PA05,,Available,,,,,,NORMAL
+19,PA06,F_DOOR_LIM,EIC_EXTINT6,Digital,High Impedance,n/a,No,No,NORMAL
+20,PA07,,Available,,,,,,NORMAL
+21,PC05,,Available,,,,,,NORMAL
+22,PC06,,Available,,,,,,NORMAL
+23,PC07,,Available,,,,,,NORMAL
+26,PA08,,Available,,,,,,NORMAL
+27,PA09,,Available,,,,,,NORMAL
+28,PA10,,Available,,,,,,NORMAL
+29,PA11,,Available,,,,,,NORMAL
+30,PB10,,Available,,,,,,NORMAL
+31,PB11,,Available,,,,,,NORMAL
+32,PB12,,Available,,,,,,NORMAL
+33,PB13,,Available,,,,,,NORMAL
+34,PB14,CAN_TX,CAN1_TX,Digital,High Impedance,n/a,No,No,NORMAL
+35,PB15,CAN_RX,CAN1_RX,Digital,High Impedance,n/a,No,No,NORMAL
+38,PC08,,Available,,,,,,NORMAL
+39,PC09,CAN_SILENT,GPIO,Digital,Out,Low,,,NORMAL
+40,PC10,,Available,,,,,,NORMAL
+41,PC11,,Available,,,,,,NORMAL
+42,PC12,DBG_UART_TX,SERCOM7_PAD0,Digital,High Impedance,n/a,No,No,NORMAL
+43,PC13,,Available,,,,,,NORMAL
+44,PC14,,Available,,,,,,NORMAL
+45,PC15,DBG_UART_RX,SERCOM7_PAD3,Digital,High Impedance,n/a,No,No,NORMAL
+46,PA12,,Available,,,,,,NORMAL
+47,PA13,BZROFF_LED,GPIO,Digital,Out,Low,,,NORMAL
+48,PA14,STOP_LED,GPIO,Digital,Out,Low,,,NORMAL
+49,PA15,PAUSE_LED,GPIO,Digital,Out,Low,,,NORMAL
+52,PA16,RUN_LED,GPIO,Digital,Out,Low,,,NORMAL
+53,PA17,PRESS_SW1,EIC_EXTINT1,Digital,High Impedance,n/a,No,No,NORMAL
+54,PA18,EPANEL_DOOR_LIM,EIC_EXTINT2,Digital,High Impedance,n/a,No,No,NORMAL
+55,PA19,B_DOOR_LIM,EIC_EXTINT3,Digital,High Impedance,n/a,No,No,NORMAL
+56,PC16,,Available,,,,,,NORMAL
+57,PC17,,Available,,,,,,NORMAL
+58,PC18,WINDING,GPIO,Digital,Out,Low,,,NORMAL
+59,PC19,,Available,,,,,,NORMAL
+60,PC20,,Available,,,,,,NORMAL
+61,PC21,,Available,,,,,,NORMAL
+64,PB16,,Available,,,,,,NORMAL
+65,PB17,,Available,,,,,,NORMAL
+66,PB18,SPI_LED_SS,SERCOM3_PAD2,Digital,High Impedance,n/a,No,No,NORMAL
+67,PB19,SPI_LED_MISO,SERCOM3_PAD3,Digital,High Impedance,n/a,No,No,NORMAL
+68,PB20,SPI_LED_MOSI,SERCOM3_PAD0,Digital,High Impedance,n/a,No,No,NORMAL
+69,PB21,SPI_LED_SCK,SERCOM3_PAD1,Digital,High Impedance,n/a,No,No,NORMAL
+70,PA20,,Available,,,,,,NORMAL
+71,PA21,,Available,,,,,,NORMAL
+72,PA22,,Available,,,,,,NORMAL
+73,PA23,,Available,,,,,,NORMAL
+74,PA24,,Available,,,,,,NORMAL
+75,PA25,,Available,,,,,,NORMAL
+78,PB22,,Available,,,,,,NORMAL
+79,PB23,,Available,,,,,,NORMAL
+80,PB24,,Available,,,,,,NORMAL
+81,PB25,,Available,,,,,,NORMAL
+82,PC24,,Available,,,,,,NORMAL
+83,PC25,,Available,,,,,,NORMAL
+84,PC26,,Available,,,,,,NORMAL
+85,PC27,TWRLMP1_R,GPIO,Digital,Out,Low,,,NORMAL
+86,PC28,TWRLMP2_Y,GPIO,Digital,Out,Low,,,NORMAL
+87,PA27,TWRLMP3_G,GPIO,Digital,Out,Low,,,NORMAL
+89,PA28,TWRLMP4_B,GPIO,Digital,Out,Low,,,NORMAL
+93,PA30,,Available,,,,,,NORMAL
+94,PA31,,Available,,,,,,NORMAL
+95,PB30,,Available,,,,,,NORMAL
+96,PB31,TWRLMP5_BUZ,GPIO,Digital,Out,Low,,,NORMAL
+97,PB00,,Available,,,,,,NORMAL
+98,PB01,CLU_SOL,GPIO,Digital,Out,Low,,,NORMAL
+99,PB02,STAMPING,GPIO,Digital,Out,Low,,,NORMAL
+100,PB03,,Available,,,,,,NORMAL

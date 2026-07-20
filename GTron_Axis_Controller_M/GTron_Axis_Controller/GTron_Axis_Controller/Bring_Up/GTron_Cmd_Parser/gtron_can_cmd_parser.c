@@ -206,7 +206,7 @@ void reeler_Stop_Motor( void )
 	p_reeler1_info->flags.is_paused				= false;
 	p_reeler1_info->hybrid.cycle_armed			= false;
 	p_reeler1_info->hybrid.first_trigger_skip	= true;
-	p_reeler1_info->hybrid.consecutive_slips		= 0;
+	p_reeler1_info->hybrid.consecutive_slips	= 0;
 	p_reeler1_info->flags.is_hybrid_trig_enabled = false;
 	//reeler_info.position.trig_step_size = 0;
 	homing_v = 0;
@@ -407,7 +407,7 @@ static bool check_Close_Left_Limit_Status( Motor_Info_t *m )
 	}
 }
 
-static bool is_single_limit_motor(const Motor_Info_t *m) 
+bool is_single_limit_motor(const Motor_Info_t *m) 
 {
 	if (!m) return false;
 
@@ -508,7 +508,7 @@ static void tmc2209_Move(Motor_Info_t *motor_info, int32_t target_position, bool
  *
  * @return
  **/
-static void tmc2209_Move_To_Open_Limit(Motor_Info_t *motor_info )
+void tmc2209_Move_To_Open_Limit(Motor_Info_t *motor_info )
 {
 	uint8_t limit_status = 0;
 	IOXP_Read_Byte(IOXP_REG_GPIO, &limit_status);
@@ -537,7 +537,7 @@ static void tmc2209_Move_To_Open_Limit(Motor_Info_t *motor_info )
  *
  * @return
  **/
-static void tmc2209_Move_To_Close_Limit(Motor_Info_t *motor_info )
+void tmc2209_Move_To_Close_Limit(Motor_Info_t *motor_info )
 {
 	uint8_t limit_status = 0;
 	IOXP_Read_Byte(IOXP_REG_GPIO, &limit_status);
@@ -566,21 +566,52 @@ static void tmc2209_Move_To_Close_Limit(Motor_Info_t *motor_info )
 
 static void tmc2209_Reference_Search( Motor_Info_t *m )
 {
-	m->flags.homing = true;
-	m->flags.move_to_close_lim = true;
-	bool open_lim_status = check_Open_Right_Limit_Status(m);
-	DBG_Printf(ERR_LVL_DEBUG, "Open Right Limit Status = %d\n", open_lim_status);
-	if(open_lim_status) {
-		DBG_Printf(ERR_LVL_DEBUG, "Homing - Motor already at limit. Not moving and sending homing done reply\n");
-		can_AxC_Write(	CAN_REPLY_TOP_RACK_ID, 
-						m->comms.can_peripheral_byte, 
-						AXC_HOMING,	
-						0x00	);
-	} else {
-		DBG_Printf(ERR_LVL_DEBUG, "Homing - Motor not at limit. Moving towards Open Right Limit\n");
-		tmc2209_set_velocity(m->comms.uart_addr, m, TMC2209_DEFAULT_SPEED);
-		m->motor_state = MOTOR_MOVING_STATE;
-		m->flags.homing = true;
+	if(!m) 
+	{
+		DBG_Printf(ERR_LVL_ERROR,\
+		"tmc2209_Reference_Search: Motor_Info_t Null ptr!\n");
+		return;
+	}
+	DBG_Printf(ERR_LVL_DEBUG, "TMC2209 Reference Search UART addr = %d\n", m->comms.uart_addr);
+	m->flags.is_tmc2209_homing = true;
+	if( is_single_limit_motor(m) ) 
+	{
+		bool open_lim_status = check_Open_Right_Limit_Status(m);
+		DBG_Printf(ERR_LVL_DEBUG, "Open Right Limit Status = %d\n", open_lim_status);
+		if(open_lim_status) 
+		{
+			DBG_Printf(ERR_LVL_DEBUG, "Homing - Motor already at limit. Not moving and sending homing done reply\n");
+			can_AxC_Write(	CAN_REPLY_TOP_RACK_ID,
+							m->comms.can_peripheral_byte,
+							AXC_HOMING,
+							0x00	);
+		} 
+		else 
+		{
+			m->flags.move_to_open_lim = true;
+			DBG_Printf(ERR_LVL_DEBUG, "Homing - Motor not at limit. Moving towards Open Right Limit\n");
+			tmc2209_set_velocity(m->comms.uart_addr, m, TMC2209_DEFAULT_SPEED);
+			m->motor_state = MOTOR_MOVING_STATE;
+		}
+	}
+	else 
+	{
+		bool open_lim_status = check_Open_Right_Limit_Status(m);
+		if(open_lim_status)
+		{
+			DBG_Printf(ERR_LVL_DEBUG, "Motor already at Open Limit. moving towards close limit.\n");
+			m->flags.move_to_close_lim	= true;
+			m->flags.move_to_open_lim	= false;
+			m->flags.first_lim_hit		= true;
+			tmc2209_Move_To_Close_Limit(m);
+		}
+		else 
+		{
+			m->flags.move_to_open_lim	= true;
+			m->flags.move_to_close_lim	= false;
+			m->flags.first_lim_hit		= false;
+			tmc2209_Move_To_Open_Limit(m);
+		}
 	}
 	return;
 }
@@ -840,7 +871,18 @@ void parse_GTron_CAN_Msg_Data( void )
 			case GUIDE_MOTOR:
 				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
 				{
-					case AXC_STOP:					tmc2209_Stop_Motor(p_guide_info);											break;
+					//case AXC_STOP:					tmc2209_Stop_Motor(p_guide_info);											break;
+					case AXC_STOP: {
+						DBG_Printf(ERR_LVL_INFO, "Ejector Command received GUIDE MOTOR STOP.\n");
+						DBG_Printf( ERR_LVL_INFO, "MsgID=0x%X | Periphearal=0x%X | Operation=0x%X | Value=0x%X\n", 
+									CAN_TOP_AXC_TO_SYSCTRL_ID, GLOBAL_COUNTER, AXC_EJECT, 0x02 );
+						message_Id = CAN_TOP_AXC_TO_SYSCTRL_ID;
+						can_tx_frame.data[0] = GLOBAL_COUNTER;
+						can_tx_frame.data[1] = AXC_EJECT;
+						can_tx_frame.data[2] = 0x02;
+						can_Write(message_Id, can_tx_frame.data_64bit);
+						break;
+					}
 					case AXC_VELOCITY:				tmc2209_Set_Velocity(p_guide_info, (int32_t)rx_can_cmd_info.value);			break;
 					case AXC_ROTATE:				tmc2209_Move(p_guide_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);		break;
 					case AXC_MOVE_TO:				tmc2209_Move(p_guide_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);		break;
@@ -849,6 +891,7 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_MOVE_TO_CLOSE_LIMIT:	tmc2209_Move_To_Close_Limit(p_guide_info);									break;
 					case AXC_INITIAL_POSITION:		tmc2209_Set_Initial_Position(p_guide_info, (int32_t)rx_can_cmd_info.value);	break;
 					case AXC_STATUS_CHECK:			tmc2209_Limits_Status_Check(p_guide_info);									break;
+					case AXC_HOMING:				tmc2209_Reference_Search(p_varrest1_info);									break;
 					case AXC_CURRENT_POSITION:		tmc2209_Get_Current_Position(p_guide_info);									break;
 					default: DBG_Printf(ERR_LVL_DEBUG,"Guide Motor Invalid Operation Rxcvd\n");									break;
 				}
@@ -1036,6 +1079,30 @@ void parse_GTron_CAN_Msg_Data( void )
 				rack_id = MOTOR_ID;
 				break;
 			}
+			case GLOBAL_COUNTER: {
+				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
+				{
+					case AXC_SET: {
+						int32_t setpos = rx_can_cmd_info.value;
+						tmc4671_setActualPosition(MOTOR, setpos);
+						DBG_Printf(ERR_LVL_INFO, "GC_Set = %ld\n", setpos);
+						break;
+					}
+					case AXC_GET: {
+						int32_t cpos = tmc4671_getActualPosition(MOTOR);
+						DBG_Printf(ERR_LVL_INFO, "GC_Get = %ld\n", cpos);
+						break;
+					} 
+					case AXC_EJECT: {
+						DBG_Printf(ERR_LVL_INFO, "GC_Eject\n");
+						break;
+					}
+					default: break;
+				}
+				rack_id = MOTOR_ID;
+				break;
+			}
+			default: break;
 		}
 	}
 	return;

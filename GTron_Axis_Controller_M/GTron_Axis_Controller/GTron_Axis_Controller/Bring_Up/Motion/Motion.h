@@ -44,8 +44,6 @@ void check_For_Move_Done(void);
 
 void run_Velocity_Ramp(void);
 
-void run_Velocity_Ramp(void);
-
 void left_limit_homing(void);
 
 void left_limit_high(void);

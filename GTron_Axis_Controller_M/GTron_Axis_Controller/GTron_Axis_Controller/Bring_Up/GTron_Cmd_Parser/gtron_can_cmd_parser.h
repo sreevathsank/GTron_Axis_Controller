@@ -153,7 +153,8 @@ typedef struct {
 	uint32_t is_encoder_mode		: 1;	// 12
 	uint32_t is_double_limit		: 1;	// 13
 	uint32_t is_tmc2209_homing		: 1;	// 14
-	uint32_t reserved				: 17;
+	uint32_t first_lim_hit			: 1;	// 15
+	uint32_t reserved				: 16;
 }Motor_Flags_t;
 
 typedef enum {
@@ -201,6 +202,12 @@ extern volatile Motor_Info_t *p_reeler2_info;
 extern volatile Motor_Info_t *mot_array[];
 
 extern Can_Cmd_Info_t rx_can_cmd_info;
+
+bool is_single_limit_motor(const Motor_Info_t *m);
+
+void tmc2209_Move_To_Close_Limit(Motor_Info_t *motor_info );
+
+void tmc2209_Move_To_Open_Limit(Motor_Info_t *motor_info );
 
 void set_CAN_Motor_Address(Motor_Info_t *m);
 

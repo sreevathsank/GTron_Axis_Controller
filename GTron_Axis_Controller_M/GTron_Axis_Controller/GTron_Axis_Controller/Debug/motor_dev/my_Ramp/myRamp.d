@@ -175,9 +175,7 @@ motor_dev/my_Ramp/myRamp.d motor_dev/my_Ramp/myRamp.o: \
  ../TMC-API/tmc/helpers/CRC.h ../TMC-API/tmc/helpers/RegisterAccess.h \
  ../TMC-API/tmc/ramp/Ramp.h ../TMC-API/tmc/ramp/LinearRamp1.h \
  ../TMC-API/tmc/helpers/Functions.h ../TMC-API/tmc/helpers/API_Header.h \
- ../All_Headers.h \
- c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\lib\gcc\arm-none-eabi\6.3.1\include\stdint-gcc.h \
- ../Macros.h ../Bring_Up/DBG_bring_up.h \
+ ../All_Headers.h ../Macros.h ../Bring_Up/DBG_bring_up.h \
  ../Bring_Up/IO_Expander/spi_io_expander.h \
  ../TMC-API/tmc/ic/TMC4671/TMC4671.h \
  ../TMC-API/tmc/ic/TMC4671/TMC4671_Register.h \
@@ -667,8 +665,6 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../TMC-API/tmc/helpers/API_Header.h:
 
 ../All_Headers.h:
-
-c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\lib\gcc\arm-none-eabi\6.3.1\include\stdint-gcc.h:
 
 ../Macros.h:
 

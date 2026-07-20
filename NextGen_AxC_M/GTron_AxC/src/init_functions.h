@@ -17,11 +17,13 @@ extern "C" {
 #include "can_gatekeeper_task.h"
 #include "can_isr_callbacks.h"
 #include "can_state.h"
+#include "dbg_print/dbg_print.h"
+#include "dbg_print/dbg_transport.h"
 
 extern uint8_t Can1MessageRAM[CAN1_MESSAGE_RAM_CONFIG_SIZE];
     
 void init_CAN1( void );
-
+void init_dbg_print( void );
 
 #ifdef	__cplusplus
 }

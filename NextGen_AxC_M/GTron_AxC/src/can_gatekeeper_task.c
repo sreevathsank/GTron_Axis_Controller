@@ -148,8 +148,7 @@ static void print_tx_message(uint8_t numberOfMessage, CAN_TX_BUFFER *txBuf, uint
     }
 }
 
-// Message Length to Data length code.
-static uint8_t CANLengthToDlcGet(uint8_t length)
+// Message Length to Data length code.static uint8_t CANLengthToDlcGet(uint8_t length)
 {
     uint8_t dlc = 0;
 

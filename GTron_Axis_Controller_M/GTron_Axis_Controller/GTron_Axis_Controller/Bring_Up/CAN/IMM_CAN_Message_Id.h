@@ -119,11 +119,10 @@ typedef enum
 	REELER_ADJ_MOTOR2			= 8,
 	SOLENOIDS					= 9,
 	HYBRID_TRIGGER_INSPECTION	= 10,
-	HYBRID_TRIGGER_N_SHOT		= 11,
-	C_SENSOR					= 12,
-	GLOBAL_COUNTER				= 13,
-	FRONT_CAMERA_MOTOR			= 14,
-	REELER_MOTOR_2				= 15,
+	C_SENSOR					= 11,
+	GLOBAL_COUNTER				= 12,
+	FRONT_CAMERA_MOTOR			= 13,
+	REELER_MOTOR_2				= 14,
 	NO_OF_AXC_PERIPHERALS
 }AxC_Peripherals_t;
 
@@ -156,6 +155,7 @@ typedef enum
 	AXC_GET					= 24,
 	AXC_TERMINAL_WIDTH		= 25,
 	AXC_ENCODER_MODE		= 26,
+	AXC_EJECT				= 27,
 	NO_OF_AXC_OPERAITONS
 }AxC_Operations_t;
 
@@ -185,6 +185,8 @@ typedef enum {
 #define CAN_REPLY_BOARD_ACTIVE_PING_ID			0x10F	
 
 #define CAN_ERR_REPLY_TOP_RACK_ID				0x402
+
+#define CAN_TOP_AXC_TO_SYSCTRL_ID				0x110
 
 
 /** 
