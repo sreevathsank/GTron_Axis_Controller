@@ -1,9 +1,6 @@
 /**
  * @file dbg_print.c
- * @brief Debug Print Library - Implementation
- *
- * This file contains NO hardware-specific references. All hardware interaction
- * is delegated to the user-provided transport layer (dbg_transport_t).
+ * @brief Debug Print Library - Non-blocking pool+queue implementation
  */
 
 #include "dbg_print.h"
@@ -19,104 +16,82 @@
 
 #include "FreeRTOS.h"
 #include "semphr.h"
+#include "task.h"
 
-/** @internal Binary semaphore signaled by DBG_TransferComplete(). */   
-static SemaphoreHandle_t    s_dma_done_sem;
+static SemaphoreHandle_t s_dbg_mutex;
 
-/** @internal Mutex to serialize access to DBG_Printf() from multiple tasks. */
-static SemaphoreHandle_t    s_dbg_mutex;
+#define DBG_MUTEX_LOCK()     xSemaphoreTake(s_dbg_mutex, portMAX_DELAY)
+#define DBG_MUTEX_UNLOCK()   xSemaphoreGive(s_dbg_mutex)
+#define DBG_ISR_YIELD()      ((void)0)
 
-#define DBG_SEM_WAIT()      xSemaphoreTake(s_dma_done_sem, portMAX_DELAY)
-#define DBG_SEM_GIVE()      xSemaphoreGive(s_dma_done_sem)
-#define DBG_SEM_GIVE_ISR()  do {                                            \
-                                BaseType_t xWoken = pdFALSE;                \
-                                xSemaphoreGiveFromISR(s_dma_done_sem,       \
-                                                      &xWoken);             \
-                                portYIELD_FROM_ISR(xWoken);                 \
-                            } while (0)
-#define DBG_MUTEX_TAKE()    xSemaphoreTake(s_dbg_mutex, portMAX_DELAY)
-#define DBG_MUTEX_GIVE()    xSemaphoreGive(s_dbg_mutex)
-
-/**
- * @internal
- * @brief Create FreeRTOS synchronization primitives.
+/*
+ * Brief IRQ mask for preventing the DMA ISR from racing with the drain
+ * kick in DBG_Printf().  Uses the port's save/restore primitives.
  */
+#define DBG_IRQ_LOCK(p)    do { (p) = (uint32_t)portSET_INTERRUPT_MASK_FROM_ISR(); } while (0)
+#define DBG_IRQ_UNLOCK(p)  portCLEAR_INTERRUPT_MASK_FROM_ISR(p)
+
 static void dbg_rtos_init(void)
 {
-    s_dma_done_sem = xSemaphoreCreateBinary();
-    /* Give once so the very first transfer does not block. */
-    xSemaphoreGive(s_dma_done_sem);
-
     s_dbg_mutex = xSemaphoreCreateMutex();
 }
 
 #elif defined(DBG_RTOS_NONE)
 
-/** @internal Volatile flag used as a bare-metal binary semaphore. */
-static volatile bool s_dma_done_flag = true;
+#define DBG_MUTEX_LOCK()     ((void)0)
+#define DBG_MUTEX_UNLOCK()   ((void)0)
+#define DBG_ISR_YIELD()      ((void)0)
 
-#define DBG_SEM_WAIT()      do { while (!s_dma_done_flag) { /* spin */ } \
-                                 s_dma_done_flag = false; } while (0)
-#define DBG_SEM_GIVE()      (s_dma_done_flag = true)
-#define DBG_SEM_GIVE_ISR()  (s_dma_done_flag = true)
-#define DBG_MUTEX_TAKE()    /* no-op */
-#define DBG_MUTEX_GIVE()    /* no-op */
+static inline uint32_t dbg_get_primask(void)
+{
+    uint32_t result;
+    __asm volatile ("mrs %0, primask" : "=r"(result));
+    return result;
+}
+static inline void dbg_disable_irq(void)
+{
+    __asm volatile ("cpsid i" ::: "memory");
+}
+static inline void dbg_set_primask(uint32_t mask)
+{
+    __asm volatile ("msr primask, %0" :: "r"(mask) : "memory");
+}
 
-/**
- * @internal
- * @brief Initialize bare-metal synchronization (reset flag).
- */
+#define DBG_IRQ_LOCK(p)    do { (p) = dbg_get_primask(); dbg_disable_irq(); } while (0)
+#define DBG_IRQ_UNLOCK(p)  dbg_set_primask(p)
+
 static void dbg_rtos_init(void)
 {
-    s_dma_done_flag = true;
 }
 
 #else
 #error "dbg_print_config.h: Define exactly one of DBG_RTOS_FREERTOS or DBG_RTOS_NONE"
 #endif
 
+/* ---- Message Pool -------------------------------------------------------- */
+
+typedef struct {
+    char     data[DBG_STAGE_SIZE];
+    uint16_t len;
+    uint16_t offset;
+    bool     in_use;
+} dbg_msg_t;
+
+static dbg_msg_t     s_pool[DBG_MSG_POOL_SIZE];
+static uint8_t       s_queue[DBG_MSG_POOL_SIZE];
+static volatile uint8_t s_q_head;
+static volatile uint8_t s_q_tail;
+static volatile int8_t  s_active;   /* -1 = idle, else pool index being DMA'd */
+static uint8_t       s_dma_buf[DBG_BUF_SIZE];
+
+static volatile uint32_t s_dma_errors;
+static volatile uint32_t s_drop_count;
+
 /* ---- Static Data --------------------------------------------------------- */
 
-/**
- * @internal
- * @brief Double-buffer for DMA transfers.
- *
- * While one buffer is being transmitted by the transport, the next message
- * can be formatted into the other.
- */
-static char s_dbg_buf[2][DBG_BUF_SIZE];
-
-/**
- * @internal
- * @brief Staging buffer for vsnprintf().
- *
- * The full formatted message (prefix + user text) is written here first,
- * then copied in chunks into the DMA transfer buffers.
- */
-static char s_dbg_stage[DBG_STAGE_SIZE];
-
-/**
- * @internal
- * @brief Index of the currently active DMA buffer (0 or 1).
- */
-static volatile uint8_t s_active_buf;
-
-/**
- * @internal
- * @brief Current error level threshold.
- */
-static err_lvl_t s_current_level;
-
-/**
- * @internal
- * @brief Stored transport pointer provided by the user at initialization.
- */
 static const dbg_transport_t *s_transport;
+static volatile err_lvl_t     s_current_level;
 
-/**
- * @internal
- * @brief Level prefix strings, indexed by err_lvl_t.
- */
 static const char * const s_level_prefix[] = {
     "[ERR] ",
     "[WRN] ",
@@ -124,20 +99,148 @@ static const char * const s_level_prefix[] = {
     "[DBG] ",
 };
 
+/* ---- Forward Declarations ------------------------------------------------ */
+
+static void drain(void);
+
+/* ---- Helpers ------------------------------------------------------------- */
+
+static int format_message(char *buf, size_t buf_size,
+                          err_lvl_t msg_level, const char *fmt, va_list args)
+{
+    int prefix_len = snprintf(buf, buf_size, "%s",
+                              s_level_prefix[msg_level]);
+    if (prefix_len < 0) {
+        prefix_len = 0;
+    } else if ((size_t)prefix_len >= buf_size) {
+        prefix_len = (int)(buf_size - 1U);
+    }
+
+    int msg_len = vsnprintf(buf + prefix_len,
+                            buf_size - (size_t)prefix_len,
+                            fmt, args);
+    if (msg_len < 0) {
+        msg_len = 0;
+    }
+
+    int total = prefix_len + msg_len;
+    if ((size_t)total >= (buf_size - 1U)) {
+        total = (int)(buf_size - 1U);
+    }
+    return total;
+}
+
+static int8_t pool_alloc(void)
+{
+    for (int8_t i = 0; i < (int8_t)DBG_MSG_POOL_SIZE; i++) {
+        if (!s_pool[i].in_use) {
+            s_pool[i].in_use = true;
+            return i;
+        }
+    }
+    return -1;
+}
+
+static inline void pool_free(int8_t idx)
+{
+    s_pool[idx].in_use = false;
+}
+
+/* ---- Drain Pump ----------------------------------------------------------
+ *
+ * Called from ISR (DBG_TransferComplete) and from task context
+ * (DBG_Printf kick, under mutex + IRQ disabled).
+ * Transfers the next pending chunk via DMA.
+ */
+
+static void drain(void)
+{
+    int8_t idx;
+
+    if (s_active >= 0) {
+        /* Continue transmitting the active message's next chunk */
+        idx = s_active;
+    } else {
+        /* No active transfer — dequeue the next pending message */
+        if (s_q_head == s_q_tail) {
+            return;   /* queue empty */
+        }
+        idx = (int8_t)s_queue[s_q_tail];
+        s_active = idx;
+    }
+
+    dbg_msg_t *msg = &s_pool[idx];
+    uint16_t remaining = msg->len - msg->offset;
+    if (remaining == 0U) {
+        /* Should not happen — offset == len means message is done */
+        pool_free(idx);
+        s_q_tail = (uint8_t)((s_q_tail + 1U) % DBG_MSG_POOL_SIZE);
+        s_active = -1;
+        return;
+    }
+
+    uint16_t chunk = remaining;
+    if (chunk > DBG_BUF_SIZE) {
+        chunk = DBG_BUF_SIZE;
+    }
+
+    memcpy(s_dma_buf, msg->data + msg->offset, chunk);
+
+    if (s_transport->send(s_dma_buf, chunk)) {
+        msg->offset = (uint16_t)(msg->offset + chunk);
+        /* If this chunk completed the message, the ISR will free +
+           advance the queue. We keep s_active set so the ISR knows
+           which message was in flight. */
+    } else {
+        /* send() rejected — channel unexpectedly busy.
+         * Leave message in queue, mark idle, count error, retry next kick. */
+        s_dma_errors++;
+        s_active = -1;
+    }
+}
+
 /* ---- Public Functions ---------------------------------------------------- */
 
 void DBG_Init(const dbg_transport_t *transport)
 {
     s_transport     = transport;
-    s_active_buf    = 0;
     s_current_level = DBG_DEFAULT_LEVEL;
+    s_active        = -1;
+    s_q_head        = 0U;
+    s_q_tail        = 0U;
+    s_dma_errors    = 0U;
+    s_drop_count    = 0U;
+
+    for (int i = 0; i < DBG_MSG_POOL_SIZE; i++) {
+        s_pool[i].in_use = false;
+    }
 
     dbg_rtos_init();
 }
 
 void DBG_TransferComplete(void)
 {
-    DBG_SEM_GIVE_ISR();
+    if (s_active < 0) {
+        return;
+    }
+
+    int8_t idx = s_active;
+    dbg_msg_t *msg = &s_pool[idx];
+
+    /*
+     * Check whether the entire message has been sent.
+     * Multi-chunk messages fire multiple completions; only when
+     * offset >= len is the message fully drained.
+     */
+    if (msg->offset >= msg->len) {
+        pool_free(idx);
+        s_q_tail = (uint8_t)((s_q_tail + 1U) % DBG_MSG_POOL_SIZE);
+        s_active = -1;
+    }
+
+    drain();
+
+    DBG_ISR_YIELD();
 }
 
 void DBG_SetLevel(err_lvl_t level)
@@ -152,69 +255,73 @@ err_lvl_t DBG_GetLevel(void)
 
 void DBG_Printf(err_lvl_t msg_level, const char *fmt, ...)
 {
-    /* Level filter: discard if this message is below the current threshold. */
     if (msg_level > s_current_level) {
         return;
     }
 
-    DBG_MUTEX_TAKE();
-
-    /* ---- Stage 1: Format the complete message into the staging buffer ---- */
-
-    /* Write the level prefix. */
-    int prefix_len = snprintf(s_dbg_stage, DBG_STAGE_SIZE, "%s",
-                              s_level_prefix[msg_level]);
-    if (prefix_len < 0) {
-        prefix_len = 0;
+    /*
+     * Bounds-check msg_level against the prefix array.
+     * s_level_prefix has exactly 4 entries (ERR_LVL_ERROR .. ERR_LVL_DEBUG).
+     */
+    if (msg_level > ERR_LVL_DEBUG) {
+        return;
     }
 
-    /* Write the user-formatted message after the prefix. */
+    /*
+     * Format into a stack buffer first.  This keeps the mutex hold time
+     * extremely short — the expensive vsnprintf happens outside the lock
+     * and does not block DMA transfers in any way.
+     */
+    char local_buf[DBG_STAGE_SIZE];
     va_list args;
     va_start(args, fmt);
-    int msg_len = vsnprintf(s_dbg_stage + prefix_len,
-                            (size_t)(DBG_STAGE_SIZE - prefix_len),
-                            fmt, args);
+    int total_len = format_message(local_buf, sizeof(local_buf),
+                                   msg_level, fmt, args);
     va_end(args);
 
-    if (msg_len < 0) {
-        msg_len = 0;
+    if (total_len <= 0) {
+        return;
     }
 
-    /* Compute total length, clamped to the staging buffer capacity. */
-    int total_len = prefix_len + msg_len;
-    if (total_len > (DBG_STAGE_SIZE - 1)) {
-        total_len = DBG_STAGE_SIZE - 1;
+    DBG_MUTEX_LOCK();
+
+    int8_t slot = pool_alloc();
+    if (slot < 0) {
+        s_drop_count++;
+        DBG_MUTEX_UNLOCK();
+        return;
     }
 
-    /* ---- Stage 2: Send in chunks via the transport ----------------------- */
+    dbg_msg_t *msg = &s_pool[slot];
+    memcpy(msg->data, local_buf, (size_t)total_len);
+    msg->len    = (uint16_t)total_len;
+    msg->offset = 0U;
 
-    int remaining  = total_len;
-    int src_offset = 0;
+    s_queue[s_q_head] = (uint8_t)slot;
+    s_q_head = (uint8_t)((s_q_head + 1U) % DBG_MSG_POOL_SIZE);
 
-    while (remaining > 0) {
-        /* Wait for the previous DMA transfer to complete. */
-        DBG_SEM_WAIT();
-
-        /* Determine chunk size: up to DBG_BUF_SIZE bytes. */
-        int chunk = remaining;
-        if (chunk > DBG_BUF_SIZE) {
-            chunk = DBG_BUF_SIZE;
+    /*
+     * Kick the drain pump if the DMA is idle.  Disable IRQ briefly
+     * to prevent the ISR from racing with s_active / send().
+     */
+    if (s_active < 0) {
+        uint32_t primask;
+        DBG_IRQ_LOCK(primask);
+        if (s_active < 0) {
+            drain();
         }
-
-        /* Copy the chunk into the active DMA buffer. */
-        memcpy(s_dbg_buf[s_active_buf], s_dbg_stage + src_offset,
-               (size_t)chunk);
-
-        /* Initiate the transfer. */
-        s_transport->send((const uint8_t *)s_dbg_buf[s_active_buf],
-                          (size_t)chunk);
-
-        /* Swap to the other buffer for the next chunk. */
-        s_active_buf ^= 1u;
-
-        src_offset += chunk;
-        remaining  -= chunk;
+        DBG_IRQ_UNLOCK(primask);
     }
 
-    DBG_MUTEX_GIVE();
+    DBG_MUTEX_UNLOCK();
+}
+
+uint32_t DBG_GetDmaErrorCount(void)
+{
+    return s_dma_errors;
+}
+
+uint32_t DBG_GetDropCount(void)
+{
+    return s_drop_count;
 }

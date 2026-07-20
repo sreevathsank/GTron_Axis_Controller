@@ -11,7 +11,8 @@ build/default/production/_ext/984881635/dbg_print.o: \
  ../src/third_party/rtos/FreeRTOS/Source/include/semphr.h \
  ../src/third_party/rtos/FreeRTOS/Source/include/queue.h \
  ../src/third_party/rtos/FreeRTOS/Source/include/task.h \
- ../src/third_party/rtos/FreeRTOS/Source/include/list.h
+ ../src/third_party/rtos/FreeRTOS/Source/include/list.h \
+ ../src/third_party/rtos/FreeRTOS/Source/include/task.h
 ../src/dbg_print/dbg_print.h:
 ../src/dbg_print/dbg_print_config.h:
 ../src/third_party/rtos/FreeRTOS/Source/include/FreeRTOS.h:
@@ -25,3 +26,4 @@ build/default/production/_ext/984881635/dbg_print.o: \
 ../src/third_party/rtos/FreeRTOS/Source/include/queue.h:
 ../src/third_party/rtos/FreeRTOS/Source/include/task.h:
 ../src/third_party/rtos/FreeRTOS/Source/include/list.h:
+../src/third_party/rtos/FreeRTOS/Source/include/task.h:

@@ -34,5 +34,5 @@ MP_CPPC_DIR="D:\MPLAB X IDE\xc32_v5.00\bin"
 MP_AS_DIR="D:\MPLAB X IDE\xc32_v5.00\bin"
 MP_LD_DIR="D:\MPLAB X IDE\xc32_v5.00\bin"
 MP_AR_DIR="D:\MPLAB X IDE\xc32_v5.00\bin"
-DFP_DIR=C:/Users/sreevathsank/.mchp_packs/Microchip/SAMC21_DFP/3.9.248
 CMSIS_DIR=C:/Users/sreevathsank/.mchp_packs/ARM/CMSIS/6.3.0
+DFP_DIR=C:/Users/sreevathsank/.mchp_packs/Microchip/SAMC21_DFP/3.9.248

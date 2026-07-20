@@ -25,12 +25,24 @@ int main ( void )
     init_CAN1();
     init_dbg_print();
     
-    DBGLED1_Clear();
-    DBGLED2_Set();
-    DBGLED3_Clear();
-    
     DBG_Printf(ERR_LVL_DEBUG,
-               "This is nise!\n");
+        "Init Done!\n");
+    
+    DBGLED1_Clear();
+    DBGLED2_Clear();
+    DBGLED3_Set();
+    
+    for(uint8_t i = 0; i <= 10; ++i) {
+        DBG_Printf(ERR_LVL_DEBUG,
+            "This is nise! = %u\n", i);
+        for(uint8_t j = 0; j <= 100; ++j) {
+            uint8_t k;
+            k += 1;
+        }
+    }
+
+    DBG_Printf(ERR_LVL_DEBUG,
+        "This is nise!\n");
     
     for(;;) {
         SYS_Tasks ( );

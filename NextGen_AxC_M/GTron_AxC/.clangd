@@ -1,0 +1,13 @@
+CompileFlags:
+  Add:
+    - -Isrc
+    - -Isrc/config/default
+    - -Isrc/packs/ATSAMC21N18A_DFP
+    - -Isrc/packs/CMSIS/
+    - -Isrc/packs/CMSIS/CMSIS/Core/Include
+    - -Isrc/third_party/rtos/FreeRTOS/Source/include
+    - -Isrc/third_party/rtos/FreeRTOS/Source/portable/GCC/ARM_CM0
+    - -IGTron_AxC.X
+    - -IC:/Users/sreevathsank/.mchp_packs/ARM/CMSIS/6.3.0/CMSIS/Core/Include
+    - -D__DEBUG
+    - -DXPRJ_default=default
