@@ -58,24 +58,8 @@ int main(void)
 	
 	// Enable Homing Flag if RF is enabled for X, Y or Z axis or repeat_ramp is greater than 0.
 	limit_variables.homing = ( repeat_ramp > 0 ) ? true : false;
-	if(axis_params.rotary_axis_enabled) { limit_variables.homing = true; }
-	// Check whether to do firmware limit based homing.
-	//if( limit_variables.homing ) {
-	//	if(axis_params.rotary_axis_enabled) {
-	//		limit_variables.rot_enc_z_first_hit = false;
-	//		ext_irq_enable(ROTENC_Z);
-	//	}
-	//	do_homing_sequence();
-	//}
-	//else { limit_variables.switch_seq_flag = false; }	// No need for Switching Sequence if Homing Sequence is disabled...
 	
-	/* Replace with your application code */
 	for(;;) {
-		// TMC2209 Step Tracker and Move Done.
-		//if( p_guide_info->flags.homing || p_guide_info->flags.move_given || \
-		//    p_guide_info->flags.move_to_open_lim || p_guide_info->flags.move_to_close_lim \
-		//	&& !gtron_limits.interrupt_raised )
-		//								{ update_TMC2209_Step_Tracking(p_guide_info);	}
 		if(is_tmc2209_mot_moving) {
 			check_Which_2209_Motor_Moving();
 		}

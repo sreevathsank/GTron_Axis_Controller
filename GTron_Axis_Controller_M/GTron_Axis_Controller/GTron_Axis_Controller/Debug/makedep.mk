@@ -28,6 +28,8 @@ Bring_Up\Motion\Hybrid_Trigger.c
 
 Bring_Up\Motion\Motion.c
 
+Bring_Up\Motion\tmc2209_limits.c
+
 Bring_Up\spi.c
 
 Code_Dump\ext_flash.c

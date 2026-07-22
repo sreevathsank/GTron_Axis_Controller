@@ -522,10 +522,8 @@ void tmc2209_Move_To_Open_Limit(Motor_Info_t *motor_info )
 		can_Write(message_Id, can_tx_frame.data_64bit);
 		return;
 	}
-	//tmc2209_writeRegister(motor_info->comms.uart_addr, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
 	tmc2209_set_velocity(motor_info->comms.uart_addr, motor_info, TMC2209_DEFAULT_SPEED);
 	motor_info->flags.move_to_open_lim = true;
-	motor_info->flags.is_tmc2209_homing = true;
 	DBG_Printf(ERR_LVL_DEBUG, "\nGuide Move To Open Limit Cmd Rxcvd\n");
 	return;
 }
@@ -542,8 +540,6 @@ void tmc2209_Move_To_Close_Limit(Motor_Info_t *motor_info )
 	uint8_t limit_status = 0;
 	IOXP_Read_Byte(IOXP_REG_GPIO, &limit_status);
 	
-	motor_info->flags.is_tmc2209_homing = true;
-	
 	if(motor_info->comms.uart_addr == TMC2209_MOT_ADDR1) {
 		if(MSK_MOT1_L_LIM(limit_status)) {
 			DBG_Printf( ERR_LVL_DEBUG, "Already in Close Limit. Not moving towards Close Limit\n");
@@ -556,9 +552,7 @@ void tmc2209_Move_To_Close_Limit(Motor_Info_t *motor_info )
 			return;
 		}
 	}
-	//tmc2209_writeRegister(motor_info->comms.uart_addr, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
 	tmc2209_set_velocity(motor_info->comms.uart_addr, motor_info, -TMC2209_DEFAULT_SPEED);
-	//tmc2209_set_velocity(motor_info->comms.uart_addr, motor_info, 0xFFFFF060);
 	motor_info->flags.move_to_close_lim = true;
 	DBG_Printf(ERR_LVL_DEBUG, "\nGuide Move to Close Limit Cmd Rxcvd\n");
 	return;
@@ -566,47 +560,37 @@ void tmc2209_Move_To_Close_Limit(Motor_Info_t *motor_info )
 
 static void tmc2209_Reference_Search( Motor_Info_t *m )
 {
-	if(!m) 
-	{
+	if(!m) {
 		DBG_Printf(ERR_LVL_ERROR,\
 		"tmc2209_Reference_Search: Motor_Info_t Null ptr!\n");
 		return;
 	}
 	DBG_Printf(ERR_LVL_DEBUG, "TMC2209 Reference Search UART addr = %d\n", m->comms.uart_addr);
 	m->flags.is_tmc2209_homing = true;
-	if( is_single_limit_motor(m) ) 
-	{
+	if( is_single_limit_motor(m) ) { 
 		bool open_lim_status = check_Open_Right_Limit_Status(m);
 		DBG_Printf(ERR_LVL_DEBUG, "Open Right Limit Status = %d\n", open_lim_status);
-		if(open_lim_status) 
-		{
+		if(open_lim_status) {
 			DBG_Printf(ERR_LVL_DEBUG, "Homing - Motor already at limit. Not moving and sending homing done reply\n");
 			can_AxC_Write(	CAN_REPLY_TOP_RACK_ID,
 							m->comms.can_peripheral_byte,
 							AXC_HOMING,
 							0x00	);
-		} 
-		else 
-		{
+		} else {
 			m->flags.move_to_open_lim = true;
 			DBG_Printf(ERR_LVL_DEBUG, "Homing - Motor not at limit. Moving towards Open Right Limit\n");
 			tmc2209_set_velocity(m->comms.uart_addr, m, TMC2209_DEFAULT_SPEED);
 			m->motor_state = MOTOR_MOVING_STATE;
 		}
-	}
-	else 
-	{
+	} else {
 		bool open_lim_status = check_Open_Right_Limit_Status(m);
-		if(open_lim_status)
-		{
+		if(open_lim_status) {
 			DBG_Printf(ERR_LVL_DEBUG, "Motor already at Open Limit. moving towards close limit.\n");
 			m->flags.move_to_close_lim	= true;
 			m->flags.move_to_open_lim	= false;
 			m->flags.first_lim_hit		= true;
 			tmc2209_Move_To_Close_Limit(m);
-		}
-		else 
-		{
+		} else {
 			m->flags.move_to_open_lim	= true;
 			m->flags.move_to_close_lim	= false;
 			m->flags.first_lim_hit		= false;
@@ -891,7 +875,7 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_MOVE_TO_CLOSE_LIMIT:	tmc2209_Move_To_Close_Limit(p_guide_info);									break;
 					case AXC_INITIAL_POSITION:		tmc2209_Set_Initial_Position(p_guide_info, (int32_t)rx_can_cmd_info.value);	break;
 					case AXC_STATUS_CHECK:			tmc2209_Limits_Status_Check(p_guide_info);									break;
-					case AXC_HOMING:				tmc2209_Reference_Search(p_varrest1_info);									break;
+					case AXC_HOMING:				tmc2209_Reference_Search(p_guide_info);									break;
 					case AXC_CURRENT_POSITION:		tmc2209_Get_Current_Position(p_guide_info);									break;
 					default: DBG_Printf(ERR_LVL_DEBUG,"Guide Motor Invalid Operation Rxcvd\n");									break;
 				}

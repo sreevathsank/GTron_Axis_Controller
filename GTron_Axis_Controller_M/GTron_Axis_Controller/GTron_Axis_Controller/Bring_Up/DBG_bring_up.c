@@ -589,22 +589,22 @@ void call_All_Init_Functions(void)
 	read_4671_ADC_Raw();
 	
 	switch(sbridge_addr) {
-		//case REELER1_GUIDE_REELERADJ1: {
-		//	init_Motor_Struct(p_reeler1_info, MOTOR_REELER1);
-		//	
-		//	init_Motor_Struct(p_guide_info, MOTOR_GUIDE);
-		//	init_tmc2209_motor(TMC2209_MOT_ADDR1, p_guide_info);
-		//	
-		//	init_Motor_Struct(p_reeleradj1_info, MOTOR_REELERADJ1);
-		//	init_tmc2209_motor(TMC2209_MOT_ADDR3, p_reeleradj1_info);
-		//	
-		//	mot_array[TMC4671_MOTOR]	= p_reeler1_info;
-		//	mot_array[TMC2209_MOTOR1]	= p_guide_info;
-		//	mot_array[TMC2209_MOTOR2]	= p_reeleradj1_info;
-		//	
-		//	DBG_Printf(ERR_LVL_INFO, "SouthBridge Addr set to REELER1_GUIDE_REELERADJ1. Initialized REELER1, GUIDE and REELERADJ1 structs.\n");
-		//	break;
-		//}
+		case REELER1_GUIDE_REELERADJ1: {
+			init_Motor_Struct(p_reeler1_info, MOTOR_REELER1);
+			
+			init_Motor_Struct(p_guide_info, MOTOR_GUIDE);
+			init_tmc2209_motor(TMC2209_MOT_ADDR1, p_guide_info);
+			
+			init_Motor_Struct(p_reeleradj1_info, MOTOR_REELERADJ1);
+			init_tmc2209_motor(TMC2209_MOT_ADDR3, p_reeleradj1_info);
+			
+			mot_array[TMC4671_MOTOR]	= p_reeler1_info;
+			mot_array[TMC2209_MOTOR1]	= p_guide_info;
+			mot_array[TMC2209_MOTOR2]	= p_reeleradj1_info;
+			
+			DBG_Printf(ERR_LVL_INFO, "SouthBridge Addr set to REELER1_GUIDE_REELERADJ1. Initialized REELER1, GUIDE and REELERADJ1 structs.\n");
+			break;
+			}
 		case VARREST_1_2_SOLENOID: {
 			init_Motor_Struct(p_varrest1_info, MOTOR_VARREST1);
 			p_varrest1_info->comms.uart_addr = TMC2209_MOT_ADDR1;

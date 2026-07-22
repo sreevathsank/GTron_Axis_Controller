@@ -597,6 +597,12 @@
     <Compile Include="Bring_Up\Motion\Motion.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="Bring_Up\Motion\tmc2209_limits.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Bring_Up\Motion\tmc2209_limits.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="Bring_Up\spi.c">
       <SubType>compile</SubType>
     </Compile>
