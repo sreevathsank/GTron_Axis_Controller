@@ -70,9 +70,11 @@ void check_Which_2209_Motor_Moving(void)
 		//tmc2209_Stop_Motor(m2);
 		return;
 	}
-	if( m1->motor_state == MOTOR_MOVING_STATE) {
+	if( (m1->motor_state == MOTOR_MOVING_STATE) || m1->flags.is_tmc2209_homing ||
+		m1->flags.move_to_open_lim || m1->flags.move_to_close_lim ) {
 		m = m1;
-	} else if(m2->motor_state == MOTOR_MOVING_STATE) {
+	} else if( (m2->motor_state == MOTOR_MOVING_STATE) || m2->flags.is_tmc2209_homing ||
+		m2->flags.move_to_open_lim || m2->flags.move_to_close_lim ) {
 		m = m2;
 	}
 	if(!m) {
@@ -82,17 +84,14 @@ void check_Which_2209_Motor_Moving(void)
 	
 	if( m->flags.homing || m->flags.move_given || \
 	    m->flags.move_to_open_lim || m->flags.move_to_close_lim \
-		&& !gtron_limits.interrupt_raised )
-	{ 
+		&& !gtron_limits.interrupt_raised ) { 
 		update_TMC2209_Step_Tracking(m);
 		uint32_t diff_ms = millis() - m->time_ms.move_start;
-		if( diff_ms > (m->time_ms.theoretical_move * 1.1 ) ) {
-			//tmc2209_set_velocity(m->comms.uart_addr, m, 0);
-			tmc2209_Stop_Motor(m);
-			DBG_Printf(ERR_LVL_DEBUG, "Move Time taken more than 1.5 * theoretical time taken. Stoppping the Motor\n");
-		}
-		//uint16_t sg_result = tmc2209_readRegister(m->comms.uart_addr, TMC2209_SG_RESULT);
-		//DBG_Printf(ERR_LVL_DEBUG, "INDEX =  %ld\n", step_count);
+		//if( diff_ms > (m->time_ms.theoretical_move * 1.1 ) 
+		//	&& ( !m->flags.is_tmc2209_homing && !m->flags.move_to_open_lim && !m->flags.move_to_close_lim ) ){
+		//	tmc2209_Stop_Motor(m);
+		//	DBG_Printf(ERR_LVL_ERROR, "Move Time taken more than 1.5 * theoretical time taken. Stoppping the Motor\n");
+		//}
 	}
 	
 	return;	
@@ -100,14 +99,23 @@ void check_Which_2209_Motor_Moving(void)
 
 void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info)
 {
-	if(motor_info == NULL) { return; }
+	if(!motor_info) { return; }
 	
-	volatile uint16_t current_mscnt = read_TMC2209_mscnt(motor_info->comms.uart_addr);
+	//uint32_t pwm_scale = tmc2209_readRegister(motor_info->comms.uart_addr, TMC2209_PWM_SCALE);
+	//uint8_t pwm_scale_sum = (pwm_scale >> TMC2209_PWM_SCALE_SUM_SHIFT) & TMC2209_PWM_SCALE_SUM_MASK;
+	
+	//uint32_t pwm_auto = tmc2209_readRegister(motor_info->comms.uart_addr, TMC2209_PWM_AUTO);
+	//uint8_t pwm_ofs_auto = (pwm_auto >> TMC2209_PWM_OFS_AUTO_SHIFT) & TMC2209_PWM_OFS_AUTO_MASK;
+	//uint8_t pwm_grad_auto = (pwm_auto >> TMC2209_PWM_GRAD_AUTO_SHIFT) & TMC2209_PWM_GRAD_AUTO_MASK;
+	//DBG_Printf(ERR_LVL_DEBUG, 
+	//	"pwm_scale = %ld -> pwm_scale_sum = %u | pwm_auto = %ld -> pwm_ofs_auto = %u, pwm_grad_auto = %u\n",
+	//	pwm_scale, pwm_scale_sum, pwm_auto, pwm_ofs_auto, pwm_grad_auto);
+	
+	uint16_t current_mscnt = read_TMC2209_mscnt(motor_info->comms.uart_addr);
 	DBG_Printf(ERR_LVL_DEBUG, "current_mscnt = %d\n", current_mscnt);
 	
 	// Skip calculation on the first reading.
-	if(motor_info->flags.mscnt_first_reading)
-	{
+	if(motor_info->flags.mscnt_first_reading) {
 		motor_info->step_tracker.prev_mscnt = current_mscnt;
 		motor_info->flags.mscnt_first_reading = false;
 		return;
@@ -117,13 +125,10 @@ void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info)
 	int16_t diff = (int16_t)current_mscnt - (int16_t)motor_info->step_tracker.prev_mscnt;
 	DBG_Printf(ERR_LVL_DEBUG, "diff = %d\n", diff);
 	// Detect and handle wraparound.
-	if( diff > MSCNT_WRAP_THRESHOLD )
-	{
+	if( diff > MSCNT_WRAP_THRESHOLD ) {
 		// Wrrapped backward (from 0 to 1023), reverse direction of motion.
 		diff -= MSCNT_MAX;
-	}
-	else if( diff < -MSCNT_WRAP_THRESHOLD )
-	{
+	} else if( diff < -MSCNT_WRAP_THRESHOLD ) {
 		// Wrapped forward (from 1023 to 0), forward direction of motion.
 		diff += MSCNT_MAX;
 	}
@@ -144,8 +149,7 @@ void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info)
 	motor_info->step_tracker.prev_mscnt = current_mscnt;
 	
 	//printf("\ntarget pos = %ld | current_pos = %ld\n", motor_info->position.target, motor_info->step_tracker.total_steps, abs(motor_info->position.target - motor_info->step_tracker.total_steps));
-	if(motor_info->flags.move_given)
-	{
+	if(motor_info->flags.move_given) {
 		int32_t pos_diff = motor_info->position.target - motor_info->step_tracker.total_steps;
 		bool diff_zero = false;
 		if( (motor_info->flags.direction == COUNT_UP ) && (pos_diff <= 0) ) {
@@ -170,7 +174,6 @@ void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info)
 				case MOTOR_REELER2:		can_tx_frame.data[0] = REELER_MOTOR_2;				break;
 				default: break;
 			}
-			//can_tx_frame.data[0] = motor_info->comms.can_peripheral_byte;
 			can_tx_frame.data[1] = AXC_MOVE_DONE;
 			can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
 			DBG_Printf(ERR_LVL_DEBUG, "\nTMC2209 Move Done. Current Position = %ld usteps | Time Taken = %ld ms\n", \

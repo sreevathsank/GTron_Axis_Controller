@@ -282,15 +282,18 @@ void read_4671_ADC_Raw(void)
 	uint32_t adc_raw_value = 0;
 	uint32_t adc_i0_raw = 0, adc_i1_raw = 0;
 	uint32_t adc_scale = 65;
-	
-	for(int32_t a = 0; a < ADC_RAW_NUM_READINGS; a++ )
-	{
+	uint32_t seed = millis();
+	for(uint32_t a = 0; a < ADC_RAW_NUM_READINGS; a++ ) {
 		adc_raw_value = tmc4671_readInt(MOTOR, TMC4671_ADC_RAW_DATA);
-		
 		adc_i0_raw += ( adc_raw_value & 0xFFFF );
-		
 		adc_i1_raw += ( (adc_raw_value >> 16) & 0xFFFF );
+		
+		seed ^= adc_raw_value;
+		seed = (seed << 1) | (seed >> 31);
 	}
+	seed ^= adc_i0_raw;
+	seed ^= adc_i1_raw << 8;
+	srand(seed);
 	adc_i0_raw = ( adc_i0_raw / ADC_RAW_NUM_READINGS );
 	adc_i1_raw = ( adc_i1_raw / ADC_RAW_NUM_READINGS );
 	printf("\nADC RAW Values i0 = %ld | i1 = %ld\n", adc_i0_raw, adc_i1_raw);
@@ -602,6 +605,20 @@ void call_All_Init_Functions(void)
 			mot_array[TMC2209_MOTOR1]	= p_guide_info;
 			mot_array[TMC2209_MOTOR2]	= p_reeleradj1_info;
 			
+			int32_t vel_2209 = 0;
+			if( rand() % 2 == 0 ) {
+				vel_2209 = 1000;
+				DBG_Printf(ERR_LVL_DEBUG, "Even!\n");
+			} else {
+				vel_2209 = -1000;
+				DBG_Printf(ERR_LVL_DEBUG, "Odd!\n");
+			}
+			tmc2209_set_velocity( p_guide_info->comms.uart_addr, p_guide_info, vel_2209);
+			tmc2209_set_velocity( p_reeleradj1_info->comms.uart_addr, p_reeleradj1_info, vel_2209);
+			delay_ms(1);
+			tmc2209_set_velocity( p_guide_info->comms.uart_addr, p_guide_info, 0);
+			tmc2209_set_velocity( p_reeleradj1_info->comms.uart_addr, p_reeleradj1_info, 0);
+			
 			DBG_Printf(ERR_LVL_INFO, "SouthBridge Addr set to REELER1_GUIDE_REELERADJ1. Initialized REELER1, GUIDE and REELERADJ1 structs.\n");
 			break;
 			}
@@ -618,6 +635,20 @@ void call_All_Init_Functions(void)
 			mot_array[TMC4671_MOTOR]	= NULL;
 			mot_array[TMC2209_MOTOR1]	= p_varrest1_info;
 			mot_array[TMC2209_MOTOR2]	= p_varrest2_info;
+			
+			int32_t vel_2209 = 0;
+			if( rand() % 2 == 0 ) {
+				vel_2209 = 1000;
+				DBG_Printf(ERR_LVL_DEBUG, "Even!\n");
+			} else {
+				vel_2209 = -1000;
+				DBG_Printf(ERR_LVL_DEBUG, "Odd!\n");
+			}
+			tmc2209_set_velocity( p_guide_info->comms.uart_addr, p_guide_info, vel_2209);
+			tmc2209_set_velocity( p_reeleradj1_info->comms.uart_addr, p_reeleradj1_info, vel_2209);
+			delay_ms(100);
+			tmc2209_set_velocity( p_guide_info->comms.uart_addr, p_guide_info, 0);
+			tmc2209_set_velocity( p_reeleradj1_info->comms.uart_addr, p_reeleradj1_info, 0);
 			
 			DBG_Printf(ERR_LVL_INFO, "SouthBridge Addr set to VARREST 1 2 and Solenoid. Initialized VARREST1 and 2 structs.\n");
 			break;	

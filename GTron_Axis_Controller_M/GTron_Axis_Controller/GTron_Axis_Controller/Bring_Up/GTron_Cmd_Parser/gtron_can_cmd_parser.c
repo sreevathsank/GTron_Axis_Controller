@@ -409,7 +409,7 @@ static bool check_Close_Left_Limit_Status( Motor_Info_t *m )
 
 bool is_single_limit_motor(const Motor_Info_t *m) 
 {
-	if (!m) return false;
+	if (!m) { return false; }
 
 	switch (m->mot_name) {
 		case MOTOR_VARREST1:
@@ -435,6 +435,7 @@ static void tmc2209_Move(Motor_Info_t *motor_info, int32_t target_position, bool
 	if(!motor_info) { return; }
 	
 	motor_info->position.current = motor_info->step_tracker.total_steps;
+	target_position = (is_single_limit_motor(motor_info)) ? -target_position : target_position;
 	if( is_single_limit_motor(motor_info) && \
 		check_Open_Right_Limit_Status(motor_info) ) 
 	{
@@ -448,7 +449,7 @@ static void tmc2209_Move(Motor_Info_t *motor_info, int32_t target_position, bool
 			"move_dir.prev == move_dir.at_rlimit == FORWARD\n");
 			return;
 		} else if(target_position < motor_info->position.current && \
-					(motor_info->move_dir.prev == motor_info->move_dir.at_llimit) ) {
+				(motor_info->move_dir.prev == motor_info->move_dir.at_llimit) ) {
 			// Reverse Direction.
 			DBG_Printf(ERR_LVL_DEBUG, \
 			"tmc2209_Move(): check_Open_Right_Limit_Status() returned false for a single limit motor. Not Moving.\n");
@@ -524,6 +525,8 @@ void tmc2209_Move_To_Open_Limit(Motor_Info_t *motor_info )
 	}
 	tmc2209_set_velocity(motor_info->comms.uart_addr, motor_info, TMC2209_DEFAULT_SPEED);
 	motor_info->flags.move_to_open_lim = true;
+	is_tmc2209_mot_moving = true;
+	motor_info->motor_state = MOTOR_MOVING_STATE;
 	DBG_Printf(ERR_LVL_DEBUG, "\nGuide Move To Open Limit Cmd Rxcvd\n");
 	return;
 }
@@ -554,6 +557,8 @@ void tmc2209_Move_To_Close_Limit(Motor_Info_t *motor_info )
 	}
 	tmc2209_set_velocity(motor_info->comms.uart_addr, motor_info, -TMC2209_DEFAULT_SPEED);
 	motor_info->flags.move_to_close_lim = true;
+	is_tmc2209_mot_moving = true;
+	motor_info->motor_state = MOTOR_MOVING_STATE;
 	DBG_Printf(ERR_LVL_DEBUG, "\nGuide Move to Close Limit Cmd Rxcvd\n");
 	return;
 }
@@ -684,22 +689,39 @@ static void reeler_Get_Position( Motor_Info_t *m )
 static void tmc2209_Limits_Status_Check(Motor_Info_t *motor_info)
 {
 	uint8_t limit_reg_value = 0;
-	//tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
 	IOXP_Read_Byte(IOXP_REG_GPIO, &limit_reg_value);
 	if(axis_id == GTRON_AXC_TOP) { message_Id = CAN_REPLY_TOP_RACK_ID; }
 	else if(axis_id == GTRON_AXC_BOT) { message_Id = CAN_REPLY_BOT_RACK_ID; }
-	if( (limit_reg_value >> MOT1_R_LIM_BIT & 1) ) {
-		can_tx_frame.data[0] = GUIDE_MOTOR;
-		can_tx_frame.data[1] = AXC_PRESSED;
-		for(int32_t i = 2; i < 8; i++) { can_tx_frame.data[i] = 0x00; }
-		can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
-		DBG_Printf(ERR_LVL_DEBUG, "\nGuide Open Right Limit is HIT!\n");
-	} else {
-		can_tx_frame.data[0] = GUIDE_MOTOR;
-		can_tx_frame.data[1] = AXC_NOT_PRESSED;
-		for(int32_t i = 2; i < 8; i++) { can_tx_frame.data[i] = 0x00; }
-		can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
-		DBG_Printf(ERR_LVL_DEBUG, "\nGuide Open Right Limit is not HIT!\n");
+		
+	if( motor_info->comms.uart_addr == TMC2209_MOT_ADDR1 ) {
+		if( MSK_MOT1_R_LIM(gtron_limits.limit_flags) ) {
+			can_tx_frame.data[0] = motor_info->comms.can_peripheral_byte;
+			can_tx_frame.data[1] = AXC_PRESSED;
+			for(int32_t i = 2; i < 8; i++) { can_tx_frame.data[i] = 0x00; }
+			can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
+			DBG_Printf(ERR_LVL_DEBUG, "\nOpen Right Limit is HIT!\n");
+		} else {
+			can_tx_frame.data[0] = motor_info->comms.can_peripheral_byte;
+			can_tx_frame.data[1] = AXC_NOT_PRESSED;
+			for(int32_t i = 2; i < 8; i++) { can_tx_frame.data[i] = 0x00; }
+			can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
+			DBG_Printf(ERR_LVL_DEBUG, "\nOpen Right Limit is not HIT!\n");
+		}
+	}
+	if( motor_info->comms.uart_addr == TMC2209_MOT_ADDR3 ) {
+		if( MSK_MOT2_R_LIM(gtron_limits.limit_flags) ) {
+			can_tx_frame.data[0] = motor_info->comms.can_peripheral_byte;
+			can_tx_frame.data[1] = AXC_PRESSED;
+			for(int32_t i = 2; i < 8; i++) { can_tx_frame.data[i] = 0x00; }
+			can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
+			DBG_Printf(ERR_LVL_DEBUG, "\nOpen Right Limit is HIT!\n");
+		} else {
+			can_tx_frame.data[0] = motor_info->comms.can_peripheral_byte;
+			can_tx_frame.data[1] = AXC_NOT_PRESSED;
+			for(int32_t i = 2; i < 8; i++) { can_tx_frame.data[i] = 0x00; }
+			can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
+			DBG_Printf(ERR_LVL_DEBUG, "\nOpen Right Limit is not HIT!\n");
+		}
 	}
 	return;	
 }
