@@ -145,7 +145,8 @@ build/default/production/_ext/1360937237/can_protocol.o: \
  ../src/config/default/peripheral/can/plib_can1.h \
  ../src/can_gatekeeper_task.h ../src/dbg_print/dbg_print.h \
  ../src/dbg_print/dbg_transport.h ../src/dbg_print/dbg_print.h \
- ../src/tmc2209_task.h ../src/supervisor_task.h ../src/debug_task.h
+ ../src/tmc2209_task.h ../src/task_state.h ../src/supervisor_task.h \
+ ../src/debug_task.h
 ../src/can_protocol.h:
 ../src/third_party/rtos/FreeRTOS/Source/include/FreeRTOS.h:
 ../src/config/default/FreeRTOSConfig.h:
@@ -299,5 +300,6 @@ build/default/production/_ext/1360937237/can_protocol.o: \
 ../src/dbg_print/dbg_transport.h:
 ../src/dbg_print/dbg_print.h:
 ../src/tmc2209_task.h:
+../src/task_state.h:
 ../src/supervisor_task.h:
 ../src/debug_task.h:

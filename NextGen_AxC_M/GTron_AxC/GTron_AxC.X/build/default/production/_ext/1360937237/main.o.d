@@ -145,8 +145,14 @@ build/default/production/_ext/1360937237/main.o: ../src/main.c \
  ../src/config/default/peripheral/can/plib_can1.h \
  ../src/can_gatekeeper_task.h ../src/dbg_print/dbg_print.h \
  ../src/dbg_print/dbg_transport.h ../src/dbg_print/dbg_print.h \
- ../src/tmc2209_task.h ../src/supervisor_task.h ../src/debug_task.h \
- ../src/init_functions.h
+ ../src/tmc2209_task.h ../src/task_state.h ../src/supervisor_task.h \
+ ../src/debug_task.h ../src/init_functions.h \
+ ../src/tmc2209_uart/Step_Counter.h ../src/task_state.h \
+ ../src/tmc2209_uart/TMC2209.h \
+ ../src/tmc2209_uart/TMC2209_HW_Abstraction.h \
+ ../src/tmc2209_uart/TMC2209_Simple_Rotation.h \
+ ../src/tmc2209_uart/TMC2209.h ../src/dbg_print/dbg_print.h \
+ ../src/dbg_print/dbg_transport.h ../src/can_protocol.h
 ../src/config/default/definitions.h:
 ../src/config/default/peripheral/sercom/spi_master/plib_sercom3_spi_master.h:
 ../src/config/default/peripheral/sercom/spi_master/plib_sercom_spi_master_common.h:
@@ -300,6 +306,16 @@ build/default/production/_ext/1360937237/main.o: ../src/main.c \
 ../src/dbg_print/dbg_transport.h:
 ../src/dbg_print/dbg_print.h:
 ../src/tmc2209_task.h:
+../src/task_state.h:
 ../src/supervisor_task.h:
 ../src/debug_task.h:
 ../src/init_functions.h:
+../src/tmc2209_uart/Step_Counter.h:
+../src/task_state.h:
+../src/tmc2209_uart/TMC2209.h:
+../src/tmc2209_uart/TMC2209_HW_Abstraction.h:
+../src/tmc2209_uart/TMC2209_Simple_Rotation.h:
+../src/tmc2209_uart/TMC2209.h:
+../src/dbg_print/dbg_print.h:
+../src/dbg_print/dbg_transport.h:
+../src/can_protocol.h:

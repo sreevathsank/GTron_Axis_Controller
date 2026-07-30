@@ -291,6 +291,12 @@ data:
       attributes:
         id: GEN_APP_RTOS_TASK_0_PRIO
         label: Task Priority
+      children:
+      - children:
+        - attributes:
+            value: '4'
+          type: User
+        type: Values
       type: Integer
     GEN_APP_RTOS_TASK_0_SIZE:
       attributes:
@@ -896,6 +902,12 @@ data:
       attributes:
         id: GEN_APP_RTOS_TASK_1_PRIO
         label: Task Priority
+      children:
+      - children:
+        - attributes:
+            value: '3'
+          type: User
+        type: Values
       type: Integer
     GEN_APP_RTOS_TASK_1_SIZE:
       attributes:
@@ -1501,6 +1513,12 @@ data:
       attributes:
         id: GEN_APP_RTOS_TASK_2_PRIO
         label: Task Priority
+      children:
+      - children:
+        - attributes:
+            value: '2'
+          type: User
+        type: Values
       type: Integer
     GEN_APP_RTOS_TASK_2_SIZE:
       attributes:

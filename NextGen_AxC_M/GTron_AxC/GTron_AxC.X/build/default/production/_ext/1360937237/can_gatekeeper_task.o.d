@@ -142,8 +142,8 @@ build/default/production/_ext/1360937237/can_gatekeeper_task.o: \
  ../src/config/default/system/system_common.h \
  ../src/config/default/system/system_module.h \
  ../src/config/default/system/system_common.h ../src/tmc4671_task.h \
- ../src/can_gatekeeper_task.h ../src/tmc2209_task.h \
- ../src/supervisor_task.h ../src/debug_task.h ../src/can_state.h \
+ ../src/can_gatekeeper_task.h ../src/tmc2209_task.h ../src/can_state.h \
+ ../src/task_state.h ../src/supervisor_task.h ../src/debug_task.h \
  ../src/can_isr_callbacks.h \
  ../src/config/default/peripheral/can/plib_can1.h \
  ../src/dbg_print/dbg_print.h ../src/dbg_print/dbg_transport.h \
@@ -295,9 +295,10 @@ build/default/production/_ext/1360937237/can_gatekeeper_task.o: \
 ../src/tmc4671_task.h:
 ../src/can_gatekeeper_task.h:
 ../src/tmc2209_task.h:
+../src/can_state.h:
+../src/task_state.h:
 ../src/supervisor_task.h:
 ../src/debug_task.h:
-../src/can_state.h:
 ../src/can_isr_callbacks.h:
 ../src/config/default/peripheral/can/plib_can1.h:
 ../src/dbg_print/dbg_print.h:

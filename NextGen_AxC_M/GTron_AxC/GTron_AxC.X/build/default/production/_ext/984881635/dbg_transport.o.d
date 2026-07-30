@@ -146,7 +146,7 @@ build/default/production/_ext/984881635/dbg_transport.o: \
  ../src/config/default/peripheral/can/plib_can1.h \
  ../src/can_gatekeeper_task.h ../src/dbg_print/dbg_print.h \
  ../src/dbg_print/dbg_transport.h ../src/tmc2209_task.h \
- ../src/supervisor_task.h ../src/debug_task.h
+ ../src/task_state.h ../src/supervisor_task.h ../src/debug_task.h
 ../src/dbg_print/dbg_transport.h:
 ../src/dbg_print/dbg_print.h:
 ../src/config/default/definitions.h:
@@ -301,5 +301,6 @@ build/default/production/_ext/984881635/dbg_transport.o: \
 ../src/dbg_print/dbg_print.h:
 ../src/dbg_print/dbg_transport.h:
 ../src/tmc2209_task.h:
+../src/task_state.h:
 ../src/supervisor_task.h:
 ../src/debug_task.h:

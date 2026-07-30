@@ -155,7 +155,7 @@ generatedFileHashHistoryMap:
 - file: ..\src\config\default\system\system_module.h
   hash: 7bfe351ce506b843c61e5be013b6e3bf2a6253d73f5db189dbaf0c4f494cb75a
 - file: ..\src\config\default\tasks.c
-  hash: 42304de438dfc1a7322e9e3dcb90a7c7b96e56b9e4e111cd8ca2355e64256150
+  hash: 718f5d9358a4673ba5b24debb9766531ca004649ef40c763963f02498689851e
 - file: ..\src\config\default\toolchain_specifics.h
   hash: a4f1774c6f1f8c6cd522567536c9e9d75ca63259b868015ac9b0fb0aeeffe1f4
 - file: ..\src\config\default\user.h

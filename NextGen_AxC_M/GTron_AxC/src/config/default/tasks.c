@@ -161,7 +161,7 @@ void SYS_Tasks ( void )
            "TMC4671_TASK_Tasks",
            128,
            NULL,
-           1U ,
+           4U ,
            &xTMC4671_TASK_Tasks);
 
     /* Create OS Thread for CAN_GATEKEEPER_TASK_Tasks. */
@@ -170,7 +170,7 @@ void SYS_Tasks ( void )
            "CAN_GATEKEEPER_TASK_Tasks",
            128,
            NULL,
-           1U ,
+           3U ,
            &xCAN_GATEKEEPER_TASK_Tasks);
 
     /* Create OS Thread for TMC2209_TASK_Tasks. */
@@ -179,7 +179,7 @@ void SYS_Tasks ( void )
            "TMC2209_TASK_Tasks",
            128,
            NULL,
-           1U ,
+           2U ,
            &xTMC2209_TASK_Tasks);
 
     /* Create OS Thread for SUPERVISOR_TASK_Tasks. */

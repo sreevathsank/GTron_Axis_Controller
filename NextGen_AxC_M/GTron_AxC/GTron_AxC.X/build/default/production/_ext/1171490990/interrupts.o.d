@@ -149,7 +149,8 @@ build/default/production/_ext/1171490990/interrupts.o: \
  ../src/config/default/peripheral/can/plib_can1.h \
  ../src/can_gatekeeper_task.h ../src/dbg_print/dbg_print.h \
  ../src/dbg_print/dbg_transport.h ../src/dbg_print/dbg_print.h \
- ../src/tmc2209_task.h ../src/supervisor_task.h ../src/debug_task.h \
+ ../src/tmc2209_task.h ../src/task_state.h ../src/supervisor_task.h \
+ ../src/debug_task.h \
  ../src/third_party/rtos/FreeRTOS/Source/portable/GCC/ARM_CM0/portasm.h \
  ../src/third_party/rtos/FreeRTOS/Source/include/mpu_wrappers.h
 ../src/config/default/configuration.h:
@@ -309,6 +310,7 @@ build/default/production/_ext/1171490990/interrupts.o: \
 ../src/dbg_print/dbg_transport.h:
 ../src/dbg_print/dbg_print.h:
 ../src/tmc2209_task.h:
+../src/task_state.h:
 ../src/supervisor_task.h:
 ../src/debug_task.h:
 ../src/third_party/rtos/FreeRTOS/Source/portable/GCC/ARM_CM0/portasm.h:

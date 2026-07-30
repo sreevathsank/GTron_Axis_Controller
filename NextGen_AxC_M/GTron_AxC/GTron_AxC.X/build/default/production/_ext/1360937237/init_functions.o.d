@@ -146,7 +146,8 @@ build/default/production/_ext/1360937237/init_functions.o: \
  ../src/can_state.h ../src/can_isr_callbacks.h \
  ../src/can_gatekeeper_task.h ../src/dbg_print/dbg_print.h \
  ../src/dbg_print/dbg_transport.h ../src/dbg_print/dbg_print.h \
- ../src/tmc2209_task.h ../src/supervisor_task.h ../src/debug_task.h
+ ../src/tmc2209_task.h ../src/task_state.h ../src/supervisor_task.h \
+ ../src/debug_task.h
 ../src/init_functions.h:
 ../src/config/default/peripheral/can/plib_can1.h:
 ../src/config/default/device.h:
@@ -301,5 +302,6 @@ build/default/production/_ext/1360937237/init_functions.o: \
 ../src/dbg_print/dbg_transport.h:
 ../src/dbg_print/dbg_print.h:
 ../src/tmc2209_task.h:
+../src/task_state.h:
 ../src/supervisor_task.h:
 ../src/debug_task.h:

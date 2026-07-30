@@ -163,7 +163,6 @@ void SYS_Initialize ( void* data )
 
 
     TMC4671_TASK_Initialize();
-    TMC2209_TASK_Initialize();
     SUPERVISOR_TASK_Initialize();
     DEBUG_TASK_Initialize();
 

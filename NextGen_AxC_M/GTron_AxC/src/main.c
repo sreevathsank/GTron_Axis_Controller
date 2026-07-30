@@ -11,6 +11,7 @@
 #include "init_functions.h"
 #include "can_isr_callbacks.h"
 #include "can_protocol.h"
+#include "tmc2209_uart/Step_Counter.h"
 
 static uint8_t          qbuf_can_work[16 * sizeof(Can_Frame_t)];
 static StaticQueue_t    sq_can_work;
@@ -32,15 +33,6 @@ int main ( void )
     DBGLED2_Clear();
     DBGLED3_Set();
     
-    for(uint8_t i = 0; i <= 10; ++i) {
-        DBG_Printf(ERR_LVL_DEBUG,
-            "This is nise! = %u\n", i);
-        for(uint8_t j = 0; j <= 100; ++j) {
-            uint8_t k;
-            k += 1;
-        }
-    }
-
     DBG_Printf(ERR_LVL_DEBUG,
         "This is nise!\n");
     

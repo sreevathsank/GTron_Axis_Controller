@@ -231,6 +231,15 @@
           </logicalFolder>
         </logicalFolder>
       </logicalFolder>
+      <logicalFolder name="tmc2209_uart"
+                     displayName="tmc2209_uart"
+                     projectFiles="true">
+        <itemPath>../src/tmc2209_uart/Step_Counter.h</itemPath>
+        <itemPath>../src/tmc2209_uart/TMC2209.h</itemPath>
+        <itemPath>../src/tmc2209_uart/TMC2209_HW_Abstraction.h</itemPath>
+        <itemPath>../src/tmc2209_uart/TMC2209_Motion.h</itemPath>
+        <itemPath>../src/tmc2209_uart/TMC2209_Simple_Rotation.h</itemPath>
+      </logicalFolder>
       <itemPath>../src/tmc4671_task.h</itemPath>
       <itemPath>../src/can_gatekeeper_task.h</itemPath>
       <itemPath>../src/tmc2209_task.h</itemPath>
@@ -406,6 +415,14 @@
           <itemPath>../src/third_party/rtos/FreeRTOS/Source/stream_buffer.c</itemPath>
         </logicalFolder>
       </logicalFolder>
+      <logicalFolder name="tmc2209_uart"
+                     displayName="tmc2209_uart"
+                     projectFiles="true">
+        <itemPath>../src/tmc2209_uart/Step_Counter.c</itemPath>
+        <itemPath>../src/tmc2209_uart/TMC2209.c</itemPath>
+        <itemPath>../src/tmc2209_uart/TMC2209_Simple_Rotation.c</itemPath>
+        <itemPath>../src/tmc2209_uart/TMC2209_Motion.c</itemPath>
+      </logicalFolder>
       <itemPath>../src/main.c</itemPath>
       <itemPath>../src/tmc4671_task.c</itemPath>
       <itemPath>../src/can_gatekeeper_task.c</itemPath>
@@ -416,6 +433,7 @@
       <itemPath>../src/can_isr_callbacks.c</itemPath>
       <itemPath>../src/can_state.c</itemPath>
       <itemPath>../src/can_protocol.c</itemPath>
+      <itemPath>../src/task_state.c</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
@@ -435,8 +453,8 @@
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="CMSIS" vendor="ARM" version="6.3.0"/>
         <pack name="SAMC21_DFP" vendor="Microchip" version="3.9.248"/>
+        <pack name="CMSIS" vendor="ARM" version="6.3.0"/>
       </packs>
       <ScriptingSettings>
       </ScriptingSettings>
@@ -554,7 +572,7 @@
         <property key="oXC16gcc-sfr-warn" value="false"/>
         <property key="oXC16gcc-smar-io-lvl" value="1"/>
         <property key="oXC16gcc-smart-io-fmt" value=""/>
-        <property key="optimization-level" value="-O0"/>
+        <property key="optimization-level" value="-O2"/>
         <property key="place-data-into-section" value="true"/>
         <property key="post-instruction-scheduling" value="default"/>
         <property key="pre-instruction-scheduling" value="default"/>

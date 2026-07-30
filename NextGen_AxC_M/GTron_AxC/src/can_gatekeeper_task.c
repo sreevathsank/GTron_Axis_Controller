@@ -250,13 +250,13 @@ static void CAN1_Read( void )
 
 void CAN_GATEKEEPER_TASK_Tasks ( void )
 {
-    Can_Frame_t frame; 
-    DBG_Printf(
-        ERR_LVL_INFO,
-        "CAN_GATEKEEPER Task - Waiting for gq_can_work queue\n"
-    );
+    Can_Frame_t frame;
+    DBG_Printf( ERR_LVL_INFO,
+        "CAN_GATEKEEPER Task - Waiting for gq_can_work queue\n" );
     xQueueReceive(gq_can_work, &frame, portMAX_DELAY);
-    
+    DBG_Printf( ERR_LVL_INFO,
+        "CAN_GATEKEEPER Task - Received item(s) in gq_can_work queue\n" );
+
     if(frame.direction == CAN_FROM_BUS) {
         // Drain ALL pending frames from both FIFOs
         while (can1_rx_fifo0_cb_info.buf_cnt ||
