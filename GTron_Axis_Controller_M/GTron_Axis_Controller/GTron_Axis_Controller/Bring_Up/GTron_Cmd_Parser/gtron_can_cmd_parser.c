@@ -77,7 +77,6 @@ static void reeler_Home( void )
 static void reeler_Move(int32_t target_position, bool move_to_by)
 {
 	check_move_done = true;
-	//reeler_info.position.trig_step_size = 0;
 	if( (abs(tmc4671_getActualPosition(MOTOR) - target_position) > MIN_DISTANCE_RAMP ) ) {
 		(move_to_by == MOVE_TO) ? move_With_S_Ramp(target_position, p_reeler1_info->velocity.limit, MOVE_TO) \
 								: move_With_S_Ramp(target_position, p_reeler1_info->velocity.limit, MOVE_BY);	
@@ -252,24 +251,6 @@ void reeler_Pause_Motor( void )
 	return;
 }
 
-
-/** 
- * \brief
- *
- * @param
- *
- * @return
- **/
-//static void reeler_Get_Position( void )
-//{
-//	int32_t reeler_position = tmc4671_getActualPosition(MOTOR);
-//	int32_t reel_pos_within_rot = reeler_position & 0xFFFF;
-//	DBG_Printf(ERR_LVL_DEBUG, "The current Reeler Position is = ABS %ld usteps | REL %ld usteps", reeler_position, reel_pos_within_rot);
-//	can_AxC_Write(CAN_REPLY_TOP_RACK_ID, REELER_MOTOR_1, AXC_CURRENT_POSITION, reel_pos_within_rot);
-//	return;
-//}
-
-
 /** 
  * \brief
  *
@@ -437,8 +418,7 @@ static void tmc2209_Move(Motor_Info_t *motor_info, int32_t target_position, bool
 	motor_info->position.current = motor_info->step_tracker.total_steps;
 	target_position = (is_single_limit_motor(motor_info)) ? -target_position : target_position;
 	if( is_single_limit_motor(motor_info) && \
-		check_Open_Right_Limit_Status(motor_info) ) 
-	{
+		check_Open_Right_Limit_Status(motor_info) ) {
 		if( (target_position > motor_info->position.current) && \
 			(motor_info->move_dir.prev == motor_info->move_dir.at_rlimit) ) {
 			//Forward Direction.
@@ -512,7 +492,8 @@ static void tmc2209_Move(Motor_Info_t *motor_info, int32_t target_position, bool
 void tmc2209_Move_To_Open_Limit(Motor_Info_t *motor_info )
 {
 	uint8_t limit_status = 0;
-	IOXP_Read_Byte(IOXP_REG_GPIO, &limit_status);
+	//IOXP_Read_Byte(IOXP_REG_GPIO, &limit_status);
+	IOXP_Read_Byte(IOXP_REG_INTCAP_RD_ONLY, &limit_status );
 	if(MSK_MOT1_R_LIM(limit_status)) {
 		DBG_Printf(ERR_LVL_DEBUG, "\nAlready in Open Limit. Not moving towards Open Limit\n");
 		
@@ -541,8 +522,8 @@ void tmc2209_Move_To_Open_Limit(Motor_Info_t *motor_info )
 void tmc2209_Move_To_Close_Limit(Motor_Info_t *motor_info )
 {
 	uint8_t limit_status = 0;
-	IOXP_Read_Byte(IOXP_REG_GPIO, &limit_status);
-	
+	//IOXP_Read_Byte(IOXP_REG_GPIO, &limit_status);
+	IOXP_Read_Byte(IOXP_REG_INTCAP_RD_ONLY, &limit_status );
 	if(motor_info->comms.uart_addr == TMC2209_MOT_ADDR1) {
 		if(MSK_MOT1_L_LIM(limit_status)) {
 			DBG_Printf( ERR_LVL_DEBUG, "Already in Close Limit. Not moving towards Close Limit\n");
@@ -566,12 +547,10 @@ void tmc2209_Move_To_Close_Limit(Motor_Info_t *motor_info )
 static void tmc2209_Reference_Search( Motor_Info_t *m )
 {
 	if(!m) {
-		DBG_Printf(ERR_LVL_ERROR,\
-		"tmc2209_Reference_Search: Motor_Info_t Null ptr!\n");
+		DBG_Printf(ERR_LVL_ERROR, "tmc2209_Reference_Search: Motor_Info_t Null ptr!\n");
 		return;
 	}
 	DBG_Printf(ERR_LVL_DEBUG, "TMC2209 Reference Search UART addr = %d\n", m->comms.uart_addr);
-	m->flags.is_tmc2209_homing = true;
 	if( is_single_limit_motor(m) ) { 
 		bool open_lim_status = check_Open_Right_Limit_Status(m);
 		DBG_Printf(ERR_LVL_DEBUG, "Open Right Limit Status = %d\n", open_lim_status);
@@ -582,7 +561,9 @@ static void tmc2209_Reference_Search( Motor_Info_t *m )
 							AXC_HOMING,
 							0x00	);
 		} else {
+			m->flags.is_tmc2209_homing = true;
 			m->flags.move_to_open_lim = true;
+			is_tmc2209_mot_moving = true;
 			DBG_Printf(ERR_LVL_DEBUG, "Homing - Motor not at limit. Moving towards Open Right Limit\n");
 			tmc2209_set_velocity(m->comms.uart_addr, m, TMC2209_DEFAULT_SPEED);
 			m->motor_state = MOTOR_MOVING_STATE;
@@ -591,12 +572,16 @@ static void tmc2209_Reference_Search( Motor_Info_t *m )
 		bool open_lim_status = check_Open_Right_Limit_Status(m);
 		if(open_lim_status) {
 			DBG_Printf(ERR_LVL_DEBUG, "Motor already at Open Limit. moving towards close limit.\n");
+			m->flags.is_tmc2209_homing = true;
+			is_tmc2209_mot_moving = true;
 			m->flags.move_to_close_lim	= true;
 			m->flags.move_to_open_lim	= false;
 			m->flags.first_lim_hit		= true;
 			tmc2209_Move_To_Close_Limit(m);
 		} else {
+			m->flags.is_tmc2209_homing = true;
 			m->flags.move_to_open_lim	= true;
+			is_tmc2209_mot_moving = true;
 			m->flags.move_to_close_lim	= false;
 			m->flags.first_lim_hit		= false;
 			tmc2209_Move_To_Open_Limit(m);
@@ -850,7 +835,6 @@ void parse_GTron_CAN_Msg_Data( void )
 	// Check if the current node and message id received are for the current node.
 	if( ((rack_id == TOP_RACK) && (axis_id == GTRON_AXC_TOP)) || \
 	    ((rack_id == BOT_RACK) && (axis_id == GTRON_AXC_BOT)) )
-	//if( (X_AXIS == axis_id) && (TOP_RACK == rack_id) )
 	{
 		switch(rx_can_cmd_info.data[PERIPHERAL_BYTE_IDX])
 		{

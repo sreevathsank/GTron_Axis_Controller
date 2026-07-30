@@ -29,7 +29,7 @@ static uint8_t get_irun_for_motor(Motor_Name_Enum_t mot_name)
 	switch(mot_name) {
 		case MOTOR_VARREST1:
 		case MOTOR_VARREST2:
-			return 20;			
+			return 23;			
 		case MOTOR_GUIDE:
 		case MOTOR_FRONT_CAM:
 		case MOTOR_REELERADJ1:

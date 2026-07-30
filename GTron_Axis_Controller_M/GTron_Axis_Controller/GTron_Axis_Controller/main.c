@@ -16,8 +16,8 @@ int main(void)
 	can_Init();
 	
 	// REELER1_GUIDE_REELERADJ1, VARREST_1_2_SOLENOID and REELER2_REELERADJ2_FRONTCAM.
-	//sbridge_addr = VARREST_1_2_SOLENOID;
-	sbridge_addr = REELER1_GUIDE_REELERADJ1;
+	sbridge_addr = VARREST_1_2_SOLENOID;
+	//sbridge_addr = REELER1_GUIDE_REELERADJ1;
 	step_count = 0;
 	define_All_Global_Variables();
 	call_All_Init_Functions();

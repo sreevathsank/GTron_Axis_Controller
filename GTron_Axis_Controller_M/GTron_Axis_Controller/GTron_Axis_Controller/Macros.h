@@ -95,7 +95,7 @@
 /* Generic Motor based Macros                                           */
 /************************************************************************/
 #define IMM_PITCH_MM				6.35f									// Linear Distance traveled in the lead screw for 1 motor mechanical rotation in mm.
-#define GUIDE_PITCH_MM				2.00f									// Linear Distance traveled in the lead screw for 1 guide motor mechanical rotation in MM.
+#define GUIDE_PITCH_MM				4.00f									// Linear Distance traveled in the lead screw for 1 guide motor mechanical rotation in MM.
 #define PITCH_DEGREE				360.00f									// 1 motor mechanical rotation in degree.
 
 /************************************************************************/

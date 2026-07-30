@@ -148,7 +148,6 @@ void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info)
 	// Store the current reading for next iteration.
 	motor_info->step_tracker.prev_mscnt = current_mscnt;
 	
-	//printf("\ntarget pos = %ld | current_pos = %ld\n", motor_info->position.target, motor_info->step_tracker.total_steps, abs(motor_info->position.target - motor_info->step_tracker.total_steps));
 	if(motor_info->flags.move_given) {
 		int32_t pos_diff = motor_info->position.target - motor_info->step_tracker.total_steps;
 		bool diff_zero = false;
