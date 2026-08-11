@@ -97,6 +97,7 @@ C_SRCS +=  \
 ../Bring_Up/Debug/dbg_transport.c \
 ../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.c \
 ../Bring_Up/IO_Expander/spi_io_expander.c \
+../Bring_Up/Motion/ejection.c \
 ../Bring_Up/Motion/Hybrid_Trigger.c \
 ../Bring_Up/Motion/Motion.c \
 ../Bring_Up/Motion/tmc2209_limits.c \
@@ -180,6 +181,7 @@ Bring_Up/Debug/dbg_print.o \
 Bring_Up/Debug/dbg_transport.o \
 Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.o \
 Bring_Up/IO_Expander/spi_io_expander.o \
+Bring_Up/Motion/ejection.o \
 Bring_Up/Motion/Hybrid_Trigger.o \
 Bring_Up/Motion/Motion.o \
 Bring_Up/Motion/tmc2209_limits.o \
@@ -256,6 +258,7 @@ Bring_Up/Debug/dbg_print.o \
 Bring_Up/Debug/dbg_transport.o \
 Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.o \
 Bring_Up/IO_Expander/spi_io_expander.o \
+Bring_Up/Motion/ejection.o \
 Bring_Up/Motion/Hybrid_Trigger.o \
 Bring_Up/Motion/Motion.o \
 Bring_Up/Motion/tmc2209_limits.o \
@@ -332,6 +335,7 @@ Bring_Up/Debug/dbg_print.d \
 Bring_Up/Debug/dbg_transport.d \
 Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.d \
 Bring_Up/IO_Expander/spi_io_expander.d \
+Bring_Up/Motion/ejection.d \
 Bring_Up/Motion/Hybrid_Trigger.d \
 Bring_Up/Motion/Motion.d \
 Bring_Up/Motion/tmc2209_limits.d \
@@ -408,6 +412,7 @@ Bring_Up/Debug/dbg_print.d \
 Bring_Up/Debug/dbg_transport.d \
 Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.d \
 Bring_Up/IO_Expander/spi_io_expander.d \
+Bring_Up/Motion/ejection.d \
 Bring_Up/Motion/Hybrid_Trigger.d \
 Bring_Up/Motion/Motion.d \
 Bring_Up/Motion/tmc2209_limits.d \
@@ -559,6 +564,13 @@ Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.o: ../Bring_Up/GTron_Cmd_Parser/g
 	
 
 Bring_Up/IO_Expander/spi_io_expander.o: ../Bring_Up/IO_Expander/spi_io_expander.c
+	@echo Building file: $<
+	@echo Invoking: ARM/GNU C Compiler : 6.3.1
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\arm\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe$(QUOTE)  -x c -mthumb -D__SAMC21N18A__ -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\arm\CMSIS\5.4.0\CMSIS\Core\Include" -I"../Bring_Up/Debug" -I"../Config" -I".." -I"../examples" -I"../hal/include" -I"../hal/utils/include" -I"../hpl/adc" -I"../hpl/can" -I"../hpl/core" -I"../hpl/divas" -I"../hpl/dmac" -I"../hpl/eic" -I"../hpl/gclk" -I"../hpl/mclk" -I"../hpl/osc32kctrl" -I"../hpl/oscctrl" -I"../hpl/pm" -I"../hpl/port" -I"../hpl/sercom" -I"../hpl/spi" -I"../hpl/tc" -I"../hpl/usart" -I"../hri" -I"../include" -I"../stdio_redirect" -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n\include"  -Og -ffunction-sections -mlong-calls -g3 -Wall -mcpu=cortex-m0plus -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+Bring_Up/Motion/ejection.o: ../Bring_Up/Motion/ejection.c
 	@echo Building file: $<
 	@echo Invoking: ARM/GNU C Compiler : 6.3.1
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\arm\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe$(QUOTE)  -x c -mthumb -D__SAMC21N18A__ -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\arm\CMSIS\5.4.0\CMSIS\Core\Include" -I"../Bring_Up/Debug" -I"../Config" -I".." -I"../examples" -I"../hal/include" -I"../hal/utils/include" -I"../hpl/adc" -I"../hpl/can" -I"../hpl/core" -I"../hpl/divas" -I"../hpl/dmac" -I"../hpl/eic" -I"../hpl/gclk" -I"../hpl/mclk" -I"../hpl/osc32kctrl" -I"../hpl/oscctrl" -I"../hpl/pm" -I"../hpl/port" -I"../hpl/sercom" -I"../hpl/spi" -I"../hpl/tc" -I"../hpl/usart" -I"../hri" -I"../include" -I"../stdio_redirect" -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n\include"  -Og -ffunction-sections -mlong-calls -g3 -Wall -mcpu=cortex-m0plus -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 

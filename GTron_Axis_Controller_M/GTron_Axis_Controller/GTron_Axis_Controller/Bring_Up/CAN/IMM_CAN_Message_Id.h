@@ -151,11 +151,12 @@ typedef enum
 	AXC_SKIP_TRIGGER		= 20,
 	AXC_PAUSE				= 21,
 	AXC_N_SHOT				= 22,
-	AXC_SET					= 23,
-	AXC_GET					= 24,
+	AXC_GC_SET				= 23,
+	AXC_GC_GET				= 24,
 	AXC_TERMINAL_WIDTH		= 25,
 	AXC_ENCODER_MODE		= 26,
-	AXC_EJECT				= 27,
+	AXC_GC_EJECT			= 27,
+	AXC_GC_COUNT			= 28,
 	NO_OF_AXC_OPERAITONS
 }AxC_Operations_t;
 

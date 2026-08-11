@@ -62,11 +62,13 @@ void check_Which_2209_Motor_Moving(void)
 	volatile Motor_Info_t *m2 = mot_array[TMC2209_MOTOR2];
 	if(!m1) {
 		DBG_Printf(ERR_LVL_ERROR, "check_Which_2209_Motor_Moving() m1 mot_array entry NULL ptr error. Motor Stoppeed\n");
+		is_tmc2209_mot_moving = false;
 		//tmc2209_Stop_Motor(m1);
 		return;
 	}
 	if(!m2) {
 		DBG_Printf(ERR_LVL_ERROR, "check_Which_2209_Motor_Moving() m2 mot_array entry NULL ptr error. Motor Stopped\n");
+		is_tmc2209_mot_moving = false;
 		//tmc2209_Stop_Motor(m2);
 		return;
 	}
@@ -79,6 +81,7 @@ void check_Which_2209_Motor_Moving(void)
 	}
 	if(!m) {
 		DBG_Printf(ERR_LVL_ERROR, "check_Which_2209_Motor_Moving() Motor_Info_t NULL ptr error.\n");
+		is_tmc2209_mot_moving = false;
 		return;
 	}
 	

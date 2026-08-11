@@ -49,7 +49,6 @@ void can_message_send(void)
 	int32_t tx_message = rand() & 127;
 	
 	can_send(&CAN_1, tx_message, STD_ID, 0, can_tx_frame);
-	printf("\nThe value sent = %x\n", tx_message);
 }
 
 void can_message_decode(unsigned int message_Id)

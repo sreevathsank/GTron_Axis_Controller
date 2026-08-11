@@ -171,6 +171,7 @@ static void reeler_Start_Motor( void )
 		timer_start(&VEL_TIMER);
 		tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
 		tmc4671_setVelocityTarget(MOTOR, p_reeler1_info->velocity.limit);
+		reeler_Set_Velocity(p_reeler1_info->velocity.limit);
 		DBG_Printf(ERR_LVL_DEBUG, "Reeler Start: VEL_TIMER Started | Sag and Rotate Vel Mode Enabled");
 	}
 	if(p_reeler1_info->hybrid.mode == HYBRID_MODE_INSPECTION) {
@@ -233,11 +234,11 @@ void reeler_Pause_Motor( void )
 	tmc4671_setVelocityLimit(MOTOR, 0);
 	tmc4671_setVelocityTarget(MOTOR, 0);
 	tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
-	move_given_trapezoidal_ramp = false;
-	move_given_s_ramp = false; 
-	check_move_done = false;
-	p_reeler1_info->flags.rotate_vel_mode = false;
-	p_reeler1_info->flags.sag_enabled = false;
+	move_given_trapezoidal_ramp				= false;
+	move_given_s_ramp						= false; 
+	check_move_done							= false;
+	p_reeler1_info->flags.rotate_vel_mode	= false;
+	p_reeler1_info->flags.sag_enabled		= false;
 	homing_v = 0;
 	timer_stop(&VEL_TIMER);
 	trig_no = 0;
@@ -865,10 +866,10 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_STOP: {
 						DBG_Printf(ERR_LVL_INFO, "Ejector Command received GUIDE MOTOR STOP.\n");
 						DBG_Printf( ERR_LVL_INFO, "MsgID=0x%X | Periphearal=0x%X | Operation=0x%X | Value=0x%X\n", 
-									CAN_TOP_AXC_TO_SYSCTRL_ID, GLOBAL_COUNTER, AXC_EJECT, 0x02 );
+									CAN_TOP_AXC_TO_SYSCTRL_ID, GLOBAL_COUNTER, AXC_GC_EJECT, 0x02 );
 						message_Id = CAN_TOP_AXC_TO_SYSCTRL_ID;
 						can_tx_frame.data[0] = GLOBAL_COUNTER;
-						can_tx_frame.data[1] = AXC_EJECT;
+						can_tx_frame.data[1] = AXC_GC_EJECT;
 						can_tx_frame.data[2] = 0x02;
 						can_Write(message_Id, can_tx_frame.data_64bit);
 						break;
@@ -1022,6 +1023,7 @@ void parse_GTron_CAN_Msg_Data( void )
 							
 							p_reeler1_info->hybrid.mode						= HYBRID_MODE_INSPECTION;
 							p_reeler1_info->hybrid.first_trigger_skip		= true;
+							p_reeler1_info->flags.sag_enabled				= true;
 							p_reeler1_info->hybrid.consecutive_slips		= 0;
 							p_reeler1_info->hybrid.cycle_armed				= false;
 							p_reeler1_info->flags.sensor_trigger			= false;
@@ -1072,18 +1074,18 @@ void parse_GTron_CAN_Msg_Data( void )
 			case GLOBAL_COUNTER: {
 				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
 				{
-					case AXC_SET: {
+					case AXC_GC_SET: {
 						int32_t setpos = rx_can_cmd_info.value;
 						tmc4671_setActualPosition(MOTOR, setpos);
 						DBG_Printf(ERR_LVL_INFO, "GC_Set = %ld\n", setpos);
 						break;
 					}
-					case AXC_GET: {
+					case AXC_GC_GET: {
 						int32_t cpos = tmc4671_getActualPosition(MOTOR);
 						DBG_Printf(ERR_LVL_INFO, "GC_Get = %ld\n", cpos);
 						break;
 					} 
-					case AXC_EJECT: {
+					case AXC_GC_EJECT: {
 						DBG_Printf(ERR_LVL_INFO, "GC_Eject\n");
 						break;
 					}

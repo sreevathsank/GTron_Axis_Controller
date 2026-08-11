@@ -10,19 +10,19 @@ volatile int32_t prev_trig_pos = 0;
 volatile uint32_t prev_trig_time_ms = 0;
 
 /** 
- * \brief	Triggers the pin that is directly connected to Sys Ctrl to trigger the Camera.
+ * \brief	Sends GC and Triggers the pin that is directly connected to Sys Ctrl to trigger the Camera.
  *
  * @param	void
  * @return	void
  **/
 void trigger_Camera_Line(void) 
 {
+	ejection_send_gc(tmc4671_getActualPosition(MOTOR));
 	gpio_set_pin_level(REELER_INT, HIGH);
 	delay_us(1);
 	gpio_toggle_pin_level(DBGLED3);
 	gpio_set_pin_level(REELER_INT, LOW);
 	p_reeler1_info->time_ms.cam_trig = millis();
-	//DBG_Printf(ERR_LVL_INFO, "Camera Line REELER_INT pin toggled\n");
 	return;
 }
 
@@ -140,7 +140,7 @@ static void handle_slip(Hybrid_t *H)
 		H->total_slips = HYBRID_ALERT_THRESHOLD;
 	}
 	
-	#if IS_DISCRETE
+	#if IS_DISCRETE == false
 		// If no sensor trigger has happened for about (total slips x terminal width), stop the motor and inform the error.
 		if( (abs(tmc4671_getActualPosition(MOTOR) - H->prev_anchor_pos) > (H->total_slips * H->term_width) ) &&
 		!p_reeler1_info->flags.sensor_trigger && !p_reeler1_info->flags.is_encoder_mode ) {
@@ -177,7 +177,25 @@ static void handle_n_shot_tick()
 	uint32_t step = p_reeler1_info->position.trig_step_size;
 	uint32_t term_pitch = H->term_width;
 	
+	if( H->total_slips == 0) {
+		H->total_slips = HYBRID_ALERT_THRESHOLD;
+	}
 	
+	// If no sensor trigger has happened for about (total slips x terminal width), stop the motor and inform the error.
+	if( (abs(tmc4671_getActualPosition(MOTOR) - H->prev_anchor_pos) > (H->total_slips * H->term_width) ) &&
+		!p_reeler1_info->flags.sensor_trigger && !p_reeler1_info->flags.is_encoder_mode ) {
+		DBG_Printf(ERR_LVL_ERROR, "No sensor trigger was received for %ld usteps.\nPausing the motor and informing the error.", (H->total_slips * H->term_width));
+		can_AxC_Write(	CAN_ERR_REPLY_TOP_RACK_ID,
+		HYBRID_TRIGGER_INSPECTION,
+		AXC_ERR_TRIGGER_FAIL, 0);
+		reeler_Pause_Motor();
+	}
+	
+	// If sensor trigger is received but the cycle is still armed, ignore the sensor trigger.
+	if(p_reeler1_info->flags.sensor_trigger && H->cycle_armed && !p_reeler1_info->flags.is_encoder_mode) {
+		DBG_Printf(ERR_LVL_WARNING, "Spurious Sensor Trigger rxcvd while cycle armed. Ignoring...\n");
+		p_reeler1_info->flags.sensor_trigger = false;
+	}
 	
 	// If sensor trigger is received while cycle is not armed, it is a valid trigger.
 	if(p_reeler1_info->flags.sensor_trigger && !p_reeler1_info->flags.is_encoder_mode) {
@@ -194,33 +212,30 @@ static void handle_n_shot_tick()
 		}
 		
 		p_reeler1_info->flags.is_paused = false;
-		#ifdef IS_DISCRETE
-			#if IS_DISCRETE
-				// Slip / Spurious Trigger Detection (anchor to anchor delta).
-				uint32_t actual			= (uint32_t)abs(new_anchor - H->prev_anchor_pos);
-				uint32_t expected		= H->term_width;
-				uint32_t tolerance		= (expected * HYBRID_SLIP_TOLERANCE_PCT) / 100u;
-				uint32_t deviation		= (actual > expected) ? (actual - expected) : (expected - actual);
-				
-				if(deviation > tolerance) {
-					// Slipped.
-					if(++H->consecutive_slips >= H->total_slips) {
-						DBG_Printf(ERR_LVL_WARNING, "Slipped: Fail %d | Expected Range = %ld to %ld | Actual = %ld\n", 
-									H->consecutive_slips, 
-									(expected - tolerance),
-									(expected + tolerance),
-									expected, actual);
-						can_AxC_Write(	CAN_ERR_REPLY_TOP_RACK_ID,
-										HYBRID_TRIGGER_INSPECTION,
-										AXC_ERR_SLIP, 0 );
-						H->consecutive_slips = 0;
-						reeler_Pause_Motor();
-					}
-				} else {
-					H->consecutive_slips = 0;
-				}
-			#endif
-		#endif
+		
+		// Slip / Spurious Trigger Detection (anchor to anchor delta).
+		uint32_t actual			= (uint32_t)abs(new_anchor - H->prev_anchor_pos);
+		uint32_t expected		= H->term_width;
+		uint32_t tolerance		= (expected * HYBRID_SLIP_TOLERANCE_PCT) / 100u;
+		uint32_t deviation		= (actual > expected) ? (actual - expected) : (expected - actual);
+		
+		if(deviation > tolerance) {
+			// Slipped.
+			if(++H->consecutive_slips >= H->total_slips) {
+				DBG_Printf(ERR_LVL_WARNING, "Slipped: Fail %d | Expected Range = %ld to %ld | Actual = %ld\n", 
+							H->consecutive_slips, 
+							(expected - tolerance),
+							(expected + tolerance),
+							expected, actual);
+				can_AxC_Write(	CAN_ERR_REPLY_TOP_RACK_ID,
+								HYBRID_TRIGGER_INSPECTION,
+								AXC_ERR_SLIP, 0 );
+				H->consecutive_slips = 0;
+				reeler_Pause_Motor();
+			}
+		} else {
+			H->consecutive_slips = 0;
+		}
 		DBG_Printf(ERR_LVL_DEBUG, "Delta of prev to curr anchor pos = %ld\n", abs(new_anchor - H->prev_anchor_pos));
 		H->prev_anchor_pos		= new_anchor;
 		H->anchor_pos			= new_anchor;

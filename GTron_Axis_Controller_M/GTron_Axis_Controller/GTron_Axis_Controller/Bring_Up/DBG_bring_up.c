@@ -493,7 +493,7 @@ void define_All_Global_Variables(void)
 	// Limit variables flags.
 	limit_variables.left_limit_flag = false;
 	limit_variables.right_limit_flag = false;
-	limit_variables.homing = true;					// Initially motor goes for Homing Sequence.
+	limit_variables.homing = false;					// Initially motor goes for Homing Sequence.
 	limit_variables.hit_limit_left = false;
 	limit_variables.hit_limit_right = false;
 	limit_variables.loop = false;
@@ -571,6 +571,8 @@ void call_All_Init_Functions(void)
 	TMC2209_UART_enable();
 	adc_sync_enable_channel(&ADC_0, 0);
 	check_Current_Axis_ADC();
+	init_timers();
+	init_ext_irq_limits();
 	if(!check_4671_version_spi()) {
 		PRINTF_DEBUG && printf("\n--------TMC4671 SPI Check Failed--------\n");
 	}
@@ -663,8 +665,6 @@ void call_All_Init_Functions(void)
 		}
 		default: break;
 	}
-	init_timers();
-	init_ext_irq_limits();
 	return;
 }
 
