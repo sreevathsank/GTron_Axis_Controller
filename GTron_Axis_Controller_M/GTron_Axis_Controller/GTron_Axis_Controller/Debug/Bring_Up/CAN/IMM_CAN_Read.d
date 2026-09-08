@@ -163,6 +163,7 @@ Bring_Up/CAN/IMM_CAN_Read.d Bring_Up/CAN/IMM_CAN_Read.o: \
  ../hal/include/hal_pwm.h ../hal/include/hpl_pwm.h \
  ../hpl/tc/hpl_tc_base.h ../hal/include/hpl_timer.h \
  ../hal/include/hal_timer.h ../hal/utils/include/utils_list.h \
+ ../hal/include/hal_wdt.h ../hal/include/hpl_wdt.h \
  ../hal/include/hal_can_async.h ../hal/include/hpl_can.h \
  ../hal/include/hpl_can_async.h ../hal/utils/include/utils.h \
  ../Bring_Up/DBG_bring_up.h ../Bring_Up/IO_Expander/spi_io_expander.h \
@@ -190,7 +191,8 @@ Bring_Up/CAN/IMM_CAN_Read.d Bring_Up/CAN/IMM_CAN_Read.o: \
  ../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h \
  ../Bring_Up/Debug/dbg_transport.h ../Bring_Up/Debug/dbg_print.h \
  ../Bring_Up/Motion/Hybrid_Trigger.h ../TMC-API/tmc/ic/TMC4671/TMC4671.h \
- ../Bring_Up/Motion/Hybrid_Trigger.h ../Code_Dump/McuSwReset.h \
+ ../Bring_Up/Motion/ejection.h ../Bring_Up/Motion/Hybrid_Trigger.h \
+ ../Bring_Up/Motion/ejection.h ../Code_Dump/McuSwReset.h \
  ../Code_Dump/tlv_flash.h ../Code_Dump/ext_flash.h ../driver_init.h \
  ../hpl/spi/spi_lite.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\string.h \
@@ -622,6 +624,10 @@ C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n
 
 ../hal/utils/include/utils_list.h:
 
+../hal/include/hal_wdt.h:
+
+../hal/include/hpl_wdt.h:
+
 ../hal/include/hal_can_async.h:
 
 ../hal/include/hpl_can.h:
@@ -714,7 +720,11 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 
 ../TMC-API/tmc/ic/TMC4671/TMC4671.h:
 
+../Bring_Up/Motion/ejection.h:
+
 ../Bring_Up/Motion/Hybrid_Trigger.h:
+
+../Bring_Up/Motion/ejection.h:
 
 ../Code_Dump/McuSwReset.h:
 

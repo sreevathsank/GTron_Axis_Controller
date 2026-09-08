@@ -36,6 +36,10 @@ void timer_ramp_cb(void);
 
 void init_timers(void);
 
+void init_wdt(void);
+
+void pet_wdt(void);
+
 void can_Rx_Cb(void);
 
 void can_Init(void);

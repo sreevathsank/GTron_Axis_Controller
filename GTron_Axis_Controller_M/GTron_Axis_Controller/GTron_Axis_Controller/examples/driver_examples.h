@@ -32,6 +32,8 @@ void VEL_TIMER_example(void);
 
 void TIMER_0_example(void);
 
+void WDT_0_example(void);
+
 void CAN_1_example(void);
 
 #ifdef __cplusplus

@@ -1456,17 +1456,19 @@ void check_Motor_Movement(void)
  */
 void run_Velocity_Ramp(void)
 {
+	if(!p_reeler1_info) { return; }
+		
 	static float vel = 0;	// Velocity to be set.
 	static bool ramping = false;
 	static int32_t prev_trig_pos = 0;
-	
+	static uint32_t prev_time = 0, current_time;
 	vel_struct.flags.reeler_vel_timer = false;
 
-	if(!p_reeler1_info) { return; }
-		
-	int32_t current_velocity	= tmc4671_getVelocityTarget(MOTOR);
+	int32_t current_velocity	= tmc4671_getActualVelocity(MOTOR);
 	int32_t target_velocity		= p_reeler1_info->velocity.limit;
 	int32_t current_position	= tmc4671_getActualPosition(MOTOR);
+	
+	ejection_service(current_position);
 
 	// Check if the Motor's current Mode Motion is in Velocity Mode or not.
 	int32_t mode_motion = tmc4671_getModeMotion(MOTOR);
@@ -1474,7 +1476,6 @@ void run_Velocity_Ramp(void)
 		tmc4671_setModeMotion(MOTOR, VELOCITY_MODE);
 	}
 	
-	static uint32_t prev_time = 0, current_time;
 	current_time = millis();
 
 	if(p_reeler1_info->flags.is_hybrid_trig_enabled && !p_reeler1_info->flags.is_encoder_mode) {
@@ -1498,27 +1499,26 @@ void run_Velocity_Ramp(void)
 		ramping = true;
 	}
 	
-	// Return from the current function if the current motor velocity is equal to the Target Velocity.
-	//if(current_velocity == target_velocity)
-	{
-		//ramping = false;
-		//timer_stop(&VEL_TIMER);
-		//return;
-	}
-	
-	// Check if the current motor velocity is greater than or less than the Target Velocity.
-	bool is_greater = (current_velocity > target_velocity);
-	
-	// Depending on the boolean is_greater, increase or decrease the value of vel.
-	if(is_greater) {
+	/*	Depending on if current velocity is greater than target velocity
+	 *	adjust the current velocity.
+	 */		
+	if(current_velocity > target_velocity) {
 		if(vel > target_velocity) {
 			vel -= axis_params.acceleration_delta;
+			if (vel > target_velocity) {
+				vel = target_velocity;
+			}
 		}
-	} else {
+	} else if(current_velocity < target_velocity) {
 		if(vel < target_velocity) {
 			vel += axis_params.acceleration_delta;
+			if (vel < target_velocity) {
+				vel = target_velocity;
+			}
 		}	
-	}			   
+	} else {
+		return;
+	}		   
 	tmc4671_setVelocityTarget(MOTOR, (int32_t)vel);
 	
 	return;

@@ -56,6 +56,7 @@ void led_Blink(uint32_t iteration, uint32_t time_taken)
 		delay_ms(time_taken);
 		
 		gpio_toggle_pin_level(DBGLED2);
+		pet_wdt();
 	}
 	gpio_set_pin_level(DBGLED1, 1);
 	gpio_set_pin_level(DBGLED2, 1);
@@ -183,6 +184,36 @@ static void init_Motor_Struct(Motor_Info_t *motor_info, Motor_Name_Enum_t motor_
 	} else {
 		motor_info->flags.is_double_limit = 0;
 	}
+	return;
+}
+
+/** 
+ * \brief Function to initialize the WDT.
+ *
+ * @param void
+ * @return void
+ */
+void init_wdt(void)
+{
+	uint32_t clk_rate;
+	uint16_t timeout_period;
+
+	clk_rate       = 1000;
+	timeout_period = 4096;
+	wdt_set_timeout_period(&WDT_0, clk_rate, timeout_period);
+	wdt_enable(&WDT_0);
+	return;
+}
+
+/** 
+ * \brief Pet/Kick WDT.
+ *
+ * @param void
+ * @return void
+ */
+void pet_wdt(void)
+{
+	wdt_feed(&WDT_0);
 	return;
 }
 
@@ -549,7 +580,9 @@ void define_All_Global_Variables(void)
  * @return void
  */
 void call_All_Init_Functions(void)
-{	
+{
+	pet_wdt();
+		
 	// PWM_0 is clk source for TMC4671. Produces 25MHz.
 	pwm_set_parameters(&PWM_0, 1, 1);
 	pwm_enable(&PWM_0);
@@ -665,6 +698,7 @@ void call_All_Init_Functions(void)
 		}
 		default: break;
 	}
+	pet_wdt();
 	return;
 }
 

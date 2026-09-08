@@ -10,6 +10,7 @@
 int main(void)
 {
 	atmel_start_init();
+	//init_wdt();
 	DBG_TransportInit();              // Configure DMA ch0 -> SERCOM7 USART.
 	DBG_Init(DBG_TransportGet());     // Wire dbg_print to the transport.
 	SYSTICK_INIT();

@@ -132,6 +132,7 @@ driver_init.d driver_init.o: .././driver_init.c .././driver_init.h \
  ../hal/include/hal_pwm.h ../hal/include/hpl_pwm.h \
  ../hpl/tc/hpl_tc_base.h ../hal/include/hpl_timer.h \
  ../hal/include/hal_timer.h ../hal/utils/include/utils_list.h \
+ ../hal/include/hal_wdt.h ../hal/include/hpl_wdt.h \
  ../hal/include/hal_can_async.h ../hal/include/hpl_can.h \
  ../hal/include/hpl_can_async.h ../hal/utils/include/utils.h \
  ../hpl/adc/hpl_adc_base.h ../hal/include/hpl_adc_async.h \
@@ -490,6 +491,10 @@ C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n
 ../hal/include/hal_timer.h:
 
 ../hal/utils/include/utils_list.h:
+
+../hal/include/hal_wdt.h:
+
+../hal/include/hpl_wdt.h:
 
 ../hal/include/hal_can_async.h:
 

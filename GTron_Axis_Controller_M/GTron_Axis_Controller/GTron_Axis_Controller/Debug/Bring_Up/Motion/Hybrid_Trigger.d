@@ -134,6 +134,7 @@ Bring_Up/Motion/Hybrid_Trigger.d Bring_Up/Motion/Hybrid_Trigger.o: \
  ../hal/include/hal_pwm.h ../hal/include/hpl_pwm.h \
  ../hpl/tc/hpl_tc_base.h ../hal/include/hpl_timer.h \
  ../hal/include/hal_timer.h ../hal/utils/include/utils_list.h \
+ ../hal/include/hal_wdt.h ../hal/include/hpl_wdt.h \
  ../hal/include/hal_can_async.h ../hal/include/hpl_can.h \
  ../hal/include/hpl_can_async.h ../hal/utils/include/utils.h \
  ../stdio_start.h \
@@ -195,7 +196,8 @@ Bring_Up/Motion/Hybrid_Trigger.d Bring_Up/Motion/Hybrid_Trigger.o: \
  ../Bring_Up/CAN/TMCL_IDE_reply.h ../Bring_Up/CAN/MCD_v3.h \
  ../SysTick/Systick.h ../Bring_Up/Motion/Motion.h \
  ../Bring_Up/Debug/dbg_transport.h ../Bring_Up/Debug/dbg_print.h \
- ../Bring_Up/Motion/Hybrid_Trigger.h ../Code_Dump/McuSwReset.h \
+ ../Bring_Up/Motion/Hybrid_Trigger.h ../Bring_Up/Motion/ejection.h \
+ ../Bring_Up/Motion/ejection.h ../Code_Dump/McuSwReset.h \
  ../Code_Dump/tlv_flash.h ../Code_Dump/ext_flash.h ../driver_init.h \
  ../hpl/spi/spi_lite.h ../Code_Dump/tlv_flash.h \
  ../Bring_Up/IO_Expander/spi_io_expander.h ../tmc2209_uart/TMC2209.h \
@@ -563,6 +565,10 @@ C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n
 
 ../hal/utils/include/utils_list.h:
 
+../hal/include/hal_wdt.h:
+
+../hal/include/hpl_wdt.h:
+
 ../hal/include/hal_can_async.h:
 
 ../hal/include/hpl_can.h:
@@ -728,6 +734,10 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../Bring_Up/Debug/dbg_print.h:
 
 ../Bring_Up/Motion/Hybrid_Trigger.h:
+
+../Bring_Up/Motion/ejection.h:
+
+../Bring_Up/Motion/ejection.h:
 
 ../Code_Dump/McuSwReset.h:
 

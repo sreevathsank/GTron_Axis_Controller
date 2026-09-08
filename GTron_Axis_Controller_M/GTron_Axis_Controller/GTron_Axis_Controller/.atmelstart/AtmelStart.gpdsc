@@ -57,6 +57,7 @@
         <file category="doc" condition="ARMCC, GCC, IAR" name="hal/documentation/timer.rst"/>
         <file category="doc" condition="ARMCC, GCC, IAR" name="hal/documentation/usart_async.rst"/>
         <file category="doc" condition="ARMCC, GCC, IAR" name="hal/documentation/usart_sync.rst"/>
+        <file category="doc" condition="ARMCC, GCC, IAR" name="hal/documentation/wdt.rst"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hal_atomic.h"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hal_can_async.h"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hal_delay.h"/>
@@ -65,6 +66,7 @@
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hal_init.h"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hal_io.h"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hal_sleep.h"/>
+        <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hal_wdt.h"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hpl_adc_dma.h"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hpl_can.h"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hpl_can_async.h"/>
@@ -85,6 +87,7 @@
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hpl_spi_async.h"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hpl_spi_sync.h"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hpl_usart.h"/>
+        <file category="header" condition="ARMCC, GCC, IAR" name="hal/include/hpl_wdt.h"/>
         <file category="source" condition="ARMCC, GCC, IAR" name="hal/src/hal_atomic.c"/>
         <file category="source" condition="ARMCC, GCC, IAR" name="hal/src/hal_can_async.c"/>
         <file category="source" condition="ARMCC, GCC, IAR" name="hal/src/hal_delay.c"/>
@@ -92,6 +95,7 @@
         <file category="source" condition="ARMCC, GCC, IAR" name="hal/src/hal_init.c"/>
         <file category="source" condition="ARMCC, GCC, IAR" name="hal/src/hal_io.c"/>
         <file category="source" condition="ARMCC, GCC, IAR" name="hal/src/hal_sleep.c"/>
+        <file category="source" condition="ARMCC, GCC, IAR" name="hal/src/hal_wdt.c"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/utils/include/compiler.h"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/utils/include/err_codes.h"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hal/utils/include/events.h"/>
@@ -209,6 +213,8 @@
         <file category="header" condition="ARMCC, GCC, IAR" name="hpl/tc/hpl_tc_base.h"/>
         <file category="source" condition="ARMCC, GCC, IAR" name="hpl/usart/usart_lite.c"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="hpl/usart/usart_lite.h"/>
+        <file category="source" condition="ARMCC, GCC, IAR" name="hpl/wdt/hpl_wdt.c"/>
+        <file category="header" condition="ARMCC, GCC, IAR" name="hpl/wdt/hpl_wdt_base.h"/>
         <file category="source" condition="ARMCC, GCC, IAR" name="stdio_start.c"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="stdio_start.h"/>
         <file category="header" condition="ARMCC, GCC, IAR" name="atmel_start.h"/>
@@ -224,6 +230,7 @@
         <file attr="config" category="header" condition="ARMCC, GCC, IAR" name="config/hpl_port_config.h"/>
         <file attr="config" category="header" condition="ARMCC, GCC, IAR" name="config/hpl_sercom_config.h"/>
         <file attr="config" category="header" condition="ARMCC, GCC, IAR" name="config/hpl_tc_config.h"/>
+        <file attr="config" category="header" condition="ARMCC, GCC, IAR" name="config/hpl_wdt_config.h"/>
         <file attr="config" category="header" condition="ARMCC, GCC, IAR" name="config/peripheral_clk_config.h"/>
         <file attr="config" category="header" condition="ARMCC, GCC, IAR" name="config/stdio_redirect_config.h"/>
         <file category="include" condition="ARMCC, GCC, IAR" name=""/>
@@ -247,6 +254,7 @@
         <file category="include" condition="ARMCC, GCC, IAR" name="hpl/spi"/>
         <file category="include" condition="ARMCC, GCC, IAR" name="hpl/tc"/>
         <file category="include" condition="ARMCC, GCC, IAR" name="hpl/usart"/>
+        <file category="include" condition="ARMCC, GCC, IAR" name="hpl/wdt"/>
         <file category="include" condition="ARMCC, GCC, IAR" name="hri"/>
         <file category="include" condition="ARMCC, GCC, IAR" name="include"/>
         <file category="include" condition="ARMCC, GCC, IAR" name=""/>

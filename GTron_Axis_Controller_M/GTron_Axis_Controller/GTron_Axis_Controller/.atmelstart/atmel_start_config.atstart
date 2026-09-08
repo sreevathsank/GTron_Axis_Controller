@@ -1235,6 +1235,19 @@ drivers:
           external_frequency: 0
         configuration:
           tc_gclk_selection: Generic clock generator 1
+  WDT_0:
+    user_label: WDT_0
+    definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::WDT::driver_config_definition::WDT::HAL:Driver:WDT
+    functionality: WDT
+    api: HAL:Driver:WDT
+    configuration:
+      wdt_arch_per: 8 clock cycles
+      wdt_arch_window: 8 clock cycles
+      wdt_arch_window_en: false
+    optional_signals: []
+    variant: null
+    clocks:
+      domain_group: null
   CAN_1:
     user_label: CAN_1
     definition: Atmel:SAMC21N_Drivers:0.0.1::SAMC21N18A-AN::CAN1::driver_config_definition::CAN::HAL:Driver:CAN.Async

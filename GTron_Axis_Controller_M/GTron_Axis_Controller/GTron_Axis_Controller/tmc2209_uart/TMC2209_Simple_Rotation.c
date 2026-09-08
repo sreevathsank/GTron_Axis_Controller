@@ -51,10 +51,10 @@ void init_tmc2209_motor(uint16_t icID, const Motor_Info_t *m)
 	} else {
 		tmc2209_writeRegister(icID, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
 	}
-	tmc2209_writeRegister(icID, TMC2209_TPOWERDOWN, 0x00000014);    // DEC 20.
+	tmc2209_writeRegister(icID, TMC2209_TPOWERDOWN, 0x00000000);    // DEC 20.
 	
 	uint8_t irun		= get_irun_for_motor(m->mot_name);
-	uint8_t ihold_delay = 7;
+	uint8_t ihold_delay = 0;
 	uint8_t ihold		= 0;
 	uint32_t ihold_irun = (ihold_delay << 16) | (irun << 8) | ihold;			// ihold_delay = 7 ticks, irun = lookup, ihold = 0;
 	tmc2209_writeRegister(icID, TMC2209_IHOLD_IRUN, ihold_irun);

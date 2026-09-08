@@ -42,18 +42,6 @@ can_union_type can_rx_frame;
 /** @} */
 
 /** 
- * \name Axis Node Numbers
- * 
- * \brief Address for all the nodes.
- * @{ */
-#define X				0x01	// X Axis.
-#define Y				0x02	// Y Axis.
-#define Z				0x03	// Z Axis.
-#define RF				0x04	// Rotary Fixture Axis. 
-#define FP				0x05	// Front Panel.
-/** @} */
-
-/** 
  * \name 29 bit CAN Message ID Identifier
  *
  * 
@@ -123,11 +111,12 @@ typedef enum
 	GLOBAL_COUNTER				= 12,
 	FRONT_CAMERA_MOTOR			= 13,
 	REELER_MOTOR_2				= 14,
+	EJECTOR_1					= 15,
+	EJECTOR_2					= 16,
 	NO_OF_AXC_PERIPHERALS
 }AxC_Peripherals_t;
 
-typedef enum
-{
+typedef enum {
 	AXC_INITIALIZE			= 0,
 	AXC_START				= 1,
 	AXC_STOP				= 2,
@@ -140,7 +129,7 @@ typedef enum
 	AXC_MOVE_TO_OPEN_LIMIT	= 9,
 	AXC_MOVE_TO_CLOSE_LIMIT	= 10,
 	AXC_MOVE_DONE			= 11,
-	AXC_TEETH				= 12,
+	AXC_TRIG_STEPSIZE		= 12,
 	AXC_INITIAL_POSITION	= 13,
 	AXC_PRESSED				= 14,
 	AXC_NOT_PRESSED			= 15,
@@ -151,12 +140,13 @@ typedef enum
 	AXC_SKIP_TRIGGER		= 20,
 	AXC_PAUSE				= 21,
 	AXC_N_SHOT				= 22,
-	AXC_GC_SET				= 23,
-	AXC_GC_GET				= 24,
+	AXC_GC_GET				= 23,
+	AXC_GC_SET				= 24,
 	AXC_TERMINAL_WIDTH		= 25,
 	AXC_ENCODER_MODE		= 26,
-	AXC_GC_EJECT			= 27,
-	AXC_GC_COUNT			= 28,
+	AXC_EJECT_BIN_OFFSET	= 27,
+	AXC_EJECT_PARTCOUNT		= 28,
+	AXC_EJECT_PART			= 29,
 	NO_OF_AXC_OPERAITONS
 }AxC_Operations_t;
 
@@ -188,218 +178,5 @@ typedef enum {
 #define CAN_ERR_REPLY_TOP_RACK_ID				0x402
 
 #define CAN_TOP_AXC_TO_SYSCTRL_ID				0x110
-
-
-/** 
- * Knob Messages
- */
-#define KNOB_MOVEMENT						0x15
-#define KNOB_MODE							0x18
-#define KNOB_AXIS_CHANGE					0x03
-
-/** 
- * Stroke Length Messages.
- */
-#define RFS_DIST							0xC4	//	DEC 196
-#define START_RANGE							0xC5	//	DEC	197
-#define END_RANGE							0xC6	//	DEC 198
-
-						
-/**
- * \name v3 Messages to v5 Implementation for X-axis (MCD json)
- *
- */
-// The "typ" or the 3rd parameter in CAN_ID() is the sub-command.
-// Eg: Move Position (MVP) is the Command (cmd) and Absolute or Move To is (typ = 0) and Relative or Move By is (typ = 1) is the sub-command.
-//#define PING_X							CAN_ID(X, 138, 1, MOTOR)		// 0x2700200(or)40894976
-//#if X_AXIS_TABLE
-	#define MOVE_DONE_PING_X				CAN_ID(X, 138, 0 ,0)
-	#define PING_X							CAN_ID(X, 138, 1, 0)
-	#define REF_SEARCH_PING_X				CAN_ID(X, RFS, 2, 0)
-	#define MAX_ACCEL_X						CAN_ID(X, SAP, 5, MOTOR)		// 0x20a0a00(or)34212352
-	#define MAX_DECCEL_X					CAN_ID(X, SAP, 17, MOTOR)		// 0x20a2e00(or)34221568
-	#define HOME_SEARCH_VEL_X				CAN_ID(X, SAP, 194, MOTOR)		// 0x20b2800(or)34285568
-	#define HOME_SWITCH_VEL_X				CAN_ID(X, SAP, 195, MOTOR)		// 0x20b2a00(or)34286080
-	#define HOMING_MODE_X					CAN_ID(X, SAP, 193, MOTOR)		// 0x20b2600(or)34285056
-	#define OPEN_CLOSED_LOOP_X				CAN_ID(X, SAP, 129, MOTOR)		// 0x20a5200(or)34230784
-	#define CORRECTION_VEL_P_X				CAN_ID(X, SAP, 115, MOTOR)		// 0x20a2a00(or)34220544
-	#define CORRECTION_VEL_I_X				CAN_ID(X, SAP, 116, MOTOR)		// 0x20a2c00(or)34221056
-	#define CORRECTION_VEL_I_CLIP_X			CAN_ID(X, SAP, 117, MOTOR)		// 0x20a2e00(or)34221568
-	#define CORRECTION_VEL_DV_CLK_X			CAN_ID(X, SAP, 118, MOTOR)		// 0x20a3000(or)34222080
-	#define CORRECTION_VEL_DV_CLIP_X		CAN_ID(X, SAP, 119, MOTOR)		// 0x20a3200(or)34222592
-	#define CORRECTION_POSITION_P_X			CAN_ID(X, SAP, 124, MOTOR)		// 0x20a4800(or)34228224
-	#define MAX_CORRECTION_TOLERANCE_X		CAN_ID(X, SAP, 125, MOTOR)		// 0x20a4a00(or)34228736
-	#define POSITION_WINDOW_X				CAN_ID(X, SAP, 134, MOTOR)		// 0x20a6800(or)34236416
-	#define RAMP_TYPE_X						CAN_ID(X, SAP, 14, MOTOR)		// 0x20a2800(or)34220032
-	#define BOW_1_X							CAN_ID(X, SAP, 22, MOTOR)		// 0x20a4400(or)34227200
-	#define BOW_2_X							CAN_ID(X, SAP, 23, MOTOR)		// 0x20a4600(or)34227712
-	#define BOW_3_X							CAN_ID(X, SAP, 24, MOTOR)		// 0x20a4800(or)34228224
-	#define	BOW_4_X							CAN_ID(X, SAP, 25, MOTOR)		// 0x20a4a00(or)34228736
-	#define ENABLE_SOFT_LIMITS_X			CAN_ID(X, SAP, 28, MOTOR)		// 0x20a5000(or)34230272
-	#define SET_LEFT_SOFT_LIMIT_X			CAN_ID(X, SAP, 26, MOTOR)		// 0x20a4c00(or)34229248
-	#define SET_RIGHT_SOFT_LIMIT_X			CAN_ID(X, SAP, 27, MOTOR)		// 0x20a4e00(or)34229760
-	#define TARGET_POSITION_X				CAN_ID(X, SAP, 0, MOTOR)		// 0x20a0000(or)34209792
-	#define ACTUAL_POSITION_X				CAN_ID(X, SAP, 1, MOTOR)		// 0x20a0200(or)34210304
-	#define ROTARY_ENC_POSITION_X			CAN_ID(X, SAP, 209, MOTOR)		// 0x20e1200(or)34476544
-	#define RFS_START_X						CAN_ID(X, RFS, 0, MOTOR)		// 0x20a2600(or)34219520
-	#define RFS_STOP_X						CAN_ID(X, RFS, 1, MOTOR)
-	#define MAX_POSITION_SPEED_X			CAN_ID(X, SAP, 4, MOTOR)		// 0x20a0800(or)34211840
-	#define MOVE_TO_X						CAN_ID(X, MVP, MVP_ABS, MOTOR)		// 0x2080000(or)34078720
-	#define MOVE_BY_X						CAN_ID(X, MVP, MVP_REL, MOTOR)		// 0x2080200(or)34079232
-	#define STOP_MOTION_X					CAN_ID(X, MST, 0 ,MOTOR)		// 0x2060000(or)33947648
-	#define ROTARY_ENC_X					CAN_ID(X, GAP, 209, MOTOR)		// 0x20c1200(or)34345472
-	#define RT_LIM_SW_CHECK_X				CAN_ID(X, GAP, 0x0A, MOTOR)
-	#define LFT_LIM_SW_CHECK_X				CAN_ID(X, GAP, 0x0B, MOTOR)
-	#define CAN_KNOB_MOVEMENT_X				CAN_ID(X, 0, 0, KNOB_MOVEMENT)
-	#define CAN_KNOB_MODE_X					CAN_ID(X, 0, 0, KNOB_MODE)
-	#define CAN_KNOB_AXIS_CHANGE_X			CAN_ID(X, 0, 0, KNOB_AXIS_CHANGE)
-	#define WRITE_REGISTER_X				CAN_ID(X, 0, 0, WR_MC)
-	#define READ_REGISTER_X					CAN_ID(X, 0, 0, RD_MC)
-	#define CHECK_PARAMETER_X				CAN_ID(X, CHK_FW_PARAM, 0, 0)
-	#define WRITE_PARAMETER_X				CAN_ID(X, WR_FW_PARAM, 0, 0)
-	#define READ_PARAMETER_X				CAN_ID(X, RD_FW_PARAM, 0, 0)
-	#define RFS_DISTANCE_X					CAN_ID(X, RFS_DIST, 0, 0)
-	#define START_RANGE_X					CAN_ID(X, START_RANGE, 0, 0)
-	#define END_RANGE_X						CAN_ID(X, END_RANGE, 0, 0)
-//#endif
-//#if Y_AXIS_TABLE
-	#define MOVE_DONE_PING_Y				CAN_ID(Y, 138, 0, 0)
-	#define PING_Y							CAN_ID(Y, 138, 1, 0)
-	#define REF_SEARCH_PING_Y				CAN_ID(Y, RFS, 2, 0)
-	#define MAX_ACCEL_Y						CAN_ID(Y, SAP, 5, MOTOR)		// 0x20a0a00(or)34212352
-	#define MAX_DECCEL_Y					CAN_ID(Y, SAP, 17, MOTOR)		// 0x20a2e00(or)34221568
-	#define HOME_SEARCH_VEL_Y				CAN_ID(Y, SAP, 194, MOTOR)		// 0x20b2800(or)34285568
-	#define HOME_SWITCH_VEL_Y				CAN_ID(Y, SAP, 195, MOTOR)		// 0x20b2a00(or)34286080
-	#define HOMING_MODE_Y					CAN_ID(Y, SAP, 193, MOTOR)		// 0x20b2600(or)34285056
-	#define OPEN_CLOSED_LOOP_Y				CAN_ID(Y, SAP, 129, MOTOR)		// 0x20a5200(or)34230784
-	#define CORRECTION_VEL_P_Y				CAN_ID(Y, SAP, 115, MOTOR)		// 0x20a2a00(or)34220544
-	#define CORRECTION_VEL_I_Y				CAN_ID(Y, SAP, 116, MOTOR)		// 0x20a2c00(or)34221056
-	#define CORRECTION_VEL_I_CLIP_Y			CAN_ID(Y, SAP, 117, MOTOR)		// 0x20a2e00(or)34221568
-	#define CORRECTION_VEL_DV_CLK_Y			CAN_ID(Y, SAP, 118, MOTOR)		// 0x20a3000(or)34222080
-	#define CORRECTION_VEL_DV_CLIP_Y		CAN_ID(Y, SAP, 119, MOTOR)		// 0x20a3200(or)34222592
-	#define CORRECTION_POSITION_P_Y			CAN_ID(Y, SAP, 124, MOTOR)		// 0x20a4800(or)34228224
-	#define MAX_CORRECTION_TOLERANCE_Y		CAN_ID(Y, SAP, 125, MOTOR)		// 0x20a4a00(or)34228736
-	#define POSITION_WINDOW_Y				CAN_ID(Y, SAP, 134, MOTOR)		// 0x20a6800(or)34236416
-	#define RAMP_TYPE_Y						CAN_ID(Y, SAP, 14, MOTOR)		// 0x20a2800(or)34220032
-	#define BOW_1_Y							CAN_ID(Y, SAP, 22, MOTOR)		// 0x20a4400(or)34227200
-	#define BOW_2_Y							CAN_ID(Y, SAP, 23, MOTOR)		// 0x20a4600(or)34227712
-	#define BOW_3_Y							CAN_ID(Y, SAP, 24, MOTOR)		// 0x20a4800(or)34228224
-	#define	BOW_4_Y							CAN_ID(Y, SAP, 25, MOTOR)		// 0x20a4a00(or)34228736
-	#define ENABLE_SOFT_LIMITS_Y			CAN_ID(Y, SAP, 28, MOTOR)		// 0x20a5000(or)34230272
-	#define SET_LEFT_SOFT_LIMIT_Y			CAN_ID(Y, SAP, 26, MOTOR)		// 0x20a4c00(or)34229248
-	#define SET_RIGHT_SOFT_LIMIT_Y			CAN_ID(Y, SAP, 27, MOTOR)		// 0x20a4e00(or)34229760
-	#define TARGET_POSITION_Y				CAN_ID(Y, SAP, 0, MOTOR)		// 0x20a0000(or)34209792
-	#define ACTUAL_POSITION_Y				CAN_ID(Y, SAP, 1, MOTOR)		// 0x20a0200(or)34210304
-	#define ROTARY_ENC_POSITION_Y			CAN_ID(Y, SAP, 209, MOTOR)		// 0x20e1200(or)34476544
-	#define RFS_START_Y						CAN_ID(Y, RFS, 0, MOTOR)		// 0x20a2600(or)34219520
-	#define RFS_STOP_Y						CAN_ID(Y, RFS, 1, MOTOR)
-	#define MAX_POSITION_SPEED_Y			CAN_ID(Y, SAP, 4, MOTOR)		// 0x20a0800(or)34211840
-	#define MOVE_TO_Y						CAN_ID(Y, MVP, MVP_ABS, MOTOR)		// 0x2080000(or)34078720
-	#define MOVE_BY_Y						CAN_ID(Y, MVP, MVP_REL, MOTOR)		// 0x2080200(or)34079232
-	#define STOP_MOTION_Y					CAN_ID(Y, MST, 0 ,MOTOR)		// 0x2060000(or)33947648
-	#define ROTARY_ENC_Y					CAN_ID(Y, GAP, 209, MOTOR)		// 0x20c1200(or)34345472
-	#define RT_LIM_SW_CHECK_Y				CAN_ID(Y, GAP, 0x0A, MOTOR)
-	#define LFT_LIM_SW_CHECK_Y				CAN_ID(Y, GAP, 0x0B, MOTOR)
-	#define CAN_KNOB_MOVEMENT_Y				CAN_ID(Y, 0, 0, KNOB_MOVEMENT)
-	#define CAN_KNOB_MODE_Y					CAN_ID(Y, 0, 0, KNOB_MODE)
-	#define CAN_KNOB_AXIS_CHANGE_Y			CAN_ID(Y, 0, 0, KNOB_AXIS_CHANGE)
-	#define WRITE_REGISTER_Y				CAN_ID(Y, 0, 0, WR_MC)
-	#define READ_REGISTER_Y					CAN_ID(Y, 0, 0, RD_MC)
-	#define CHECK_PARAMETER_Y				CAN_ID(Y, CHK_FW_PARAM, 0, 0)
-	#define WRITE_PARAMETER_Y				CAN_ID(Y, WR_FW_PARAM, 0, 0)
-	#define READ_PARAMETER_Y				CAN_ID(Y, RD_FW_PARAM, 0, 0)
-	#define RFS_DISTANCE_Y					CAN_ID(Y, RFS_DIST, 0, 0)
-	#define START_RANGE_Y					CAN_ID(Y, START_RANGE, 0, 0)
-	#define END_RANGE_Y						CAN_ID(Y, END_RANGE, 0, 0)
-//#endif
-//#if Z_AXIS_PROTO
-	#define MOVE_DONE_PING_Z				CAN_ID(Z, 138, 0, 0)
-	#define PING_Z							CAN_ID(Z, 138, 1, 0)
-	#define REF_SEARCH_PING_Z				CAN_ID(Z, RFS, 2, 0)
-	#define MAX_ACCEL_Z						CAN_ID(Z, SAP, 5, MOTOR)			// 0x20a0a00(or)34212352
-	#define MAX_DECCEL_Z					CAN_ID(Z, SAP, 17, MOTOR)			// 0x20a2e00(or)34221568
-	#define HOME_SEARCH_VEL_Z				CAN_ID(Z, SAP, 194, MOTOR)			// 0x20b2800(or)34285568
-	#define HOME_SWITCH_VEL_Z				CAN_ID(Z, SAP, 195, MOTOR)			// 0x20b2a00(or)34286080
-	#define HOMING_MODE_Z					CAN_ID(Z, SAP, 193, MOTOR)			// 0x20b2600(or)34285056
-	#define OPEN_CLOSED_LOOP_Z				CAN_ID(Z, SAP, 129, MOTOR)			// 0x20a5200(or)34230784
-	#define CORRECTION_VEL_P_Z				CAN_ID(Z, SAP, 115, MOTOR)			// 0x20a2a00(or)34220544
-	#define CORRECTION_VEL_I_Z				CAN_ID(Z, SAP, 116, MOTOR)			// 0x20a2c00(or)34221056
-	#define CORRECTION_VEL_I_CLIP_Z			CAN_ID(Z, SAP, 117, MOTOR)			// 0x20a2e00(or)34221568
-	#define CORRECTION_VEL_DV_CLK_Z			CAN_ID(Z, SAP, 118, MOTOR)			// 0x20a3000(or)34222080
-	#define CORRECTION_VEL_DV_CLIP_Z		CAN_ID(Z, SAP, 119, MOTOR)			// 0x20a3200(or)34222592
-	#define CORRECTION_POSITION_P_Z			CAN_ID(Z, SAP, 124, MOTOR)			// 0x20a4800(or)34228224
-	#define MAX_CORRECTION_TOLERANCE_Z		CAN_ID(Z, SAP, 125, MOTOR)			// 0x20a4a00(or)34228736
-	#define POSITION_WINDOW_Z				CAN_ID(Z, SAP, 134, MOTOR)			// 0x20a6800(or)34236416
-	#define RAMP_TYPE_Z						CAN_ID(Z, SAP, 14, MOTOR)			// 0x20a2800(or)34220032
-	#define BOW_1_Z							CAN_ID(Z, SAP, 22, MOTOR)			// 0x20a4400(or)34227200
-	#define BOW_2_Z							CAN_ID(Z, SAP, 23, MOTOR)			// 0x20a4600(or)34227712
-	#define BOW_3_Z							CAN_ID(Z, SAP, 24, MOTOR)			// 0x20a4800(or)34228224
-	#define BOW_4_Z							CAN_ID(Z, SAP, 25, MOTOR)			// 0x20a4a00(or)34228736
-	#define ENABLE_SOFT_LIMITS_Z			CAN_ID(Z, SAP, 28, MOTOR)			// 0x20a5000(or)34230272
-	#define SET_LEFT_SOFT_LIMIT_Z			CAN_ID(Z, SAP, 26, MOTOR)			// 0x20a4c00(or)34229248
-	#define SET_RIGHT_SOFT_LIMIT_Z			CAN_ID(Z, SAP, 27, MOTOR)			// 0x20a4e00(or)34229760
-	#define TARGET_POSITION_Z				CAN_ID(Z, SAP, 0, MOTOR)			// 0x20a0000(or)34209792
-	#define ACTUAL_POSITION_Z				CAN_ID(Z, SAP, 1, MOTOR)			// 0x20a0200(or)34210304
-	#define ROTARY_ENC_POSITION_Z			CAN_ID(Z, SAP, 209, MOTOR)			// 0x20e1200(or)34476544
-	#define RFS_START_Z						CAN_ID(Z, RFS, 0, MOTOR)			// 0x20a2600(or)34219520
-	#define RFS_STOP_Z						CAN_ID(Z, RFS, 1, MOTOR)
-	#define MAX_POSITION_SPEED_Z			CAN_ID(Z, SAP, 4, MOTOR)			// 0x20a0800(or)34211840
-	#define MOVE_TO_Z						CAN_ID(Z, MVP, MVP_ABS, MOTOR)			// 0x2080000(or)34078720
-	#define MOVE_BY_Z						CAN_ID(Z, MVP, MVP_REL, MOTOR)			// 0x2080200(or)34079232
-	#define STOP_MOTION_Z					CAN_ID(Z, MST, 0 ,MOTOR)			// 0x2060000(or)33947648
-	#define ROTARY_ENC_Z					CAN_ID(Z, GAP, 209, MOTOR)			// 0x20c1200(or)34345472
-	#define AF_STARTPOINT_Z					CAN_ID(0, 0, 0, AF_STARTPOINT)
-	#define AF_COMPARE_CNT_Z				CAN_ID(0, 0, 0, AF_COMPARE_CNT)
-	#define LINEAR_ENC_CLEAR_Z				CAN_ID(Z, LIN_ENC_CLEAR, 0, MOTOR)
-	#define RT_LIM_SW_CHECK_Z				CAN_ID(Z, GAP, 0x0A, MOTOR)
-	#define LFT_LIM_SW_CHECK_Z				CAN_ID(Z, GAP, 0x0B, MOTOR)
-	#define CAN_KNOB_MOVEMENT_Z				CAN_ID(Z, 0, 0, KNOB_MOVEMENT)
-	#define CAN_KNOB_MODE_Z					CAN_ID(Z, 0, 0, KNOB_MODE)
-	#define CAN_KNOB_AXIS_CHANGE_Z			CAN_ID(Z, 0, 0, KNOB_AXIS_CHANGE)
-	#define WRITE_REGISTER_Z				CAN_ID(Z, 0, 0, WR_MC)
-	#define READ_REGISTER_Z					CAN_ID(Z, 0, 0, RD_MC)
-	#define CHECK_PARAMETER_Z				CAN_ID(Z, CHK_FW_PARAM, 0, 0)
-	#define WRITE_PARAMETER_Z				CAN_ID(Z, WR_FW_PARAM, 0, 0)
-	#define READ_PARAMETER_Z				CAN_ID(Z, RD_FW_PARAM, 0, 0)
-	#define RFS_DISTANCE_Z					CAN_ID(Z, RFS_DIST, 0, 0)
-	#define START_RANGE_Z					CAN_ID(Z, START_RANGE, 0, 0)
-	#define END_RANGE_Z						CAN_ID(Z, END_RANGE, 0, 0)
-//#endif
-
-
-/** 
- * \name Linear Encoder Messages
- *
- */
-#define LINEAR_ENC_ENABLE_X				CAN_ID(X, LIN_ENC_ENABLE, 0, MOTOR)
-#define LINEAR_ENC_DISABLE_X			CAN_ID(X, LIN_ENC_DISABLE, 0, MOTOR)
-#define LINEAR_ENC_CLEAR_X				CAN_ID(X, LIN_ENC_CLEAR, 0, MOTOR)
-#define	LINEAR_ENC_READ_X				CAN_ID(X, LIN_ENC_READ, 0, MOTOR)
-
-#define LINEAR_ENC_ENABLE_Y				CAN_ID(Y, LIN_ENC_ENABLE, 0, MOTOR)
-#define LINEAR_ENC_DISABLE_Y			CAN_ID(Y, LIN_ENC_DISABLE, 0, MOTOR)
-#define LINEAR_ENC_CLEAR_Y				CAN_ID(Y, LIN_ENC_CLEAR, 0, MOTOR)
-#define	LINEAR_ENC_READ_Y				CAN_ID(Y, LIN_ENC_READ, 0, MOTOR)
-
-#define LINEAR_ENC_ENABLE_Z				CAN_ID(Z, LIN_ENC_ENABLE, 0, MOTOR)
-#define LINEAR_ENC_DISABLE_Z			CAN_ID(Z, LIN_ENC_DISABLE, 0, MOTOR)
-#define LINEAR_ENC_CLEAR_Z				CAN_ID(Z, LIN_ENC_CLEAR, 0, MOTOR)
-#define	LINEAR_ENC_READ_Z				CAN_ID(Z, LIN_ENC_READ, 0, MOTOR)
-
-/** 
- * \name TMCL Direct Mode Messages 
- * @{ */
-// Command No. for ROR (Rotate Right) is 1
-#define ROR_X		CAN_ID(X, ROR, 0, MOTOR)	// 0x2020000(or)33685504 - value of MOTOR macro is 0
-#define ROR_Y		CAN_ID(Y, ROR, 0, MOTOR)	// 0x4020000(or)67239936
-#define ROR_Z		CAN_ID(Z, ROR, 0, MOTOR)	// 0x6020000(or)100794368
-#define ROR_RF		CAN_ID(RF, ROR, 0. MOTOR)	// 0x8020000(or)134348800
-
-// Command No. for ROL (Rotate Left) is 2
-#define ROL_X		CAN_ID(X, ROL, 0, MOTOR)	// 0x2040000(or)33816576
-#define ROL_Y		CAN_ID(Y, ROL, 0, MOTOR)	// 0x4040000(or)67371008
-#define ROL_Z		CAN_ID(Z, ROL, 0, MOTOR)	// 0x6040000(or)100925440
-#define ROL_RF		CAN_ID(RF, ROL, 0. MOTOR)	// 0x8040000(or)134479872
-/** @} */
 
 #endif /* IMM_CAN_MESSAGE_ID_H_ */

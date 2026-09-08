@@ -27,13 +27,6 @@ uint8_t can_Message_Calculate_Crc(uint32_t msg_Id, int32_t value)
 	typ = (msg_Id >> 9) & 0xFF;
 	mot = msg_Id & 0x1FF;
 
-	
-	/*crc = ad + cmd + typ + mot +	
-	      ((value >> 24) & 0xFF) +	
-		  ((value >> 16) & 0xFF) +	
-		  ((value >> 8) ) +	
-		  (value & 0xFF);
-		  */
 	crc = ad + cmd + typ + mot +
 		  can_tx_frame.data[0] +
 		  can_tx_frame.data[1] +
@@ -130,100 +123,73 @@ void zero_MessageID_Data(uint32_t message_Id, int32_t data)
  * @param[out] data Contains the 4 byte Value and 1 byte CRC.
  * @return void
  */
-void reply_Version(uint32_t message_Id, int32_t data)
-{
-	switch(typ)
-	{
-		case 0x00:
-			zero_MessageID_Data(message_Id, data);
-// 			#if X_AXIS_TABLE
-// 			message_Id = CAN_ID(REPLY_ID_X, 0x30, 0x30, 0x31);
-// 			#endif
-// 			#if Y_AXIS_TABLE
-// 			message_Id = CAN_ID(REPLY_ID_Y, 0x30, 0x30, 0x31);
-// 			#endif
-// 			#if Z_AXIS_PROTO
-// 			message_Id = CAN_ID(REPLY_ID_Z, 0x30, 0x30, 0x31);
-// 			#end	
-			switch(axis_id)
-			{
-				case X_AXIS:
-					message_Id = CAN_ID(REPLY_ID_X, 0x30, 0x30, 0x31);
-				break;
-				case Y_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Y, 0x30, 0x30, 0x31);
-				break;
-				case Z_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Z, 0x30, 0x30, 0x31);
-				break;
-				default: break;
-			}	
-			data = 0x30335632;									// Hardcoded value.
-			can_tx_frame.data_64bit = data;
-			can_tx_frame.data[4] = 0x39;
-			can_Write(message_Id, data);
-		break;
-		case 0x01:
-			zero_MessageID_Data(message_Id, data);
-// 			#if X_AXIS_TABLE
-// 			message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, 0x88);
-// 			#endif
-// 			#if Y_AXIS_TABLE
-// 			message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, 0x88);
-// 			#endif
-// 			#if Z_AXIS_PROTO
-// 			message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, 0x88);
-// 			#end
-			switch(axis_id)
-			{
-				case X_AXIS:
-					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, 0x88);
-				break;
-				case Y_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, 0x88);
-				break;
-				case Z_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, 0x88);
-				break;
-				default: break;
-			}
-			data = 0x09030C00;									// Hardcoded value.
-			can_tx_frame.data_64bit = data;
-			can_tx_frame.data[4] = 0x07;
-			can_Write(message_Id, data);
-		break;
-		case 0x05:
-			zero_MessageID_Data(message_Id, data);
-// 			#if X_AXIS_TABLE
-// 			message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, 0x88);
-// 			#endif
-// 			#if Y_AXIS_TABLE
-// 			message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, 0x88);
-// 			#endif
-// 			#if Z_AXIS_PROTO
-// 			message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, 0x88);
-// 			#end
-			switch(axis_id)
-			{
-				case X_AXIS:
-					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, 0x88);
-				break;
-				case Y_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, 0x88);
-				break;
-				case Z_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, 0x88);
-				break;
-				default: break;
-			}
-			data = 0x180C0000;									// Hardcoded value.
-			can_tx_frame.data_64bit = data;
-			can_tx_frame.data[4] = 0x13;
-			can_Write(message_Id, data);
-		break;
-	}	
-	return;
-}
+//void reply_Version(uint32_t message_Id, int32_t data)
+//{
+//	switch(typ)
+//	{
+//		case 0x00:
+//			zero_MessageID_Data(message_Id, data);
+//			switch(axis_id)
+//			{
+//				case X_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_X, 0x30, 0x30, 0x31);
+//				break;
+//				case Y_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Y, 0x30, 0x30, 0x31);
+//				break;
+//				case Z_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Z, 0x30, 0x30, 0x31);
+//				break;
+//				default: break;
+//			}	
+//			data = 0x30335632;									// Hardcoded value.
+//			can_tx_frame.data_64bit = data;
+//			can_tx_frame.data[4] = 0x39;
+//			can_Write(message_Id, data);
+//		break;
+//		case 0x01:
+//			zero_MessageID_Data(message_Id, data);
+//			switch(axis_id)
+//			{
+//				case X_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, 0x88);
+//				break;
+//				case Y_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, 0x88);
+//				break;
+//				case Z_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, 0x88);
+//				break;
+//				default: break;
+//			}
+//			data = 0x09030C00;									// Hardcoded value.
+//			can_tx_frame.data_64bit = data;
+//			can_tx_frame.data[4] = 0x07;
+//			can_Write(message_Id, data);
+//		break;
+//		case 0x05:
+//			zero_MessageID_Data(message_Id, data);
+//			switch(axis_id)
+//			{
+//				case X_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, 0x88);
+//				break;
+//				case Y_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, 0x88);
+//				break;
+//				case Z_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, 0x88);
+//				break;
+//				default: break;
+//			}
+//			data = 0x180C0000;									// Hardcoded value.
+//			can_tx_frame.data_64bit = data;
+//			can_tx_frame.data[4] = 0x13;
+//			can_Write(message_Id, data);
+//		break;
+//	}	
+//	return;
+//}
 
 /** 
  * \brief TMCL-IDE function that replies hard coded values for the Get Global Parameter(GGP) command from Direct Mode.
@@ -232,129 +198,93 @@ void reply_Version(uint32_t message_Id, int32_t data)
  * @param[out] data Contains the 4 byte Value and 1 byte CRC.
  * @return void
  */
-void reply_GGP(uint32_t msg_Id, int32_t value)
-{
-	switch(typ)
-	{
-		case 0x01:
-			zero_MessageID_Data(msg_Id, value);
-// 			#if X_AXIS_TABLE
-// 			msg_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GGP);
-// 			#endif
-// 			#if Y_AXIS_TABLE
-// 			msg_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GGP);
-// 			#endif
-// 			#if Z_AXIS_PROTO
-// 			msg_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GGP);
-// 			#end
-			switch(axis_id)
-			{
-				case X_AXIS:
-					msg_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GGP);
-				break;
-				case Y_AXIS:
-					msg_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GGP);
-				break;
-				case Z_AXIS:
-					msg_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GGP);
-				break;
-				default: break;
-			}
-			value = 0x40000000;							// Hardcoded value.
-			can_tx_frame.data_64bit = value;
-			can_tx_frame.data[4] = can_Message_Calculate_Crc(msg_Id, value);
-			can_Write(msg_Id, value);
-		break;
-		case 0x02:
-			zero_MessageID_Data(msg_Id, value);
-// 			#if X_AXIS_TABLE
-// 			msg_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GGP);
-// 			#endif
-// 			#if Y_AXIS_TABLE
-// 			msg_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GGP);
-// 			#endif
-// 			#if Z_AXIS_PROTO
-// 			msg_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GGP);
-// 			#end
-			switch(axis_id)
-			{
-				case X_AXIS:
-					msg_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GGP);
-				break;
-				case Y_AXIS:
-					msg_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GGP);
-				break;
-				case Z_AXIS:
-					msg_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GGP);
-				break;	
-				default: break;
-			}
-			value = 0x01000000;							// Hardcoded value.
-			can_tx_frame.data_64bit = value;
-			can_tx_frame.data[4] = can_Message_Calculate_Crc(msg_Id, value);
-			can_Write(msg_Id, value);
-		break;
-		case 0x04:
-			zero_MessageID_Data(msg_Id, value);
-// 			#if X_AXIS_TABLE
-// 			msg_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GGP);
-// 			#endif
-// 			#if Y_AXIS_TABLE
-// 			msg_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GGP);
-// 			#endif
-// 			#if Z_AXIS_PROTO
-// 			msg_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GGP);
-// 			#endif
-			switch(axis_id)
-			{
-				case X_AXIS:
-					msg_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GGP);
-				break;
-				case Y_AXIS:
-					msg_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GGP);
-				break;
-				case Z_AXIS:
-					msg_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GGP);
-				break;
-				default: break;
-			}
-			value = 0x0D020006;							// Hardcoded value.
-			can_tx_frame.data_64bit = value;
-			can_tx_frame.data[4] = can_Message_Calculate_Crc(msg_Id, value);
-			can_Write(msg_Id, value);
-		break;
-		case 0x05:
-			zero_MessageID_Data(msg_Id, value);
-// 			#if X_AXIS_TABLE
-// 			msg_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GGP);
-// 			#endif
-// 			#if Y_AXIS_TABLE
-// 			msg_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GGP);
-// 			#endif
-// 			#if Z_AXIS_PROTO
-// 			msg_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GGP);
-// 			#endif
-			switch(axis_id)
-			{
-				case X_AXIS:
-					msg_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GGP);
-				break;
-				case Y_AXIS:
-					msg_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GGP);
-				break;
-				case Z_AXIS:
-					msg_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GGP);
-				break;
-				default: break;
-			}
-			value = 0x02000000;							// Hardcoded value.
-			can_tx_frame.data_64bit = value;
-			can_tx_frame.data[4] = can_Message_Calculate_Crc(msg_Id, value);
-			can_Write(msg_Id, value);
-		break;
-	}
-	return;
-}
+//void reply_GGP(uint32_t msg_Id, int32_t value)
+//{
+//	switch(typ)
+//	{
+//		case 0x01:
+//			zero_MessageID_Data(msg_Id, value);
+//			switch(axis_id)
+//			{
+//				case X_AXIS:
+//					msg_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GGP);
+//				break;
+//				case Y_AXIS:
+//					msg_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GGP);
+//				break;
+//				case Z_AXIS:
+//					msg_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GGP);
+//				break;
+//				default: break;
+//			}
+//			value = 0x40000000;							// Hardcoded value.
+//			can_tx_frame.data_64bit = value;
+//			can_tx_frame.data[4] = can_Message_Calculate_Crc(msg_Id, value);
+//			can_Write(msg_Id, value);
+//		break;
+//		case 0x02:
+//			zero_MessageID_Data(msg_Id, value);
+//			switch(axis_id)
+//			{
+//				case X_AXIS:
+//					msg_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GGP);
+//				break;
+//				case Y_AXIS:
+//					msg_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GGP);
+//				break;
+//				case Z_AXIS:
+//					msg_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GGP);
+//				break;	
+//				default: break;
+//			}
+//			value = 0x01000000;							// Hardcoded value.
+//			can_tx_frame.data_64bit = value;
+//			can_tx_frame.data[4] = can_Message_Calculate_Crc(msg_Id, value);
+//			can_Write(msg_Id, value);
+//		break;
+//		case 0x04:
+//			zero_MessageID_Data(msg_Id, value);
+//			switch(axis_id)
+//			{
+//				case X_AXIS:
+//					msg_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GGP);
+//				break;
+//				case Y_AXIS:
+//					msg_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GGP);
+//				break;
+//				case Z_AXIS:
+//					msg_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GGP);
+//				break;
+//				default: break;
+//			}
+//			value = 0x0D020006;							// Hardcoded value.
+//			can_tx_frame.data_64bit = value;
+//			can_tx_frame.data[4] = can_Message_Calculate_Crc(msg_Id, value);
+//			can_Write(msg_Id, value);
+//		break;
+//		case 0x05:
+//			zero_MessageID_Data(msg_Id, value);
+//			switch(axis_id)
+//			{
+//				case X_AXIS:
+//					msg_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GGP);
+//				break;
+//				case Y_AXIS:
+//					msg_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GGP);
+//				break;
+//				case Z_AXIS:
+//					msg_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GGP);
+//				break;
+//				default: break;
+//			}
+//			value = 0x02000000;							// Hardcoded value.
+//			can_tx_frame.data_64bit = value;
+//			can_tx_frame.data[4] = can_Message_Calculate_Crc(msg_Id, value);
+//			can_Write(msg_Id, value);
+//		break;
+//	}
+//	return;
+//}
 
 /** 
  * \brief TMCL-IDE function that replies hard coded values for the Assignment command from Direct Mode.
@@ -363,72 +293,54 @@ void reply_GGP(uint32_t msg_Id, int32_t value)
  * @param[out] data Contains the 4 byte Value and 1 byte CRC.
  * @return void
  */
-void reply_Assignment(uint32_t message_Id, int32_t data)
-{
-	switch(typ)
-	{
-		case 0x03:
-			zero_MessageID_Data(message_Id, data);
-// 			#if X_AXIS_TABLE
-// 			message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, ASSIGNMENT);
-// 			#endif
-// 			#if Y_AXIS_TABLE
-// 			message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, ASSIGNMENT);
-// 			#endif
-// 			#if Z_AXIS_PROTO
-// 			message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, ASSIGNMENT);
-// 			#endif
-			switch(axis_id)
-			{
-				case X_AXIS:
-					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, ASSIGNMENT);
-				break;
-				case Y_AXIS:
-					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, ASSIGNMENT);
-				break;
-				case Z_AXIS:
-					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, ASSIGNMENT);
-				break;
-				default: break;
-			}
-			
-			data = 0x0D000000;					// Hardcoded value.
-			can_tx_frame.data_64bit = data;
-			can_tx_frame.data[4] = 0x03;
-			can_Write(message_Id, data);
-		break;
-		case 0x04:
-			zero_MessageID_Data(message_Id, data);
-// 			#if X_AXIS_TABLE
-// 			message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, ASSIGNMENT);
-// 			#endif
-// 			#if Y_AXIS_TABLE
-// 			message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, ASSIGNMENT);
-// 			#endif
-// 			#if Z_AXIS_PROTO
-// 			message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, ASSIGNMENT);
-// 			#endif
-			switch(axis_id)
-			{
-				case X_AXIS:
-					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, ASSIGNMENT);
-				break;
-				case Y_AXIS:
-					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, ASSIGNMENT);
-				break;
-				case Z_AXIS:
-					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, ASSIGNMENT);
-				break;
-				default: break;
-			}
-			data = 0x0D020006;					// Hardcoded value.
-			can_tx_frame.data_64bit = data;
-			can_tx_frame.data[4] = 0x0B;
-			can_Write(message_Id, data);
-		break;
-	}
-	return;
-}
+//void reply_Assignment(uint32_t message_Id, int32_t data)
+//{
+//	switch(typ)
+//	{
+//		case 0x03:
+//			zero_MessageID_Data(message_Id, data);
+//			switch(axis_id)
+//			{
+//				case X_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, ASSIGNMENT);
+//				break;
+//				case Y_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, ASSIGNMENT);
+//				break;
+//				case Z_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, ASSIGNMENT);
+//				break;
+//				default: break;
+//			}
+//			
+//			data = 0x0D000000;					// Hardcoded value.
+//			can_tx_frame.data_64bit = data;
+//			can_tx_frame.data[4] = 0x03;
+//			can_Write(message_Id, data);
+//		break;
+//		case 0x04:
+//			zero_MessageID_Data(message_Id, data);
+//			switch(axis_id)
+//			{
+//				case X_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, ASSIGNMENT);
+//				break;
+//				case Y_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, ASSIGNMENT);
+//				break;
+//				case Z_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, ASSIGNMENT);
+//				break;
+//				default: break;
+//			}
+//			data = 0x0D020006;					// Hardcoded value.
+//			can_tx_frame.data_64bit = data;
+//			can_tx_frame.data[4] = 0x0B;
+//			can_Write(message_Id, data);
+//		break;
+//	}
+//	return;
+//}
 
 
 /** 
@@ -438,198 +350,198 @@ void reply_Assignment(uint32_t message_Id, int32_t data)
  * @param[out] data Contains the 4 byte Value and 1 byte CRC.
  * @return void
  */
-void reply_GAP(uint32_t message_Id, int32_t data)
-{
-	switch(typ)
-	{
-		case GAP_TORQUE_P:
-			zero_MessageID_Data(message_Id, data);
-			data = tmc4671_readInt(MOTOR, TMC4671_PID_TORQUE_P_TORQUE_I);
-			data = (int32_t)((data >> 16) & 0xFFFF);
-			switch(axis_id)
-			{
-				case X_AXIS:
-					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GAP);
-				break;
-				case Y_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GAP);
-				break;
-				case Z_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GAP);
-				break;
-				default: break;
-			}
-			can_tx_frame.data_64bit = data;
-			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
-			can_Write(message_Id, data);
-		break;
-		case GAP_TORQUE_I:
-			zero_MessageID_Data(message_Id, data);
-			data = tmc4671_readInt(MOTOR, TMC4671_PID_TORQUE_P_TORQUE_I);
-			data = (int32_t)(data & 0xFFFF);
-			switch(axis_id)
-			{
-				case X_AXIS:
-					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GAP);
-				break;
-				case Y_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GAP);
-				break;
-				case Z_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GAP);
-				break;
-				default: break;
-			}
-			can_tx_frame.data_64bit = data;
-			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
-			can_Write(message_Id, data);
-		break;
-		case GAP_VELOCITY_P:
-			zero_MessageID_Data(message_Id, data);
-			data = tmc4671_readInt(MOTOR, TMC4671_PID_VELOCITY_P_VELOCITY_I);
-			data = (int32_t)((data >> 16) & 0xFFFF);
-			switch(axis_id)
-			{
-				case X_AXIS:
-					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GAP);
-				break;
-				case Y_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GAP);
-				break;
-				case Z_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GAP);
-				break;
-				default: break;
-			}
-			can_tx_frame.data_64bit = data;
-			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
-			can_Write(message_Id, data);
-		break;
-		case GAP_VELOCITY_I:
-			zero_MessageID_Data(message_Id, data);
-			data = tmc4671_readInt(MOTOR, TMC4671_PID_TORQUE_P_TORQUE_I);
-			data = (int32_t)(data & 0xFFFF);
-			switch(axis_id)
-			{
-				case X_AXIS:
-					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GAP);
-				break;
-				case Y_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GAP);
-				break;
-				case Z_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GAP);
-				break;	
-				default: break;
-			}
-			can_tx_frame.data_64bit = data;
-			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
-			can_Write(message_Id, data);
-		break;
-		case GAP_POSITION_P:
-			zero_MessageID_Data(message_Id, data);
-			data = tmc4671_readInt(MOTOR, TMC4671_PID_POSITION_P_POSITION_I);
-			data = (int32_t)((data >> 16) & 0xFFFF);
-			switch(axis_id)
-			{
-				case X_AXIS:
-					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GAP);
-				break;
-				case Y_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GAP);
-				break;
-				case Z_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GAP);
-				break;
-				default: break;
-			}
-			can_tx_frame.data_64bit = data;
-			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
-			can_Write(message_Id, data);
-		break;
-		case GAP_ACCELERATION:
-			zero_MessageID_Data(message_Id, data);
-			data = tmc4671_readInt(MOTOR, TMC4671_PID_ACCELERATION_LIMIT);
-			switch(axis_id)
-			{
-				case X_AXIS:
-					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GAP);
-				break;
-				case Y_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GAP);
-				break;
-				case Z_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GAP);
-				break;	
-				default: break;
-			}
-			can_tx_frame.data_64bit = data;
-			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
-			can_Write(message_Id, data);
-		break;
-		case GAP_EN_VELOCITY_RAMP:
-			zero_MessageID_Data(message_Id, data);
-			data = 0x01;
-			switch(axis_id)
-			{
-				case X_AXIS:
-					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GAP);
-				break;
-				case Y_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GAP);
-				break;
-				case Z_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GAP);
-				break;
-				default: break;
-			}
-			can_tx_frame.data_64bit = data;
-			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
-			can_Write(message_Id, data);
-		break;
-		case GAP_MAX_CURRENT:
-			zero_MessageID_Data(message_Id, data);
-			data = tmc4671_readInt(MOTOR, TMC4671_PID_TORQUE_FLUX_LIMITS);
-			switch(axis_id)
-			{
-				case X_AXIS:
-					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GAP);
-				break;
-				case Y_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GAP);
-				break;
-				case Z_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GAP);
-				break;
-				default: break;
-			}
-			can_tx_frame.data_64bit = data;
-			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
-			can_Write(message_Id, data);
-		break;
-		case GAP_MAX_SPEED:
-			zero_MessageID_Data(message_Id, data);
-			data = tmc4671_readInt(MOTOR, TMC4671_PID_VELOCITY_LIMIT);
-			switch(axis_id)
-			{
-				case X_AXIS:
-					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GAP);
-				break;
-				case Y_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GAP);
-				break;
-				case Z_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GAP);
-				break;
-				default: break;
-			}
-			can_tx_frame.data_64bit = data;
-			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
-			can_Write(message_Id, data);
-		break;
-	}
-	return;
-}
+//void reply_GAP(uint32_t message_Id, int32_t data)
+//{
+//	switch(typ)
+//	{
+//		case GAP_TORQUE_P:
+//			zero_MessageID_Data(message_Id, data);
+//			data = tmc4671_readInt(MOTOR, TMC4671_PID_TORQUE_P_TORQUE_I);
+//			data = (int32_t)((data >> 16) & 0xFFFF);
+//			switch(axis_id)
+//			{
+//				case X_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GAP);
+//				break;
+//				case Y_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GAP);
+//				break;
+//				case Z_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GAP);
+//				break;
+//				default: break;
+//			}
+//			can_tx_frame.data_64bit = data;
+//			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
+//			can_Write(message_Id, data);
+//		break;
+//		case GAP_TORQUE_I:
+//			zero_MessageID_Data(message_Id, data);
+//			data = tmc4671_readInt(MOTOR, TMC4671_PID_TORQUE_P_TORQUE_I);
+//			data = (int32_t)(data & 0xFFFF);
+//			switch(axis_id)
+//			{
+//				case X_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GAP);
+//				break;
+//				case Y_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GAP);
+//				break;
+//				case Z_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GAP);
+//				break;
+//				default: break;
+//			}
+//			can_tx_frame.data_64bit = data;
+//			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
+//			can_Write(message_Id, data);
+//		break;
+//		case GAP_VELOCITY_P:
+//			zero_MessageID_Data(message_Id, data);
+//			data = tmc4671_readInt(MOTOR, TMC4671_PID_VELOCITY_P_VELOCITY_I);
+//			data = (int32_t)((data >> 16) & 0xFFFF);
+//			switch(axis_id)
+//			{
+//				case X_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GAP);
+//				break;
+//				case Y_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GAP);
+//				break;
+//				case Z_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GAP);
+//				break;
+//				default: break;
+//			}
+//			can_tx_frame.data_64bit = data;
+//			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
+//			can_Write(message_Id, data);
+//		break;
+//		case GAP_VELOCITY_I:
+//			zero_MessageID_Data(message_Id, data);
+//			data = tmc4671_readInt(MOTOR, TMC4671_PID_TORQUE_P_TORQUE_I);
+//			data = (int32_t)(data & 0xFFFF);
+//			switch(axis_id)
+//			{
+//				case X_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GAP);
+//				break;
+//				case Y_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GAP);
+//				break;
+//				case Z_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GAP);
+//				break;	
+//				default: break;
+//			}
+//			can_tx_frame.data_64bit = data;
+//			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
+//			can_Write(message_Id, data);
+//		break;
+//		case GAP_POSITION_P:
+//			zero_MessageID_Data(message_Id, data);
+//			data = tmc4671_readInt(MOTOR, TMC4671_PID_POSITION_P_POSITION_I);
+//			data = (int32_t)((data >> 16) & 0xFFFF);
+//			switch(axis_id)
+//			{
+//				case X_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GAP);
+//				break;
+//				case Y_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GAP);
+//				break;
+//				case Z_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GAP);
+//				break;
+//				default: break;
+//			}
+//			can_tx_frame.data_64bit = data;
+//			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
+//			can_Write(message_Id, data);
+//		break;
+//		case GAP_ACCELERATION:
+//			zero_MessageID_Data(message_Id, data);
+//			data = tmc4671_readInt(MOTOR, TMC4671_PID_ACCELERATION_LIMIT);
+//			switch(axis_id)
+//			{
+//				case X_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GAP);
+//				break;
+//				case Y_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GAP);
+//				break;
+//				case Z_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GAP);
+//				break;	
+//				default: break;
+//			}
+//			can_tx_frame.data_64bit = data;
+//			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
+//			can_Write(message_Id, data);
+//		break;
+//		case GAP_EN_VELOCITY_RAMP:
+//			zero_MessageID_Data(message_Id, data);
+//			data = 0x01;
+//			switch(axis_id)
+//			{
+//				case X_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GAP);
+//				break;
+//				case Y_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GAP);
+//				break;
+//				case Z_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GAP);
+//				break;
+//				default: break;
+//			}
+//			can_tx_frame.data_64bit = data;
+//			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
+//			can_Write(message_Id, data);
+//		break;
+//		case GAP_MAX_CURRENT:
+//			zero_MessageID_Data(message_Id, data);
+//			data = tmc4671_readInt(MOTOR, TMC4671_PID_TORQUE_FLUX_LIMITS);
+//			switch(axis_id)
+//			{
+//				case X_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GAP);
+//				break;
+//				case Y_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GAP);
+//				break;
+//				case Z_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GAP);
+//				break;
+//				default: break;
+//			}
+//			can_tx_frame.data_64bit = data;
+//			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
+//			can_Write(message_Id, data);
+//		break;
+//		case GAP_MAX_SPEED:
+//			zero_MessageID_Data(message_Id, data);
+//			data = tmc4671_readInt(MOTOR, TMC4671_PID_VELOCITY_LIMIT);
+//			switch(axis_id)
+//			{
+//				case X_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GAP);
+//				break;
+//				case Y_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GAP);
+//				break;
+//				case Z_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GAP);
+//				break;
+//				default: break;
+//			}
+//			can_tx_frame.data_64bit = data;
+//			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
+//			can_Write(message_Id, data);
+//		break;
+//	}
+//	return;
+//}
 
 /** 
  * \brief TMCL-IDE function that replies hard coded values for the GIO command from Direct Mode.
@@ -638,33 +550,33 @@ void reply_GAP(uint32_t message_Id, int32_t data)
  * @param[out] data Contains the 4 byte Value and 1 byte CRC.
  * @return void
  */
-void reply_GIO(uint32_t message_Id, int32_t data)
-{
-	switch(typ)
-	{
-		case 0x05:
-			zero_MessageID_Data(message_Id, data);
-			data = ZERO_HEX;
-			switch(axis_id)
-			{
-				case X_AXIS:
-					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GIO);
-				break;
-				case Y_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GIO);
-				break;
-				case Z_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GIO);
-				break;
-				default: break;
-			}
-			can_tx_frame.data_64bit = data;
-			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
-			can_Write(message_Id, data);
-		break;
-	}
-	return;
-}
+//void reply_GIO(uint32_t message_Id, int32_t data)
+//{
+//	switch(typ)
+//	{
+//		case 0x05:
+//			zero_MessageID_Data(message_Id, data);
+//			data = ZERO_HEX;
+//			switch(axis_id)
+//			{
+//				case X_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, GIO);
+//				break;
+//				case Y_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, GIO);
+//				break;
+//				case Z_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, GIO);
+//				break;
+//				default: break;
+//			}
+//			can_tx_frame.data_64bit = data;
+//			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
+//			can_Write(message_Id, data);
+//		break;
+//	}
+//	return;
+//}
 
 /** 
  * \brief TMCL-IDE function for Rotate Right(ROR) and rotates the motor for the given speed.
@@ -673,31 +585,31 @@ void reply_GIO(uint32_t message_Id, int32_t data)
  * @param[out] data Contains the 4 byte Value and 1 byte CRC.
  * @return void
  */
-void reply_ROR(uint32_t message_Id, int32_t data)
-{
-	int32_t velocity_limit = decoding_CAN_Byte_Data();
-	tmc4671_writeInt(MOTOR, TMC4671_MODE_RAMP_MODE_MOTION, POSITION_MODE);
-	tmc4671_setAbsolutTargetPosition(MOTOR, POSITION_HIGH);
-	tmc4671_writeInt(MOTOR, TMC4671_PID_VELOCITY_LIMIT, velocity_limit);
-	switch(axis_id)
-	{
-		case X_AXIS:
-			message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, ROR);
-		break;
-		case Y_AXIS:
-			message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, ROR);
-		break;
-		case Z_AXIS:
-			message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, ROR);
-		break;
-		default: break;
-	}
-	encoding_CAN_Byte_Data(velocity_limit);
-	can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, velocity_limit);
-	can_Write(message_Id, velocity_limit);
-	
-	return;
-}
+//void reply_ROR(uint32_t message_Id, int32_t data)
+//{
+//	int32_t velocity_limit = decoding_CAN_Byte_Data();
+//	tmc4671_writeInt(MOTOR, TMC4671_MODE_RAMP_MODE_MOTION, POSITION_MODE);
+//	tmc4671_setAbsolutTargetPosition(MOTOR, POSITION_HIGH);
+//	tmc4671_writeInt(MOTOR, TMC4671_PID_VELOCITY_LIMIT, velocity_limit);
+//	switch(axis_id)
+//	{
+//		case X_AXIS:
+//			message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, ROR);
+//		break;
+//		case Y_AXIS:
+//			message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, ROR);
+//		break;
+//		case Z_AXIS:
+//			message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, ROR);
+//		break;
+//		default: break;
+//	}
+//	encoding_CAN_Byte_Data(velocity_limit);
+//	can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, velocity_limit);
+//	can_Write(message_Id, velocity_limit);
+//	
+//	return;
+//}
 
 /** 
  * \brief TMCL-IDE function for Rotate Left(ROL) and rotates the motor for the given speed.
@@ -706,31 +618,31 @@ void reply_ROR(uint32_t message_Id, int32_t data)
  * @param[out] data Contains the 4 byte Value and 1 byte CRC.
  * @return void
  */
-void reply_ROL(uint32_t message_Id, int32_t data)
-{
-	int32_t velocity_limit = decoding_CAN_Byte_Data();
-	tmc4671_writeInt(MOTOR, TMC4671_MODE_RAMP_MODE_MOTION, POSITION_MODE);
-	tmc4671_setAbsolutTargetPosition(MOTOR, POSITION_LOW);
-	tmc4671_writeInt(MOTOR, TMC4671_PID_VELOCITY_LIMIT, velocity_limit);
-	switch(axis_id)
-	{
-		case X_AXIS:
-			message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, ROL);
-		break;
-		case Y_AXIS:
-			message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, ROL);
-		break;
-		case Z_AXIS:
-			message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, ROL);
-		break;
-		default: break;
-	}
-	encoding_CAN_Byte_Data(velocity_limit);
-	can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, velocity_limit);
-	can_Write(message_Id, velocity_limit);
-	
-	return;
-}
+//void reply_ROL(uint32_t message_Id, int32_t data)
+//{
+//	int32_t velocity_limit = decoding_CAN_Byte_Data();
+//	tmc4671_writeInt(MOTOR, TMC4671_MODE_RAMP_MODE_MOTION, POSITION_MODE);
+//	tmc4671_setAbsolutTargetPosition(MOTOR, POSITION_LOW);
+//	tmc4671_writeInt(MOTOR, TMC4671_PID_VELOCITY_LIMIT, velocity_limit);
+//	switch(axis_id)
+//	{
+//		case X_AXIS:
+//			message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, ROL);
+//		break;
+//		case Y_AXIS:
+//			message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, ROL);
+//		break;
+//		case Z_AXIS:
+//			message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, ROL);
+//		break;
+//		default: break;
+//	}
+//	encoding_CAN_Byte_Data(velocity_limit);
+//	can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, velocity_limit);
+//	can_Write(message_Id, velocity_limit);
+//	
+//	return;
+//}
 
 /** 
  * \brief TMCL-IDE function for Motor Stop(MST) which halts the motor.
@@ -739,30 +651,30 @@ void reply_ROL(uint32_t message_Id, int32_t data)
  * @param[out] data Contains the 4 byte Value and 1 byte CRC.
  * @return void
  */
-void reply_MST(uint32_t message_Id, int32_t data)
-{
-	tmc4671_writeInt(MOTOR, TMC4671_MODE_RAMP_MODE_MOTION, STOPPED_MODE);
-	zero_MessageID_Data(message_Id, data);
-	switch(axis_id)
-	{
-		case X_AXIS:
-			message_Id = CAN_ID(REPLY_ID_X, X, 0x64, MST);
-		break;
-		case Y_AXIS:
-			message_Id = CAN_ID(REPLY_ID_Y, Y, 0x64, MST);
-		break;
-		case Z_AXIS:
-			message_Id = CAN_ID(REPLY_ID_Z, Z, 0x64, MST);
-		break;
-		default: break;
-	}
-	data = ZERO_HEX;
-	can_tx_frame.data_64bit = data;
-	can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
-	can_Write(message_Id, data);
-	
-	return;
-}
+//void reply_MST(uint32_t message_Id, int32_t data)
+//{
+//	tmc4671_writeInt(MOTOR, TMC4671_MODE_RAMP_MODE_MOTION, STOPPED_MODE);
+//	zero_MessageID_Data(message_Id, data);
+//	switch(axis_id)
+//	{
+//		case X_AXIS:
+//			message_Id = CAN_ID(REPLY_ID_X, X, 0x64, MST);
+//		break;
+//		case Y_AXIS:
+//			message_Id = CAN_ID(REPLY_ID_Y, Y, 0x64, MST);
+//		break;
+//		case Z_AXIS:
+//			message_Id = CAN_ID(REPLY_ID_Z, Z, 0x64, MST);
+//		break;
+//		default: break;
+//	}
+//	data = ZERO_HEX;
+//	can_tx_frame.data_64bit = data;
+//	can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
+//	can_Write(message_Id, data);
+//	
+//	return;
+//}
 
 /** 
  * \brief TMCL-IDE function for Move Position (MVP) moves the motor to the desired position either relatively(Move By) or absolutely(Move To).
@@ -770,65 +682,65 @@ void reply_MST(uint32_t message_Id, int32_t data)
  * @param[out] data Contains the 4 byte Value and 1 byte CRC.
  * @return void
  */
-void reply_MVP(uint32_t message_Id, int32_t data)
-{
-	check_move_done = true;
-	int32_t target_position = decoding_CAN_Byte_Data();
-	switch(typ)
-	{
-		case MVP_ABS:
-			tmc4671_writeInt(MOTOR, TMC4671_MODE_RAMP_MODE_MOTION, POSITION_MODE);
-			set_TargetVelocity(velocity_limit);
-			tmc4671_setAbsolutTargetPosition(MOTOR, target_position);
-			//call_all_ramp_params_functions(&ramp_Parameters);
-			//run_Trapezoidal_Ramp();
-			zero_MessageID_Data(message_Id, data);
-			data = target_position;
-			switch(axis_id)
-			{
-				case X_AXIS:
-					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, MVP);
-				break;
-				case Y_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, MVP);
-				break;
-				case Z_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, MVP);
-				break;
-			}
-			can_tx_frame.data_64bit = target_position;
-			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
-			can_Write(message_Id, data);
-		break;
-		case MVP_REL:
-			tmc4671_writeInt(MOTOR, TMC4671_MODE_RAMP_MODE_MOTION, POSITION_MODE);
-			set_TargetVelocity(velocity_limit);
-			tmc4671_setRelativeTargetPosition(MOTOR, target_position);
-			//timer_start(&TIMER_0);
-			//call_all_ramp_params_functions(&ramp_Parameters);
-			//run_Trapezoidal_Ramp();
-			zero_MessageID_Data(message_Id, data);
-			data = target_position;
-			switch(axis_id)
-			{
-				case X_AXIS:
-					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, MVP);
-				break;
-				case Y_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, MVP);
-				break;
-				case Z_AXIS:
-					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, MVP);
-				break;
-				default: break;
-			}
-			can_tx_frame.data_64bit = target_position;
-			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
-			can_Write(message_Id, data);
-		break;
-	}
-	return;
-}
+//void reply_MVP(uint32_t message_Id, int32_t data)
+//{
+//	check_move_done = true;
+//	int32_t target_position = decoding_CAN_Byte_Data();
+//	switch(typ)
+//	{
+//		case MVP_ABS:
+//			tmc4671_writeInt(MOTOR, TMC4671_MODE_RAMP_MODE_MOTION, POSITION_MODE);
+//			set_TargetVelocity(velocity_limit);
+//			tmc4671_setAbsolutTargetPosition(MOTOR, target_position);
+//			//call_all_ramp_params_functions(&ramp_Parameters);
+//			//run_Trapezoidal_Ramp();
+//			zero_MessageID_Data(message_Id, data);
+//			data = target_position;
+//			switch(axis_id)
+//			{
+//				case X_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, MVP);
+//				break;
+//				case Y_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, MVP);
+//				break;
+//				case Z_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, MVP);
+//				break;
+//			}
+//			can_tx_frame.data_64bit = target_position;
+//			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
+//			can_Write(message_Id, data);
+//		break;
+//		case MVP_REL:
+//			tmc4671_writeInt(MOTOR, TMC4671_MODE_RAMP_MODE_MOTION, POSITION_MODE);
+//			set_TargetVelocity(velocity_limit);
+//			tmc4671_setRelativeTargetPosition(MOTOR, target_position);
+//			//timer_start(&TIMER_0);
+//			//call_all_ramp_params_functions(&ramp_Parameters);
+//			//run_Trapezoidal_Ramp();
+//			zero_MessageID_Data(message_Id, data);
+//			data = target_position;
+//			switch(axis_id)
+//			{
+//				case X_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, MVP);
+//				break;
+//				case Y_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, MVP);
+//				break;
+//				case Z_AXIS:
+//					message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, MVP);
+//				break;
+//				default: break;
+//			}
+//			can_tx_frame.data_64bit = target_position;
+//			can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
+//			can_Write(message_Id, data);
+//		break;
+//	}
+//	return;
+//}
 
 /** 
  * \brief Common function used for writing values to the TMC4671's register via the Register Browser in the TMCL-IDE.
@@ -837,30 +749,30 @@ void reply_MVP(uint32_t message_Id, int32_t data)
  * @param[in] value Value to written to the register.
  * @return void
  */
-void write_MC_common(int32_t address, int32_t value)
-{
-	tmc4671_writeInt(MOTOR, address, value);
-	zero_MessageID_Data(message_Id, data);
-	encoding_CAN_Byte_Data(value);
-	switch(axis_id)
-	{
-		case X_AXIS:
-			message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, WR_MC);
-		break;
-		case Y_AXIS:
-			message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, WR_MC);
-		break;
-		case Z_AXIS:
-			message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, WR_MC);
-		break;
-		default: break;
-	}
-	//can_tx_frame.data_64bit = data;
-	can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
-	can_Write(message_Id, data);
-	
-	return;
-}
+//void write_MC_common(int32_t address, int32_t value)
+//{
+//	tmc4671_writeInt(MOTOR, address, value);
+//	zero_MessageID_Data(message_Id, data);
+//	encoding_CAN_Byte_Data(value);
+//	switch(axis_id)
+//	{
+//		case X_AXIS:
+//			message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, WR_MC);
+//		break;
+//		case Y_AXIS:
+//			message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, WR_MC);
+//		break;
+//		case Z_AXIS:
+//			message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, WR_MC);
+//		break;
+//		default: break;
+//	}
+//	//can_tx_frame.data_64bit = data;
+//	can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
+//	can_Write(message_Id, data);
+//	
+//	return;
+//}
 
 /** 
  * This function has all the registers of TMC4671 with write access and calls the function to write the value to a register.
@@ -990,30 +902,29 @@ void reply_WR_MC(uint32_t message_Id, int32_t data)
  * @param[in] address Address of the register to read from.
  * @return void
  */
-void read_MC_common(int32_t address)
-{
-	zero_MessageID_Data(message_Id, data);
-	int32_t value = tmc4671_readInt(MOTOR, address);
-	encoding_CAN_Byte_Data(value);
-	switch(axis_id)
-	{
-		case X_AXIS:
-			message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, RD_MC);
-		break;
-		case Y_AXIS:
-			message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, RD_MC);
-		break;
-		case Z_AXIS:
-			message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, RD_MC);
-		break;
-		default: break;
-	}
-	//can_tx_frame.data_64bit = data;
-	can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
-	can_Write(message_Id, data);
-	
-	return;
-}
+//void read_MC_common(int32_t address)
+//{
+//	zero_MessageID_Data(message_Id, data);
+//	int32_t value = tmc4671_readInt(MOTOR, address);
+//	encoding_CAN_Byte_Data(value);
+//	switch(axis_id)
+//	{
+//		case X_AXIS:
+//			message_Id = CAN_ID(REPLY_ID_X, 0x01, 0x64, RD_MC);
+//		break;
+//		case Y_AXIS:
+//			message_Id = CAN_ID(REPLY_ID_Y, 0x01, 0x64, RD_MC);
+//		break;
+//		case Z_AXIS:
+//			message_Id = CAN_ID(REPLY_ID_Z, 0x01, 0x64, RD_MC);
+//		break;
+//		default: break;
+//	}
+//	can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, data);
+//	can_Write(message_Id, data);
+//	
+//	return;
+//}
 
 /** 
  * \brief This function has cases for all the registers of TMC4671 with read access and calls the function to read the register.

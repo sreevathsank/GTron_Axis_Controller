@@ -29,6 +29,8 @@ struct usart_sync_descriptor TARGET_IO;
 
 struct pwm_descriptor PWM_0;
 
+struct wdt_descriptor WDT_0;
+
 void ADC_0_PORT_init(void)
 {
 
@@ -424,6 +426,17 @@ static void TIMER_0_init(void)
 	timer_init(&TIMER_0, TC4, _tc_get_timer());
 }
 
+void WDT_0_CLOCK_init(void)
+{
+	hri_mclk_set_APBAMASK_WDT_bit(MCLK);
+}
+
+void WDT_0_init(void)
+{
+	WDT_0_CLOCK_init();
+	wdt_init(&WDT_0, WDT);
+}
+
 void CAN_1_PORT_init(void)
 {
 
@@ -668,5 +681,6 @@ void system_init(void)
 
 	VEL_TIMER_init();
 	TIMER_0_init();
+	WDT_0_init();
 	CAN_1_init();
 }

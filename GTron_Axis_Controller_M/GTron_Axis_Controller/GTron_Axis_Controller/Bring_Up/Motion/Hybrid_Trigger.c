@@ -186,8 +186,8 @@ static void handle_n_shot_tick()
 		!p_reeler1_info->flags.sensor_trigger && !p_reeler1_info->flags.is_encoder_mode ) {
 		DBG_Printf(ERR_LVL_ERROR, "No sensor trigger was received for %ld usteps.\nPausing the motor and informing the error.", (H->total_slips * H->term_width));
 		can_AxC_Write(	CAN_ERR_REPLY_TOP_RACK_ID,
-		HYBRID_TRIGGER_INSPECTION,
-		AXC_ERR_TRIGGER_FAIL, 0);
+						HYBRID_TRIGGER_INSPECTION,
+						AXC_ERR_TRIGGER_FAIL, 0	);
 		reeler_Pause_Motor();
 	}
 	
@@ -336,20 +336,3 @@ void check_For_Hybrid_Trigger(void)
 	}
 	return;
 }
-//void check_For_Hybrid_Trigger(void)
-//{
-//	int32_t current_pos = tmc4671_getActualPosition(MOTOR);
-//	uint32_t diff_pos = abs(prev_trig_pos - current_position);
-//	
-//	if(p_reeler_info->flags.sensor_trigger && (diff_pos >= p_reeler_info->position.trig_step_size) ) {
-//		trigger_Camera_Line();
-//		p_reeler_info->flags.sensor_trigger = false;
-//		prev_trig_time_ms = millis();
-//		
-//		DBG_Printf(ERR_LVL_INFO, "\nT%ld => Step Size = %ld | Curr - Prev Pos = %ld | Error = %ld\n", ++trig_no, p_reeler_info->position.trig_step_size, diff_pos,
-//		(diff_pos - p_reeler_info->position.trig_step_size));
-//		
-//		prev_trig_pos = current_pos;
-//	}
-//	return;
-//}

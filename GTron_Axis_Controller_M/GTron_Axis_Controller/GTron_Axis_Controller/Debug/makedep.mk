@@ -76,6 +76,8 @@ hal\src\hal_usart_async.c
 
 hal\src\hal_usart_sync.c
 
+hal\src\hal_wdt.c
+
 hal\utils\src\utils_assert.c
 
 hal\utils\src\utils_event.c
@@ -117,6 +119,8 @@ hpl\spi\spi_lite.c
 hpl\tc\hpl_tc.c
 
 hpl\usart\usart_lite.c
+
+hpl\wdt\hpl_wdt.c
 
 main.c
 

@@ -849,7 +849,7 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_ROTATE:			reeler_Move( TMC4671_ROTATION, MOVE_BY );					    break;
 					case AXC_MOVE_TO:			reeler_Move( (int32_t)rx_can_cmd_info.value, MOVE_TO );			break;
 					case AXC_MOVE_BY:			reeler_Move( (int32_t)rx_can_cmd_info.value, MOVE_BY );			break;
-					case AXC_TEETH:				reeler_Set_Teeth( (uint32_t)rx_can_cmd_info.value );			break;
+					case AXC_TRIG_STEPSIZE:		reeler_Set_Teeth( (uint32_t)rx_can_cmd_info.value );			break;
 					case AXC_INITIAL_POSITION:	reeler_Set_Initial_Position( (int32_t)rx_can_cmd_info.value );	break;
 					case AXC_HOMING:			reeler_Home();													break;
 					case AXC_CURRENT_POSITION:	reeler_Get_Position(p_reeler1_info);							break;
@@ -862,18 +862,7 @@ void parse_GTron_CAN_Msg_Data( void )
 			case GUIDE_MOTOR:
 				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
 				{
-					//case AXC_STOP:					tmc2209_Stop_Motor(p_guide_info);											break;
-					case AXC_STOP: {
-						DBG_Printf(ERR_LVL_INFO, "Ejector Command received GUIDE MOTOR STOP.\n");
-						DBG_Printf( ERR_LVL_INFO, "MsgID=0x%X | Periphearal=0x%X | Operation=0x%X | Value=0x%X\n", 
-									CAN_TOP_AXC_TO_SYSCTRL_ID, GLOBAL_COUNTER, AXC_GC_EJECT, 0x02 );
-						message_Id = CAN_TOP_AXC_TO_SYSCTRL_ID;
-						can_tx_frame.data[0] = GLOBAL_COUNTER;
-						can_tx_frame.data[1] = AXC_GC_EJECT;
-						can_tx_frame.data[2] = 0x02;
-						can_Write(message_Id, can_tx_frame.data_64bit);
-						break;
-					}
+					case AXC_STOP:					tmc2209_Stop_Motor(p_guide_info);											break;
 					case AXC_VELOCITY:				tmc2209_Set_Velocity(p_guide_info, (int32_t)rx_can_cmd_info.value);			break;
 					case AXC_ROTATE:				tmc2209_Move(p_guide_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);		break;
 					case AXC_MOVE_TO:				tmc2209_Move(p_guide_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);		break;
@@ -959,16 +948,16 @@ void parse_GTron_CAN_Msg_Data( void )
 			case REELER_ADJ_MOTOR2:
 				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
 				{
-					case AXC_STOP:				tmc2209_Stop_Motor(p_reeleradj2_info);											break;
-					case AXC_VELOCITY:			tmc2209_Set_Velocity(p_reeleradj2_info, (int32_t)rx_can_cmd_info.value);		break;
-					case AXC_ROTATE:			tmc2209_Move(p_reeleradj2_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);		break;
-					case AXC_MOVE_TO:			tmc2209_Move(p_reeleradj2_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);		break;
-					case AXC_MOVE_BY:			tmc2209_Move(p_reeleradj2_info, (int32_t)rx_can_cmd_info.value, MOVE_BY);		break;
-					case AXC_INITIAL_POSITION:tmc2209_Set_Initial_Position(p_reeleradj2_info, (int32_t)rx_can_cmd_info.value);	break;
-					case AXC_STATUS_CHECK:		tmc2209_Limits_Status_Check(p_reeleradj2_info);									break;
-					case AXC_HOMING:			tmc2209_Reference_Search(p_reeleradj2_info);									break;
-					case AXC_CURRENT_POSITION:	tmc2209_Get_Current_Position(p_reeleradj2_info);								break;
-					default: DBG_Printf(ERR_LVL_DEBUG, "\nReeler Adj 2 Motor Invalid Operation Rxcvd\n");						break;
+					case AXC_STOP:				tmc2209_Stop_Motor(p_reeleradj2_info);												break;
+					case AXC_VELOCITY:			tmc2209_Set_Velocity(p_reeleradj2_info, (int32_t)rx_can_cmd_info.value);			break;
+					case AXC_ROTATE:			tmc2209_Move(p_reeleradj2_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
+					case AXC_MOVE_TO:			tmc2209_Move(p_reeleradj2_info, (int32_t)rx_can_cmd_info.value, MOVE_TO);			break;
+					case AXC_MOVE_BY:			tmc2209_Move(p_reeleradj2_info, (int32_t)rx_can_cmd_info.value, MOVE_BY);			break;
+					case AXC_INITIAL_POSITION:	tmc2209_Set_Initial_Position(p_reeleradj2_info, (int32_t)rx_can_cmd_info.value);	break;
+					case AXC_STATUS_CHECK:		tmc2209_Limits_Status_Check(p_reeleradj2_info);										break;
+					case AXC_HOMING:			tmc2209_Reference_Search(p_reeleradj2_info);										break;
+					case AXC_CURRENT_POSITION:	tmc2209_Get_Current_Position(p_reeleradj2_info);									break;
+					default: DBG_Printf(ERR_LVL_DEBUG, "\nReeler Adj 2 Motor Invalid Operation Rxcvd\n");break;
 				}
 				rack_id = MOTOR_ID;
 			break;
@@ -1071,22 +1060,63 @@ void parse_GTron_CAN_Msg_Data( void )
 				rack_id = MOTOR_ID;
 				break;
 			}
-			case GLOBAL_COUNTER: {
-				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX])
-				{
-					case AXC_GC_SET: {
-						int32_t setpos = rx_can_cmd_info.value;
-						tmc4671_setActualPosition(MOTOR, setpos);
-						DBG_Printf(ERR_LVL_INFO, "GC_Set = %ld\n", setpos);
+			case EJECTOR_1: {
+				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX]) {
+					case AXC_TRIG_STEPSIZE: {
+						/* Distance from the Camera FOV to the Ejector ID */
+						
 						break;
 					}
-					case AXC_GC_GET: {
-						int32_t cpos = tmc4671_getActualPosition(MOTOR);
-						DBG_Printf(ERR_LVL_INFO, "GC_Get = %ld\n", cpos);
+					case AXC_EJECT_SET_COUNT: {
+						/* Set the part/camera count to the one received. */
+						
 						break;
-					} 
-					case AXC_GC_EJECT: {
-						DBG_Printf(ERR_LVL_INFO, "GC_Eject\n");
+					}
+					case AXC_EJECT_BIN_OFFSET: {
+						/* Receives the offset and ejector bin id to eject at coupled with AXC_EJECT_PARTCOUNT. */
+						
+						break;
+					}
+					case AXC_PAUSE: {
+						/* To stop the reeler motor at the ejecting position instead of ejecting. */
+						
+						break;
+					}
+					case AXC_EJECT_PARTCOUNT: {
+						/* Receive the part count coupled with AXC_EJECT_BIN_OFFSET */
+						
+						break;
+					}
+					default: break;
+				}
+				rack_id = MOTOR_ID;
+				break;
+			}
+			case EJECTOR_2: {
+				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX]) {
+					case AXC_TRIG_STEPSIZE: {
+						/* Distance from the Camera FOV to the Ejector ID */
+						
+						break;
+					}
+					case AXC_EJECT_SET_COUNT: {
+						/* Set the part/camera count to the one received. */
+						
+						break;
+					}
+					case AXC_EJECT_BIN_OFFSET: {
+						/* Receives the offset and ejector bin id to eject at coupled with AXC_EJECT_PARTCOUNT. */
+						
+						break;
+					}
+					case AXC_PAUSE: {
+						/* To stop the reeler motor at the ejecting position instead of ejecting. */
+						
+						break;
+					}
+					case AXC_EJECT_PARTCOUNT: {
+						/* Receive the part count coupled with AXC_EJECT_BIN_OFFSET */
+						
 						break;
 					}
 					default: break;

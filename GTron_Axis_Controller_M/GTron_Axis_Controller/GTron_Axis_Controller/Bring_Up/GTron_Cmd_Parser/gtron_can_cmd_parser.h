@@ -12,6 +12,7 @@
 
 #include "Bring_Up/Debug/dbg_transport.h"
 #include "Bring_Up/Motion/Hybrid_Trigger.h"
+#include "Bring_Up/Motion/ejection.h"
 
 #define CAN_DATA_FIELD_LEN		8	// No. of bytes in the CAN Data Field.
 

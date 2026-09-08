@@ -15,6 +15,7 @@
 #include "Bring_Up/CAN/IMM_CAN_Message_Id.h"
 #include "Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h"
 #include "Hybrid_Trigger.h"
+#include "ejection.h"
 
 void init_PosMode(uint8_t motor);
 
