@@ -17,119 +17,17 @@ volatile uint32_t prev_trig_time_ms = 0;
  **/
 void trigger_Camera_Line(void) 
 {
-	ejection_send_gc(tmc4671_getActualPosition(MOTOR));
+	ejection_note_trigger(tmc4671_getActualPosition(MOTOR));
+	
 	gpio_set_pin_level(REELER_INT, HIGH);
 	delay_us(1);
 	gpio_toggle_pin_level(DBGLED3);
 	gpio_set_pin_level(REELER_INT, LOW);
 	p_reeler1_info->time_ms.cam_trig = millis();
+	
 	return;
 }
-
-
-/** 
- * \brief
- *
- * @param
- *
- * @return
- **/
-static void handle_inspection_tick( void )
-{
-	volatile Hybrid_t *H = &p_reeler1_info->hybrid;
-	uint32_t step = p_reeler1_info->position.trig_step_size;
-	
-	if(p_reeler1_info->flags.sensor_trigger) {
-		int32_t new_anchor = tmc4671_getActualPosition(MOTOR);
-		p_reeler1_info->flags.sensor_trigger = false;
-		
-		if(H->first_trigger_skip) {
-			H->first_trigger_skip	= false;
-			H->prev_anchor_pos		= new_anchor;
-			H->anchor_pos			= new_anchor;
-			H->cycle_armed			= true;
-			return;
-		}
-		
-		// Slip / spurious trigger detection (anchor-to-anchor delta)
-		uint32_t actual			= (uint32_t)labs(new_anchor - H->prev_anchor_pos);
-		uint32_t expected		= step;
-		uint32_t tolerance		= (expected * HYBRID_SLIP_TOLERANCE_PCT) / 100u;
-		uint32_t deviation		= (actual > expected) ? (actual - expected) : (expected - actual);
-		
-		if(deviation > tolerance) {
-			// Slipped.
-			H->consecutive_slips += 1;
-			if(H->consecutive_slips >= HYBRID_ALERT_THRESHOLD) {
-				DBG_Printf(ERR_LVL_WARNING, "[HYB] slip threshold: fail=%d exp=%ld act=%ld\n", 
-							H->consecutive_slips, 
-							expected, actual);
-				bool can_ret_status;
-				//can_ret_status = can_AxC_Write( CAN_REPLY_TOP_RACK_ERR_ID,
-				//								HYBRID_TRIGGER_INSPECTION,
-				//								SLIP_ERR ) ;
-			}
-		} else {
-			H->consecutive_slips = 0;
-		}
-		
-		H->prev_anchor_pos	= new_anchor;
-		H->anchor_pos		= new_anchor;
-		H->cycle_armed		= true;
-		return;				// do not poll and fire in the same tick.
-	}
-	
-	// No edge in this tick. if armed, check offset and fire when reached.
-	if(H->cycle_armed) {
-		int32_t cur = tmc4671_getActualPosition(MOTOR);
-		if((uint32_t)labs(cur - H->anchor_pos) >= step) {
-			trigger_Camera_Line();
-			H->gc += 1;
-			H->cycle_armed = false;
-		}
-	}
-	return;
-}
-
-
-/** 
- * \brief
- *
- * @param
- *
- * @return
- **/
-static void handle_one_shot_tick()
-{
-	volatile Hybrid_t *H = &p_reeler1_info->hybrid;
-	
-	if(!H->one_shot_armed) {
-		// One shot mode is ON but no Move To/By is received yet.
-		// Drop any stale flag so the next move starts clean.
-		if(p_reeler1_info->flags.sensor_trigger) {
-			p_reeler1_info->flags.sensor_trigger = false;
-		}
-		return;
-	}
-	
-	if(p_reeler1_info->flags.sensor_trigger){
-		p_reeler1_info->flags.sensor_trigger = false;
-		
-		// One shot Sequence.
-		reeler_Pause_Motor();
-		trigger_Camera_Line();
-		check_move_done = false;
-		
-		H->one_shot_armed	= false;
-		H->mode				= HYBRID_MODE_OFF;
-		p_reeler1_info->flags.is_hybrid_trig_enabled = false;
-		
-		DBG_Printf(ERR_LVL_DEBUG, "[HYB] One-Shot fired; auto-disabled\n");
-	}
-	return;
-}
-
-
+/*
 static void handle_slip(Hybrid_t *H)
 {
 	if(!H) {
@@ -159,7 +57,7 @@ static void handle_slip(Hybrid_t *H)
 	#endif
 	return;
 }
-
+*/
 /** 
  * \brief
  *
@@ -175,7 +73,6 @@ static void handle_n_shot_tick()
 	}
 	volatile Hybrid_t *H = &p_reeler1_info->hybrid;
 	uint32_t step = p_reeler1_info->position.trig_step_size;
-	uint32_t term_pitch = H->term_width;
 	
 	if( H->total_slips == 0) {
 		H->total_slips = HYBRID_ALERT_THRESHOLD;

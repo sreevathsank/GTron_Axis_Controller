@@ -11,6 +11,7 @@
  */
 
 #include "Bring_Up/CAN/IMM_CAN_Read.h"
+#include "Bring_Up/CAN/IMM_CAN.h"
 
 /** 
  * \brief Checks if the receive counter is greater than 0. If so, it decrements it and reads the CAN receive buffer and calls the message id decode function.
@@ -120,7 +121,10 @@ void can_Message_Process_GTron_Message_Data()
 	rx_can_cmd_info.id = message_Id;
 	memcpy(rx_can_cmd_info.data, can_rx_frame.data, CAN_DATA_FIELD_LEN);
 	rx_can_cmd_info.value = decoding_GTon_CAN_Byte_Data();
-	PRINTF_DEBUG ? printf("\nMsgID = %x | CAN Data Field = 0x%x or %ld\n", rx_can_cmd_info.id, rx_can_cmd_info.value, rx_can_cmd_info.value): 0;
+	
+	DBG_Printf(ERR_LVL_INFO, "\nMsgID = %x | CAN Data Field = 0x%x or %ld\n", 
+	(unsigned int)rx_can_cmd_info.id, (unsigned int)rx_can_cmd_info.value, (unsigned int)rx_can_cmd_info.value);
+	
 	parse_GTron_CAN_Msg_Data();
 	return;
 }
@@ -140,11 +144,17 @@ void can_Message_Decode(uint32_t message_Id, int32_t data)
 	switch(axis_id)
 	{
 		case GTRON_AXC_TOP:
-			PRINTF_DEBUG && printf("\nReceived by AxC_Top: %x Data %x %x %x %x %x", message_Id, can_rx_frame.data[0], can_rx_frame.data[1], can_rx_frame.data[2], can_rx_frame.data[3], can_rx_frame.data[4]);
+			DBG_Printf(ERR_LVL_INFO, "\nReceived by AxC_Top: %x Data %x %x %x %x %x", 
+			(unsigned int)message_Id, (unsigned int)can_rx_frame.data[0], (unsigned int)can_rx_frame.data[1], 
+			(unsigned int)can_rx_frame.data[2], (unsigned int)can_rx_frame.data[3], (unsigned int)can_rx_frame.data[4]);
+			
 			can_Message_Process_GTron_Message_Data();
 		break;
 		case GTRON_AXC_BOT:
-			PRINTF_DEBUG && printf("\nReceived by AxC_Bot: %x Data %x %x %x %x %x", message_Id, can_rx_frame.data[0], can_rx_frame.data[1], can_rx_frame.data[2], can_rx_frame.data[3], can_rx_frame.data[4]);
+			DBG_Printf(ERR_LVL_INFO, "\nReceived by AxC_Top: %x Data %x %x %x %x %x",
+			(unsigned int)message_Id, (unsigned int)can_rx_frame.data[0], (unsigned int)can_rx_frame.data[1],
+			(unsigned int)can_rx_frame.data[2], (unsigned int)can_rx_frame.data[3], (unsigned int)can_rx_frame.data[4]);
+			
 			can_Message_Process_GTron_Message_Data();
 		break;
 		default: break;

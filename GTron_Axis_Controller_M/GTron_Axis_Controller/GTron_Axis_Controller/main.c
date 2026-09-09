@@ -24,7 +24,6 @@ int main(void)
 	call_All_Init_Functions();
 	DBG_Printf(ERR_LVL_INFO, "AxC dbg_print online @ 2 Mbaud, axis=%d\n", axis_id);
 	switch(axis_id) {
-		case X_AXIS: DBG_Printf(ERR_LVL_DEBUG, "AxC - X Axis\n");				break;
 		case GTRON_AXC_TOP: DBG_Printf(ERR_LVL_DEBUG, "\nAxC - GTron TOP\n");	break;
 		case GTRON_AXC_BOT: DBG_Printf(ERR_LVL_DEBUG, "AxC - GTron BOTTOM\n");	break;
 		default: break;
@@ -47,10 +46,6 @@ int main(void)
 	}
 	if(axis_params.rotary_axis_enabled) {
 		switch(axis_id) {
-			case X_AXIS:		DBG_Printf(ERR_LVL_DEBUG, "X Rotary Axis Enabled!\n");		break;
-			case Y_AXIS:		DBG_Printf(ERR_LVL_DEBUG, "Y Rotary Axis Enabled!\n");		break;
-			case Z_AXIS:		DBG_Printf(ERR_LVL_DEBUG, "Z Rotary Axis Enabled!\n");		break;
-			case RF_AXIS:		DBG_Printf(ERR_LVL_DEBUG, "RF Rotary Axis Enabled!\n");		break;
 			case GTRON_AXC_TOP: DBG_Printf(ERR_LVL_DEBUG, "Reeler Rotary Axis Enabled!\n"); break;
 			case GTRON_AXC_BOT: DBG_Printf(ERR_LVL_DEBUG, "Reeler Rotary Axis Enabled!\n"); break;
 			default: break;
@@ -61,30 +56,32 @@ int main(void)
 	limit_variables.homing = ( repeat_ramp > 0 ) ? true : false;
 	
 	for(;;) {
+		/* TMC2209 Motor step calculation during movements. */
 		if(is_tmc2209_mot_moving) {
 			check_Which_2209_Motor_Moving();
 		}
 		
+		/* IOXP interrupts handling. */
 		if(gtron_limits.interrupt_raised) {
 			check_Limit_Flags();
 		}
 		
-		// TMC2209 DIAG pin interrupt raised.
+		/* TMC2209 DIAG pin interrupt raised. */
 		if(tmc2209_diag_flag) {
 			
 		}
-		// For checking if the Motor has reached its target position TMC4671.
+		/* For checking if the Motor has reached its target position TMC4671. */
 		if(check_move_done)				{ check_For_Move_Done();						}
 		
-		// For Generating S Ramp profile for TMC4671.
+		/* For Generating S Ramp profile for TMC4671. */
 		if(move_given_s_ramp)			{ run_S_ramp();									}
 			
-		// For running the motor in Velocity Mode TMC4671.
+		/* For running the motor in Velocity Mode TMC4671. */
 		if( (repeat_ramp != 2) && p_reeler1_info->flags.rotate_vel_mode \
 			&& p_reeler1_info->flags.vel_timer && p_reeler1_info->flags.sag_enabled)
 										{ run_Velocity_Ramp();							}	
 		
-		// Check if CAN Messages were received.
+		/* Check if CAN Messages were received. */
 		if(can_rx_int)					{ can_Read();									}
 	}
 	return 0;

@@ -40,7 +40,7 @@ void ioxp_Init( void )
 	return;
 }
 
-void IOXP_transfer_block(void *wr_buf, void *rd_buf, uint8_t size)
+static void IOXP_transfer_block(const void *wr_buf, void *rd_buf, uint8_t size)
 {
 	uint8_t *w = (uint8_t *)wr_buf;
 	uint8_t *r = (uint8_t *)rd_buf;

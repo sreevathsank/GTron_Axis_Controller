@@ -8,6 +8,7 @@
 #include "TMC4671.h"
 #include "TMC4671_Register.h"
 #include "spi_lite.h"
+#include "Code_Dump/ext_flash.h"
 
 #define STATE_NOTHING_TO_DO    0
 #define STATE_START_INIT       1
@@ -76,12 +77,6 @@ int32_t tmc4671_readInt(uint8_t motor, uint8_t address)
 	SPI_0_transfer_block(&rd_3b, &wr_3b, 1);
 	SPI_0_transfer_block(&rd_4b, &wr_4b, 1);
 	
-// 	SPI_0_exchange_block(&rd_addr, 1);
-// 	SPI_0_exchange_block(&rd_1b, 1);
-// 	SPI_0_exchange_block(&rd_2b, 1);
-// 	SPI_0_exchange_block(&rd_3b, 1);
-// 	SPI_0_exchange_block(&rd_4b, 1);
-	
 	data |= ((uint32_t)wr_1b) << 24;
 	data |= ((uint32_t)wr_2b) << 16;
 	data |= ((uint32_t)wr_3b) << 8;
@@ -139,12 +134,6 @@ void tmc4671_writeInt(uint8_t motor, uint8_t address, int32_t data)
 	SPI_0_transfer_block(&wr_2b, &rd_2b, 1);
 	SPI_0_transfer_block(&wr_3b, &rd_3b, 1);
 	SPI_0_transfer_block(&wr_4b, &rd_4b, 1);	
-	
-// 	SPI_0_exchange_block(&wr_addr, 1);
-// 	SPI_0_exchange_block(&wr_1b, 1);
-// 	SPI_0_exchange_block(&wr_2b, 1);
-// 	SPI_0_exchange_block(&wr_3b, 1);
-// 	SPI_0_exchange_block(&wr_4b, 1);
 	
 	gpio_set_pin_level(nCS_4671, 1);	
 }

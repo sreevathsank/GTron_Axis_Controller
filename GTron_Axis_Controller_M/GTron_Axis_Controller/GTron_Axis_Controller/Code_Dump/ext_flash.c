@@ -16,7 +16,7 @@ void SPI_0_transfer_block(void *wr_buf, void *rd_buf, uint8_t size)
 	}
 }
 
-void Ext_Flash_transfer_block(void *wr_buf, void *rd_buf, uint8_t size)
+void Ext_Flash_transfer_block(const void *wr_buf, void *rd_buf, uint8_t size)
 {
 	uint8_t *w = (uint8_t *)wr_buf;
 	uint8_t *r = (uint8_t *)rd_buf;
@@ -70,18 +70,6 @@ static const extFlashInfo_t flashInfo[] =
 static const extFlashInfo_t *pFlashInfo = NULL;
 static uint8_t infoBuf[2];
 static uint8_t rxBuff[FLASH_PROGRAM_PAGE_SIZE + FLASH_MAX_COMMAND_SIZE];
-
-/**
- * Callback fucntion for SPI transfer completed on EXTFLASH SPI.
- *
- * @param spi_m_async_descriptor		IO descriptor for SPI object.
- *
- * @return void
- */
-static void SPI_EXTFLASH_complete_cb(const struct spi_m_async_descriptor *const io_descr)
-{
-	/* Transfer Completed */
-}
 
 /**
  * Method for initializing SPI on the EXTFLASH pins.
@@ -138,7 +126,7 @@ bool EXTFLASH_transfer(const uint8_t *wbuf, uint8_t *rbuf, const uint16_t length
 	bool returnVal = false;
 	
 	// Send the Command
-	if (EXTFLASH_transfer(&wbuf, &rxBuff, 4))
+	if (EXTFLASH_transfer(wbuf, rxBuff, 4))
 	{
 		// Copy Vendor and Device Data into the Info Buffer
 		infoBuf[0] = rxBuff[1];
@@ -215,27 +203,23 @@ static bool EXTFLASH_readStatus(uint8_t *buf)
 /**
  * Wait for the previous erase / program operation to complete.
  *
- * @return int								0 on success, < 0 on failure
+ * @return int								0 on success, < 1 on failure
  */
 static int EXTFLASH_waitReady(void)
-{
-	// Return Value
-	int returnValue;
-	
-	for (;;)
-	{
+{	
+	int retVal = 1;
+	for (;;) {
 		uint8_t buf;
-		returnValue = EXTFLASH_readStatus(&buf);
+		retVal = (int)EXTFLASH_readStatus(&buf);
 		
 		// Check if Status Register Bit Busy
-		if (!(buf & FLASH_STATUS_BIT_BUSY))
-		{
+		if (!(buf & FLASH_STATUS_BIT_BUSY)) {
 			// Now Ready
 			break;
 		}
 	}
 	
-	return 0;
+	return retVal;
 }
 
 /**

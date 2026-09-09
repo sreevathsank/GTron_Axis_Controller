@@ -43,7 +43,7 @@ static uint8_t get_irun_for_motor(Motor_Name_Enum_t mot_name)
  * Configures the registers with the right settings that are needed for rotating the motor.
  * E.g Enabling driver, setting IRUN current etc.
  */
-void init_tmc2209_motor(uint16_t icID, const Motor_Info_t *m)
+void init_tmc2209_motor(uint16_t icID, const volatile Motor_Info_t *m)
 {
 	if( (m->mot_name == MOTOR_VARREST2) || 
 		(m->mot_name == MOTOR_REELERADJ1) ) {

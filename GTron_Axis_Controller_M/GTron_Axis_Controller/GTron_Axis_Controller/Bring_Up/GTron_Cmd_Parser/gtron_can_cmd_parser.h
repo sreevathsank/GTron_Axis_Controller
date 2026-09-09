@@ -204,34 +204,34 @@ extern volatile Motor_Info_t *mot_array[];
 
 extern Can_Cmd_Info_t rx_can_cmd_info;
 
-bool is_single_limit_motor(const Motor_Info_t *m);
+bool is_single_limit_motor(const volatile Motor_Info_t *m);
 
-void tmc2209_Move_To_Close_Limit(Motor_Info_t *motor_info );
+void tmc2209_Move_To_Close_Limit(volatile Motor_Info_t *motor_info );
 
-void tmc2209_Move_To_Open_Limit(Motor_Info_t *motor_info );
+void tmc2209_Move_To_Open_Limit(volatile Motor_Info_t *motor_info );
 
-void set_CAN_Motor_Address(Motor_Info_t *m);
+void set_CAN_Motor_Address(volatile Motor_Info_t *m);
 
 void reeler_Stop_Motor( void );
 
 void reeler_Pause_Motor( void );
 
-void tmc2209_Stop_Motor(Motor_Info_t *m);
+void tmc2209_Stop_Motor(volatile Motor_Info_t *m);
 
 /************************************************************************/
 /* Velocity Variable Checking                                           */
 /************************************************************************/
-static inline bool is_Motor_At_TargetVelocity(const Motor_Info_t *motor)
+static inline bool is_Motor_At_TargetVelocity(const volatile Motor_Info_t *motor)
 {
 	return ( motor->velocity.current == motor->velocity.target );
 }
 
-static inline bool is_Motor_Less_Than_Equal_TargetVelocity(const Motor_Info_t *motor)
+static inline bool is_Motor_Less_Than_Equal_TargetVelocity(const volatile Motor_Info_t *motor)
 {
 	return ( motor->velocity.current <= motor->velocity.target );
 }
 
-static inline bool is_Motor_Greater_Than_Equal_TargetVelocity(const Motor_Info_t *motor)
+static inline bool is_Motor_Greater_Than_Equal_TargetVelocity(const volatile Motor_Info_t *motor)
 {
 	return ( motor->velocity.current >= motor->velocity.target );
 }

@@ -185,6 +185,9 @@ Bring_Up/Motion/Hybrid_Trigger.d Bring_Up/Motion/Hybrid_Trigger.o: \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\string.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\inttypes.h \
  ../Bring_Up/CAN/IMM_CAN_Message_Id.h ../Bring_Up/CAN/IMM_CAN_Read.h \
+ ../Bring_Up/CAN/TMCL_IDE_reply.h ../Bring_Up/CAN/IMM_CAN.h \
+ ../Bring_Up/Debug/dbg_transport.h ../Bring_Up/Debug/dbg_print.h \
+ ../Bring_Up/Motion/Hybrid_Trigger.h ../Bring_Up/Motion/ejection.h \
  ../Bring_Up/CAN/IMM_CAN_Message_Id.h ../motor_dev/my_Ramp/myRamp.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\fastmath.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\machine\fastmath.h \
@@ -195,8 +198,6 @@ Bring_Up/Motion/Hybrid_Trigger.d Bring_Up/Motion/Hybrid_Trigger.o: \
  ../Bring_Up/CAN/IMM_CAN_Write.h ../Global_Vars.h \
  ../Bring_Up/CAN/TMCL_IDE_reply.h ../Bring_Up/CAN/MCD_v3.h \
  ../SysTick/Systick.h ../Bring_Up/Motion/Motion.h \
- ../Bring_Up/Debug/dbg_transport.h ../Bring_Up/Debug/dbg_print.h \
- ../Bring_Up/Motion/Hybrid_Trigger.h ../Bring_Up/Motion/ejection.h \
  ../Bring_Up/Motion/ejection.h ../Code_Dump/McuSwReset.h \
  ../Code_Dump/tlv_flash.h ../Code_Dump/ext_flash.h ../driver_init.h \
  ../hpl/spi/spi_lite.h ../Code_Dump/tlv_flash.h \
@@ -695,6 +696,18 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 
 ../Bring_Up/CAN/IMM_CAN_Read.h:
 
+../Bring_Up/CAN/TMCL_IDE_reply.h:
+
+../Bring_Up/CAN/IMM_CAN.h:
+
+../Bring_Up/Debug/dbg_transport.h:
+
+../Bring_Up/Debug/dbg_print.h:
+
+../Bring_Up/Motion/Hybrid_Trigger.h:
+
+../Bring_Up/Motion/ejection.h:
+
 ../Bring_Up/CAN/IMM_CAN_Message_Id.h:
 
 ../motor_dev/my_Ramp/myRamp.h:
@@ -728,14 +741,6 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../SysTick/Systick.h:
 
 ../Bring_Up/Motion/Motion.h:
-
-../Bring_Up/Debug/dbg_transport.h:
-
-../Bring_Up/Debug/dbg_print.h:
-
-../Bring_Up/Motion/Hybrid_Trigger.h:
-
-../Bring_Up/Motion/ejection.h:
 
 ../Bring_Up/Motion/ejection.h:
 

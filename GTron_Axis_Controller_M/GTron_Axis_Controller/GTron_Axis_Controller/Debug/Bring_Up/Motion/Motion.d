@@ -181,7 +181,12 @@ Bring_Up/Motion/Motion.d Bring_Up/Motion/Motion.o: \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\string.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\inttypes.h \
  ../Global_Vars.h ../Bring_Up/CAN/IMM_CAN_Message_Id.h \
- ../Bring_Up/CAN/IMM_CAN_Read.h ../Bring_Up/CAN/IMM_CAN_Message_Id.h \
+ ../Bring_Up/CAN/IMM_CAN_Read.h ../Bring_Up/CAN/TMCL_IDE_reply.h \
+ ../Bring_Up/CAN/IMM_CAN.h \
+ ../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h \
+ ../Bring_Up/Debug/dbg_transport.h ../Bring_Up/Debug/dbg_print.h \
+ ../Bring_Up/Motion/Hybrid_Trigger.h ../TMC-API/tmc/ic/TMC4671/TMC4671.h \
+ ../Bring_Up/Motion/ejection.h ../Bring_Up/CAN/IMM_CAN_Message_Id.h \
  ../motor_dev/my_Ramp/myRamp.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\fastmath.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\machine\fastmath.h \
@@ -197,10 +202,7 @@ Bring_Up/Motion/Motion.d Bring_Up/Motion/Motion.o: \
  ../Code_Dump/tlv_flash.h ../Bring_Up/IO_Expander/spi_io_expander.h \
  ../tmc2209_uart/TMC2209.h ../tmc2209_uart/TMC2209_HW_Abstraction.h \
  ../tmc2209_uart/TMC2209_Simple_Rotation.h ../tmc2209_uart/TMC2209.h \
- ../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h \
- ../Bring_Up/Debug/dbg_transport.h ../Bring_Up/Debug/dbg_print.h \
- ../Bring_Up/Motion/Hybrid_Trigger.h ../TMC-API/tmc/ic/TMC4671/TMC4671.h \
- ../Bring_Up/Motion/ejection.h ../tmc2209_uart/TMC2209_Motion.h \
+ ../tmc2209_uart/TMC2209_Motion.h \
  ../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h \
  ../tmc2209_uart/Step_Counter.h ../Bring_Up/Motion/Hybrid_Trigger.h \
  ../Bring_Up/Motion/ejection.h
@@ -689,6 +691,22 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 
 ../Bring_Up/CAN/IMM_CAN_Read.h:
 
+../Bring_Up/CAN/TMCL_IDE_reply.h:
+
+../Bring_Up/CAN/IMM_CAN.h:
+
+../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h:
+
+../Bring_Up/Debug/dbg_transport.h:
+
+../Bring_Up/Debug/dbg_print.h:
+
+../Bring_Up/Motion/Hybrid_Trigger.h:
+
+../TMC-API/tmc/ic/TMC4671/TMC4671.h:
+
+../Bring_Up/Motion/ejection.h:
+
 ../Bring_Up/CAN/IMM_CAN_Message_Id.h:
 
 ../motor_dev/my_Ramp/myRamp.h:
@@ -744,18 +762,6 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../tmc2209_uart/TMC2209_Simple_Rotation.h:
 
 ../tmc2209_uart/TMC2209.h:
-
-../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h:
-
-../Bring_Up/Debug/dbg_transport.h:
-
-../Bring_Up/Debug/dbg_print.h:
-
-../Bring_Up/Motion/Hybrid_Trigger.h:
-
-../TMC-API/tmc/ic/TMC4671/TMC4671.h:
-
-../Bring_Up/Motion/ejection.h:
 
 ../tmc2209_uart/TMC2209_Motion.h:
 

@@ -203,16 +203,16 @@ int32_t readRegisterUART(uint16_t icID, uint8_t address)
 	data[2] = address;
 	data[3] = CRC8(data, 3);
 	CRITICAL_SECTION_ENTER();
-		tmc2209_UART_write(&data, 4);
+		tmc2209_UART_write(data, 4);
 		
 		// Reading the 4 bytes written to clear the Rx buffer.
-		(void)tmc2209_UART_read(&data, 4);
+		(void)tmc2209_UART_read(data, 4);
 		
-		memset(&data, 0x00, sizeof(data));
+		memset(data, 0x00, sizeof(data));
 		tmc2209_read_flag = true;
 		
 		// Read the 8 incoming bytes.
-		tmc2209_UART_read(&data, 8);
+		tmc2209_UART_read(data, 8);
 	CRITICAL_SECTION_LEAVE();
 	// Byte 0: Sync nibble correct?
 	if (data[0] != 0x05) { 
@@ -247,7 +247,7 @@ void writeRegisterUART(uint16_t icID, uint8_t address, int32_t value)
 	data[6] = (value      ) & 0xFF;
 	data[7] = CRC8(data, 7);
 	CRITICAL_SECTION_ENTER();
-		tmc2209_UART_write(&data, 8);
+		tmc2209_UART_write(data, 8);
 		if(TMC2209_UART_is_byte_received()) {
 			(void)TMC2209_UART_read_byte();
 		}

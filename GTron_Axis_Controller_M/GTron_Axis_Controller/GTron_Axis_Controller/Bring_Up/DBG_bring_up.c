@@ -69,15 +69,17 @@ void led_Blink(uint32_t iteration, uint32_t time_taken)
  * @param void
  * @return void
  */
-void timer_ramp_cb(void)
+void timer_ramp_cb(const struct timer_task *const timer_task)
 {
+	(void)timer_task;
 	rParams.timer_ramp_flag = true;
 	rParams.time_ramp += 1;
 	return;
 }
 
-void vel_timer_cb(void)
+void vel_timer_cb(const struct timer_task *const timer_task)
 {
+	(void)timer_task;
 	p_reeler1_info->flags.vel_timer = true;
 	return;
 }
@@ -105,7 +107,7 @@ void init_timers(void)
 	
 }
 
-static void init_Motor_Struct(Motor_Info_t *motor_info, Motor_Name_Enum_t motor_name)
+static void init_Motor_Struct(volatile Motor_Info_t *motor_info, Motor_Name_Enum_t motor_name)
 {
 	if(motor_info == NULL) {
 		DBG_Printf(ERR_LVL_ERROR, "init_Motor_Struct NULL Pointer.\n");
@@ -454,7 +456,7 @@ bool check_4671_version_spi(void)
 	
 	int32_t chip_info = tmc4671_readInt(MOTOR, TMC4671_CHIPINFO_DATA);
 	bool ret_val = VERSION_4671 == tmc4671_readInt(MOTOR, TMC4671_CHIPINFO_DATA);
-	printf("\nchip info = %ld or 0x%x\n", chip_info, chip_info);
+	printf("\nchip info = %ld or 0x%lX\n", chip_info, chip_info);
 	ret_val ? PRINTF_DEBUG ? printf("\nSPI Comms with TMC4671 is successful\n"): 0
 			: 0;
     return ret_val;
@@ -471,7 +473,7 @@ bool check_passive_flash_spi(void)
 	// Check the Flash Manufacture and Device ID.
 	if( EXTFLASH_open() )
 	{
-		PRINTF_DEBUG && printf("\nExt Flash ID Check Pass\n");
+		DBG_Printf(ERR_LVL_ERROR, "\nExt Flash ID Check Pass\n");
 		ioxp_Init();
 		return 0; // Success.
 	}
@@ -586,8 +588,6 @@ void call_All_Init_Functions(void)
 	// PWM_0 is clk source for TMC4671. Produces 25MHz.
 	pwm_set_parameters(&PWM_0, 1, 1);
 	pwm_enable(&PWM_0);
-	
-	//GUIDE_STEP_COUNTER_init();
 
 	reset_TMC4671();
 	gpio_set_pin_level(EN_4671, LOW);
@@ -607,16 +607,16 @@ void call_All_Init_Functions(void)
 	init_timers();
 	init_ext_irq_limits();
 	if(!check_4671_version_spi()) {
-		PRINTF_DEBUG && printf("\n--------TMC4671 SPI Check Failed--------\n");
+		DBG_Printf(ERR_LVL_ERROR, "\n--------TMC4671 SPI Check Failed--------\n");
 	}
 	gpio_set_pin_level(IOXP_CS, HIGH);
 	
 	if(check_passive_flash_spi()) {
-		PRINTF_DEBUG && printf("\n------Passive Flash SPI Check Failed-----\n");
+		DBG_Printf(ERR_LVL_ERROR, "\n------Passive Flash SPI Check Failed-----\n");
 	}
 	gpio_set_pin_level(IOXP_CS, HIGH);
 	
-	PRINTF_DEBUG && printf("\nExt Flash CS -> %d | IOXP CS -> %d\n", gpio_get_pin_level(EXT_CS), gpio_get_pin_level(IOXP_CS) );
+	DBG_Printf(ERR_LVL_INFO, "\nExt Flash CS -> %d | IOXP CS -> %d\n", gpio_get_pin_level(EXT_CS), gpio_get_pin_level(IOXP_CS) );
 	
 	read_Set_Parameters_From_Flash();
 	
@@ -698,6 +698,9 @@ void call_All_Init_Functions(void)
 		}
 		default: break;
 	}
+	
+	ejection_init();
+	
 	pet_wdt();
 	return;
 }
@@ -729,25 +732,9 @@ void run_Open_Loop_Setup_Closed_Loop(uint32_t time_taken)
 	
 	switch(axis_id)
 	{
-		case X_AXIS:
-			PRINTF_DEBUG ? printf("\nX Axis Rotary Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_PPR)):0;
-			PRINTF_DEBUG && printf("\nX Axis Rotary Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE));
-			PRINTF_DEBUG ? printf("\nX Axis Linear Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_2_DECODER_PPR)):0;
-			PRINTF_DEBUG && printf("\nX Axis Linear Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_2_DECODER_MODE));
-		break;
-		case Y_AXIS:
-			PRINTF_DEBUG ? printf("\nY Axis Rotary Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_PPR)):0;
-			PRINTF_DEBUG && printf("\nY Axis Rotary Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE));
-			PRINTF_DEBUG ? printf("\nY Axis Linear Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_2_DECODER_PPR)):0;
-			PRINTF_DEBUG && printf("\nX Axis Linear Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_2_DECODER_MODE));
-		break;
-		case Z_AXIS:
-			PRINTF_DEBUG ? printf("\nZ Axis Rotary Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_PPR)):0;
-			PRINTF_DEBUG && printf("\nZ Axis Rotary Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE));
-		break;
 		case GTRON_AXC_TOP:
-			PRINTF_DEBUG ? printf("\nTop Reeler Rotary Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_PPR)):0;
-			PRINTF_DEBUG ? printf("\nTop Reeler Rotary Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE)):0;
+			DBG_Printf(ERR_LVL_INFO, "\nTop Reeler Rotary Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_PPR));
+			DBG_Printf(ERR_LVL_INFO, "\nTop Reeler Rotary Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE));
 		break;
 		default: break;
 	}

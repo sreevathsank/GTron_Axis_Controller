@@ -48,7 +48,7 @@ bool can_Write(uint32_t message_Id, int32_t data)
 	//can_tx_frame.data_64bit = data;
 	//can_tx_frame.data[4] = message_Id + data;
 	can_send(&CAN_1, message_Id, EXT_ID, 6, can_tx_frame);
-	return;
+	return false;
 }
 
 /** 

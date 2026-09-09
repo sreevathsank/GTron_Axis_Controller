@@ -151,9 +151,13 @@ typedef enum {
 }AxC_Operations_t;
 
 typedef enum {
-	AXC_ERR_NONE			= 0,
-	AXC_ERR_SLIP			= 1,
-	AXC_ERR_TRIGGER_FAIL	= 2,
+	AXC_ERR_NONE					= 0,
+	AXC_ERR_SLIP					= 1,	/* Hybrid Trigger slip between Roller and terminal. */
+	AXC_ERR_TRIGGER_FAIL			= 2,	/* Roller rotating but no sensor trigger received Hybrid Trigger. */
+	AXC_ERR_EJECT_STALE				= 3,	/* Eject/Pause command too late (part overwritten or already passed). */
+	AXC_ERR_EJECT_UNPAIRED			= 4,	/* Action frame received without a preceding part-count frame. */
+	AXC_ERR_EJECT_OVERFLOW			= 5,	/* Ejector target queue full. */
+	AXC_ERR_EJECT_BAD_EJECTOR_ID	= 6,	/* Incorrect Ejector ID. */
 	NO_OF_AXC_ERR
 }AxC_Errors_t;
 

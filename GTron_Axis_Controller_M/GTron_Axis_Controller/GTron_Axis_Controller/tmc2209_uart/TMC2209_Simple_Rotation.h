@@ -17,7 +17,7 @@ extern "C" {
 #include "Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h"	
 
 void move_guide_motor(uint32_t loop_count);
-void init_tmc2209_motor(uint16_t icID, const Motor_Info_t *m);
+void init_tmc2209_motor(uint16_t icID, const volatile Motor_Info_t *m);
 void read_Init_Registers(uint16_t icID);
 
 

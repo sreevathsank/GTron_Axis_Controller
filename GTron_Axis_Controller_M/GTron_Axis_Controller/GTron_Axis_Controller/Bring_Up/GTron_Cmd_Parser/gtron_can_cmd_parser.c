@@ -270,7 +270,7 @@ static void reeler_Set_Encoder_Mode( int32_t enc_mode )
 /* Guide Vertical Arrestor Functions                                    */
 /************************************************************************/
 
-static bool check_Open_Right_Limit_Status( Motor_Info_t *m )
+static bool check_Open_Right_Limit_Status( volatile Motor_Info_t *m )
 {
 	if(!m) {
 		DBG_Printf(ERR_LVL_ERROR, "check_Open_Right_Limit_Status() m null ptr received\n");
@@ -329,8 +329,8 @@ static bool check_Open_Right_Limit_Status( Motor_Info_t *m )
 	}
 	return false;
 }
-
-static bool check_Close_Left_Limit_Status( Motor_Info_t *m )
+/*
+static bool check_Close_Left_Limit_Status( volatile Motor_Info_t *m )
 {
 	if(m == NULL) {
 		DBG_Printf(ERR_LVL_ERROR, "check_Close_Left_Limit_Status() m null ptr received\n");
@@ -388,8 +388,8 @@ static bool check_Close_Left_Limit_Status( Motor_Info_t *m )
 		return false;
 	}
 }
-
-bool is_single_limit_motor(const Motor_Info_t *m) 
+*/
+bool is_single_limit_motor(const volatile Motor_Info_t *m) 
 {
 	if (!m) { return false; }
 
@@ -412,7 +412,7 @@ bool is_single_limit_motor(const Motor_Info_t *m)
  *
  * @return
  **/
-static void tmc2209_Move(Motor_Info_t *motor_info, int32_t target_position, bool move_to_by)
+static void tmc2209_Move(volatile Motor_Info_t *motor_info, int32_t target_position, bool move_to_by)
 {
 	if(!motor_info) { return; }
 	
@@ -490,7 +490,7 @@ static void tmc2209_Move(Motor_Info_t *motor_info, int32_t target_position, bool
  *
  * @return
  **/
-void tmc2209_Move_To_Open_Limit(Motor_Info_t *motor_info )
+void tmc2209_Move_To_Open_Limit(volatile Motor_Info_t *motor_info )
 {
 	uint8_t limit_status = 0;
 	//IOXP_Read_Byte(IOXP_REG_GPIO, &limit_status);
@@ -520,7 +520,7 @@ void tmc2209_Move_To_Open_Limit(Motor_Info_t *motor_info )
  *
  * @return
  **/
-void tmc2209_Move_To_Close_Limit(Motor_Info_t *motor_info )
+void tmc2209_Move_To_Close_Limit(volatile Motor_Info_t *motor_info )
 {
 	uint8_t limit_status = 0;
 	//IOXP_Read_Byte(IOXP_REG_GPIO, &limit_status);
@@ -545,7 +545,7 @@ void tmc2209_Move_To_Close_Limit(Motor_Info_t *motor_info )
 	return;
 }
 
-static void tmc2209_Reference_Search( Motor_Info_t *m )
+static void tmc2209_Reference_Search( volatile Motor_Info_t *m )
 {
 	if(!m) {
 		DBG_Printf(ERR_LVL_ERROR, "tmc2209_Reference_Search: Motor_Info_t Null ptr!\n");
@@ -598,7 +598,7 @@ static void tmc2209_Reference_Search( Motor_Info_t *m )
  *
  * @return
  **/
-static void tmc2209_Set_Velocity(Motor_Info_t *motor_info, int32_t target_velocity)
+static void tmc2209_Set_Velocity(volatile Motor_Info_t *motor_info, int32_t target_velocity)
 {
 	motor_info->velocity.target = target_velocity;
 	DBG_Printf(ERR_LVL_DEBUG, "\nGuide Varrest Velocity Set to %ld usteps/sec\n", motor_info->velocity.target);
@@ -612,7 +612,7 @@ static void tmc2209_Set_Velocity(Motor_Info_t *motor_info, int32_t target_veloci
  *
  * @return
  **/
-static void tmc2209_Set_Initial_Position(Motor_Info_t *motor_info, int32_t initial_position)
+static void tmc2209_Set_Initial_Position(volatile Motor_Info_t *motor_info, int32_t initial_position)
 {
 	
 	return;
@@ -627,7 +627,7 @@ static void tmc2209_Set_Initial_Position(Motor_Info_t *motor_info, int32_t initi
  *
  * @return
  **/
-void tmc2209_Stop_Motor(Motor_Info_t *m)
+void tmc2209_Stop_Motor(volatile Motor_Info_t *m)
 {
 	tmc2209_writeRegister(m->comms.uart_addr, TMC2209_VACTUAL, 0x00000000);
 	is_tmc2209_mot_moving = false;
@@ -640,7 +640,7 @@ void tmc2209_Stop_Motor(Motor_Info_t *m)
 	return;
 }
 
-void tmc2209_Get_Current_Position(Motor_Info_t *m) 
+void tmc2209_Get_Current_Position(volatile Motor_Info_t *m) 
 {
 	int32_t c_pos2 = m->step_tracker.total_steps;
 	update_TMC2209_Step_Tracking(m);
@@ -652,7 +652,7 @@ void tmc2209_Get_Current_Position(Motor_Info_t *m)
 	return;
 }
 
-static void reeler_Get_Position( Motor_Info_t *m )
+static void reeler_Get_Position( volatile Motor_Info_t *m )
 {
 	int32_t reeler_position = tmc4671_getActualPosition(MOTOR);
 	int32_t reel_pos_within_rot = reeler_position & 0xFFFF;
@@ -672,7 +672,7 @@ static void reeler_Get_Position( Motor_Info_t *m )
  *
  * @return
  **/
-static void tmc2209_Limits_Status_Check(Motor_Info_t *motor_info)
+static void tmc2209_Limits_Status_Check(volatile Motor_Info_t *motor_info)
 {
 	uint8_t limit_reg_value = 0;
 	IOXP_Read_Byte(IOXP_REG_GPIO, &limit_reg_value);
@@ -1063,28 +1063,23 @@ void parse_GTron_CAN_Msg_Data( void )
 			case EJECTOR_1: {
 				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX]) {
 					case AXC_TRIG_STEPSIZE: {
-						/* Distance from the Camera FOV to the Ejector ID */
-						
-						break;
-					}
-					case AXC_EJECT_SET_COUNT: {
-						/* Set the part/camera count to the one received. */
-						
-						break;
-					}
-					case AXC_EJECT_BIN_OFFSET: {
-						/* Receives the offset and ejector bin id to eject at coupled with AXC_EJECT_PARTCOUNT. */
-						
+						/* Distance from the Camera FOV to this ejector/cut point. */
+						ejection_set_distance(0, rx_can_cmd_info.value);
 						break;
 					}
 					case AXC_PAUSE: {
 						/* To stop the reeler motor at the ejecting position instead of ejecting. */
-						
+						ejection_enqueue(0, rx_can_cmd_info.value, EJECT_ACTION_PAUSE);
+						break;
+					}
+					case AXC_EJECT_BIN_OFFSET: {
+						/* Receives the offset and ejector bin id to eject at coupled with AXC_EJECT_PARTCOUNT. */
+						ejection_enqueue(0, rx_can_cmd_info.value, EJECT_ACTION_EJECT);
 						break;
 					}
 					case AXC_EJECT_PARTCOUNT: {
-						/* Receive the part count coupled with AXC_EJECT_BIN_OFFSET */
-						
+						/* 0 == reset, non-zero == Receive the part count coupled with AXC_EJECT_BIN_OFFSET. */
+						ejection_set_part_no(0, (uint32_t)rx_can_cmd_info.value);
 						break;
 					}
 					default: break;
@@ -1095,28 +1090,23 @@ void parse_GTron_CAN_Msg_Data( void )
 			case EJECTOR_2: {
 				switch(rx_can_cmd_info.data[OPERATION_BYTE_IDX]) {
 					case AXC_TRIG_STEPSIZE: {
-						/* Distance from the Camera FOV to the Ejector ID */
-						
-						break;
-					}
-					case AXC_EJECT_SET_COUNT: {
-						/* Set the part/camera count to the one received. */
-						
-						break;
-					}
-					case AXC_EJECT_BIN_OFFSET: {
-						/* Receives the offset and ejector bin id to eject at coupled with AXC_EJECT_PARTCOUNT. */
-						
+						/* Distance from the Camera FOV to this ejector/cut point. */
+						ejection_set_distance(1, rx_can_cmd_info.value);
 						break;
 					}
 					case AXC_PAUSE: {
 						/* To stop the reeler motor at the ejecting position instead of ejecting. */
-						
+						ejection_enqueue(1, rx_can_cmd_info.value, EJECT_ACTION_PAUSE);
+						break;
+					}
+					case AXC_EJECT_BIN_OFFSET: {
+						/* Receives the offset and ejector bin id to eject at coupled with AXC_EJECT_PARTCOUNT. */
+						ejection_enqueue(1, rx_can_cmd_info.value, EJECT_ACTION_EJECT);
 						break;
 					}
 					case AXC_EJECT_PARTCOUNT: {
-						/* Receive the part count coupled with AXC_EJECT_BIN_OFFSET */
-						
+						/* 0 == reset, non-zero == Receive the part count coupled with AXC_EJECT_BIN_OFFSET. */
+						ejection_set_part_no(1, (uint32_t)rx_can_cmd_info.value);
 						break;
 					}
 					default: break;

@@ -38,9 +38,9 @@ uint16_t read_TMC2209_mscnt(uint16_t icID);
 
 void check_Which_2209_Motor_Moving(void);
 
-void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info);
+void update_TMC2209_Step_Tracking(volatile Motor_Info_t *motor_info);
 
-void tmc2209_set_velocity(uint16_t icID, Motor_Info_t *motor_info, int32_t velocity);
+void tmc2209_set_velocity(uint16_t icID, volatile Motor_Info_t *motor_info, int32_t velocity);
 
 
 #endif /* STEP_COUNTER_H_ */

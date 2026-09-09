@@ -32,8 +32,6 @@ bool check_4671_version_spi(void);
 
 bool check_passive_flash_spi(void);
 
-void timer_ramp_cb(void);
-
 void init_timers(void);
 
 void init_wdt(void);

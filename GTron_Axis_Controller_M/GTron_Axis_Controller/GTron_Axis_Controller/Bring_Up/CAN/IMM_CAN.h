@@ -57,16 +57,12 @@ void can_message_decode(unsigned int message_Id);
 /*
 Function API
 */
-//void can_init(struct can_async_descriptor * descr , void *const hw , unsigned int baud_rate , unsigned char rx_int_flag , unsigned char tx_int_flag);
 void can_begin(struct can_async_descriptor * descr, void *const hw , unsigned int baud_rate , unsigned char can_silent_pin);
 void can_set_txcb(struct can_async_descriptor * descr , FUNC_PTR cb);
 void can_set_rxcb(struct can_async_descriptor * descr , FUNC_PTR cb);
 bool can_send(struct can_async_descriptor * descr , unsigned int ID, unsigned char ext_flag, unsigned char dlc, can_union_type can_frame);
-unsigned char can_receive(struct can_async_descriptor * descr , unsigned int* ID, can_union_type * can_frame);
+unsigned char can_receive(struct can_async_descriptor * descr , uint32_t* ID, can_union_type * can_frame);
 void can_set_filter(struct can_async_descriptor * descr , unsigned int ID, unsigned int mask, unsigned char ext);
 void can_busoff_set_cb(struct can_async_descriptor *const descr);
 
-/* CAN messages call backs*/
-//void can_rx_cb_fxn(); //RX Callback function
-//void can_tx_cb_fxn(); //TX Callback function
 #endif /* IMM_CAN_H_ */

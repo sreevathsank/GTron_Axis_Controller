@@ -22,7 +22,7 @@ void can_tx(void)
 
 void can_Message_Read(void)
 {
-	unsigned int message_id;
+	uint32_t message_id;
 	if(can_rx_int)
 	{
 		can_rx_int--;
@@ -165,7 +165,7 @@ bool can_send(struct can_async_descriptor * descr , unsigned int ID, unsigned ch
 Function Name: can_receive
 Task:          Receive the can frame data
 */
-unsigned char  can_receive(struct can_async_descriptor * descr , unsigned int* ID, can_union_type * can_frame)
+unsigned char  can_receive(struct can_async_descriptor * descr , uint32_t* ID, can_union_type * can_frame)
 {
 	struct can_message rx_msg;
 	//uint8_t    data[8];

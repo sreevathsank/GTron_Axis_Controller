@@ -58,7 +58,7 @@ void EXTFLASH_init(void);
 // ExtFlash Methods
 
 extern void SPI_0_transfer_block(void *wr_buf, void *rd_buf, uint8_t size);
-extern void Ext_Flash_transfer_block(void *wr_buf, void *rd_buf, uint8_t size);
+extern void Ext_Flash_transfer_block(const void *wr_buf, void *rd_buf, uint8_t size);
 
 extern void EXTFLASH_setup(void);
 extern bool EXTFLASH_open(void);

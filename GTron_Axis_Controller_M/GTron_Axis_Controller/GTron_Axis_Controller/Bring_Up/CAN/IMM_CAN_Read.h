@@ -6,12 +6,9 @@
  */ 
 
 
-#ifndef IMM_CAN_H_
-#define IMM_CAN_H_
+#ifndef IMM_CAN_READ_H_
+#define IMM_CAN_READ_H_
 
-
-//#include "Zen_can_api/zen_can_api.h"
-//#include "Zen_can_api/zen_common.h"
 #include "Global_Vars.h"
 #include "All_Headers.h"
 #include "Bring_Up/CAN/IMM_CAN_Message_Id.h"
@@ -42,4 +39,4 @@ void can_Message_Operational_v3_ZAxis(uint32_t message_Id, int32_t data);
 
 void can_Message_Process_GTron_Peripheral_Byte(axis_current curr_axis, uint32_t message_Id, int32_t data);
 
-#endif /* IMM_CAN_H_ */
+#endif /* IMM_CAN_READ_H_ */

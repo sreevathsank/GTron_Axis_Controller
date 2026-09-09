@@ -85,34 +85,19 @@ void check_Which_2209_Motor_Moving(void)
 		return;
 	}
 	
-	if( m->flags.homing || m->flags.move_given || \
-	    m->flags.move_to_open_lim || m->flags.move_to_close_lim \
+	if( ( m->flags.homing || m->flags.move_given ||
+		m->flags.move_to_open_lim || m->flags.move_to_close_lim )
 		&& !gtron_limits.interrupt_raised ) { 
 		update_TMC2209_Step_Tracking(m);
-		uint32_t diff_ms = millis() - m->time_ms.move_start;
-		//if( diff_ms > (m->time_ms.theoretical_move * 1.1 ) 
-		//	&& ( !m->flags.is_tmc2209_homing && !m->flags.move_to_open_lim && !m->flags.move_to_close_lim ) ){
-		//	tmc2209_Stop_Motor(m);
-		//	DBG_Printf(ERR_LVL_ERROR, "Move Time taken more than 1.5 * theoretical time taken. Stoppping the Motor\n");
-		//}
+		//uint32_t diff_ms = millis() - m->time_ms.move_start;
 	}
 	
 	return;	
 }
 
-void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info)
+void update_TMC2209_Step_Tracking(volatile Motor_Info_t *motor_info)
 {
 	if(!motor_info) { return; }
-	
-	//uint32_t pwm_scale = tmc2209_readRegister(motor_info->comms.uart_addr, TMC2209_PWM_SCALE);
-	//uint8_t pwm_scale_sum = (pwm_scale >> TMC2209_PWM_SCALE_SUM_SHIFT) & TMC2209_PWM_SCALE_SUM_MASK;
-	
-	//uint32_t pwm_auto = tmc2209_readRegister(motor_info->comms.uart_addr, TMC2209_PWM_AUTO);
-	//uint8_t pwm_ofs_auto = (pwm_auto >> TMC2209_PWM_OFS_AUTO_SHIFT) & TMC2209_PWM_OFS_AUTO_MASK;
-	//uint8_t pwm_grad_auto = (pwm_auto >> TMC2209_PWM_GRAD_AUTO_SHIFT) & TMC2209_PWM_GRAD_AUTO_MASK;
-	//DBG_Printf(ERR_LVL_DEBUG, 
-	//	"pwm_scale = %ld -> pwm_scale_sum = %u | pwm_auto = %ld -> pwm_ofs_auto = %u, pwm_grad_auto = %u\n",
-	//	pwm_scale, pwm_scale_sum, pwm_auto, pwm_ofs_auto, pwm_grad_auto);
 	
 	uint16_t current_mscnt = read_TMC2209_mscnt(motor_info->comms.uart_addr);
 	DBG_Printf(ERR_LVL_DEBUG, "current_mscnt = %d\n", current_mscnt);
@@ -187,7 +172,7 @@ void update_TMC2209_Step_Tracking(Motor_Info_t *motor_info)
 	return;
 }
 
-void tmc2209_set_velocity(uint16_t icID, Motor_Info_t *motor_info, int32_t velocity)
+void tmc2209_set_velocity(uint16_t icID, volatile Motor_Info_t *motor_info, int32_t velocity)
 {
 	// Set the direction of motion according the velocity given.
 	if( velocity > 0 ) { 

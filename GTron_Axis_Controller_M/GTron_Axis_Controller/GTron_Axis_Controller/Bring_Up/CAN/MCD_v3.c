@@ -30,9 +30,9 @@ void reeler_Move_Done(void)
 	can_tx_frame.data[1] = AXC_MOVE_DONE;
 	for(int32_t i = 2; i < 8; i++) { can_tx_frame.data[i] = 0x00; }
 	can_Write(message_Id, data);
-	PRINTF_DEBUG && printf("\nad %x  cmd %x  typ %x mot %x Data %x %x %x %x %x", ad, cmd, typ ,mot, can_tx_frame.data[0], can_tx_frame.data[1], can_tx_frame.data[2], can_tx_frame.data[3], can_rx_frame.data[4]);
+	DBG_Printf(ERR_LVL_INFO, "\nad %x  cmd %x  typ %x mot %x Data %x %x %x %x %x", ad, cmd, typ ,mot, can_tx_frame.data[0], can_tx_frame.data[1], can_tx_frame.data[2], can_tx_frame.data[3], can_rx_frame.data[4]);
 	int32_t current_position = tmc4671_getActualPosition(MOTOR);
-	PRINTF_DEBUG && printf(" | Reeler Move Done | current position = %ld steps or %.2f mm\n", current_position, (current_position / TMC4671_MOVE_MM(1)) );
+	DBG_Printf(ERR_LVL_INFO, " | Reeler Move Done | current position = %ld steps or %.2f mm\n", current_position, (current_position / TMC4671_MOVE_MM(1)) );
 	check_move_done = false;
 	
 	return;
@@ -54,8 +54,8 @@ void reply_MCD_Common(uint8_t ad, uint8_t cmd, uint8_t typ, uint8_t mot)
 	encoding_CAN_Byte_Data(decoding_CAN_Byte_Data());
 	can_tx_frame.data[4] = can_Message_Calculate_Crc(message_Id, can_tx_frame.data_64bit);
 	can_Write(message_Id, data);
-	uint8_t print_buf[64];
-	PRINTF_DEBUG && printf("\nad %x  cmd %x  typ %x mot %x Data %x %x %x %x %x", ad, cmd, typ ,mot,can_tx_frame.data[0], can_tx_frame.data[1], can_tx_frame.data[2], can_tx_frame.data[3], can_rx_frame.data[4]);
+	
+	DBG_Printf(ERR_LVL_INFO, "\nad %x  cmd %x  typ %x mot %x Data %x %x %x %x %x", ad, cmd, typ ,mot,can_tx_frame.data[0], can_tx_frame.data[1], can_tx_frame.data[2], can_tx_frame.data[3], can_rx_frame.data[4]);
 	return;
 }
 
