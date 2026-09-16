@@ -350,70 +350,12 @@ void read_Set_Parameters_From_Flash(void)
 	axis_params.rotary_axis_enabled = ( read_tlv_flash(tlv_ptr, ROTARY_AXIS_FLASH, tlv_traversal) == 0 ) ? false : true;
 	limit_variables.soft_limit_low = read_tlv_flash(tlv_ptr, START_RANGE_FLASH, tlv_traversal);
 	limit_variables.soft_limit_high = read_tlv_flash(tlv_ptr, END_RANGE_FLASH, tlv_traversal);
+	
+	axis_params.rotary_axis_enabled = 1;
 
 	// PI parameters for X, Y and Z axes.
 	switch((axis_current)axis_id)
 	{
-		case X_AXIS:
-			axis_params.start_voltage		= 1000;
-			axis_params.align_delay			= read_tlv_flash(tlv_ptr, ENCODER_ALIGN_DELAY_MS_FLASH, tlv_traversal);//250;
-			axis_params.torque_flux_limit	= read_tlv_flash(tlv_ptr, CURRENT_LIMIT_mA_FLASH, tlv_traversal);//1800;
-			axis_params.torque_i			= read_tlv_flash(tlv_ptr, TORQUE_I_FLASH, tlv_traversal);//20000; //3850;
-			axis_params.torque_p			= read_tlv_flash(tlv_ptr, TORQUE_P_FLASH , tlv_traversal);//8000;  //3078;
-			axis_params.flux_i				= read_tlv_flash(tlv_ptr, FLUX_I_FLASH, tlv_traversal);//20000; //3850;
-			axis_params.flux_p				= read_tlv_flash(tlv_ptr, FLUX_P_FLASH, tlv_traversal);//8000;  //3078;
-			axis_params.velocity_i			= read_tlv_flash(tlv_ptr, VELOCITY_I_FLASH, tlv_traversal);//5000;  //300;
-			axis_params.velocity_p			= read_tlv_flash(tlv_ptr, VELOCITY_P_FLASH, tlv_traversal);//2500;  //1000;
-			axis_params.position_i			= read_tlv_flash(tlv_ptr, POSITION_I_FLASH, tlv_traversal);//0;
-			axis_params.position_p			= read_tlv_flash(tlv_ptr, POSITION_P_FLASH, tlv_traversal);//2000;	 //500;
-			axis_params.home_search_vel		= read_tlv_flash(tlv_ptr, HOMING_VELOCITY_FLASH, tlv_traversal);//160;
-			axis_params.home_switch_vel		= (axis_params.home_search_vel / 10);
-			axis_params.endurance_vel		= read_tlv_flash(tlv_ptr, ENDURACE_VELOCTIY_FLASH, tlv_traversal);////1000;
-			axis_params.acceleration		= read_tlv_flash(tlv_ptr, ENDURANCE_ACCELERATION_FLASH, tlv_traversal);//5000;
-			axis_params.acceleration_delta	= (axis_params.acceleration * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS));
-			axis_params.jerk				= read_tlv_flash(tlv_ptr, ENDURANCE_JERK_FLASH, tlv_traversal);//5000;
-			axis_params.jerk_delta			= (axis_params.jerk * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS) * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS));
-		break;								  
-		case Y_AXIS:
-			axis_params.start_voltage		= 1000;
-			axis_params.align_delay			= read_tlv_flash(tlv_ptr, ENCODER_ALIGN_DELAY_MS_FLASH, tlv_traversal);//250;
-			axis_params.torque_flux_limit	= read_tlv_flash(tlv_ptr, CURRENT_LIMIT_mA_FLASH, tlv_traversal);//1800;
-			axis_params.torque_i			= read_tlv_flash(tlv_ptr, TORQUE_I_FLASH, tlv_traversal);//20000; //3850;
-			axis_params.torque_p			= read_tlv_flash(tlv_ptr, TORQUE_P_FLASH , tlv_traversal);//8000;  //3078;
-			axis_params.flux_i				= read_tlv_flash(tlv_ptr, FLUX_I_FLASH, tlv_traversal);//20000; //3850;
-			axis_params.flux_p				= read_tlv_flash(tlv_ptr, FLUX_P_FLASH, tlv_traversal);//8000;  //3078;
-			axis_params.velocity_i			= read_tlv_flash(tlv_ptr, VELOCITY_I_FLASH, tlv_traversal);//5000;  //300;
-			axis_params.velocity_p			= read_tlv_flash(tlv_ptr, VELOCITY_P_FLASH, tlv_traversal);//2500;  //1000;
-			axis_params.position_i			= read_tlv_flash(tlv_ptr, POSITION_I_FLASH, tlv_traversal);//0;
-			axis_params.position_p			= read_tlv_flash(tlv_ptr, POSITION_P_FLASH, tlv_traversal);//2000;	 //500;
-			axis_params.home_search_vel		= read_tlv_flash(tlv_ptr, HOMING_VELOCITY_FLASH, tlv_traversal);//160;
-			axis_params.home_switch_vel		= (axis_params.home_search_vel / 10);
-			axis_params.endurance_vel		= read_tlv_flash(tlv_ptr, ENDURACE_VELOCTIY_FLASH, tlv_traversal);////1000;
-			axis_params.acceleration		= read_tlv_flash(tlv_ptr, ENDURANCE_ACCELERATION_FLASH, tlv_traversal);//5000;
-			axis_params.acceleration_delta	= (axis_params.acceleration * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS));
-			axis_params.jerk				= read_tlv_flash(tlv_ptr, ENDURANCE_JERK_FLASH, tlv_traversal);//5000;
-			axis_params.jerk_delta			= (axis_params.jerk * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS) * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS));
-		break;
-		case Z_AXIS:
-			axis_params.start_voltage		= 1500;
-			axis_params.align_delay			= read_tlv_flash(tlv_ptr, ENCODER_ALIGN_DELAY_MS_FLASH, tlv_traversal);//250;//500;
-			axis_params.torque_flux_limit	= read_tlv_flash(tlv_ptr, CURRENT_LIMIT_mA_FLASH, tlv_traversal);//1800;//2000;
-			axis_params.torque_i			= read_tlv_flash(tlv_ptr, TORQUE_I_FLASH, tlv_traversal);//20000; //3850;//15000;
-			axis_params.torque_p			= read_tlv_flash(tlv_ptr, TORQUE_P_FLASH , tlv_traversal);//8000;  //3078;//5300;
-			axis_params.flux_i				= read_tlv_flash(tlv_ptr, FLUX_I_FLASH, tlv_traversal);//20000; //3850;//15000;
-			axis_params.flux_p				= read_tlv_flash(tlv_ptr, FLUX_P_FLASH, tlv_traversal);//8000;  //3078;//5300;
-			axis_params.velocity_i			= read_tlv_flash(tlv_ptr, VELOCITY_I_FLASH, tlv_traversal);//5000;  //300;//4000;
-			axis_params.velocity_p			= read_tlv_flash(tlv_ptr, VELOCITY_P_FLASH, tlv_traversal);//2500;  //1000;//2000;
-			axis_params.position_i			= read_tlv_flash(tlv_ptr, POSITION_I_FLASH, tlv_traversal);//0;//0;
-			axis_params.position_p			= read_tlv_flash(tlv_ptr, POSITION_P_FLASH, tlv_traversal);//2000;	 //500;//1000;
-			axis_params.home_search_vel		= read_tlv_flash(tlv_ptr, HOMING_VELOCITY_FLASH, tlv_traversal);//160;//160;
-			axis_params.home_switch_vel		= (axis_params.home_search_vel / 10);//(axis_params.home_search_vel / 10);
-			axis_params.endurance_vel		= read_tlv_flash(tlv_ptr, ENDURACE_VELOCTIY_FLASH, tlv_traversal);////1000;//1000;
-			axis_params.acceleration		= read_tlv_flash(tlv_ptr, ENDURANCE_ACCELERATION_FLASH, tlv_traversal);//5000;//8000;
-			axis_params.acceleration_delta	= (axis_params.acceleration * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS));//(axis_params.acceleration * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS));
-			axis_params.jerk				= read_tlv_flash(tlv_ptr, ENDURANCE_JERK_FLASH, tlv_traversal);//5000;//8000;
-			axis_params.jerk_delta			= (axis_params.jerk * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS) * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS));//(axis_params.jerk * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS) * (RAMP_INTERVAL_MS * ONE_MS_IN_SECONDS));
-		break;
 		case GTRON_AXC_TOP:
 			axis_params.start_voltage		= 1500;
 			axis_params.align_delay			= read_tlv_flash(tlv_ptr, ENCODER_ALIGN_DELAY_MS_FLASH, tlv_traversal);//250;
@@ -630,11 +572,13 @@ void call_All_Init_Functions(void)
 		case REELER1_GUIDE_REELERADJ1: {
 			init_Motor_Struct(p_reeler1_info, MOTOR_REELER1);
 			
-			init_Motor_Struct(p_guide_info, MOTOR_GUIDE);
-			init_tmc2209_motor(TMC2209_MOT_ADDR1, p_guide_info);
-			
-			init_Motor_Struct(p_reeleradj1_info, MOTOR_REELERADJ1);
-			init_tmc2209_motor(TMC2209_MOT_ADDR3, p_reeleradj1_info);
+			#if IS_DISCRETE == false
+				init_Motor_Struct(p_guide_info, MOTOR_GUIDE);
+				init_tmc2209_motor(TMC2209_MOT_ADDR1, p_guide_info);
+				
+				init_Motor_Struct(p_reeleradj1_info, MOTOR_REELERADJ1);
+				init_tmc2209_motor(TMC2209_MOT_ADDR3, p_reeleradj1_info);
+			#endif
 			
 			mot_array[TMC4671_MOTOR]	= p_reeler1_info;
 			mot_array[TMC2209_MOTOR1]	= p_guide_info;

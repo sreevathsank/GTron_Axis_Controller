@@ -54,7 +54,7 @@ int main(void)
 	
 	// Enable Homing Flag if RF is enabled for X, Y or Z axis or repeat_ramp is greater than 0.
 	limit_variables.homing = ( repeat_ramp > 0 ) ? true : false;
-	
+	p_reeler1_info->flags.sag_enabled = (IS_DISCRETE) ? true : false;
 	for(;;) {
 		/* TMC2209 Motor step calculation during movements. */
 		if(is_tmc2209_mot_moving) {

@@ -117,8 +117,8 @@ void can_begin(struct can_async_descriptor * descr, void *const hw , unsigned in
 	gpio_set_pin_direction(can_silent_pin , GPIO_DIRECTION_OUT);
 	gpio_set_pin_level(can_silent_pin, 0); // Set CAN silent pin LOW
 	/* CAN Bus off debug led indication */
-	gpio_set_pin_direction(DEBUG_LED , GPIO_DIRECTION_OUT);
-	gpio_set_pin_level(DEBUG_LED, 0); // Set CAN silent pin LOW
+	//gpio_set_pin_direction(DEBUG_LED , GPIO_DIRECTION_OUT);
+	//gpio_set_pin_level(DEBUG_LED, 0); // Set CAN silent pin LOW
 	// printf("0x%x \n",hri_can_read_NBTP_reg(dev->hw));
 }
 

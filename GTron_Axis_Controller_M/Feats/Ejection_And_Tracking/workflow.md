@@ -38,21 +38,24 @@ Instead SW sends the **part count**, and AxC indexes its snapshot ring directly 
 ### 3.1 Trigger ring (producer: main loop, consumer: CAN RX)
 
 ```c
-TrigEntry_t g_trig_ring[256];   // { int32 pos; uint32 count; }
+TrigEntry_t g_trig_ring[175];   // { int32 pos; uint32 count; }
 volatile uint32_t g_cam_count;  // AxC's own camera-trigger count
 ```
 
 - Written every camera trigger inside `trigger_Camera_Line()`.
-- Index is `count & 0xFF`. The full `count` is stored as a **tag** to detect overwrites
+- Index is `count % 175`. The full `count` is stored as a **tag** to detect overwrites
   and u32 wraparound (part counts can reach 80,000, well past any 16-bit counter).
+- Depth 175 (not power-of-two) covers the ~165 worst-case parts-in-flight with ~10 slots
+  of margin; wraparound uses constant-modulo (`% 175`), which compiles to a reciprocal
+  multiply + shift on M0+ — no hardware-divide or library call.
 
 ### 3.2 Per-ejector target queue (producer: CAN RX, consumer: main loop)
 
 ```c
-Ejector_Queue_t g_ejectors[2];  // { target_gc[256], action[256], part_no[256], head, tail, distance, ... }
+Ejector_Queue_t g_ejectors[2];  // { target_gc[175], action[175], part_no[175], head, tail, distance, ... }
 ```
 
-- Each ejector has its own 256-deep ring of pending `{target, action, part_no}`.
+- Each ejector has its own 175-deep ring of pending `{target, action, part_no}`.
 - `action` is either `EJECT` (send CAN to SysCtrl) or `PAUSE` (stop the reeler).
 - `part_no` is remembered so the outbound eject frame can echo which part is being
   ejected.
@@ -121,7 +124,7 @@ Count is **1-based** — the first trigger after reset is part 1, matching SW:
 
 ```
 g_cam_count = g_cam_count + 1                     // 1, 2, 3, ...
-idx = g_cam_count & 0xFF
+idx = g_cam_count % 175
 g_trig_ring[idx].pos   = tmc4671_getActualPosition(MOTOR)   // snapshot
 g_trig_ring[idx].count = g_cam_count                        // tag
 ```
@@ -140,11 +143,21 @@ if ejector_id >= 2            -> FAULT_BAD_EJECTOR_ID
 if !g_pending_valid           -> FAULT_UNPAIRED_ACTION, error to SysCtrl
 if ejector_id != pending_id   -> mismatch, error
 part_no = g_pending_part_no;  clear pending
-e = &g_trig_ring[part_no & 0xFF]
+e = &g_trig_ring[part_no % 175]
 if e->count != part_no        -> FAULT_STALE_PART (overwritten), error to SW
 target = e->pos + distance[ejector] + offset
 if target <= current_position -> FAULT_STALE_PART (already passed), error to SW
-enqueue {target, action, part_no}; if full -> FAULT_QUEUE_OVERFLOW
+
+-- duplicate check (same-ejector or cross-ejector correction) --
+qA = &g_ejectors[ejector_id]         (new bin)
+qB = &g_ejectors[1 - ejector_id]     (old bin)
+if !q_empty(qA) AND qA->part_no[prev(qA->tail)] == part_no:
+    overwrite qA at prev(tail) with {target, action, part_no}; return
+else if !q_empty(qB) AND qB->part_no[prev(qB->tail)] == part_no:
+    qB->tail = prev(qB->tail)        (remove stale entry from old bin)
+    fall through to append
+
+append into A: {target, action, part_no}; if full -> FAULT_QUEUE_OVERFLOW
 ```
 
 ### 5.4 Service (main loop, `ejection_service`, already at Motion.c:1471)
@@ -153,9 +166,13 @@ enqueue {target, action, part_no}; if full -> FAULT_QUEUE_OVERFLOW
 for each ejector:
     while !empty && current_position >= target_gc[head]:
         if action == EJECT -> ejection_send_ejection_cmd(id, part_no[head])
-        if action == PAUSE -> reeler_Pause_Motor()
+        if action == PAUSE -> reeler_Pause_Motor(); ejection_send_pause_reply(id, part_no[head])
         head++
 ```
+
+`ejection_send_pause_reply` sends `AXC_PAUSE`(21) on `CAN_TOP_AXC_TO_SYSCTRL_ID`
+with the part count, so SysCtrl knows which part the reeler stopped on. (Potential
+opcode collision with the inbound `AXC_PAUSE` — needs SysCtrl dev confirmation.)
 
 ---
 
@@ -163,15 +180,19 @@ for each ejector:
 
 | case | detection | response |
 |---|---|---|
-| **Stale: part overwritten** (`count != part_no`, >256 triggers late) | tag mismatch | `FAULT_STALE_PART` → `AXC_ERR_EJECT_STALE` to SW |
+| **Stale: part overwritten** (`count != part_no`, >175 triggers late) | tag mismatch | `FAULT_STALE_PART` → `AXC_ERR_EJECT_STALE` to SW |
 | **Stale: part already passed** (target <= current) | position check | `FAULT_STALE_PART` → `AXC_ERR_EJECT_STALE` to SW |
 | **Unpaired action** (frame 2 without frame 1) | `!g_pending_valid` | `FAULT_UNPAIRED_ACTION` → `AXC_ERR_EJECT_UNPAIRED` to SysCtrl |
-| **Queue overflow** (>256 pending targets) | head/tail collision | `FAULT_QUEUE_OVERFLOW` → `AXC_ERR_EJECT_OVERFLOW` |
+| **Queue overflow** (>175 pending targets) | head/tail collision | `FAULT_QUEUE_OVERFLOW` → `AXC_ERR_EJECT_OVERFLOW` |
 | **Bad ejector id** | `id >= 2` | `FAULT_BAD_EJECTOR_ID` (local bug, log) |
 | **Count wrap** (part count > 65535) | full `uint32` tag | no aliasing; tag compare is exact |
 | **Reset mid-run** | `AXC_EJECT_PARTCOUNT == 0` | `ejection_reset()` (runtime state only) |
 | **Homing / motor stop mid-run** | — | `ejection_flush_all()` + reset on stop/homing |
-| **Trigger ring overflow** (>256 triggers without command) | overwritten slot | caught as stale on later lookup |
+| **Trigger ring overflow** (>175 triggers without command) | overwritten slot | caught as stale on later lookup |
+| **Same-ejector correction** (part count re-sent to same bin) | tail-1 match in same queue | overwrite all three fields (target, action, part_no) in place |
+| **Cross-ejector correction** (part count re-sent to different bin after spurious inspection) | tail-1 match in other queue | remove stale entry from old queue (`tail--`), append corrected entry into new queue |
+| **Correction on empty queue** | neither queue has tail-1 match | normal append (no duplicate found) |
+| **Late correction** (>1 part enqueued since original) | tail-1 does not match part_no | normal append (duplicate possible); SW/SysCtrl responsibility |
 
 ---
 

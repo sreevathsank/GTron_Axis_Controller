@@ -201,7 +201,7 @@ void reeler_Stop_Motor( void )
 	move_given_s_ramp							= false; 
 	check_move_done								= false;
 	p_reeler1_info->flags.rotate_vel_mode		= false;
-	p_reeler1_info->flags.sag_enabled			= false;
+	p_reeler1_info->flags.sag_enabled			= (IS_DISCRETE) ? true : false;
 	p_reeler1_info->hybrid.one_shot_armed		= false;
 	p_reeler1_info->flags.is_paused				= false;
 	p_reeler1_info->hybrid.cycle_armed			= false;
@@ -238,7 +238,7 @@ void reeler_Pause_Motor( void )
 	move_given_s_ramp						= false; 
 	check_move_done							= false;
 	p_reeler1_info->flags.rotate_vel_mode	= false;
-	p_reeler1_info->flags.sag_enabled		= false;
+	p_reeler1_info->flags.sag_enabled		= (IS_DISCRETE) ? true : false;;
 	homing_v = 0;
 	timer_stop(&VEL_TIMER);
 	trig_no = 0;
@@ -764,7 +764,7 @@ void parse_GTron_CAN_Msg_Data( void )
 						break;
 					}
 					case 0: {
-						p_reeler1_info->flags.sag_enabled = false;
+						p_reeler1_info->flags.sag_enabled = (IS_DISCRETE) ? true : false;
 						if(!p_reeler1_info->flags.sag_enabled || !p_reeler1_info->flags.rotate_vel_mode) {
 							trig_no = 0;
 							prev_trig_no = 0;
@@ -794,7 +794,7 @@ void parse_GTron_CAN_Msg_Data( void )
 					DBG_Printf(ERR_LVL_DEBUG, "\nSag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Rotate.\n");
 				break;
 				case 0:
-					p_reeler1_info->flags.sag_enabled = false;
+					p_reeler1_info->flags.sag_enabled = (IS_DISCRETE) ? true : false;
 					//if(!reeler_info.flags.sag_enabled & !reeler_info.flags.rotate_vel_mode)
 					{
 						timer_stop(&VEL_TIMER);

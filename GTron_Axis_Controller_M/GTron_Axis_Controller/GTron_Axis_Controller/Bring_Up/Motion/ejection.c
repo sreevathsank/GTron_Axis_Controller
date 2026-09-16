@@ -24,7 +24,12 @@ static inline bool q_is_empty(const EjectorQueue_t *q)
 
 static inline uint16_t q_next(uint16_t i)
 {
-	return (uint16_t)( (i + 1u) & QUEUE_MASK );
+	return (uint16_t)( (i + 1u) % QUEUE_DEPTH );
+}
+
+static inline uint16_t q_prev(uint16_t i)
+{
+	return (uint16_t)((i + QUEUE_DEPTH - 1u) % QUEUE_DEPTH);
 }
 
 /* Wrap-safe "reached" check: true when current_gc has passed or reached target_gc */
@@ -67,6 +72,8 @@ void ejection_flush_all(void)
 	g_pending_ejector_id	= 0u;
 	g_pending_valid			= false;
 	
+	DBG_Printf(ERR_LVL_INFO, "[EJT] Flushing all queues.\n");
+	
 	return;
 }
 
@@ -88,6 +95,8 @@ void ejection_set_distance(uint8_t ejector_id, int32_t distance)
 	}
 	g_ejectors[ejector_id].distance = distance;
 	
+	DBG_Printf(ERR_LVL_INFO, "[EJT] Set Ejector Distance/Delta for Ejector %d = %ld usteps\n", ejector_id, g_ejectors[ejector_id].distance);
+	
 	return;
 }
 
@@ -95,13 +104,16 @@ void ejection_set_distance(uint8_t ejector_id, int32_t distance)
 void ejection_note_trigger(int32_t pos)
 {
 	uint32_t c		= g_cam_count + 1u;		/* 1-based: first trigger -> 1 */
-	uint32_t idx	= c & TRIG_RING_MASK;	/* Ensures that idx circles back to 0 after TRIG_RING_DEPTH */
+	uint32_t idx	= c % TRIG_RING_DEPTH;	/* Ensures that idx circles back to 0 after TRIG_RING_DEPTH */
 	
 	g_trig_ring[idx].pos	= pos;
 	g_trig_ring[idx].count	= c;
 	__asm__ volatile("" ::: "memory");		/* Compiler barrier. */
 	g_cam_count	= c;
-		
+	
+	DBG_Printf(ERR_LVL_DEBUG, "[EJT] Tracking Q | Index = %ld | Pos = %ld | Count = %ld\n", 
+								idx, g_trig_ring[idx].pos, g_trig_ring[idx].count);
+	
 	return;
 }
 
@@ -116,6 +128,8 @@ void ejection_set_part_no(uint8_t ejector_id, uint32_t part_no)
 	g_pending_part_no		= part_no;
 	g_pending_ejector_id	= ejector_id;
 	g_pending_valid			= true;
+	
+	DBG_Printf(ERR_LVL_INFO, "[EJT] Part Count received = %ld for Ejector %d\n", g_pending_part_no, g_pending_ejector_id);
 	
 	return;
 }
@@ -132,6 +146,7 @@ void ejection_enqueue(uint8_t ejector_id, int32_t offset, EjectAction_t action)
 	/* An action frame must be preceded by a part-count frame. */
 	if (!g_pending_valid) {
 		ejection_fault_raise(FAULT_UNPAIRED_ACTION);
+		DBG_Printf(ERR_LVL_ERROR, "Action frame was not preceded by part-count frame.\n");
 		
 		return;
 	} 
@@ -139,6 +154,7 @@ void ejection_enqueue(uint8_t ejector_id, int32_t offset, EjectAction_t action)
 	/* Cross-check that the latched count belongs to the same ejector. */
 	if (ejector_id != g_pending_ejector_id) {
 		ejection_fault_raise(FAULT_UNPAIRED_ACTION);
+		DBG_Printf(ERR_LVL_ERROR, "Pending (Offset + Action) ejector is not the same as the one received.\n");
 		
 		return;
 	}
@@ -147,25 +163,46 @@ void ejection_enqueue(uint8_t ejector_id, int32_t offset, EjectAction_t action)
 	g_pending_valid		= false;
 	
 	/* Look up the snapshot; the full-count tag rejects overwritten/aliased slots. */
-	uint32_t idx	= part_no & TRIG_RING_MASK;
+	uint32_t idx	= part_no % TRIG_RING_DEPTH;
 	TrigEntry_t *e	= &g_trig_ring[idx];
 	if (e->count != part_no) {
 		ejection_fault_raise(FAULT_STALE_PART);
-		
+		DBG_Printf(ERR_LVL_ERROR, "Received Part count %ld != Trigger'd Part Count %ld\n",
+					part_no, e->count);
+					
 		return;
 	}
 	
 	EjectorQueue_t *q	= &g_ejectors[ejector_id];
 	int32_t target		= e->pos + q->distance + offset;
+	DBG_Printf(ERR_LVL_DEBUG, "[EJT] Ejector %d's %ld (Part Pos) + %ld (Ejt_Delta) + %ld (offset) = %ld usteps (Ejt Pos)\n",
+				ejector_id, e->pos, q->distance, offset, target);
 	
 	/* If the part has already physically passed the ejector, this is a stale command. */
 	int32_t now			= tmc4671_getActualPosition(MOTOR);
 	if (gc_reached(now, target)) {
 		q->stale++;
 		ejection_fault_raise(FAULT_STALE_PART);
+		DBG_Printf(ERR_LVL_ERROR, "Already physically passed. C_Pos = %ld | E_pos = %ld\n", now, target);
 		
 		return;
 	}
+	
+	EjectorQueue_t *qA	= &g_ejectors[ejector_id];
+	EjectorQueue_t *qB	= &g_ejectors[1u - ejector_id];
+	
+	/* Case 1: Same-ejector correction - overwrite tail-1. */
+	if(!q_is_empty(qA) && qA->part_no[q_prev(qA->tail)] == part_no) {
+		uint16_t p			= q_prev(qA->tail);
+		qA->target_gc[p]	= target;
+		qA->action[p]		= (uint8_t)action;
+		qA->part_no[p]		= part_no;
+	}
+	
+	/* Case 2: Cross-ejector correction - free stale entry from B, then append to A */
+	if(!q_is_empty(qB) && qB->part_no[q_prev(qB->tail)] == part_no) {
+		qB->tail	= q_prev(qB->tail);
+	}	
 	
 	uint16_t n	= q_next(q->tail);
 	if (n == q->head) {
@@ -180,6 +217,8 @@ void ejection_enqueue(uint8_t ejector_id, int32_t offset, EjectAction_t action)
 	q->part_no[q->tail]		= part_no;
 	__asm__ volatile("" ::: "memory");
 	q->tail					= n;
+	
+	DBG_Printf(ERR_LVL_INFO, "[EJT] Enqueue Ejector %d | Pos = %ld usteps | Part No = %ld\n", ejector_id, target, part_no);
 	
 	return;
 }
@@ -210,17 +249,22 @@ void ejection_send_ejection_cmd(uint8_t bin, uint32_t part_no)
 {
 	can_AxC_Write(	CAN_TOP_AXC_TO_SYSCTRL_ID,
 					ejector_peripheral(bin),
-					AXC_EJECT_PART,
+					AXC_EJECT_BIN_OFFSET,
 					(int32_t)part_no	);
+	
+	DBG_Printf(ERR_LVL_INFO, "[EJT] Ejection Eject Bin %d | Part No = %ld | C_Pos = %ld\n", bin, part_no, tmc4671_getActualPosition(MOTOR));
 	return;
 }
 
-void ejection_send_pause_reply(uint8_t bin uint32_t part_no)
+void ejection_send_pause_reply(uint8_t bin, uint32_t part_no)
 {
 	can_AxC_Write(	CAN_TOP_AXC_TO_SYSCTRL_ID,
 					ejector_peripheral(bin),
 					AXC_PAUSE,
 					(int32_t)part_no	);
+	
+	DBG_Printf(ERR_LVL_INFO, "[EJT] Ejection Pause Bin %d | Part No = %ld | C_Pos = %ld\n", bin, part_no, tmc4671_getActualPosition(MOTOR));				
+	
 	return;
 }
 

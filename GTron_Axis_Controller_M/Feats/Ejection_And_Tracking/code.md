@@ -73,16 +73,14 @@ typedef enum {
 /** \brief	Number of ejector bins (TIM treats EJECTOR_1 as its single cut point). */
 #define NUM_EJECTORS        2u
 
-/** \brief	Depth of the trigger snapshot ring (must be power of two). */
-#define TRIG_RING_DEPTH     256u
-#define TRIG_RING_MASK      (TRIG_RING_DEPTH - 1u)
+/** \brief	Depth of the trigger snapshot ring (covers ~165 in-flight parts + margin). */
+#define TRIG_RING_DEPTH     175u
 
-/** \brief	Depth of each per-ejector pending-target queue (must be power of two). */
-#define QUEUE_DEPTH         256u
-#define QUEUE_MASK          (QUEUE_DEPTH - 1u)
+/** \brief	Depth of each per-ejector pending-target queue (covers ~165 in-flight parts). */
+#define QUEUE_DEPTH         175u
 
-#if ((TRIG_RING_DEPTH & TRIG_RING_MASK) != 0u) || ((QUEUE_DEPTH & QUEUE_MASK) != 0u)
-#error "Ejection ring/queue depths must be non-zero powers of two"
+#if (TRIG_RING_DEPTH < 2u) || (QUEUE_DEPTH < 2u)
+#error "Ejection ring/queue depths must be >= 2"
 #endif
 
 /**
@@ -200,6 +198,15 @@ void ejection_note_trigger(int32_t pos);
 void ejection_send_ejection_cmd(uint8_t bin, uint32_t part_no);
 
 /**
+ * \brief	Sends a CAN frame to SysCtrl to inform that the reeler has paused on the
+ *			cutting position (TIM).
+ *
+ * @param[in]	bin		Ejector index (0/1).
+ * @param[in]	part_no	Part count of the part at the cut position.
+ */
+void ejection_send_pause_reply(uint8_t bin, uint32_t part_no);
+
+/**
  * \brief	Raises a fault: logs it and, where relevant, sends a CAN error to SW/SysCtrl.
  *
  * @param[in]	code	Fault code.
@@ -241,7 +248,12 @@ static inline bool q_is_empty(const Ejector_Queue_t *q)
 
 static inline uint16_t q_next(uint16_t i)
 {
-	return (uint16_t)((i + 1u) & QUEUE_MASK);
+	return (uint16_t)((i + 1u) % QUEUE_DEPTH);
+}
+
+static inline uint16_t q_prev(uint16_t i)
+{
+	return (uint16_t)((i + QUEUE_DEPTH - 1u) % QUEUE_DEPTH);
 }
 
 /* Wrap-safe "reached" check: true when current_gc has passed or reached target_gc. */
@@ -306,7 +318,7 @@ void ejection_set_distance(uint8_t ejector_id, int32_t distance)
 void ejection_note_trigger(int32_t pos)
 {
 	uint32_t c   = g_cam_count + 1u;   /* 1-based: first trigger -> 1 */
-	uint32_t idx = c & TRIG_RING_MASK;
+	uint32_t idx = c % TRIG_RING_DEPTH;
 
 	g_trig_ring[idx].pos   = pos;   /* Write data first... */
 	g_trig_ring[idx].count = c;     /* ...then the tag.   */
@@ -354,37 +366,54 @@ void ejection_enqueue(uint8_t ejector_id, int32_t offset, eject_action_t action)
 	g_pending_valid  = false;   /* Consume the latch. */
 
 	/* Look up the snapshot; the full-count tag rejects overwritten/aliased slots. */
-	uint32_t    idx = part_no & TRIG_RING_MASK;
+	uint32_t    idx = part_no % TRIG_RING_DEPTH;
 	TrigEntry_t *e  = &g_trig_ring[idx];
 	if (e->count != part_no) {
 		fault_raise(FAULT_STALE_PART);
 		return;
 	}
 
-	Ejector_Queue_t *q = &g_ejectors[ejector_id];
-
-	int32_t target = e->pos + q->distance + offset;
+	int32_t target = e->pos + g_ejectors[ejector_id].distance + offset;
 
 	/* If the part has already physically passed the ejector, this is a stale command. */
 	int32_t now = tmc4671_getActualPosition(MOTOR);
 	if (gc_reached(now, target)) {
-		q->stale++;
+		g_ejectors[ejector_id].stale++;
 		fault_raise(FAULT_STALE_PART);
 		return;
 	}
 
-	uint16_t n = q_next(q->tail);
-	if (n == q->head) {
-		q->overflows++;
+	/* --- Spurious-trigger correction (same-ejector or cross-ejector) ----------- */
+	Ejector_Queue_t *qA = &g_ejectors[ejector_id];
+	Ejector_Queue_t *qB = &g_ejectors[1u - ejector_id];
+
+	/* Case 1: same-ejector correction — part_no is the last entry in this queue. */
+	if (!q_is_empty(qA) && qA->part_no[q_prev(qA->tail)] == part_no) {
+		uint16_t p = q_prev(qA->tail);
+		qA->target_gc[p] = target;
+		qA->action[p]    = (uint8_t)action;
+		qA->part_no[p]   = part_no;
+		return;
+	}
+
+	/* Case 2: cross-ejector correction — part_no is the last entry in the other queue. */
+	if (!q_is_empty(qB) && qB->part_no[q_prev(qB->tail)] == part_no) {
+		qB->tail = q_prev(qB->tail);   /* remove the stale entry from the old bin */
+	}
+
+	/* Normal append into qA. */
+	uint16_t n = q_next(qA->tail);
+	if (n == qA->head) {
+		qA->overflows++;
 		fault_raise(FAULT_QUEUE_OVERFLOW);
 		return;
 	}
 
-	q->target_gc[q->tail] = target;
-	q->action[q->tail]    = (uint8_t)action;
-	q->part_no[q->tail]   = part_no;
+	qA->target_gc[qA->tail] = target;
+	qA->action[qA->tail]    = (uint8_t)action;
+	qA->part_no[qA->tail]   = part_no;
 	__asm__ volatile("" ::: "memory");
-	q->tail = n;
+	qA->tail = n;
 }
 
 /* --- Service (consumer; main loop) ------------------------------------------ */
@@ -399,6 +428,7 @@ void ejection_service(int32_t current_gc)
 				ejection_send_ejection_cmd(e, q->part_no[q->head]);
 			} else {
 				reeler_Pause_Motor();
+				ejection_send_pause_reply(e, q->part_no[q->head]);
 			}
 			q->fired++;
 			q->head = q_next(q->head);
@@ -413,6 +443,14 @@ void ejection_send_ejection_cmd(uint8_t bin, uint32_t part_no)
 	can_AxC_Write(CAN_TOP_AXC_TO_SYSCTRL_ID,
 				  ejector_peripheral(bin),
 				  AXC_EJECT_PART,
+				  (int32_t)part_no);
+}
+
+void ejection_send_pause_reply(uint8_t bin, uint32_t part_no)
+{
+	can_AxC_Write(CAN_TOP_AXC_TO_SYSCTRL_ID,
+				  ejector_peripheral(bin),
+				  AXC_PAUSE,
 				  (int32_t)part_no);
 }
 

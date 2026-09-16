@@ -179,6 +179,9 @@ void align_Rotor_ABNEnc(uint8_t motor, uint16_t startVoltage)
 	delay_ms(500);
 	
 	axis_params.rot_enc_res = read_tlv_flash(tlv_ptr, ROTARY_ENCODER_PPR_FLASH, tlv_traversal);
+	#if IS_DISCRETE
+		axis_params.rot_enc_res = 4096;
+	#endif
 	int32_t rot_enc_dir = (read_tlv_flash(tlv_ptr, ROTARY_ENCODER_DIRECTION_FLASH, tlv_traversal) == 0) ? ABN_ENC_REVERSE_DIRECTION : ABN_ENC_FORWARD_DIRECTION;
 	axis_params.lin_enc_res = read_tlv_flash(tlv_ptr, LINEAR_ENCODER_CPR_FLASH, tlv_traversal);
 	int32_t linear_enc_dir = (read_tlv_flash(tlv_ptr, LINEAR_ENCODER_DIRECTION_FLASH, tlv_traversal) == 0) ? ABN_ENC_REVERSE_DIRECTION : ABN_ENC_FORWARD_DIRECTION;
@@ -203,7 +206,11 @@ void align_Rotor_ABNEnc(uint8_t motor, uint16_t startVoltage)
 			tmc4671_writeInt(motor, TMC4671_ABN_DECODER_MODE, rot_enc_dir);		// Spring Setup -> Reverse | Proto1 9030 -> Reverse | Proto2 9010 -> Forward | Proto3 9010 -> Forward | Prod 1 9010 -> 
 		break;
 		case GTRON_AXC_TOP:
-			tmc4671_writeInt(MOTOR, TMC4671_ABN_DECODER_MODE, rot_enc_dir | USE_ABN_AS_N);		// For v3 Table. v5 -> forward. | Proto1 -> Reverse |
+			if(IS_DISCRETE) {
+				tmc4671_writeInt(MOTOR, TMC4671_ABN_DECODER_MODE, rot_enc_dir);
+			} else {
+				tmc4671_writeInt(MOTOR, TMC4671_ABN_DECODER_MODE, rot_enc_dir | USE_ABN_AS_N);		// For v3 Table. v5 -> forward. | Proto1 -> Reverse |
+			}
 			tmc4671_writeInt(motor, TMC4671_ABN_DECODER_PPR, axis_params.rot_enc_res);		// 0x2000 -> 8192 | 0x4000 -> 16384	// For v3 Table.
 		break;
 		default: break;
@@ -831,7 +838,10 @@ void check_Limit_Flags(void)
  */
 void rot_Enc_Z_Pulse_Interrupt_Callback(void)
 {
-	if(!limit_variables.homing) { return; }
+	if(!limit_variables.homing || IS_DISCRETE) { 
+		return; 
+	}
+	
 	delay_ms(50);
 	ext_irq_disable(ROTENC_Z);
 	tmc4671_setModeMotion(MOTOR, STOPPED_MODE);

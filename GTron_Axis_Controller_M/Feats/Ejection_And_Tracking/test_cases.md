@@ -114,11 +114,11 @@ For determinism, before each test send `AXC_EJECT_PARTCOUNT` with `value=0` (or 
 | Stimulus | Fire 3 triggers at positions P1, P2, P3 |
 | Expected | `ring[1].pos==P1, ring[2].pos==P2, ring[3].pos==P3`; counts 1,2,3; `g_cam_count==3` |
 
-### TC-2.3 — Ring wraps at 256
+### TC-2.3 — Ring wraps at 175
 | | |
 |---|---|
-| Stimulus | Fire 257 triggers |
-| Expected | `ring[1].count==257` (overwritten); `ring[1].pos` == position of trigger #257; `g_cam_count==257`; no fault |
+| Stimulus | Fire 176 triggers |
+| Expected | `ring[1].count==176` (overwritten); `ring[1].pos` == position of trigger #176; `g_cam_count==176`; no fault |
 
 ### TC-2.4 — Reset mid-run re-anchors to part 1
 | | |
@@ -158,10 +158,10 @@ For determinism, before each test send `AXC_EJECT_PARTCOUNT` with `value=0` (or 
 
 ## 4. Stale handling
 
-### TC-4.1 — Part overwritten (>256 triggers late)
+### TC-4.1 — Part overwritten (>175 triggers late)
 | | |
 |---|---|
-| Setup | Note part_no=N, then fire >256 triggers so slot `N & 0xFF` is overwritten |
+| Setup | Note part_no=N, then fire >175 triggers so slot `N % 175` is overwritten |
 | Stimulus | `PARTCOUNT=N` then `EJECT_BIN_OFFSET` |
 | Expected | `FAULT_STALE_PART`; `AXC_ERR_EJECT_STALE` reply; `stale` not incremented (no enqueue attempted) |
 
@@ -172,12 +172,12 @@ For determinism, before each test send `AXC_EJECT_PARTCOUNT` with `value=0` (or 
 | Stimulus | `PARTCOUNT` then `EJECT_BIN_OFFSET` |
 | Expected | `FAULT_STALE_PART`; `AXC_ERR_EJECT_STALE` reply; `g_ejectors[0].stale` incremented |
 
-### TC-4.3 — Count wrap does not alias (part 70000 vs part 4464)
+### TC-4.3 — Count wrap does not alias (part 70175 vs part 70000)
 | | |
 |---|---|
-| Setup | Simulate: seed `ring[112].count=70000`, `ring[112].pos=X` |
-| Stimulus | `PARTCOUNT=4464` (same `&0xFF == 112`) then action |
-| Expected | `ring[112].count(70000) != 4464` -> `FAULT_STALE_PART` (no false match) |
+| Setup | Simulate: seed `ring[0].count=70175`, `ring[0].pos=X` (70175 % 175 == 0) |
+| Stimulus | `PARTCOUNT=70000` (70000 % 175 == 0, same slot) then action |
+| Expected | `ring[0].count(70175) != 70000` -> `FAULT_STALE_PART` (no false match) |
 
 ---
 
@@ -195,11 +195,11 @@ For determinism, before each test send `AXC_EJECT_PARTCOUNT` with `value=0` (or 
 | Setup | trigger at P; `EJECT_BIN_OFFSET=-500` |
 | Expected | target `= P + distance[0] - 500`; fires 500 usteps earlier than TC-5.1 |
 
-### TC-5.3 — Pause action stops reeler (TIM)
+### TC-5.3 — Pause action stops reeler (TIM) + sends pause reply
 | | |
 |---|---|
 | Setup | `distance[0]=cut_distance`; trigger at P; `PARTCOUNT` then `AXC_PAUSE, value=0` |
-| Expected | target `= P + cut_distance`; on reaching it, `reeler_Pause_Motor()` called (motor stops, `is_paused==true`); no `AXC_EJECT_PART` frame |
+| Expected | target `= P + cut_distance`; on reaching it, `reeler_Pause_Motor()` called AND `AXC_PAUSE`(21) frame sent on `CAN_TOP_AXC_TO_SYSCTRL_ID` with `peripheral=EJECTOR_1`, `value=part_no`; `fired==1` |
 
 ### TC-5.4 — Multiple pending targets drain in order
 | | |
@@ -218,11 +218,11 @@ For determinism, before each test send `AXC_EJECT_PARTCOUNT` with `value=0` (or 
 
 ## 6. Overflow
 
-### TC-6.1 — Queue overflow when 256 targets pending
+### TC-6.1 — Queue overflow when 174 targets pending
 | | |
 |---|---|
-| Setup | Enqueue 256 targets without servicing (keep motor parked) |
-| Stimulus | Enqueue a 257th valid target |
+| Setup | Enqueue 174 targets without servicing (keep motor parked) |
+| Stimulus | Enqueue a 175th valid target |
 | Expected | `FAULT_QUEUE_OVERFLOW`; `AXC_ERR_EJECT_OVERFLOW` reply; `overflows==1` |
 
 ---
@@ -263,3 +263,56 @@ For determinism, before each test send `AXC_EJECT_PARTCOUNT` with `value=0` (or 
 |---|---|
 | Stimulus | `AXC_EJECT_PARTCOUNT, value=0` then `EJECT_BIN_OFFSET` with no `PARTCOUNT` |
 | Expected | `FAULT_UNPAIRED_ACTION`; nothing enqueued |
+
+---
+
+## 9. Spurious-trigger correction
+
+### TC-9.1 — Same-ejector correction overwrites tail-1
+| | |
+|---|---|
+| Setup | Trigger at P; `EJECTOR_1, PARTCOUNT=3`; `EJECTOR_1, EJECT_BIN_OFFSET=50` → enqueued in `g_ejectors[0]` with `part_no=3, target=P+distance[0]+50` |
+| Stimulus | `EJECTOR_1, PARTCOUNT=3`; `EJECTOR_1, EJECT_BIN_OFFSET=100` (correction) |
+| Expected | `g_ejectors[0].part_no[tail-1]==3`; `target_gc[tail-1]==P+distance[0]+100` (overwritten); `action[tail-1]==EJECT`; queue length unchanged (no new entry appended); `g_ejectors[0].tail` same as before |
+
+### TC-9.2 — Cross-ejector correction moves entry from EJECTOR_2 to EJECTOR_1
+| | |
+|---|---|
+| Setup | Trigger at P; `EJECTOR_2, PARTCOUNT=5`; `EJECTOR_2, EJECT_BIN_OFFSET=0` → enqueued in `g_ejectors[1]` with `part_no=5` at tail-1 |
+| Stimulus | `EJECTOR_1, PARTCOUNT=5`; `EJECTOR_1, EJECT_BIN_OFFSET=30` (correction: fail→pass) |
+| Expected | `g_ejectors[1].tail` decremented by 1 (stale entry removed); `g_ejectors[0]` gets `part_no=5, target=P+distance[0]+30`; `g_ejectors[0].tail` incremented by 1 |
+
+### TC-9.3 — Cross-ejector correction with EJECTOR_1→EJECTOR_2
+| | |
+|---|---|
+| Setup | Trigger at P; `EJECTOR_1, PARTCOUNT=5`; `EJECTOR_1, EJECT_BIN_OFFSET=0` → enqueued in `g_ejectors[0]` with `part_no=5` at tail-1 |
+| Stimulus | `EJECTOR_2, PARTCOUNT=5`; `EJECTOR_2, EJECT_BIN_OFFSET=30` (correction: pass→fail) |
+| Expected | `g_ejectors[0].tail` decremented by 1; `g_ejectors[1]` gets `part_no=5, target=P+distance[1]+30`; `g_ejectors[1].tail` incremented by 1 |
+
+### TC-9.4 — Duplicate correction on empty queue (no match)
+| | |
+|---|---|
+| Setup | Both queues empty; trigger at P; `PARTCOUNT=7` latched |
+| Stimulus | `EJECTOR_1, EJECT_BIN_OFFSET=50` |
+| Expected | Normal append: `part_no=7` enqueued in `g_ejectors[0]`; `tail` incremented |
+
+### TC-9.5 — Corrected target already passed → stale fault
+| | |
+|---|---|
+| Setup | Trigger at P; `EJECTOR_1, PARTCOUNT=3`; `EJECTOR_1, EJECT_BIN_OFFSET=50` → enqueued; drive motor past target; latch new part count |
+| Stimulus | `EJECTOR_1, PARTCOUNT=3`; `EJECTOR_1, EJECT_BIN_OFFSET=50` (same correction) |
+| Expected | `gc_reached(now, target)` is true → `FAULT_STALE_PART`; `g_ejectors[0].stale` incremented; no overwrite, no append |
+
+### TC-9.6 — Late correction (not at tail-1) appends as new entry
+| | |
+|---|---|
+| Setup | Trigger at P; `EJECTOR_1, PARTCOUNT=3`; `EJECTOR_1, EJECT_BIN_OFFSET=50` → enqueued; then `EJECTOR_1, PARTCOUNT=4`; `EJECTOR_1, EJECT_BIN_OFFSET=10` → enqueued (part 4 now at tail-1) |
+| Stimulus | `EJECTOR_1, PARTCOUNT=3`; `EJECTOR_1, EJECT_BIN_OFFSET=100` (late correction) |
+| Expected | `qA->part_no[tail-1]==4` (not 3); no match in either queue → normal append; `part_no=3` appears twice in `g_ejectors[0]` (duplicate — SW/SysCtrl responsibility) |
+
+### TC-9.7 — Cross-ejector correction when other queue is empty
+| | |
+|---|---|
+| Setup | `g_ejectors[0]` has part 3 at tail-1; `g_ejectors[1]` is empty |
+| Stimulus | `EJECTOR_2, PARTCOUNT=3`; `EJECTOR_2, EJECT_BIN_OFFSET=0` (correction) |
+| Expected | `q_is_empty(qB)` is true → cross-ejector check skipped; normal append into `g_ejectors[1]`; `g_ejectors[0]` retains its stale entry (no removal from empty queue) |

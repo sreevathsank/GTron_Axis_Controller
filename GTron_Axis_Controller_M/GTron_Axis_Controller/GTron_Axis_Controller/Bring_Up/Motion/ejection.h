@@ -11,13 +11,13 @@
  * \brief	Ejection & Tracking module: per-ejector target queues, fed by a trigger
  *			position snapshot ring indexed by part count.
  *
- * AxC snapshots PID_POSITION_ACTUAL at every camera trigger . SW inspects tghe image and
+ * AxC snapshots PID_POSITION_ACTUAL at every camera trigger . SW inspects the image and
  * later sends back the part count + offset + action. AxC reconstructs the absolute
  * target position (snapshot + ejector distance + offset) and fires the action when the
  * motor reaches it.
  *
  * The camera-trigger count is 1-based to match SW (first part = 1). A part count of 0
- * resets the runtine tracking state.
+ * resets the runtime tracking state.
  */
 
 #ifndef EJECTION_H_
@@ -28,20 +28,16 @@
 /** \brief	Compile-time maximum number of ejector bins. */
 #define NUM_EJECTORS        2u
 
-/** \brief Depth of the trigger snapshot ring (must be power of two). */
-#define TRIG_RING_DEPTH		256u
-#define TRIG_RING_MASK		(TRIG_RING_DEPTH - 1u)
+/** \brief Depth of the trigger snapshot ring. */
+#define TRIG_RING_DEPTH		175u
 
-/** \brief	Ring-buffer depth per queue (must be power of two).
+/** \brief	Ring-buffer depth per queue.
  *  Usable slots = QUEUE_DEPTH - 1 (one slot reserved for empty/full
  *  discrimination). */
-#define QUEUE_DEPTH         256u
+#define QUEUE_DEPTH         175u
 
-/** \brief	Bitmask for power-of-two wraparound (QUEUE_DEPTH - 1u). */
-#define QUEUE_MASK          (QUEUE_DEPTH - 1u)
-
-#if ( ((TRIG_RING_DEPTH & TRIG_RING_MASK) != 0u) || ((QUEUE_DEPTH & QUEUE_MASK) != 0u) )
-	#error "TRIG_RING_DEPTH and/or QUEUE_DEPTH in ejection.h must be a non-zero power of two"
+#if ( (TRIG_RING_DEPTH < 2u) || (QUEUE_DEPTH < 2u) )
+	#error "TRIG_RING_DEPTH and/or QUEUE_DEPTH in ejection.h must be >= 2."
 #endif
 
 /**
@@ -96,14 +92,14 @@ void ejection_init(void);
 /** 
  * \brief	Flushes all target queues and clears the pending part-count latch.
  */
-void ejection_flush_all();
+void ejection_flush_all(void);
 
 /** 
- * \brief	Resets runtime tracking state: slushes queues/latch, zeros the count.
+ * \brief	Resets runtime tracking state: flushes queues/latch, zeros the count.
  *
  * Ejector distances are NOT reset. Handles AXC_EJECT_PARTCOUNT == 0.
  */
-void ejection_reset();
+void ejection_reset(void);
 
 /** 
  * \brief	Stores the distance of a given ejector/cut point.
@@ -128,9 +124,9 @@ void ejection_set_distance(uint8_t ejector_id, int32_t distance);
   *
   * Called from CAN RX on the action frame. Consumes the latched part count.
   *
-  * @param[in]	ejector_id	0 ... NUM_EJECTORs - 1.
+  * @param[in]	ejector_id	0 ... NUM_EJECTORS - 1.
   * @param[in]	offset		Part position within the FOV, relative to centre (usteps, signed).
-  * @param[in]	action		EJECT_ACTIONEJECT or EJECT_ACTION_PAUSE.
+  * @param[in]	action		EJECT_ACTION_EJECT or EJECT_ACTION_PAUSE.
   */
  void ejection_enqueue(uint8_t ejector_id, int32_t offset, EjectAction_t action);
  

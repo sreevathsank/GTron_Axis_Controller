@@ -80,7 +80,7 @@ static void handle_n_shot_tick()
 	
 	// If no sensor trigger has happened for about (total slips x terminal width), stop the motor and inform the error.
 	if( (abs(tmc4671_getActualPosition(MOTOR) - H->prev_anchor_pos) > (H->total_slips * H->term_width) ) &&
-		!p_reeler1_info->flags.sensor_trigger && !p_reeler1_info->flags.is_encoder_mode ) {
+		!p_reeler1_info->flags.sensor_trigger && !p_reeler1_info->flags.is_encoder_mode && !IS_DISCRETE ) {
 		DBG_Printf(ERR_LVL_ERROR, "No sensor trigger was received for %ld usteps.\nPausing the motor and informing the error.", (H->total_slips * H->term_width));
 		can_AxC_Write(	CAN_ERR_REPLY_TOP_RACK_ID,
 						HYBRID_TRIGGER_INSPECTION,
@@ -110,28 +110,30 @@ static void handle_n_shot_tick()
 		
 		p_reeler1_info->flags.is_paused = false;
 		
-		// Slip / Spurious Trigger Detection (anchor to anchor delta).
-		uint32_t actual			= (uint32_t)abs(new_anchor - H->prev_anchor_pos);
-		uint32_t expected		= H->term_width;
-		uint32_t tolerance		= (expected * HYBRID_SLIP_TOLERANCE_PCT) / 100u;
-		uint32_t deviation		= (actual > expected) ? (actual - expected) : (expected - actual);
-		
-		if(deviation > tolerance) {
-			// Slipped.
-			if(++H->consecutive_slips >= H->total_slips) {
-				DBG_Printf(ERR_LVL_WARNING, "Slipped: Fail %d | Expected Range = %ld to %ld | Actual = %ld\n", 
-							H->consecutive_slips, 
-							(expected - tolerance),
-							(expected + tolerance),
-							expected, actual);
-				can_AxC_Write(	CAN_ERR_REPLY_TOP_RACK_ID,
-								HYBRID_TRIGGER_INSPECTION,
-								AXC_ERR_SLIP, 0 );
+		if(!IS_DISCRETE) {
+			// Slip / Spurious Trigger Detection (anchor to anchor delta).
+			uint32_t actual			= (uint32_t)abs(new_anchor - H->prev_anchor_pos);
+			uint32_t expected		= H->term_width;
+			uint32_t tolerance		= (expected * HYBRID_SLIP_TOLERANCE_PCT) / 100u;
+			uint32_t deviation		= (actual > expected) ? (actual - expected) : (expected - actual);
+			
+			if(deviation > tolerance) {
+				// Slipped.
+				if(++H->consecutive_slips >= H->total_slips) {
+					DBG_Printf(ERR_LVL_WARNING, "Slipped: Fail %d | Expected Range = %ld to %ld | Actual = %ld\n", 
+								H->consecutive_slips, 
+								(expected - tolerance),
+								(expected + tolerance),
+								expected, actual);
+					can_AxC_Write(	CAN_ERR_REPLY_TOP_RACK_ID,
+									HYBRID_TRIGGER_INSPECTION,
+									AXC_ERR_SLIP, 0 );
+					H->consecutive_slips = 0;
+					reeler_Pause_Motor();
+				}
+			} else {
 				H->consecutive_slips = 0;
-				reeler_Pause_Motor();
 			}
-		} else {
-			H->consecutive_slips = 0;
 		}
 		DBG_Printf(ERR_LVL_DEBUG, "Delta of prev to curr anchor pos = %ld\n", abs(new_anchor - H->prev_anchor_pos));
 		H->prev_anchor_pos		= new_anchor;
@@ -190,7 +192,7 @@ static void handle_n_shot_tick()
 						H->curr_n_shots		= 0;
 						p_reeler1_info->flags.is_hybrid_trig_enabled = false;
 						p_reeler1_info->flags.is_paused				= true;
-						p_reeler1_info->flags.sag_enabled			= false;
+						p_reeler1_info->flags.sag_enabled			= (IS_DISCRETE) ? true : false;
 						p_reeler1_info->flags.rotate_vel_mode		= false;
 					}
 				}
