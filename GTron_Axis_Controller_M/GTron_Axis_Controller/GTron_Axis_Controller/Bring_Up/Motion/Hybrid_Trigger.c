@@ -17,12 +17,12 @@ volatile uint32_t prev_trig_time_ms = 0;
  **/
 void trigger_Camera_Line(void) 
 {
-	ejection_note_trigger(tmc4671_getActualPosition(MOTOR));
+	//ejection_note_trigger(tmc4671_getActualPosition(MOTOR));
 	
-	gpio_set_pin_level(REELER_INT, HIGH);
+	gpio_set_pin_level(FOC_INTOUT, HIGH);
 	delay_us(1);
 	gpio_toggle_pin_level(DBGLED3);
-	gpio_set_pin_level(REELER_INT, LOW);
+	gpio_set_pin_level(FOC_INTOUT, LOW);
 	p_reeler1_info->time_ms.cam_trig = millis();
 	
 	return;
@@ -110,31 +110,58 @@ static void handle_n_shot_tick()
 		
 		p_reeler1_info->flags.is_paused = false;
 		
-		if(!IS_DISCRETE) {
-			// Slip / Spurious Trigger Detection (anchor to anchor delta).
-			uint32_t actual			= (uint32_t)abs(new_anchor - H->prev_anchor_pos);
-			uint32_t expected		= H->term_width;
-			uint32_t tolerance		= (expected * HYBRID_SLIP_TOLERANCE_PCT) / 100u;
-			uint32_t deviation		= (actual > expected) ? (actual - expected) : (expected - actual);
+		// Slip / Spurious Trigger Detection (anchor to anchor delta).
+		uint32_t actual				= (uint32_t)abs(new_anchor - H->prev_anchor_pos);
+		uint32_t expected			= H->term_width;
+		uint32_t tolerance			= (expected * HYBRID_SLIP_TOLERANCE_PCT) / 100u;
+		uint32_t upper_tolerance	= expected + tolerance;
+		uint32_t lower_tolerance	= expected - tolerance;
+		
+		if (actual < lower_tolerance) {
+			// Early Edge -> Spurious. Ignore.
+			DBG_Printf(ERR_LVL_WARNING, "Early Edge: Expected Range = %ld to %ld | Expected = %ld | Actual = %ld\n",
+						lower_tolerance,
+						upper_tolerance,
+						expected, actual);
+			p_reeler1_info->flags.sensor_trigger = false;
 			
-			if(deviation > tolerance) {
-				// Slipped.
-				if(++H->consecutive_slips >= H->total_slips) {
-					DBG_Printf(ERR_LVL_WARNING, "Slipped: Fail %d | Expected Range = %ld to %ld | Actual = %ld\n", 
-								H->consecutive_slips, 
-								(expected - tolerance),
-								(expected + tolerance),
-								expected, actual);
-					can_AxC_Write(	CAN_ERR_REPLY_TOP_RACK_ID,
-									HYBRID_TRIGGER_INSPECTION,
-									AXC_ERR_SLIP, 0 );
-					H->consecutive_slips = 0;
-					reeler_Pause_Motor();
-				}
-			} else {
-				H->consecutive_slips = 0;
-			}
+			return;
 		}
+		if (actual > upper_tolerance) {
+			// Late edge -> Slip. Still Valid.
+			if ( !IS_DISCRETE && (++H->consecutive_slips >= H->total_slips) ) {
+				DBG_Printf(ERR_LVL_WARNING, "Slipped: Fail %d | Expected Range = %ld to %ld | Expected = %ld | Actual = %ld\n",
+							H->consecutive_slips,
+							lower_tolerance,
+							upper_tolerance,
+							expected, actual);
+				can_AxC_Write(	CAN_ERR_REPLY_TOP_RACK_ID,
+								HYBRID_TRIGGER_INSPECTION,
+								AXC_ERR_SLIP, 0 );
+								H->consecutive_slips = 0;
+				reeler_Pause_Motor();
+			}
+		} else {
+			H->consecutive_slips = 0;	
+		}
+		
+		/*if (deviation > tolerance) {
+			// Slipped.
+			if ( (++H->consecutive_slips >= H->total_slips) && !IS_DISCRETE) {
+				DBG_Printf(ERR_LVL_WARNING, "Slipped: Fail %d | Expected Range = %ld to %ld | Actual = %ld\n", 
+							H->consecutive_slips, 
+							(expected - tolerance),
+							(expected + tolerance),
+							expected, actual);
+				can_AxC_Write(	CAN_ERR_REPLY_TOP_RACK_ID,
+								HYBRID_TRIGGER_INSPECTION,
+								AXC_ERR_SLIP, 0 );
+				H->consecutive_slips = 0;
+				reeler_Pause_Motor();
+			}
+		} else {
+			H->consecutive_slips = 0;
+		}*/
 		DBG_Printf(ERR_LVL_DEBUG, "Delta of prev to curr anchor pos = %ld\n", abs(new_anchor - H->prev_anchor_pos));
 		H->prev_anchor_pos		= new_anchor;
 		H->anchor_pos			= new_anchor;

@@ -24,8 +24,8 @@ int main(void)
 	call_All_Init_Functions();
 	DBG_Printf(ERR_LVL_INFO, "AxC dbg_print online @ 2 Mbaud, axis=%d\n", axis_id);
 	switch(axis_id) {
-		case GTRON_AXC_TOP: DBG_Printf(ERR_LVL_DEBUG, "\nAxC - GTron TOP\n");	break;
-		case GTRON_AXC_BOT: DBG_Printf(ERR_LVL_DEBUG, "AxC - GTron BOTTOM\n");	break;
+		case GTRON_AXC_TOP: DBG_Printf(ERR_LVL_DEBUG, "AxC - GTron TOP\n");	break;
+		case GTRON_AXC_BOT: DBG_Printf(ERR_LVL_DEBUG, "AxC - GTron BOT\n");	break;
 		default: break;
 	}
 	led_Blink(2, 100);
@@ -46,8 +46,8 @@ int main(void)
 	}
 	if(axis_params.rotary_axis_enabled) {
 		switch(axis_id) {
-			case GTRON_AXC_TOP: DBG_Printf(ERR_LVL_DEBUG, "Reeler Rotary Axis Enabled!\n"); break;
-			case GTRON_AXC_BOT: DBG_Printf(ERR_LVL_DEBUG, "Reeler Rotary Axis Enabled!\n"); break;
+			case GTRON_AXC_TOP: DBG_Printf(ERR_LVL_DEBUG, "GTron Top Reeler Rotary Axis Enabled!\n"); break;
+			case GTRON_AXC_BOT: DBG_Printf(ERR_LVL_DEBUG, "GTron Bot Reeler Rotary Axis Enabled!\n"); break;
 			default: break;
 		}
 	}
@@ -71,18 +71,25 @@ int main(void)
 			
 		}
 		/* For checking if the Motor has reached its target position TMC4671. */
-		if(check_move_done)				{ check_For_Move_Done();						}
+		if(check_move_done)	{ 
+			check_For_Move_Done();
+		}
 		
 		/* For Generating S Ramp profile for TMC4671. */
-		if(move_given_s_ramp)			{ run_S_ramp();									}
+		if(move_given_s_ramp) { 
+			run_S_ramp();
+		}
 			
 		/* For running the motor in Velocity Mode TMC4671. */
 		if( (repeat_ramp != 2) && p_reeler1_info->flags.rotate_vel_mode \
-			&& p_reeler1_info->flags.vel_timer && p_reeler1_info->flags.sag_enabled)
-										{ run_Velocity_Ramp();							}	
+			&& p_reeler1_info->flags.vel_timer && p_reeler1_info->flags.sag_enabled) {
+			run_Velocity_Ramp();
+		}
 		
 		/* Check if CAN Messages were received. */
-		if(can_rx_int)					{ can_Read();									}
+		if(can_rx_int) { 
+			can_Read();
+		}
 	}
 	return 0;
 }

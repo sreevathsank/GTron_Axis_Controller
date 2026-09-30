@@ -47,7 +47,7 @@ void init_tmc2209_motor(uint16_t icID, const volatile Motor_Info_t *m)
 {
 	if( (m->mot_name == MOTOR_VARREST2) || 
 		(m->mot_name == MOTOR_REELERADJ1) ) {
-		tmc2209_writeRegister(icID, TMC2209_GCONF, 0x000000E0);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
+		tmc2209_writeRegister(icID, TMC2209_GCONF, 0x000000E8);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
 	} else {
 		tmc2209_writeRegister(icID, TMC2209_GCONF, 0x000000E8);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
 	}
@@ -79,7 +79,7 @@ void move_guide_motor(uint32_t loop_count)
 	for(int32_t i = 0; i < loop_count; i++)
 	{
 		update_TMC2209_Step_Tracking(p_guide_info);
-		PRINTF_DEBUG ? printf("\nGuide total Steps = %ld | Total Dist = %ld\n", p_guide_info->step_tracker.total_steps, p_guide_info->step_tracker.total_dist): 0;
+		PRINTF_DEBUG ? printf("Guide total Steps = %ld | Total Dist = %ld\n", p_guide_info->step_tracker.total_steps, p_guide_info->step_tracker.total_dist): 0;
 		tmc2209_set_velocity(TMC2209_MOTOR1_ADDR, p_guide_info, 0x000003E8);
 		delay_ms(500);
 		//while(p_guide_info->step_tracker.total_steps <= TMC2209_ROTATION)
@@ -88,7 +88,7 @@ void move_guide_motor(uint32_t loop_count)
 		}
 		
 		update_TMC2209_Step_Tracking(p_guide_info);
-		PRINTF_DEBUG ? printf("\nGuide total Steps = %ld | Total Dist = %ld\n", p_guide_info->step_tracker.total_steps, p_guide_info->step_tracker.total_dist): 0;
+		PRINTF_DEBUG ? printf("Guide total Steps = %ld | Total Dist = %ld\n", p_guide_info->step_tracker.total_steps, p_guide_info->step_tracker.total_dist): 0;
 		tmc2209_set_velocity(TMC2209_MOTOR1_ADDR, p_guide_info, 0xFFFFFC18);
 		delay_ms(500);
 		//while(p_guide_info->step_tracker.total_steps >= ZERO_HEX)
@@ -117,7 +117,7 @@ void read_Init_Registers(uint16_t icID)
     int32_t pwm = tmc2209_readRegister(icID, TMC2209_PWMCONF);
     //while(SERCOM6_USART_ReadIsBusy());
     
-    printf("\nRead Values:\ngconf = %x | tpwrdwn = %x | ihold = %x | chop = %x | pwm = %x\n",
+    printf("Read Values:\ngconf = %x | tpwrdwn = %x | ihold = %x | chop = %x | pwm = %x\n",
             (unsigned int)gconf, (unsigned int)tpwrdwm, (unsigned int)ihold, (unsigned int)chop, (unsigned int)pwm);
     
     return;

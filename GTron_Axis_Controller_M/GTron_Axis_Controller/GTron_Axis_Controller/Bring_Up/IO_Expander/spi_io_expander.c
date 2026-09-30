@@ -36,7 +36,7 @@ void ioxp_Init( void )
 	uint8_t ioxp_rd_data = 0x00;
 	IOXP_Read_Byte(IOXP_REG_INTCAP_RD_ONLY, &ioxp_rd_data);
 	
-	PRINTF_DEBUG ? printf("\nIOXP Init Done\n"): 0;
+	PRINTF_DEBUG ? printf("IOXP Init Done\n"): 0;
 	return;
 }
 

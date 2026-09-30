@@ -29,7 +29,7 @@
 //#include <zen_message_id.h>
 
 /* Related IO Inclusion */
-#define DEBUG_LED		36	// PB04
+#define CAN_FAULT		36	// PB04
 
 #include "Global_Vars.h"
 #include "All_Headers.h"

@@ -121,7 +121,10 @@ void DBG_Printf(err_lvl_t msg_level, const char *fmt, ...)
                             (size_t)(DBG_STAGE_SIZE - prefix_len),
                             fmt, args);
     va_end(args);
-
+	
+	printf("%s", s_dbg_stage);
+	return; 
+	
     if (msg_len < 0) {
         msg_len = 0;
     }

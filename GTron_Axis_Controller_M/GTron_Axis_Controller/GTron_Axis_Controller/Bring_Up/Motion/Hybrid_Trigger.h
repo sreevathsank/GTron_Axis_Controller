@@ -10,6 +10,7 @@
 #define HYBRID_TRIGGER_H_
 
 #include <atmel_start.h>
+#include <inttypes.h>
 #include "Global_Vars.h"
 #include "TMC-API/tmc/ic/TMC4671/TMC4671.h"
 

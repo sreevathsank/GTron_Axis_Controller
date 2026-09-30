@@ -181,7 +181,7 @@ static void reeler_Start_Motor( void )
 		p_reeler1_info->flags.sensor_trigger			= false;
 	}
 	
-	DBG_Printf(ERR_LVL_DEBUG,"\nReeler Start Motor with Velocity %ld rpm\n", p_reeler1_info->velocity.limit);
+	DBG_Printf(ERR_LVL_DEBUG,"Reeler Start Motor with Velocity %ld rpm\n", p_reeler1_info->velocity.limit);
 	return;
 }
 
@@ -218,7 +218,7 @@ void reeler_Stop_Motor( void )
 	prev_trig_no = 0;
 	p_reeler1_info->position.current = tmc4671_getActualPosition(MOTOR);
 	tmc4671_setAbsolutTargetPosition(MOTOR, p_reeler1_info->position.current);
-	DBG_Printf(ERR_LVL_INFO, "\nReeler Stop Motor\n");
+	DBG_Printf(ERR_LVL_INFO, "Reeler Stop Motor\n");
 	return;
 }
 
@@ -231,6 +231,7 @@ void reeler_Stop_Motor( void )
  **/
 void reeler_Pause_Motor( void )
 {
+	p_reeler1_info->position.current = tmc4671_getActualPosition(MOTOR);
 	tmc4671_setVelocityLimit(MOTOR, 0);
 	tmc4671_setVelocityTarget(MOTOR, 0);
 	tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
@@ -243,7 +244,6 @@ void reeler_Pause_Motor( void )
 	timer_stop(&VEL_TIMER);
 	trig_no = 0;
 	prev_trig_no = 0;
-	p_reeler1_info->position.current = tmc4671_getActualPosition(MOTOR);
 	tmc4671_setAbsolutTargetPosition(MOTOR, p_reeler1_info->position.current);
 	tmc4671_setVelocityLimit(MOTOR, 2);
 	tmc4671_setModeMotion(MOTOR, POSITION_MODE);
@@ -302,7 +302,7 @@ static bool check_Open_Right_Limit_Status( volatile Motor_Info_t *m )
 			return false;
 		}
 	} 
-	else if(m->comms.uart_addr == TMC2209_MOT_ADDR3)
+	else if(m->comms.uart_addr == TMC2209_MOT_ADDR2)
 	{
 		if(MSK_MOT2_R_LIM(gtron_limits.limit_flags))
 		{
@@ -455,7 +455,7 @@ static void tmc2209_Move(volatile Motor_Info_t *motor_info, int32_t target_posit
 			
 		//tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
 		tmc2209_set_velocity(motor_info->comms.uart_addr, motor_info, motor_info->velocity.target);
-		DBG_Printf(ERR_LVL_DEBUG, "\nMove To: Current Pos = %ld | Target Pos = %ld | Velocity = %ld ustep/s\n", \
+		DBG_Printf(ERR_LVL_DEBUG, "Move To: Current Pos = %ld | Target Pos = %ld | Velocity = %ld ustep/s\n", \
 								motor_info->position.current, target_position, motor_info->velocity.target);
 		motor_info->motor_state = MOTOR_MOVING_STATE;
 		if( !(motor_info->position.target == motor_info->position.current) ) {
@@ -469,7 +469,7 @@ static void tmc2209_Move(volatile Motor_Info_t *motor_info, int32_t target_posit
 		
 		//tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
 		tmc2209_set_velocity(motor_info->comms.uart_addr, motor_info, (-motor_info->velocity.target) );
-		DBG_Printf(ERR_LVL_DEBUG, "\nMove To: Current Pos = %ld | Target Pos = %ld | Velocity = %ld ustep/s\n", \
+		DBG_Printf(ERR_LVL_DEBUG, "Move To: Current Pos = %ld | Target Pos = %ld | Velocity = %ld ustep/s\n", \
 								motor_info->position.current, target_position, (-motor_info->velocity.target) );
 		motor_info->motor_state = MOTOR_MOVING_STATE;
 		if( !(motor_info->position.target == motor_info->position.current) ) {
@@ -478,7 +478,7 @@ static void tmc2209_Move(volatile Motor_Info_t *motor_info, int32_t target_posit
 			motor_info->time_ms.move_start		 = millis();
 		}
 	} else {
-		DBG_Printf(ERR_LVL_DEBUG, "\nTarget Position is same as Current Position. Not Moving...\n");
+		DBG_Printf(ERR_LVL_DEBUG, "Target Position is same as Current Position. Not Moving...\n");
 	}
 	return;
 }
@@ -496,7 +496,7 @@ void tmc2209_Move_To_Open_Limit(volatile Motor_Info_t *motor_info )
 	//IOXP_Read_Byte(IOXP_REG_GPIO, &limit_status);
 	IOXP_Read_Byte(IOXP_REG_INTCAP_RD_ONLY, &limit_status );
 	if(MSK_MOT1_R_LIM(limit_status)) {
-		DBG_Printf(ERR_LVL_DEBUG, "\nAlready in Open Limit. Not moving towards Open Limit\n");
+		DBG_Printf(ERR_LVL_DEBUG, "Already in Open Limit. Not moving towards Open Limit\n");
 		
 		// Send the CAN Command
 		message_Id = CAN_REPLY_TOP_RACK_ID;
@@ -509,7 +509,7 @@ void tmc2209_Move_To_Open_Limit(volatile Motor_Info_t *motor_info )
 	motor_info->flags.move_to_open_lim = true;
 	is_tmc2209_mot_moving = true;
 	motor_info->motor_state = MOTOR_MOVING_STATE;
-	DBG_Printf(ERR_LVL_DEBUG, "\nGuide Move To Open Limit Cmd Rxcvd\n");
+	DBG_Printf(ERR_LVL_DEBUG, "Guide Move To Open Limit Cmd Rxcvd\n");
 	return;
 }
 
@@ -541,7 +541,7 @@ void tmc2209_Move_To_Close_Limit(volatile Motor_Info_t *motor_info )
 	motor_info->flags.move_to_close_lim = true;
 	is_tmc2209_mot_moving = true;
 	motor_info->motor_state = MOTOR_MOVING_STATE;
-	DBG_Printf(ERR_LVL_DEBUG, "\nGuide Move to Close Limit Cmd Rxcvd\n");
+	DBG_Printf(ERR_LVL_DEBUG, "Guide Move to Close Limit Cmd Rxcvd\n");
 	return;
 }
 
@@ -601,7 +601,7 @@ static void tmc2209_Reference_Search( volatile Motor_Info_t *m )
 static void tmc2209_Set_Velocity(volatile Motor_Info_t *motor_info, int32_t target_velocity)
 {
 	motor_info->velocity.target = target_velocity;
-	DBG_Printf(ERR_LVL_DEBUG, "\nGuide Varrest Velocity Set to %ld usteps/sec\n", motor_info->velocity.target);
+	DBG_Printf(ERR_LVL_DEBUG, "Guide Varrest Velocity Set to %ld usteps/sec\n", motor_info->velocity.target);
 	return;
 }
 
@@ -636,7 +636,7 @@ void tmc2209_Stop_Motor(volatile Motor_Info_t *m)
 	m->flags.move_given = 0;
 	m->flags.move_to_open_lim = 0;
 	m->flags.move_to_close_lim = 0;
-	DBG_Printf(ERR_LVL_DEBUG, "\nGuide Motor Stop\n");
+	DBG_Printf(ERR_LVL_DEBUG, "Guide Motor Stop\n");
 	return;
 }
 
@@ -685,28 +685,28 @@ static void tmc2209_Limits_Status_Check(volatile Motor_Info_t *motor_info)
 			can_tx_frame.data[1] = AXC_PRESSED;
 			for(int32_t i = 2; i < 8; i++) { can_tx_frame.data[i] = 0x00; }
 			can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
-			DBG_Printf(ERR_LVL_DEBUG, "\nOpen Right Limit is HIT!\n");
+			DBG_Printf(ERR_LVL_DEBUG, "Open Right Limit is HIT!\n");
 		} else {
 			can_tx_frame.data[0] = motor_info->comms.can_peripheral_byte;
 			can_tx_frame.data[1] = AXC_NOT_PRESSED;
 			for(int32_t i = 2; i < 8; i++) { can_tx_frame.data[i] = 0x00; }
 			can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
-			DBG_Printf(ERR_LVL_DEBUG, "\nOpen Right Limit is not HIT!\n");
+			DBG_Printf(ERR_LVL_DEBUG, "Open Right Limit is not HIT!\n");
 		}
 	}
-	if( motor_info->comms.uart_addr == TMC2209_MOT_ADDR3 ) {
+	if( motor_info->comms.uart_addr == TMC2209_MOT_ADDR2 ) {
 		if( MSK_MOT2_R_LIM(gtron_limits.limit_flags) ) {
 			can_tx_frame.data[0] = motor_info->comms.can_peripheral_byte;
 			can_tx_frame.data[1] = AXC_PRESSED;
 			for(int32_t i = 2; i < 8; i++) { can_tx_frame.data[i] = 0x00; }
 			can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
-			DBG_Printf(ERR_LVL_DEBUG, "\nOpen Right Limit is HIT!\n");
+			DBG_Printf(ERR_LVL_DEBUG, "Open Right Limit is HIT!\n");
 		} else {
 			can_tx_frame.data[0] = motor_info->comms.can_peripheral_byte;
 			can_tx_frame.data[1] = AXC_NOT_PRESSED;
 			for(int32_t i = 2; i < 8; i++) { can_tx_frame.data[i] = 0x00; }
 			can_Write(message_Id, (int32_t)can_tx_frame.data_64bit);
-			DBG_Printf(ERR_LVL_DEBUG, "\nOpen Right Limit is not HIT!\n");
+			DBG_Printf(ERR_LVL_DEBUG, "Open Right Limit is not HIT!\n");
 		}
 	}
 	return;	
@@ -760,7 +760,7 @@ void parse_GTron_CAN_Msg_Data( void )
 							tmc4671_setVelocityLimit(MOTOR, p_reeler1_info->velocity.limit);
 							tmc4671_setVelocityTarget(MOTOR, p_reeler1_info->velocity.limit);
 						}
-						DBG_Printf(ERR_LVL_DEBUG, "\nSag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Rotate.\n");
+						DBG_Printf(ERR_LVL_DEBUG, "Sag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Rotate.\n");
 						break;
 					}
 					case 0: {
@@ -771,17 +771,17 @@ void parse_GTron_CAN_Msg_Data( void )
 							timer_stop(&VEL_TIMER);
 						}
 						tmc4671_setVelocityTarget(MOTOR, 0);
-						DBG_Printf(ERR_LVL_DEBUG, "\nSag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Stop.\n");
+						DBG_Printf(ERR_LVL_DEBUG, "Sag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Stop.\n");
 						break;
 					}
-					default: DBG_Printf(ERR_LVL_DEBUG, "\nSag Sensor Invalid Operation Rxcvd\n"); break;
+					default: DBG_Printf(ERR_LVL_DEBUG, "Sag Sensor Invalid Operation Rxcvd\n"); break;
 				}
 			}
 			break;
 		}
 		case CAN_BOT_SAG_REELER_ID: {
 			rack_id = BOT_RACK;
-			DBG_Printf(ERR_LVL_DEBUG, "\nBOTTOM Sag Reeler Message ID Rxcvd from Sys Ctrl\n");
+			DBG_Printf(ERR_LVL_DEBUG, "BOTTOM Sag Reeler Message ID Rxcvd from Sys Ctrl\n");
 			if(!p_reeler1_info->flags.rotate_vel_mode) { break; }
 			switch(rx_can_cmd_info.data[0])
 			{
@@ -791,7 +791,7 @@ void parse_GTron_CAN_Msg_Data( void )
 					{
 						timer_start(&VEL_TIMER);
 					}
-					DBG_Printf(ERR_LVL_DEBUG, "\nSag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Rotate.\n");
+					DBG_Printf(ERR_LVL_DEBUG, "Sag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Rotate.\n");
 				break;
 				case 0:
 					p_reeler1_info->flags.sag_enabled = (IS_DISCRETE) ? true : false;
@@ -800,9 +800,9 @@ void parse_GTron_CAN_Msg_Data( void )
 						timer_stop(&VEL_TIMER);
 					}
 					tmc4671_setVelocityTarget(MOTOR, 0);
-					DBG_Printf(ERR_LVL_DEBUG, "\nSag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Stop.\n");
+					DBG_Printf(ERR_LVL_DEBUG, "Sag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Stop.\n");
 				break;
-				default: DBG_Printf(ERR_LVL_DEBUG, "\nSag Sensor Invalid Operation Rxcvd\n");					break;
+				default: DBG_Printf(ERR_LVL_DEBUG, "Sag Sensor Invalid Operation Rxcvd\n");					break;
 			}
 			break;
 		}
@@ -811,26 +811,26 @@ void parse_GTron_CAN_Msg_Data( void )
 				message_Id = CAN_REPLY_BOARD_ACTIVE_PING_ID;
 				can_tx_frame.data[0] = TOP_AXC_BOARD_ID;
 				can_Write(message_Id, can_tx_frame.data_64bit);
-				DBG_Printf(ERR_LVL_DEBUG, "\nGTron Top AxC Board Active Ping Rxcvd\t Board Active Ping Reply Sent\n");
+				DBG_Printf(ERR_LVL_DEBUG, "GTron Top AxC Board Active Ping Rxcvd\t Board Active Ping Reply Sent\n");
 			} else if( (axis_id == GTRON_AXC_BOT) && (can_rx_frame.data[0] == BOT_AXC_BOARD_ID) ) {
 				message_Id = CAN_REPLY_BOARD_ACTIVE_PING_ID;
 				can_tx_frame.data[0] = BOT_AXC_BOARD_ID;
 				can_Write(message_Id, can_tx_frame.data_64bit);
-				DBG_Printf(ERR_LVL_DEBUG, "\nGTron Bottom AxC Board Active Ping Rxcvd\t Board Active Ping Reply Sent\n");
+				DBG_Printf(ERR_LVL_DEBUG, "GTron Bottom AxC Board Active Ping Rxcvd\t Board Active Ping Reply Sent\n");
 			}
 			break;
 		}
 		case CAN_IO_TO_TOP_AXC_ID: {
 			rack_id = TOP_RACK;
-			DBG_Printf(ERR_LVL_DEBUG, "\nTOP Rack Message ID Rxcvd from IO Ctrl\n");
+			DBG_Printf(ERR_LVL_DEBUG, "TOP Rack Message ID Rxcvd from IO Ctrl\n");
 			break;
 		}
 		case CAN_IO_TO_BOT_AXC_ID: {
 			rack_id = BOT_RACK;
-			DBG_Printf(ERR_LVL_DEBUG, "\nBOT Rack Message ID Rxcvd from IO Ctrl\n");
+			DBG_Printf(ERR_LVL_DEBUG, "BOT Rack Message ID Rxcvd from IO Ctrl\n");
 			break;
 		}
-		default: DBG_Printf(ERR_LVL_DEBUG, "\nDEFAULT %ld\n", rx_can_cmd_info.id); break;
+		default: DBG_Printf(ERR_LVL_DEBUG, "DEFAULT %ld\n", rx_can_cmd_info.id); break;
 	}	
 	
 	// Check if the current node and message id received are for the current node.
@@ -871,7 +871,7 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_MOVE_TO_CLOSE_LIMIT:	tmc2209_Move_To_Close_Limit(p_guide_info);									break;
 					case AXC_INITIAL_POSITION:		tmc2209_Set_Initial_Position(p_guide_info, (int32_t)rx_can_cmd_info.value);	break;
 					case AXC_STATUS_CHECK:			tmc2209_Limits_Status_Check(p_guide_info);									break;
-					case AXC_HOMING:				tmc2209_Reference_Search(p_guide_info);									break;
+					case AXC_HOMING:				tmc2209_Reference_Search(p_guide_info);										break;
 					case AXC_CURRENT_POSITION:		tmc2209_Get_Current_Position(p_guide_info);									break;
 					default: DBG_Printf(ERR_LVL_DEBUG,"Guide Motor Invalid Operation Rxcvd\n");									break;
 				}
@@ -889,7 +889,7 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_STATUS_CHECK:		tmc2209_Limits_Status_Check(p_varrest1_info);									break;
 					case AXC_HOMING:			tmc2209_Reference_Search(p_varrest1_info);										break;
 					case AXC_CURRENT_POSITION:	tmc2209_Get_Current_Position(p_varrest1_info);									break;
-					default: DBG_Printf(ERR_LVL_DEBUG, "\nVert Arrestor 1 Motor Invalid Operation Rxcvd\n");					break;
+					default: DBG_Printf(ERR_LVL_DEBUG, "Vert Arrestor 1 Motor Invalid Operation Rxcvd\n");						break;
 				}
 				rack_id = MOTOR_ID;
 			break;
@@ -925,7 +925,7 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_STATUS_CHECK:		tmc2209_Limits_Status_Check(p_varrest2_info);									break;
 					case AXC_HOMING:			tmc2209_Reference_Search(p_varrest2_info);										break;
 					case AXC_CURRENT_POSITION:	tmc2209_Get_Current_Position(p_varrest2_info);									break;
-					default: DBG_Printf(ERR_LVL_DEBUG, "\nVert Arrestor 2 Motor Invalid Operation Rxcvd\n");					break;
+					default: DBG_Printf(ERR_LVL_DEBUG, "Vert Arrestor 2 Motor Invalid Operation Rxcvd\n");						break;
 				}	
 				rack_id = MOTOR_ID;
 			break;
@@ -941,7 +941,7 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_STATUS_CHECK:		tmc2209_Limits_Status_Check(p_reeleradj1_info);										break;
 					case AXC_HOMING:			tmc2209_Reference_Search(p_reeleradj1_info);										break;
 					case AXC_CURRENT_POSITION:	tmc2209_Get_Current_Position(p_reeleradj1_info);									break;
-					default: DBG_Printf(ERR_LVL_DEBUG, "\nReeler Adj 1 Motor Invalid Operation Rxcvd\n");							break;
+					default: DBG_Printf(ERR_LVL_DEBUG, "Reeler Adj 1 Motor Invalid Operation Rxcvd\n");							break;
 				}
 				rack_id = MOTOR_ID;
 			break;
@@ -957,7 +957,7 @@ void parse_GTron_CAN_Msg_Data( void )
 					case AXC_STATUS_CHECK:		tmc2209_Limits_Status_Check(p_reeleradj2_info);										break;
 					case AXC_HOMING:			tmc2209_Reference_Search(p_reeleradj2_info);										break;
 					case AXC_CURRENT_POSITION:	tmc2209_Get_Current_Position(p_reeleradj2_info);									break;
-					default: DBG_Printf(ERR_LVL_DEBUG, "\nReeler Adj 2 Motor Invalid Operation Rxcvd\n");break;
+					default: DBG_Printf(ERR_LVL_DEBUG, "Reeler Adj 2 Motor Invalid Operation Rxcvd\n");break;
 				}
 				rack_id = MOTOR_ID;
 			break;
@@ -1055,7 +1055,7 @@ void parse_GTron_CAN_Msg_Data( void )
 						DBG_Printf(ERR_LVL_INFO, "Hybrid Terminal Width received = %ld usteps", p_reeler1_info->hybrid.term_width);
 						break;
 					}
-					default: DBG_Printf(ERR_LVL_INFO, "\nHybrid Trigger Invalid Operation Rxcvd\n"); break;
+					default: DBG_Printf(ERR_LVL_INFO, "Hybrid Trigger Invalid Operation Rxcvd\n"); break;
 				}
 				rack_id = MOTOR_ID;
 				break;
@@ -1069,17 +1069,18 @@ void parse_GTron_CAN_Msg_Data( void )
 					}
 					case AXC_PAUSE: {
 						/* To stop the reeler motor at the ejecting position instead of ejecting. */
-						ejection_enqueue(0, rx_can_cmd_info.value, EJECT_ACTION_PAUSE);
+						ejection_set_part_no(0, (uint32_t)rx_can_cmd_info.value, EJECT_ACTION_PAUSE);
+						//ejection_enqueue(0, rx_can_cmd_info.value, EJECT_ACTION_PAUSE);
 						break;
 					}
 					case AXC_EJECT_BIN_OFFSET: {
 						/* Receives the offset and ejector bin id to eject at coupled with AXC_EJECT_PARTCOUNT. */
-						ejection_enqueue(0, rx_can_cmd_info.value, EJECT_ACTION_EJECT);
+						ejection_execute_enqueue(0, rx_can_cmd_info.value);
 						break;
 					}
 					case AXC_EJECT_PARTCOUNT: {
 						/* 0 == reset, non-zero == Receive the part count coupled with AXC_EJECT_BIN_OFFSET. */
-						ejection_set_part_no(0, (uint32_t)rx_can_cmd_info.value);
+						ejection_set_part_no(0, (uint32_t)rx_can_cmd_info.value, EJECT_ACTION_EJECT);
 						break;
 					}
 					default: break;
@@ -1096,17 +1097,18 @@ void parse_GTron_CAN_Msg_Data( void )
 					}
 					case AXC_PAUSE: {
 						/* To stop the reeler motor at the ejecting position instead of ejecting. */
-						ejection_enqueue(1, rx_can_cmd_info.value, EJECT_ACTION_PAUSE);
+						ejection_set_part_no(1, (uint32_t)rx_can_cmd_info.value, EJECT_ACTION_PAUSE);
+						//ejection_enqueue(0, rx_can_cmd_info.value, EJECT_ACTION_PAUSE);
 						break;
 					}
 					case AXC_EJECT_BIN_OFFSET: {
 						/* Receives the offset and ejector bin id to eject at coupled with AXC_EJECT_PARTCOUNT. */
-						ejection_enqueue(1, rx_can_cmd_info.value, EJECT_ACTION_EJECT);
+						ejection_execute_enqueue(1, rx_can_cmd_info.value);
 						break;
 					}
 					case AXC_EJECT_PARTCOUNT: {
 						/* 0 == reset, non-zero == Receive the part count coupled with AXC_EJECT_BIN_OFFSET. */
-						ejection_set_part_no(1, (uint32_t)rx_can_cmd_info.value);
+						ejection_set_part_no(1, (uint32_t)rx_can_cmd_info.value, EJECT_ACTION_EJECT);
 						break;
 					}
 					default: break;

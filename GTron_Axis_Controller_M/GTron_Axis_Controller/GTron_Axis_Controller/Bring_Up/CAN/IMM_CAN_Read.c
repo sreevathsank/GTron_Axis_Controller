@@ -41,7 +41,7 @@ void can_Message_Send(int32_t tx_message)
 	//int32_t tx_message = rand() & 127;
 	
 	can_send(&CAN_1, tx_message, EXT_ID, 0, can_tx_frame);
-	//printf("\nThe value sent = &x\n", tx_message);
+	//printf("The value sent = &x\n", tx_message);
 	
 	return;
 }
@@ -122,7 +122,7 @@ void can_Message_Process_GTron_Message_Data()
 	memcpy(rx_can_cmd_info.data, can_rx_frame.data, CAN_DATA_FIELD_LEN);
 	rx_can_cmd_info.value = decoding_GTon_CAN_Byte_Data();
 	
-	DBG_Printf(ERR_LVL_INFO, "\nMsgID = %x | CAN Data Field = 0x%x or %ld\n", 
+	DBG_Printf(ERR_LVL_INFO, "MsgID = %x | CAN Data Field = 0x%x or %ld\n", 
 	(unsigned int)rx_can_cmd_info.id, (unsigned int)rx_can_cmd_info.value, (unsigned int)rx_can_cmd_info.value);
 	
 	parse_GTron_CAN_Msg_Data();
@@ -144,14 +144,14 @@ void can_Message_Decode(uint32_t message_Id, int32_t data)
 	switch(axis_id)
 	{
 		case GTRON_AXC_TOP:
-			DBG_Printf(ERR_LVL_INFO, "\nReceived by AxC_Top: %x Data %x %x %x %x %x", 
+			DBG_Printf(ERR_LVL_INFO, "Received by AxC_Top: %x Data %x %x %x %x %x", 
 			(unsigned int)message_Id, (unsigned int)can_rx_frame.data[0], (unsigned int)can_rx_frame.data[1], 
 			(unsigned int)can_rx_frame.data[2], (unsigned int)can_rx_frame.data[3], (unsigned int)can_rx_frame.data[4]);
 			
 			can_Message_Process_GTron_Message_Data();
 		break;
 		case GTRON_AXC_BOT:
-			DBG_Printf(ERR_LVL_INFO, "\nReceived by AxC_Top: %x Data %x %x %x %x %x",
+			DBG_Printf(ERR_LVL_INFO, "Received by AxC_Top: %x Data %x %x %x %x %x",
 			(unsigned int)message_Id, (unsigned int)can_rx_frame.data[0], (unsigned int)can_rx_frame.data[1],
 			(unsigned int)can_rx_frame.data[2], (unsigned int)can_rx_frame.data[3], (unsigned int)can_rx_frame.data[4]);
 			

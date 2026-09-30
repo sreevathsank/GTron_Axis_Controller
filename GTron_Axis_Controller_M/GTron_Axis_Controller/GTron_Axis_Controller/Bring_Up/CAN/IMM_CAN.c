@@ -117,7 +117,7 @@ void can_begin(struct can_async_descriptor * descr, void *const hw , unsigned in
 	gpio_set_pin_direction(can_silent_pin , GPIO_DIRECTION_OUT);
 	gpio_set_pin_level(can_silent_pin, 0); // Set CAN silent pin LOW
 	/* CAN Bus off debug led indication */
-	//gpio_set_pin_direction(DEBUG_LED , GPIO_DIRECTION_OUT);
+	//gpio_set_pin_direction(CAN_FAULT , GPIO_DIRECTION_OUT);
 	//gpio_set_pin_level(DEBUG_LED, 0); // Set CAN silent pin LOW
 	// printf("0x%x \n",hri_can_read_NBTP_reg(dev->hw));
 }
@@ -209,7 +209,7 @@ void isr_can_bus_off_error_cb(struct _can_async_device *dev, enum can_async_inte
 {
 	// ON the debug led for bus off condition
 	if(hri_can_get_PSR_BO_bit(dev->hw)){
-		gpio_set_pin_level(DEBUG_LED , true);
+		gpio_set_pin_level(CAN_FAULT , true);
 	}	
 }
 

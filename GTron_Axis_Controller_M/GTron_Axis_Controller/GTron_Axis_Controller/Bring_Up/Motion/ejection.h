@@ -73,15 +73,16 @@ typedef struct {
  * Single-producer (CAN RX), single consumer (main loop). head == tail means empty.
  */
 typedef struct {
-	int32_t				target_gc[QUEUE_DEPTH];		/**< Absolute PID_POSITION_ACTUAL at which to act. */
-	uint8_t				action[QUEUE_DEPTH];		/**< EJECT_ACTION_EJECT or EJECT_ACTION_PAUSE per act. */
-	uint32_t			part_no[QUEUE_DEPTH];		/**< Part count echoed back in the eject frame. */
-	volatile uint16_t	head;						/**< Oldest pending target (consumer reads). */
-	volatile uint16_t	tail;						/**< Next free slot (producer writes). */
-	int32_t				distance;					/**< Camera FOC centre -> an ejector/cut point in usteps. */
-	uint32_t			fired;						/**< Telemetry: actions performed. */
-	uint32_t			stale;						/**< Telemetry: rejected late commands. */
-	uint32_t			overflows;					/**< Telemetry: rejected full-queue enqueues. */
+	int32_t				target_gc[QUEUE_DEPTH];			/**< Absolute PID_POSITION_ACTUAL at which to act. */
+	uint8_t				action[QUEUE_DEPTH];			/**< EJECT_ACTION_EJECT or EJECT_ACTION_PAUSE per act. */
+	uint32_t			part_no[QUEUE_DEPTH];			/**< Part count echoed back in the eject frame. */
+	EjectAction_t		upcoming_action;				/**< Action to do. */
+	volatile uint16_t	head;							/**< Oldest pending target (consumer reads). */
+	volatile uint16_t	tail;							/**< Next free slot (producer writes). */
+	int32_t				distance;						/**< Camera FOC centre -> an ejector/cut point in usteps. */
+	uint32_t			fired;							/**< Telemetry: actions performed. */
+	uint32_t			stale;							/**< Telemetry: rejected late commands. */
+	uint32_t			overflows;						/**< Telemetry: rejected full-queue enqueues. */
 }EjectorQueue_t;
 
 /** 
@@ -114,11 +115,19 @@ void ejection_set_distance(uint8_t ejector_id, int32_t distance);
  *
  * A part-no of 0 resets the runtime tracking state instead of latching.
  *
- * @param[in]	ejector_id	Ejector id the count is paired with.
- * @param[in]	part_no		Camera-trigger count of the part (>= 1; 0 = reset).
+ * @param[in]	ejector_id		Ejector id the count is paired with.
+ * @param[in]	part_no			Camera-trigger count of the part (>= 1; 0 = reset).
+ * @param[in]	action_to_do	Upcoming Action to do for the given part count.
  */
- void ejection_set_part_no(uint8_t ejector_id, uint32_t part_no);
+ void ejection_set_part_no(uint8_t ejector_id, uint32_t part_no, EjectAction_t action_to_do);
  
+  /** 
+  * \brief	
+  *
+  * @param[in]	
+  */
+ void ejection_execute_enqueue(uint8_t ejector_id, int32_t offset);
+
  /** 
   * \brief	Computes and enqueues a target from the stored snapshot + distance + offset.
   *

@@ -68,11 +68,16 @@ void ejection_flush_all(void)
 	for (uint8_t e = 0u; e < NUM_EJECTORS; e++) {
 		g_ejectors[e].head	= g_ejectors[e].tail;
 	}
+	for (uint32_t i = 0u; i < TRIG_RING_DEPTH; ++i) {
+		g_trig_ring[i].pos		= 0;
+		g_trig_ring[i].count	= 0u;
+	}
+	g_cam_count				= 0u;
 	g_pending_part_no		= 0u;
 	g_pending_ejector_id	= 0u;
 	g_pending_valid			= false;
 	
-	DBG_Printf(ERR_LVL_INFO, "[EJT] Flushing all queues.\n");
+	DBG_Printf(ERR_LVL_INFO, "[EJT] Flushing all tracking and ejector queues, flags and variables.\n");
 	
 	return;
 }
@@ -80,7 +85,6 @@ void ejection_flush_all(void)
 void ejection_reset(void)
 {
 	ejection_flush_all();
-	g_cam_count = 0u;		/* Next trigger becomes part 1. */
 	
 	return;
 }
@@ -111,35 +115,56 @@ void ejection_note_trigger(int32_t pos)
 	__asm__ volatile("" ::: "memory");		/* Compiler barrier. */
 	g_cam_count	= c;
 	
-	DBG_Printf(ERR_LVL_DEBUG, "[EJT] Tracking Q | Index = %ld | Pos = %ld | Count = %ld\n", 
+	DBG_Printf(ERR_LVL_DEBUG, "[EJT] Tracking Q | Index = %ld | Pos = %ld | Cam Count = %ld\n", 
 								idx, g_trig_ring[idx].pos, g_trig_ring[idx].count);
 	
 	return;
 }
 
 /* --- Part-count latch (producer: CAN RX) ------------------------------------ */
-void ejection_set_part_no(uint8_t ejector_id, uint32_t part_no)
+void ejection_set_part_no(uint8_t ejector_id, uint32_t part_no, EjectAction_t action_to_do)
 {
 	if (part_no == 0u) {
 		ejection_reset();
 		return;
 	}
+	if (ejector_id >= NUM_EJECTORS) {
+		ejection_fault_raise(FAULT_BAD_EJECTOR_ID);
+		DBG_Printf(ERR_LVL_ERROR, "Ejector Id > No of Ejectors.\n");
+		return;
+	}
 	
-	g_pending_part_no		= part_no;
-	g_pending_ejector_id	= ejector_id;
-	g_pending_valid			= true;
+	g_pending_part_no						= part_no;
+	g_pending_ejector_id					= ejector_id;
+	g_pending_valid							= true;
+	g_ejectors[ejector_id].upcoming_action	= action_to_do;
 	
-	DBG_Printf(ERR_LVL_INFO, "[EJT] Part Count received = %ld for Ejector %d\n", g_pending_part_no, g_pending_ejector_id);
+	DBG_Printf(ERR_LVL_INFO, "[EJT] Part Count received = %ld for Ejector %d.\n", g_pending_part_no, g_pending_ejector_id);
 	
 	return;
 }
 
 /* --- Enqueue (consumer of latch, producer of target queue; CAN RX) ---------- */
+
+void ejection_execute_enqueue(uint8_t ejector_id, int32_t offset)
+{
+	if (ejector_id >= NUM_EJECTORS) {
+		ejection_fault_raise(FAULT_BAD_EJECTOR_ID);
+		DBG_Printf(ERR_LVL_ERROR, "Ejector Id > No of Ejectors.\n");
+		return;
+	}
+	(g_ejectors[ejector_id].upcoming_action == EJECT_ACTION_EJECT)
+		? ejection_enqueue(ejector_id, offset, EJECT_ACTION_EJECT)
+		: ejection_enqueue(ejector_id, offset, EJECT_ACTION_PAUSE);
+	
+	return;
+}
+
 void ejection_enqueue(uint8_t ejector_id, int32_t offset, EjectAction_t action)
 {
 	if (ejector_id >= NUM_EJECTORS) {
 		ejection_fault_raise(FAULT_BAD_EJECTOR_ID);
-		
+		DBG_Printf(ERR_LVL_ERROR, "Ejector Id > No of Ejectors.\n");
 		return;
 	}
 	
@@ -175,15 +200,16 @@ void ejection_enqueue(uint8_t ejector_id, int32_t offset, EjectAction_t action)
 	
 	EjectorQueue_t *q	= &g_ejectors[ejector_id];
 	int32_t target		= e->pos + q->distance + offset;
-	DBG_Printf(ERR_LVL_DEBUG, "[EJT] Ejector %d's %ld (Part Pos) + %ld (Ejt_Delta) + %ld (offset) = %ld usteps (Ejt Pos)\n",
-				ejector_id, e->pos, q->distance, offset, target);
+	DBG_Printf(ERR_LVL_DEBUG, "[EJT] Ejector %d's Part No = %ld | %ld (Part Pos) + %ld (Ejt_Delta) + %ld (offset) = %ld usteps or %.2f deg(Ejt Pos)\n",
+				ejector_id, part_no, e->pos, q->distance, offset, target, (float)(target / ONE_DEG_STEPS));
 	
 	/* If the part has already physically passed the ejector, this is a stale command. */
 	int32_t now			= tmc4671_getActualPosition(MOTOR);
 	if (gc_reached(now, target)) {
 		q->stale++;
 		ejection_fault_raise(FAULT_STALE_PART);
-		DBG_Printf(ERR_LVL_ERROR, "Already physically passed. C_Pos = %ld | E_pos = %ld\n", now, target);
+		DBG_Printf(ERR_LVL_ERROR, "Already physically passed s by %ld usteps. Part No = %ld | C_Pos = %ld usteps | E_pos = %ld usteps\n", 
+					(now - target), part_no, now, target);
 		
 		return;
 	}
@@ -197,10 +223,11 @@ void ejection_enqueue(uint8_t ejector_id, int32_t offset, EjectAction_t action)
 		qA->target_gc[p]	= target;
 		qA->action[p]		= (uint8_t)action;
 		qA->part_no[p]		= part_no;
+		
+		return;
 	}
-	
 	/* Case 2: Cross-ejector correction - free stale entry from B, then append to A */
-	if(!q_is_empty(qB) && qB->part_no[q_prev(qB->tail)] == part_no) {
+	else if(!q_is_empty(qB) && qB->part_no[q_prev(qB->tail)] == part_no) {
 		qB->tail	= q_prev(qB->tail);
 	}	
 	
@@ -218,7 +245,7 @@ void ejection_enqueue(uint8_t ejector_id, int32_t offset, EjectAction_t action)
 	__asm__ volatile("" ::: "memory");
 	q->tail					= n;
 	
-	DBG_Printf(ERR_LVL_INFO, "[EJT] Enqueue Ejector %d | Pos = %ld usteps | Part No = %ld\n", ejector_id, target, part_no);
+	DBG_Printf(ERR_LVL_INFO, "[EJT] Enqueue Ejector %d | Part No = %ld | Curr_Pos = %ld usteps | Ejt_Pos = %ld usteps\n", ejector_id, part_no, now, target, (target - now));
 	
 	return;
 }
@@ -232,9 +259,23 @@ void ejection_service(int32_t current_gc)
 		while (!q_is_empty(q) && gc_reached(current_gc, q->target_gc[q->head])) {
 			if (q->action[q->head] == EJECT_ACTION_EJECT) {
 				ejection_send_ejection_cmd(e, q->part_no[q->head]);
+				int32_t c_pos = tmc4671_getActualPosition(MOTOR);
+				DBG_Printf(ERR_LVL_INFO, "[EJT] Ejection Eject Bin %d | Part No = %ld | C_Pos = %ld | Ejt_Pos = %ld | Err = %ld\n",
+				e, q->part_no[q->head], c_pos, q->target_gc[q->head], (c_pos - q->target_gc[q->head]));
+			} else if ( IS_DISCRETE && (q->action[q->head] == EJECT_ACTION_PAUSE) ) {
+				ejection_send_pause_reply(e, q->part_no[q->head]);
+				ejection_send_ejection_cmd(e, q->part_no[q->head]);
+				p_reeler1_info->flags.is_paused = true;
+				/* TODO: Send Stop Motor Command */
+				int32_t c_pos = tmc4671_getActualPosition(MOTOR);
+				DBG_Printf(ERR_LVL_INFO, "[EJT] Ejection Eject Pause Bin %d | Part No = %ld | C_Pos = %ld | Ejt_Pos = %ld | Err = %ld\n",
+				e, q->part_no[q->head], c_pos, q->target_gc[q->head], (c_pos - q->target_gc[q->head]));
 			} else {
 				reeler_Pause_Motor();
 				ejection_send_pause_reply(e, q->part_no[q->head]);
+				int32_t c_pos = tmc4671_getActualPosition(MOTOR);
+				DBG_Printf(ERR_LVL_INFO, "[EJT] Ejection Pause Bin %d | Part No = %ld | C_Pos = %ld | Ejt_Pos = %ld | Err = %ld\n",
+							e, q->part_no[q->head], c_pos, q->target_gc[q->head], (c_pos - q->target_gc[q->head]));
 			}
 			q->fired++;
 			q->head	= q_next(q->head);
@@ -252,7 +293,7 @@ void ejection_send_ejection_cmd(uint8_t bin, uint32_t part_no)
 					AXC_EJECT_BIN_OFFSET,
 					(int32_t)part_no	);
 	
-	DBG_Printf(ERR_LVL_INFO, "[EJT] Ejection Eject Bin %d | Part No = %ld | C_Pos = %ld\n", bin, part_no, tmc4671_getActualPosition(MOTOR));
+	DBG_Printf(ERR_LVL_INFO, "[EJT] Ejection Eject() Bin %d | Part No = %ld\n", bin, part_no);
 	return;
 }
 
@@ -261,10 +302,8 @@ void ejection_send_pause_reply(uint8_t bin, uint32_t part_no)
 	can_AxC_Write(	CAN_TOP_AXC_TO_SYSCTRL_ID,
 					ejector_peripheral(bin),
 					AXC_PAUSE,
-					(int32_t)part_no	);
-	
-	DBG_Printf(ERR_LVL_INFO, "[EJT] Ejection Pause Bin %d | Part No = %ld | C_Pos = %ld\n", bin, part_no, tmc4671_getActualPosition(MOTOR));				
-	
+					(int32_t)part_no	);				
+	DBG_Printf(ERR_LVL_INFO, "[EJT] Ejection Pause Bin %d | Part No = %ld\n", bin, part_no);
 	return;
 }
 

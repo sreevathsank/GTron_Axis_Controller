@@ -120,8 +120,7 @@ void EXTERNAL_IRQ_0_init(void)
 	                       // <GPIO_PULL_UP"> Pull-up
 	                       // <GPIO_PULL_DOWN"> Pull-down
 	                       GPIO_PULL_OFF);
-
-	gpio_set_pin_function(INDEX, PINMUX_PB23A_EIC_EXTINT7);
+	gpio_set_pin_function(INDEX, PINMUX_PB30A_EIC_EXTINT14);
 
 	// Set pin direction to input
 	gpio_set_pin_direction(ROTENC_DIR, GPIO_DIRECTION_IN);
@@ -530,6 +529,20 @@ void system_init(void)
 	gpio_set_pin_direction(DBGLED2, GPIO_DIRECTION_OUT);
 
 	gpio_set_pin_function(DBGLED2, GPIO_PIN_FUNCTION_OFF);
+	
+	
+	// GPIO on PB23
+	gpio_set_pin_level(FOC_INTOUT,
+						// <y> Initial level
+						// <id> pad_initial_level
+						// <false"> Low
+						// <true"> High
+						false);
+	
+	// Set pin direction to output.
+	gpio_set_pin_direction(FOC_INTOUT, GPIO_DIRECTION_OUT);
+	
+	gpio_set_pin_function(FOC_INTOUT, GPIO_PIN_FUNCTION_OFF);
 
 	// GPIO on PB07
 
@@ -646,17 +659,17 @@ void system_init(void)
 
 	// GPIO on PB30
 
-	gpio_set_pin_level(REELER_INT,
-	                   // <y> Initial level
-	                   // <id> pad_initial_level
-	                   // <false"> Low
-	                   // <true"> High
-	                   false);
-
-	// Set pin direction to output
-	gpio_set_pin_direction(REELER_INT, GPIO_DIRECTION_OUT);
-
-	gpio_set_pin_function(REELER_INT, GPIO_PIN_FUNCTION_OFF);
+	//gpio_set_pin_level(REELER_INT,
+	//                   // <y> Initial level
+	//                   // <id> pad_initial_level
+	//                   // <false"> Low
+	//                   // <true"> High
+	//                   false);
+	//
+	//// Set pin direction to output
+	//gpio_set_pin_direction(REELER_INT, GPIO_DIRECTION_OUT);
+	//
+	//gpio_set_pin_function(REELER_INT, GPIO_PIN_FUNCTION_OFF);
 
 	ADC_0_init();
 

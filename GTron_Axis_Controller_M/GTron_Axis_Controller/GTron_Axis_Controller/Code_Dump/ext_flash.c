@@ -290,7 +290,7 @@ bool EXTFLASH_read(size_t offset, size_t length, uint8_t *buf)
 	
 	if (ret)
 	{
-		return false;
+		//return false;
 	}
 	
 	// SPI is driven with low frequency (1Mhz), so not necessary to use fast read.
@@ -339,7 +339,7 @@ uint8_t wbuf[4];
 		// If the device isn't ready, return false
 		if (ret)
 		{
-			return false;
+			//return false;
 		}
 		
 		// Enable Writing on the Flash Device
@@ -426,7 +426,7 @@ bool EXTFLASH_erase(size_t offset, size_t length)
 		// If not complete, return FALSE
 		if (ret)
 		{
-			return false;
+			//return false;
 		}
 		
 		// Enable writing on the device

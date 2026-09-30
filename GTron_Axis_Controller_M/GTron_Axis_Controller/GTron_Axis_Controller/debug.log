@@ -1903,3 +1903,5 @@
 [0713/094150:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
 [0714/191611:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
 [0813/134204:WARNING:dns_config_service_win.cc(674)] Failed to read DnsConfig.
+[0928/193443:WARNING:raw_channel_win.cc(532)] WriteFile: The pipe is being closed. (0xE8)
+[0928/193443:WARNING:channel.cc(359)] RawChannel write error

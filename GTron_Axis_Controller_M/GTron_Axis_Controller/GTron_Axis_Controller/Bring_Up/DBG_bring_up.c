@@ -130,7 +130,7 @@ static void init_Motor_Struct(volatile Motor_Info_t *motor_info, Motor_Name_Enum
 		case MOTOR_VARREST2:
 		case MOTOR_REELERADJ1:
 		case MOTOR_REELERADJ2:
-			motor_info->comms.uart_addr = TMC2209_MOT_ADDR3;
+			motor_info->comms.uart_addr = TMC2209_MOT_ADDR2;
 		break;
 		default: break;
 	}
@@ -289,7 +289,7 @@ void check_Current_Axis_ADC(void)
 		adc_sum += adc_reading.adc_16bit;
 	}
 	adc_result = (uint32_t)(adc_sum / ADC_NUM_READINGS);
-	PRINTF_DEBUG ? printf("\nADC Max = %ld | ADC Avg = %ld | ADC Min = %ld\n", (uint32_t)adc_max, (uint32_t)adc_result, (uint32_t)adc_min) : 0;
+	PRINTF_DEBUG ? printf("ADC Max = %ld | ADC Avg = %ld | ADC Min = %ld\n", (uint32_t)adc_max, (uint32_t)adc_result, (uint32_t)adc_min) : 0;
 	
 	//if( (adc_result >= GTRON_AXC_ADC_MIN) && (adc_result <= GTRON_AXC_ADC_MAX) )
 	{
@@ -329,7 +329,7 @@ void read_4671_ADC_Raw(void)
 	srand(seed);
 	adc_i0_raw = ( adc_i0_raw / ADC_RAW_NUM_READINGS );
 	adc_i1_raw = ( adc_i1_raw / ADC_RAW_NUM_READINGS );
-	printf("\nADC RAW Values i0 = %ld | i1 = %ld\n", adc_i0_raw, adc_i1_raw);
+	printf("ADC RAW Values i0 = %ld | i1 = %ld\n", adc_i0_raw, adc_i1_raw);
 	
 	adc_i0_raw = ( (adc_i0_raw & 0x0000FFFF) | ((uint32_t) adc_scale << 16) );
 	adc_i1_raw = ( (adc_i1_raw & 0x0000FFFF) | ((uint32_t) adc_scale << 16) );
@@ -398,8 +398,8 @@ bool check_4671_version_spi(void)
 	
 	int32_t chip_info = tmc4671_readInt(MOTOR, TMC4671_CHIPINFO_DATA);
 	bool ret_val = VERSION_4671 == tmc4671_readInt(MOTOR, TMC4671_CHIPINFO_DATA);
-	printf("\nchip info = %ld or 0x%lX\n", chip_info, chip_info);
-	ret_val ? PRINTF_DEBUG ? printf("\nSPI Comms with TMC4671 is successful\n"): 0
+	printf("chip info = %ld or 0x%lX\n", chip_info, chip_info);
+	ret_val ? PRINTF_DEBUG ? printf("SPI Comms with TMC4671 is successful\n"): 0
 			: 0;
     return ret_val;
 }
@@ -415,7 +415,7 @@ bool check_passive_flash_spi(void)
 	// Check the Flash Manufacture and Device ID.
 	if( EXTFLASH_open() )
 	{
-		DBG_Printf(ERR_LVL_ERROR, "\nExt Flash ID Check Pass\n");
+		DBG_Printf(ERR_LVL_ERROR, "Ext Flash ID Check Pass\n");
 		ioxp_Init();
 		return 0; // Success.
 	}
@@ -549,16 +549,56 @@ void call_All_Init_Functions(void)
 	init_timers();
 	init_ext_irq_limits();
 	if(!check_4671_version_spi()) {
-		DBG_Printf(ERR_LVL_ERROR, "\n--------TMC4671 SPI Check Failed--------\n");
+		DBG_Printf(ERR_LVL_ERROR, "--------TMC4671 SPI Check Failed--------\n");
 	}
 	gpio_set_pin_level(IOXP_CS, HIGH);
 	
 	if(check_passive_flash_spi()) {
-		DBG_Printf(ERR_LVL_ERROR, "\n------Passive Flash SPI Check Failed-----\n");
+		DBG_Printf(ERR_LVL_ERROR, "------Passive Flash SPI Check Failed-----\n");
 	}
 	gpio_set_pin_level(IOXP_CS, HIGH);
 	
-	DBG_Printf(ERR_LVL_INFO, "\nExt Flash CS -> %d | IOXP CS -> %d\n", gpio_get_pin_level(EXT_CS), gpio_get_pin_level(IOXP_CS) );
+	DBG_Printf(ERR_LVL_INFO, "Ext Flash CS -> %d | IOXP CS -> %d\n", gpio_get_pin_level(EXT_CS), gpio_get_pin_level(IOXP_CS) );
+	
+	/*{
+		EXTFLASH_erase(PARAM_FIRST_MEM_LOC, FLASH_ERASE_SECTOR_SIZE);
+		uint32_t current_limit = 2500; uint16_t torque_i = 20000, torque_p = 8000, velocity_i = 5000, velocity_p = 2500, position_i = 0, position_p = 200;
+		uint32_t pos_window = 24, enc_align_delay = 0, home_vel = 120, end_vel = 1000, end_accln = 2000, end_jerk = 2000, rot_enc_res = 1600, lin_enc_res = 0, lim_delay = 0, start_range = 0, end_range = 360;
+		uint8_t rot_enc_dir = 1, lin_enc_dir = 1, mot_dir = 0, adc_max_val = 92, adc_min_val = 72, limit_edge_det = 1, rotary_axis = 1;
+		repeat_ramp = 0;
+		write_tlv_flash(CURRENT_LIMIT_mA_FLASH, &current_limit, 4);
+		write_tlv_flash(TORQUE_I_FLASH, &torque_i, 2);
+		write_tlv_flash(TORQUE_P_FLASH, &torque_p, 2);
+		write_tlv_flash(FLUX_I_FLASH, &torque_i, 2);
+		write_tlv_flash(FLUX_P_FLASH, &torque_p, 2);
+		write_tlv_flash(VELOCITY_I_FLASH, &velocity_i, 2);
+		write_tlv_flash(VELOCITY_P_FLASH, &velocity_p, 2);
+		write_tlv_flash(POSITION_I_FLASH, &position_i, 2);
+		write_tlv_flash(POSITION_P_FLASH, &position_p, 2);
+		write_tlv_flash(PID_POSITION_CORRECTION_WINDOW_FLASH, &pos_window, 4);
+		write_tlv_flash(ENCODER_ALIGN_DELAY_MS_FLASH, &enc_align_delay, 4);
+		write_tlv_flash(HOMING_VELOCITY_FLASH, &home_vel, 4);
+		write_tlv_flash(ENDURACE_VELOCTIY_FLASH, &end_vel, 4);
+		write_tlv_flash(ENDURANCE_ACCELERATION_FLASH, &end_accln, 4);
+		write_tlv_flash(ENDURANCE_JERK_FLASH, &end_jerk, 4);
+		write_tlv_flash(ROTARY_ENCODER_PPR_FLASH, &rot_enc_res, 4);
+		write_tlv_flash(ROTARY_ENCODER_DIRECTION_FLASH, &rot_enc_dir, 1);
+		write_tlv_flash(LINEAR_ENCODER_CPR_FLASH, &lin_enc_res, 4);
+		write_tlv_flash(LINEAR_ENCODER_DIRECTION_FLASH, &lin_enc_dir, 1);
+		write_tlv_flash(MOTOR_DIRECTION_FLASH, &mot_dir, 1);
+		write_tlv_flash(ADC_MAX_VALUE_FLASH, &adc_max_val, 1);
+		write_tlv_flash(ADC_MIN_VALUE_FLASH, &adc_min_val, 1);
+		write_tlv_flash(LIMIT_EDGE_DETECTION_FLASH, &limit_edge_det, 1);
+		write_tlv_flash(LIMIT_DELAY_MS_FLASH, &lim_delay, 4);
+		write_tlv_flash(REPEAT_RAMP_FLASH, &repeat_ramp, 1);
+		write_tlv_flash(ROTARY_AXIS_FLASH, &rotary_axis, 1);
+		write_tlv_flash(START_RANGE_FLASH, &start_range, 4);
+		write_tlv_flash(END_RANGE_FLASH, &end_range, 4);
+		uint32_t cur_lim_mA = read_tlv_flash(tlv_ptr, CURRENT_LIMIT_mA_FLASH, tlv_traversal);
+		DBG_Printf(ERR_LVL_DEBUG, "Current Limit = %ld", cur_lim_mA);
+	}*/
+	uint8_t cur_lim_mA = (uint8_t)read_tlv_flash(tlv_ptr, ROTARY_ENCODER_DIRECTION_FLASH, tlv_traversal);
+	DBG_Printf(ERR_LVL_DEBUG, "Current Limit = %d", cur_lim_mA);
 	
 	read_Set_Parameters_From_Flash();
 	
@@ -577,7 +617,7 @@ void call_All_Init_Functions(void)
 				init_tmc2209_motor(TMC2209_MOT_ADDR1, p_guide_info);
 				
 				init_Motor_Struct(p_reeleradj1_info, MOTOR_REELERADJ1);
-				init_tmc2209_motor(TMC2209_MOT_ADDR3, p_reeleradj1_info);
+				init_tmc2209_motor(TMC2209_MOT_ADDR2, p_reeleradj1_info);
 			#endif
 			
 			mot_array[TMC4671_MOTOR]	= p_reeler1_info;
@@ -608,8 +648,8 @@ void call_All_Init_Functions(void)
 			//tmc2209_writeRegister(p_varrest1_info->comms.uart_addr, TMC2209_TCOOLTHRS, 500);
 			
 			init_Motor_Struct(p_varrest2_info, MOTOR_VARREST2);
-			p_varrest2_info->comms.uart_addr = TMC2209_MOT_ADDR3;
-			init_tmc2209_motor(TMC2209_MOT_ADDR3, p_varrest2_info);
+			p_varrest2_info->comms.uart_addr = TMC2209_MOT_ADDR2;
+			init_tmc2209_motor(TMC2209_MOT_ADDR2, p_varrest2_info);
 			
 			mot_array[TMC4671_MOTOR]	= NULL;
 			mot_array[TMC2209_MOTOR1]	= p_varrest1_info;
@@ -677,8 +717,8 @@ void run_Open_Loop_Setup_Closed_Loop(uint32_t time_taken)
 	switch(axis_id)
 	{
 		case GTRON_AXC_TOP:
-			DBG_Printf(ERR_LVL_INFO, "\nTop Reeler Rotary Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_PPR));
-			DBG_Printf(ERR_LVL_INFO, "\nTop Reeler Rotary Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE));
+			DBG_Printf(ERR_LVL_INFO, "Top Reeler Rotary Encoder Resolution = %5ld ppr", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_PPR));
+			DBG_Printf(ERR_LVL_INFO, "Top Reeler Rotary Encoder Direction = %ld\n", tmc4671_readInt(MOTOR, TMC4671_ABN_DECODER_MODE));
 		break;
 		default: break;
 	}
