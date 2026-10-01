@@ -18,11 +18,18 @@ volatile uint32_t prev_trig_time_ms = 0;
 void trigger_Camera_Line(void) 
 {
 	//ejection_note_trigger(tmc4671_getActualPosition(MOTOR));
+	if(IS_DISCRETE) {
+		gpio_set_pin_level(INDEX, HIGH);
+		delay_us(1);
+		gpio_toggle_pin_level(DBGLED3);
+		gpio_set_pin_level(INDEX, LOW);
+	} else {
+		gpio_set_pin_level(FOC_INTOUT, HIGH);
+		delay_us(1);
+		gpio_toggle_pin_level(DBGLED3);
+		gpio_set_pin_level(FOC_INTOUT, LOW);
+	}
 	
-	gpio_set_pin_level(FOC_INTOUT, HIGH);
-	delay_us(1);
-	gpio_toggle_pin_level(DBGLED3);
-	gpio_set_pin_level(FOC_INTOUT, LOW);
 	p_reeler1_info->time_ms.cam_trig = millis();
 	
 	return;

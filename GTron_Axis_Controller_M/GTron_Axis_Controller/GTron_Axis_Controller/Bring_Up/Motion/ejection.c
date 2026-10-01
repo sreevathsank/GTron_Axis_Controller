@@ -263,8 +263,9 @@ void ejection_service(int32_t current_gc)
 				DBG_Printf(ERR_LVL_INFO, "[EJT] Ejection Eject Bin %d | Part No = %ld | C_Pos = %ld | Ejt_Pos = %ld | Err = %ld\n",
 				e, q->part_no[q->head], c_pos, q->target_gc[q->head], (c_pos - q->target_gc[q->head]));
 			} else if ( IS_DISCRETE && (q->action[q->head] == EJECT_ACTION_PAUSE) ) {
-				ejection_send_pause_reply(e, q->part_no[q->head]);
 				ejection_send_ejection_cmd(e, q->part_no[q->head]);
+				delay_ms(10);
+				ejection_send_pause_reply(e, q->part_no[q->head]);
 				p_reeler1_info->flags.is_paused = true;
 				/* TODO: Send Stop Motor Command */
 				int32_t c_pos = tmc4671_getActualPosition(MOTOR);

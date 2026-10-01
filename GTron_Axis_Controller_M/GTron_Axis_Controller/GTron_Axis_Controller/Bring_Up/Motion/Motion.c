@@ -919,7 +919,7 @@ void init_ext_irq_limits(void)
 	//ext_irq_register(LIM_RT, right_Limit_Interrupt_Callback);
 	ext_irq_register(ROTENC_Z, rot_Enc_Z_Pulse_Interrupt_Callback);
 	ext_irq_register(IOXP_INT, ioxp_Interrupt_Callback);
-	ext_irq_register(INDEX, index_Interrupt_Callback);
+	//ext_irq_register(INDEX, index_Interrupt_Callback);
 	ext_irq_register(DIAG, diag_Interrupt_Callback);
 	return;
 }
