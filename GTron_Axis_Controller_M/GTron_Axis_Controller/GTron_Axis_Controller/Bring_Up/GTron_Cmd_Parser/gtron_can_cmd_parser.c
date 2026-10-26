@@ -282,48 +282,35 @@ static bool check_Open_Right_Limit_Status( volatile Motor_Info_t *m )
 		return false;
 	}
 	
-	if(m->comms.uart_addr == TMC2209_MOT_ADDR1)
-	{
-		if(MSK_MOT1_R_LIM(gtron_limits.limit_flags))
-		{
+	if(m->comms.uart_addr == TMC2209_MOT_ADDR1) {
+		if(MSK_MOT1_R_LIM(gtron_limits.limit_flags)) {
 			DBG_Printf(ERR_LVL_DEBUG, "Inside MSK_MOT1_R_LIM\n");
 			if( (m->mot_name == MOTOR_VARREST1) ||
 			(m->mot_name == MOTOR_REELERADJ1) ||
-			(m->mot_name == MOTOR_FRONT_CAM) )
-			{
+			(m->mot_name == MOTOR_FRONT_CAM) ) {
 				DBG_Printf(ERR_LVL_ERROR, "Single Limit Motor Open Right Limit Hit!\n");
 			} else {
 				DBG_Printf(ERR_LVL_ERROR, "Double Limit Motor Open Right Limit Hit!\n");
 			}
 			return true;
-		} 
-		else 
-		{
+		} else {
 			return false;
 		}
-	} 
-	else if(m->comms.uart_addr == TMC2209_MOT_ADDR2)
-	{
-		if(MSK_MOT2_R_LIM(gtron_limits.limit_flags))
-		{
+	} else if(m->comms.uart_addr == TMC2209_MOT_ADDR2) {
+		if(MSK_MOT2_R_LIM(gtron_limits.limit_flags)) {
 			DBG_Printf(ERR_LVL_DEBUG, "Inside MSK_MOT2_R_LIM\n");
 			if( (m->mot_name == MOTOR_VARREST2) ||
 			(m->mot_name == MOTOR_REELERADJ2) ||
-			(m->mot_name == MOTOR_FRONT_CAM) )
-			{
+			(m->mot_name == MOTOR_FRONT_CAM) ) {
 				DBG_Printf(ERR_LVL_ERROR, "Single Limit Motor Open Right Limit Hit!\n");
 			} else {
 				DBG_Printf(ERR_LVL_ERROR, "Double Limit Motor Open Right Limit Hit!\n");
 			}
 			return true;
-		}
-		else 
-		{
+		} else {
 			return false;
 		}
-	}
-	else 
-	{
+	} else {
 		DBG_Printf(ERR_LVL_ERROR, "UART Address not part of current config -> %d\n", m->comms.uart_addr);
 		return false;
 	}
@@ -396,9 +383,9 @@ bool is_single_limit_motor(const volatile Motor_Info_t *m)
 	switch (m->mot_name) {
 		case MOTOR_VARREST1:
 		case MOTOR_VARREST2:
-		case MOTOR_REELERADJ1:
+		/*case MOTOR_REELERADJ1:*/
 		case MOTOR_REELERADJ2:
-		case MOTOR_FRONT_CAM:
+		/*case MOTOR_FRONT_CAM:*/
 			return true;
 		default:
 			return false;

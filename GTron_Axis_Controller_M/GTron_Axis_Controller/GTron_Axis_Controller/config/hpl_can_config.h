@@ -138,7 +138,7 @@
 // <i> Number of Rx FIFO 0 element
 // <id> can_rxf0c_f0s
 #ifndef CONF_CAN1_RXF0C_F0S
-#define CONF_CAN1_RXF0C_F0S 2
+#define CONF_CAN1_RXF0C_F0S 5
 #endif
 
 // <o> Data Field Size

@@ -45,11 +45,11 @@ static uint8_t get_irun_for_motor(Motor_Name_Enum_t mot_name)
  */
 void init_tmc2209_motor(uint16_t icID, const volatile Motor_Info_t *m)
 {
-	if( (m->mot_name == MOTOR_VARREST2) || 
-		(m->mot_name == MOTOR_REELERADJ1) ) {
+	if( 0/*(m->mot_name == MOTOR_VARREST2) || 
+		(m->mot_name == MOTOR_REELERADJ1)*/ ) {
 		tmc2209_writeRegister(icID, TMC2209_GCONF, 0x000000E8);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
 	} else {
-		tmc2209_writeRegister(icID, TMC2209_GCONF, 0x000000E8);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
+		tmc2209_writeRegister(icID, TMC2209_GCONF, 0x000000E0);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
 	}
 	tmc2209_writeRegister(icID, TMC2209_TPOWERDOWN, 0x00000000);    // DEC 20.
 	

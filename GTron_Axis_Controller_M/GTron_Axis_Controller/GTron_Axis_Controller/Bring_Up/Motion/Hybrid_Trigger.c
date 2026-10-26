@@ -17,8 +17,8 @@ volatile uint32_t prev_trig_time_ms = 0;
  **/
 void trigger_Camera_Line(void) 
 {
-	//ejection_note_trigger(tmc4671_getActualPosition(MOTOR));
 	if(IS_DISCRETE) {
+		ejection_note_trigger(tmc4671_getActualPosition(MOTOR));
 		gpio_set_pin_level(INDEX, HIGH);
 		delay_us(1);
 		gpio_toggle_pin_level(DBGLED3);
@@ -95,11 +95,11 @@ static void handle_n_shot_tick()
 		reeler_Pause_Motor();
 	}
 	
-	// If sensor trigger is received but the cycle is still armed, ignore the sensor trigger.
+	/*// If sensor trigger is received but the cycle is still armed, ignore the sensor trigger.
 	if(p_reeler1_info->flags.sensor_trigger && H->cycle_armed && !p_reeler1_info->flags.is_encoder_mode) {
 		DBG_Printf(ERR_LVL_WARNING, "Spurious Sensor Trigger rxcvd while cycle armed. Ignoring...\n");
 		p_reeler1_info->flags.sensor_trigger = false;
-	}
+	}*/
 	
 	// If sensor trigger is received while cycle is not armed, it is a valid trigger.
 	if(p_reeler1_info->flags.sensor_trigger && !p_reeler1_info->flags.is_encoder_mode) {
