@@ -147,7 +147,7 @@ void update_TMC2209_Step_Tracking(volatile Motor_Info_t *motor_info)
 		
 		if( diff_zero ) {
 			motor_info->flags.move_given = false;
-			tmc2209_set_velocity(motor_info->comms.uart_addr, motor_info, 0);
+			tmc2209_set_velocity(motor_info, 0);
 			motor_info->position.current = motor_info->step_tracker.total_steps;
 			is_tmc2209_mot_moving = false;
 			message_Id = CAN_REPLY_TOP_RACK_ID;
@@ -172,7 +172,7 @@ void update_TMC2209_Step_Tracking(volatile Motor_Info_t *motor_info)
 	return;
 }
 
-void tmc2209_set_velocity(uint16_t icID, volatile Motor_Info_t *motor_info, int32_t velocity)
+void tmc2209_set_velocity(volatile Motor_Info_t *motor_info, int32_t velocity)
 {
 	// Set the direction of motion according the velocity given.
 	if( velocity > 0 ) { 
@@ -187,7 +187,7 @@ void tmc2209_set_velocity(uint16_t icID, volatile Motor_Info_t *motor_info, int3
 		DBG_Printf(ERR_LVL_DEBUG, "\nVelocity < 0 | Count DOWN - 1\n");
 	}
 	
-	tmc2209_writeRegister(icID, TMC2209_VACTUAL, velocity);
+	tmc2209_writeRegister(motor_info->comms.uart_addr, TMC2209_VACTUAL, velocity);
 	
 	return;
 }

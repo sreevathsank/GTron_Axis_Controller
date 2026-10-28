@@ -214,7 +214,11 @@ void set_CAN_Motor_Address(volatile Motor_Info_t *m);
 
 void reeler_Stop_Motor( void );
 
+void reeler_Sag_Pause_Motor(void);
+
 void reeler_Pause_Motor( void );
+
+void reeler_Set_Velocity(int32_t reeler_target_velocity);
 
 void tmc2209_Stop_Motor(volatile Motor_Info_t *m);
 

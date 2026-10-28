@@ -180,6 +180,9 @@ Bring_Up/Motion/Hybrid_Trigger.d Bring_Up/Motion/Hybrid_Trigger.o: \
  ../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h ../All_Headers.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\math.h \
  ../Bring_Up/DBG_bring_up.h ../Bring_Up/IO_Expander/spi_io_expander.h \
+ ../Bring_Up/Light_Curtain/light_curtain.h \
+ ../Bring_Up/Debug/dbg_transport.h ../Bring_Up/Debug/dbg_print.h \
+ ../Bring_Up/Motion/Hybrid_Trigger.h ../Bring_Up/Motion/ejection.h \
  ../TMC-API/tmc/ic/TMC4671/TMC4671.h ../Bring_Up/CAN/IMM_CAN.h \
  ../hpl/can/hpl_can_base.h ../Config/hpl_can_config.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\string.h \
@@ -187,8 +190,6 @@ Bring_Up/Motion/Hybrid_Trigger.d Bring_Up/Motion/Hybrid_Trigger.o: \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\string.h \
  ../Bring_Up/CAN/IMM_CAN_Message_Id.h ../Bring_Up/CAN/IMM_CAN_Read.h \
  ../Bring_Up/CAN/TMCL_IDE_reply.h ../Bring_Up/CAN/IMM_CAN.h \
- ../Bring_Up/Debug/dbg_transport.h ../Bring_Up/Debug/dbg_print.h \
- ../Bring_Up/Motion/Hybrid_Trigger.h ../Bring_Up/Motion/ejection.h \
  ../Bring_Up/CAN/IMM_CAN_Message_Id.h ../motor_dev/my_Ramp/myRamp.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\fastmath.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\machine\fastmath.h \
@@ -679,6 +680,16 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 
 ../Bring_Up/IO_Expander/spi_io_expander.h:
 
+../Bring_Up/Light_Curtain/light_curtain.h:
+
+../Bring_Up/Debug/dbg_transport.h:
+
+../Bring_Up/Debug/dbg_print.h:
+
+../Bring_Up/Motion/Hybrid_Trigger.h:
+
+../Bring_Up/Motion/ejection.h:
+
 ../TMC-API/tmc/ic/TMC4671/TMC4671.h:
 
 ../Bring_Up/CAN/IMM_CAN.h:
@@ -700,14 +711,6 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../Bring_Up/CAN/TMCL_IDE_reply.h:
 
 ../Bring_Up/CAN/IMM_CAN.h:
-
-../Bring_Up/Debug/dbg_transport.h:
-
-../Bring_Up/Debug/dbg_print.h:
-
-../Bring_Up/Motion/Hybrid_Trigger.h:
-
-../Bring_Up/Motion/ejection.h:
 
 ../Bring_Up/CAN/IMM_CAN_Message_Id.h:
 

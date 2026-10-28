@@ -25,6 +25,9 @@ volatile Motor_Info_t *p_reeleradj1_info = &reeleradj1_info;
 volatile Motor_Info_t reeleradj2_info;
 volatile Motor_Info_t *p_reeleradj2_info = &reeleradj2_info;
 
+volatile Motor_Info_t frontcam_info;
+volatile Motor_Info_t *p_frontcam_info = &frontcam_info;
+
 volatile Motor_Info_t *mot_array[] = { NULL, NULL, NULL};
 
 Can_Cmd_Info_t rx_can_cmd_info;
@@ -103,7 +106,7 @@ static void reeler_Move(int32_t target_position, bool move_to_by)
  *
  * @return void
  **/
-static void reeler_Set_Velocity(int32_t reeler_target_velocity)
+void reeler_Set_Velocity(int32_t reeler_target_velocity)
 {
 	p_reeler1_info->velocity.limit = reeler_target_velocity;
 	tmc4671_setVelocityLimit(MOTOR, p_reeler1_info->velocity.limit);
@@ -222,6 +225,20 @@ void reeler_Stop_Motor( void )
 	return;
 }
 
+void reeler_Sag_Pause_Motor(void)
+{
+	p_reeler1_info->position.current = tmc4671_getActualPosition(MOTOR);
+	tmc4671_setVelocityLimit(MOTOR, 0);
+	tmc4671_setVelocityTarget(MOTOR, 0);
+	tmc4671_setModeMotion(MOTOR, STOPPED_MODE);
+	timer_stop(&VEL_TIMER);
+	tmc4671_setAbsolutTargetPosition(MOTOR, p_reeler1_info->position.current);
+	tmc4671_setVelocityLimit(MOTOR, 2);
+	tmc4671_setModeMotion(MOTOR, POSITION_MODE);
+	p_reeler1_info->flags.is_paused = true;
+	return;
+}
+
 /** 
  * \brief
  *
@@ -239,7 +256,7 @@ void reeler_Pause_Motor( void )
 	move_given_s_ramp						= false; 
 	check_move_done							= false;
 	p_reeler1_info->flags.rotate_vel_mode	= false;
-	p_reeler1_info->flags.sag_enabled		= (IS_DISCRETE) ? true : false;;
+	p_reeler1_info->flags.sag_enabled		= (IS_DISCRETE) ? true : false;
 	homing_v = 0;
 	timer_stop(&VEL_TIMER);
 	trig_no = 0;
@@ -384,7 +401,7 @@ bool is_single_limit_motor(const volatile Motor_Info_t *m)
 		case MOTOR_VARREST1:
 		case MOTOR_VARREST2:
 		/*case MOTOR_REELERADJ1:*/
-		case MOTOR_REELERADJ2:
+		/*case MOTOR_REELERADJ2:*/
 		/*case MOTOR_FRONT_CAM:*/
 			return true;
 		default:
@@ -441,7 +458,7 @@ static void tmc2209_Move(volatile Motor_Info_t *motor_info, int32_t target_posit
 		{ motor_info->position.target = motor_info->position.current + target_position; }
 			
 		//tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
-		tmc2209_set_velocity(motor_info->comms.uart_addr, motor_info, motor_info->velocity.target);
+		tmc2209_set_velocity(motor_info, motor_info->velocity.target);
 		DBG_Printf(ERR_LVL_DEBUG, "Move To: Current Pos = %ld | Target Pos = %ld | Velocity = %ld ustep/s\n", \
 								motor_info->position.current, target_position, motor_info->velocity.target);
 		motor_info->motor_state = MOTOR_MOVING_STATE;
@@ -455,7 +472,7 @@ static void tmc2209_Move(volatile Motor_Info_t *motor_info, int32_t target_posit
 		{ motor_info->position.target = motor_info->position.current - target_position; }
 		
 		//tmc2209_writeRegister(TMC2209_MOTOR1_ADDR, TMC2209_GCONF, 0x00000068);         // DEC 104. //0x68 for inverse shaft dir. 0x60 for forward shaft dir.
-		tmc2209_set_velocity(motor_info->comms.uart_addr, motor_info, (-motor_info->velocity.target) );
+		tmc2209_set_velocity(motor_info, (-motor_info->velocity.target) );
 		DBG_Printf(ERR_LVL_DEBUG, "Move To: Current Pos = %ld | Target Pos = %ld | Velocity = %ld ustep/s\n", \
 								motor_info->position.current, target_position, (-motor_info->velocity.target) );
 		motor_info->motor_state = MOTOR_MOVING_STATE;
@@ -480,7 +497,6 @@ static void tmc2209_Move(volatile Motor_Info_t *motor_info, int32_t target_posit
 void tmc2209_Move_To_Open_Limit(volatile Motor_Info_t *motor_info )
 {
 	uint8_t limit_status = 0;
-	//IOXP_Read_Byte(IOXP_REG_GPIO, &limit_status);
 	IOXP_Read_Byte(IOXP_REG_INTCAP_RD_ONLY, &limit_status );
 	if(MSK_MOT1_R_LIM(limit_status)) {
 		DBG_Printf(ERR_LVL_DEBUG, "Already in Open Limit. Not moving towards Open Limit\n");
@@ -492,7 +508,7 @@ void tmc2209_Move_To_Open_Limit(volatile Motor_Info_t *motor_info )
 		can_Write(message_Id, can_tx_frame.data_64bit);
 		return;
 	}
-	tmc2209_set_velocity(motor_info->comms.uart_addr, motor_info, TMC2209_DEFAULT_SPEED);
+	tmc2209_set_velocity(motor_info, TMC2209_DEFAULT_SPEED);
 	motor_info->flags.move_to_open_lim = true;
 	is_tmc2209_mot_moving = true;
 	motor_info->motor_state = MOTOR_MOVING_STATE;
@@ -524,7 +540,7 @@ void tmc2209_Move_To_Close_Limit(volatile Motor_Info_t *motor_info )
 			return;
 		}
 	}
-	tmc2209_set_velocity(motor_info->comms.uart_addr, motor_info, -TMC2209_DEFAULT_SPEED);
+	tmc2209_set_velocity(motor_info, -TMC2209_DEFAULT_SPEED);
 	motor_info->flags.move_to_close_lim = true;
 	is_tmc2209_mot_moving = true;
 	motor_info->motor_state = MOTOR_MOVING_STATE;
@@ -553,7 +569,7 @@ static void tmc2209_Reference_Search( volatile Motor_Info_t *m )
 			m->flags.move_to_open_lim = true;
 			is_tmc2209_mot_moving = true;
 			DBG_Printf(ERR_LVL_DEBUG, "Homing - Motor not at limit. Moving towards Open Right Limit\n");
-			tmc2209_set_velocity(m->comms.uart_addr, m, TMC2209_DEFAULT_SPEED);
+			tmc2209_set_velocity(m, TMC2209_DEFAULT_SPEED);
 			m->motor_state = MOTOR_MOVING_STATE;
 		}
 	} else {
@@ -711,7 +727,7 @@ void parse_GTron_CAN_Msg_Data( void )
 	switch(rx_can_cmd_info.id)
 	{
 		case 0x200: {
-			if(sbridge_addr == VARREST_1_2_SOLENOID) {
+			if(sbridge_addr == VARREST_1_2_FRONTCAM) {
 				rack_id = TOP_RACK;
 				DBG_Printf(ERR_LVL_DEBUG, "TOP VARREST 1 2 Message ID Rxcvd from MI - 200\n");
 			} else {
@@ -739,7 +755,7 @@ void parse_GTron_CAN_Msg_Data( void )
 				switch(rx_can_cmd_info.data[0])
 				{
 					case 1: {
-						p_reeler1_info->flags.sag_enabled = true;
+						//p_reeler1_info->flags.sag_enabled = true;
 						if(p_reeler1_info->flags.sag_enabled & p_reeler1_info->flags.rotate_vel_mode) {
 							trig_no = 0;
 							prev_trig_no = 0;
@@ -773,7 +789,7 @@ void parse_GTron_CAN_Msg_Data( void )
 			switch(rx_can_cmd_info.data[0])
 			{
 				case 1:
-					p_reeler1_info->flags.sag_enabled = true;
+					//p_reeler1_info->flags.sag_enabled = true;
 					if(p_reeler1_info->flags.sag_enabled & p_reeler1_info->flags.rotate_vel_mode)
 					{
 						timer_start(&VEL_TIMER);

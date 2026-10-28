@@ -167,6 +167,12 @@ Bring_Up/CAN/IMM_CAN_Write.d Bring_Up/CAN/IMM_CAN_Write.o: \
  ../hal/include/hal_can_async.h ../hal/include/hpl_can.h \
  ../hal/include/hpl_can_async.h ../hal/utils/include/utils.h \
  ../Bring_Up/DBG_bring_up.h ../Bring_Up/IO_Expander/spi_io_expander.h \
+ ../Bring_Up/Light_Curtain/light_curtain.h \
+ ../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h \
+ ../Bring_Up/Debug/dbg_transport.h ../Bring_Up/Debug/dbg_print.h \
+ ../Bring_Up/Motion/Hybrid_Trigger.h ../atmel_start.h ../stdio_start.h \
+ ../stdio_redirect/stdio_io.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\inttypes.h \
  ../TMC-API/tmc/ic/TMC4671/TMC4671.h ../TMC-API/tmc/helpers/API_Header.h \
  ../TMC-API/tmc/helpers/Config.h ../TMC-API/tmc/helpers/Constants.h \
  ../TMC-API/tmc/helpers/Types.h ../TMC-API/tmc/helpers/Macros.h \
@@ -175,20 +181,15 @@ Bring_Up/CAN/IMM_CAN_Write.d Bring_Up/CAN/IMM_CAN_Write.o: \
  ../TMC-API/tmc/ic/TMC4671/TMC4671_Register.h \
  ../TMC-API/tmc/ic/TMC4671/TMC4671_Constants.h \
  ../TMC-API/tmc/helpers/Constants.h \
- ../TMC-API/tmc/ic/TMC4671/TMC4671_Fields.h ../Bring_Up/CAN/IMM_CAN.h \
- ../atmel_start.h ../stdio_start.h ../stdio_redirect/stdio_io.h \
+ ../TMC-API/tmc/ic/TMC4671/TMC4671_Fields.h ../Bring_Up/Motion/ejection.h \
+ ../TMC-API/tmc/ic/TMC4671/TMC4671.h ../Bring_Up/CAN/IMM_CAN.h \
  ../hpl/can/hpl_can_base.h ../Config/hpl_can_config.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\string.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\xlocale.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\string.h \
- c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\inttypes.h \
  ../Bring_Up/CAN/IMM_CAN_Message_Id.h ../Bring_Up/CAN/IMM_CAN_Read.h \
  ../Bring_Up/CAN/TMCL_IDE_reply.h ../Bring_Up/CAN/IMM_CAN.h \
- ../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h \
- ../Bring_Up/Debug/dbg_transport.h ../Bring_Up/Debug/dbg_print.h \
- ../Bring_Up/Motion/Hybrid_Trigger.h ../TMC-API/tmc/ic/TMC4671/TMC4671.h \
- ../Bring_Up/Motion/ejection.h ../Bring_Up/CAN/IMM_CAN_Message_Id.h \
- ../motor_dev/my_Ramp/myRamp.h \
+ ../Bring_Up/CAN/IMM_CAN_Message_Id.h ../motor_dev/my_Ramp/myRamp.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\fastmath.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\machine\fastmath.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\newlib-nano\newlib.h \
@@ -642,6 +643,24 @@ C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n
 
 ../Bring_Up/IO_Expander/spi_io_expander.h:
 
+../Bring_Up/Light_Curtain/light_curtain.h:
+
+../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h:
+
+../Bring_Up/Debug/dbg_transport.h:
+
+../Bring_Up/Debug/dbg_print.h:
+
+../Bring_Up/Motion/Hybrid_Trigger.h:
+
+../atmel_start.h:
+
+../stdio_start.h:
+
+../stdio_redirect/stdio_io.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\inttypes.h:
+
 ../TMC-API/tmc/ic/TMC4671/TMC4671.h:
 
 ../TMC-API/tmc/helpers/API_Header.h:
@@ -668,13 +687,11 @@ C:\Program\ Files\ (x86)\Atmel\Studio\7.0\Packs\atmel\SAMC21_DFP\1.2.176\samc21n
 
 ../TMC-API/tmc/ic/TMC4671/TMC4671_Fields.h:
 
+../Bring_Up/Motion/ejection.h:
+
+../TMC-API/tmc/ic/TMC4671/TMC4671.h:
+
 ../Bring_Up/CAN/IMM_CAN.h:
-
-../atmel_start.h:
-
-../stdio_start.h:
-
-../stdio_redirect/stdio_io.h:
 
 ../hpl/can/hpl_can_base.h:
 
@@ -686,8 +703,6 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\string.h:
 
-c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\inttypes.h:
-
 ../Bring_Up/CAN/IMM_CAN_Message_Id.h:
 
 ../Bring_Up/CAN/IMM_CAN_Read.h:
@@ -695,18 +710,6 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../Bring_Up/CAN/TMCL_IDE_reply.h:
 
 ../Bring_Up/CAN/IMM_CAN.h:
-
-../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h:
-
-../Bring_Up/Debug/dbg_transport.h:
-
-../Bring_Up/Debug/dbg_print.h:
-
-../Bring_Up/Motion/Hybrid_Trigger.h:
-
-../TMC-API/tmc/ic/TMC4671/TMC4671.h:
-
-../Bring_Up/Motion/ejection.h:
 
 ../Bring_Up/CAN/IMM_CAN_Message_Id.h:
 

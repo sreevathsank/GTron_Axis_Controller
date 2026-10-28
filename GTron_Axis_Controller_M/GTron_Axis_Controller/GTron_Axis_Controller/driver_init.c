@@ -33,11 +33,15 @@ struct wdt_descriptor WDT_0;
 
 void ADC_0_PORT_init(void)
 {
+	// Disable digital pin circuitry
+	gpio_set_pin_direction(SAG_SNSR2, GPIO_DIRECTION_OFF);
+
+	gpio_set_pin_function(SAG_SNSR2, PINMUX_PA02B_ADC0_AIN0);
 
 	// Disable digital pin circuitry
-	gpio_set_pin_direction(DVC_ADDR, GPIO_DIRECTION_OFF);
+	gpio_set_pin_direction(FOC_ADDR, GPIO_DIRECTION_OFF);
 
-	gpio_set_pin_function(DVC_ADDR, PINMUX_PC01B_ADC0_AIN9);
+	gpio_set_pin_function(FOC_ADDR, PINMUX_PC01B_ADC0_AIN9);
 }
 
 void ADC_0_CLOCK_init(void)
@@ -641,20 +645,20 @@ void system_init(void)
 	gpio_set_pin_direction(FPGA_CRESET_B, GPIO_DIRECTION_OUT);
 
 	gpio_set_pin_function(FPGA_CRESET_B, GPIO_PIN_FUNCTION_OFF);
-
+	
 	// GPIO on PB19
 
-	gpio_set_pin_level(INDEX_SEL,
-	                   // <y> Initial level
-	                   // <id> pad_initial_level
-	                   // <false"> Low
-	                   // <true"> High
-	                   false);
+	gpio_set_pin_level(EN_SOLENOID,
+						// <y> Initial level
+						// <id> pad_initial_level
+						// <false"> Low
+						// <true"> High
+						false);
 
 	// Set pin direction to output
-	gpio_set_pin_direction(INDEX_SEL, GPIO_DIRECTION_OUT);
+	gpio_set_pin_direction(EN_SOLENOID, GPIO_DIRECTION_OUT);
 
-	gpio_set_pin_function(INDEX_SEL, GPIO_PIN_FUNCTION_OFF);
+	gpio_set_pin_function(EN_SOLENOID, GPIO_PIN_FUNCTION_OFF);
 
 	// GPIO on PB20
 

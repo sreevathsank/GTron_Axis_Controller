@@ -229,7 +229,7 @@
       </AcmeProjectConfig>
     </AcmeProjectConfig>
     <avrtool>com.atmel.avrdbg.tool.atmelice</avrtool>
-    <avrtoolserialnumber>J42700054980</avrtoolserialnumber>
+    <avrtoolserialnumber>J45700000540</avrtoolserialnumber>
     <avrdeviceexpectedsignature>0x11011420</avrdeviceexpectedsignature>
     <avrtoolinterface>SWD</avrtoolinterface>
     <com_atmel_avrdbg_tool_atmelice>
@@ -240,7 +240,7 @@
         <InterfaceName>SWD</InterfaceName>
       </ToolOptions>
       <ToolType>com.atmel.avrdbg.tool.atmelice</ToolType>
-      <ToolNumber>J42700054980</ToolNumber>
+      <ToolNumber>J45700000540</ToolNumber>
       <ToolName>Atmel-ICE</ToolName>
     </com_atmel_avrdbg_tool_atmelice>
     <avrtoolinterfaceclock>2000000</avrtoolinterfaceclock>
@@ -595,6 +595,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Bring_Up\IO_Expander\spi_io_expander.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Bring_Up\Light_Curtain\light_curtain.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Bring_Up\Light_Curtain\light_curtain.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Bring_Up\Motion\ejection.c">
@@ -1274,6 +1280,7 @@
     <Folder Include="Bring_Up\Motion\" />
     <Folder Include="Bring_Up\IO_Expander" />
     <Folder Include="Bring_Up\GTron_Cmd_Parser" />
+    <Folder Include="Bring_Up\Light_Curtain" />
     <Folder Include="config\" />
     <Folder Include="Device_Startup\" />
     <Folder Include="documentation\" />

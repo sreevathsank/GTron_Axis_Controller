@@ -6,6 +6,7 @@
 #include "All_Headers.h"
 #include "Bring_Up/CAN/IMM_CAN_Read.h"
 #include "Bring_Up/Debug/dbg_transport.h"
+#include "Bring_Up/Light_Curtain/light_curtain.h"
 
 int main(void)
 {
@@ -15,10 +16,7 @@ int main(void)
 	DBG_Init(DBG_TransportGet());     // Wire dbg_print to the transport.
 	SYSTICK_INIT();
 	can_Init();
-	
-	// REELER1_GUIDE_REELERADJ1, VARREST_1_2_SOLENOID and REELER2_REELERADJ2_FRONTCAM.
-	//sbridge_addr = VARREST_1_2_SOLENOID;
-	sbridge_addr = REELER1_GUIDE_REELERADJ1;
+
 	step_count = 0;
 	define_All_Global_Variables();
 	call_All_Init_Functions();
@@ -55,40 +53,47 @@ int main(void)
 	// Enable Homing Flag if RF is enabled for X, Y or Z axis or repeat_ramp is greater than 0.
 	limit_variables.homing = ( repeat_ramp > 0 ) ? true : false;
 	p_reeler1_info->flags.sag_enabled = (IS_DISCRETE) ? true : false;
+	update_lc_rd_time_to_millis();
 	for(;;) {
 		/* TMC2209 Motor step calculation during movements. */
-		if(is_tmc2209_mot_moving) {
+		if (is_tmc2209_mot_moving) {
 			check_Which_2209_Motor_Moving();
 		}
 		
 		/* IOXP interrupts handling. */
-		if(gtron_limits.interrupt_raised) {
+		if (gtron_limits.interrupt_raised) {
 			check_Limit_Flags();
 		}
 		
 		/* TMC2209 DIAG pin interrupt raised. */
-		if(tmc2209_diag_flag) {
+		if (tmc2209_diag_flag) {
 			
 		}
 		/* For checking if the Motor has reached its target position TMC4671. */
-		if(check_move_done)	{ 
+		if (check_move_done)	{ 
 			check_For_Move_Done();
 		}
 		
 		/* For Generating S Ramp profile for TMC4671. */
-		if(move_given_s_ramp) { 
+		if (move_given_s_ramp) { 
 			run_S_ramp();
 		}
 			
 		/* For running the motor in Velocity Mode TMC4671. */
-		if( (repeat_ramp != 2) && p_reeler1_info->flags.rotate_vel_mode \
+		if ((repeat_ramp != 2) && p_reeler1_info->flags.rotate_vel_mode \
 			&& p_reeler1_info->flags.vel_timer && p_reeler1_info->flags.sag_enabled) {
 			run_Velocity_Ramp();
 		}
 		
 		/* Check if CAN Messages were received. */
-		if(can_rx_int) { 
+		if (can_rx_int) { 
 			can_Read();
+		}
+		
+		/* Reading the ADC Light Curtain. */
+		if (millis() - get_lc_rd_time() > LC_READ_DELAY_MS) {
+			light_curtain_service();
+			update_lc_rd_time_to_millis();
 		}
 	}
 	return 0;

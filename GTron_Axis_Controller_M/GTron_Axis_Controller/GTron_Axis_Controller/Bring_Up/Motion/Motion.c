@@ -216,6 +216,7 @@ void align_Rotor_ABNEnc(uint8_t motor, uint16_t startVoltage)
 		break;
 		default: break;
 	}
+	tmc4671_writeInt(motor, TMC4671_ABN_DECODER_PPR, read_tlv_flash(tlv_ptr, ROTARY_ENCODER_PPR_FLASH, tlv_traversal));
 	//After the rotor has aligned this will set the ABN_DECODER_COUNT to 0 so there is a defined 0-position
 	tmc4671_writeInt(motor, TMC4671_ABN_DECODER_COUNT, 0);
 	
@@ -284,7 +285,7 @@ void do_homing_sequence( void )
 		limit_variables.right_limit_position = 0;
 		
 		tmc4671_setActualPosition(MOTOR, 0);
-		tmc4671_setRelativeTargetPosition(MOTOR, 66666);
+		tmc4671_setRelativeTargetPosition(MOTOR, POSITION_HIGH);
 		tmc4671_setVelocityLimit(MOTOR, axis_params.home_search_vel);
 		tmc4671_setModeMotion(MOTOR, POSITION_MODE);
 		return;
@@ -856,7 +857,7 @@ void rot_Enc_Z_Pulse_Interrupt_Callback(void)
 	move_given_s_ramp = false;
 	move_given_trapezoidal_ramp = false;
 	limit_variables.homing = false;
-	
+	DBG_Printf(ERR_LVL_INFO, "GTron Top AxC | Rotary Encoder Z Pulse Edge Detected\n");
 	switch(axis_id) {
 		case GTRON_AXC_TOP: DBG_Printf(ERR_LVL_INFO, "GTron Top AxC | Rotary Encoder Z Pulse Edge Detected\n"); break;
 		case GTRON_AXC_BOT: DBG_Printf(ERR_LVL_INFO, "GTron Bot AxC | Rotary Encoder Z Pulse Edge Detected\n"); break;
@@ -1453,10 +1454,11 @@ void run_Velocity_Ramp(void)
 {
 	if(!p_reeler1_info) { return; }
 		
-	static float vel = 0;	// Velocity to be set.
-	static bool ramping = false;
-	static int32_t prev_trig_pos = 0;
-	vel_struct.flags.reeler_vel_timer = false;
+	static float vel					= 0;	// Velocity to be set.
+	static bool ramping					= false;
+	static int32_t prev_trig_pos		= 0;
+	vel_struct.flags.reeler_vel_timer	= false;
+	
 
 	int32_t current_velocity	= tmc4671_getActualVelocity(MOTOR);
 	int32_t target_velocity		= p_reeler1_info->velocity.limit;
@@ -1486,6 +1488,8 @@ void run_Velocity_Ramp(void)
 	}
 	
 	ejection_service(current_position);
+	
+	
 	
 	if(!ramping) {
 		vel = current_velocity;

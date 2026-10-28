@@ -36,8 +36,8 @@ int32_t prev_sens_pos;
 
 typedef enum {
 	REELER1_GUIDE_REELERADJ1	= 0,
-	VARREST_1_2_SOLENOID		= 1,
-	REELER2_REELERADJ2_FRONTCAM	= 2,
+	VARREST_1_2_FRONTCAM		= 1,
+	REELER2_REELERADJ2	= 2,
 }SouthBridge_t;
 
 SouthBridge_t sbridge_addr;
@@ -60,7 +60,7 @@ typedef union
 {
 	uint16_t adc_16bit;
 	uint8_t adc_8bit[2];
-}adc_values;
+}ADC_Values_t;
 
 struct io_descriptor *io_tmc2209;
 
@@ -388,7 +388,7 @@ int32_t decel_velocity;
 int32_t stop_velocity;
 
 axis_current		axis_id;
-adc_values			adc_reading;
+ADC_Values_t			adc_reading;
 axis_parameters		axis_params;
 rampParams			rParams;
 trapezoidal_state	ramp_State;

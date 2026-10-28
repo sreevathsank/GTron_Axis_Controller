@@ -41,13 +41,13 @@
 #define GTRON_AXC_ADC_MAX			208
 /**********************************/	
 
-#define IS_DISCRETE					true
+#define IS_DISCRETE					false
 
-#define ADC_CHANNEL					0				// ADC Channel to read from.
-#define ADC_READ_LENGTH				2				// No. of bytes to read. 8 bit = 1 | 10 and 12 bits = 2.			
-#define ADC_NUM_READINGS			50				// No. of ADC Readings to average.
+#define ADC_CHANNEL					0u				// ADC Channel to read from.
+#define ADC_READ_LENGTH				2u				// No. of bytes to read. 8 bit = 1 | 10 and 12 bits = 2.			
+#define ADC_NUM_READINGS			1000u			// No. of ADC Readings to average.
 
-#define ADC_RAW_NUM_READINGS		1000			// No. of ADC RAW value read from TMC4671 for ADC offset calibration.
+#define ADC_RAW_NUM_READINGS		1000u			// No. of ADC RAW value read from TMC4671 for ADC offset calibration.
 
 /** 
  * TMC2209 Module Addresses.

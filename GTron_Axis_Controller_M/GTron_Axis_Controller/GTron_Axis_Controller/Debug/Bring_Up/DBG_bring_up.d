@@ -205,7 +205,8 @@ Bring_Up/DBG_bring_up.d Bring_Up/DBG_bring_up.o: \
  ../tmc2209_uart/TMC2209_Simple_Rotation.h ../tmc2209_uart/TMC2209.h \
  ../tmc2209_uart/TMC2209_Motion.h \
  ../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h \
- ../tmc2209_uart/Step_Counter.h ../Code_Dump/tlv_flash.h
+ ../tmc2209_uart/Step_Counter.h ../Bring_Up/Light_Curtain/light_curtain.h \
+ ../Code_Dump/tlv_flash.h
 
 ../Bring_Up/DBG_bring_up.h:
 
@@ -772,5 +773,7 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../Bring_Up/GTron_Cmd_Parser/gtron_can_cmd_parser.h:
 
 ../tmc2209_uart/Step_Counter.h:
+
+../Bring_Up/Light_Curtain/light_curtain.h:
 
 ../Code_Dump/tlv_flash.h:
