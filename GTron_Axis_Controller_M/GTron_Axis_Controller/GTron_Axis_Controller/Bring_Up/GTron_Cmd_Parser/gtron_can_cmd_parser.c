@@ -204,13 +204,15 @@ void reeler_Stop_Motor( void )
 	move_given_s_ramp							= false; 
 	check_move_done								= false;
 	p_reeler1_info->flags.rotate_vel_mode		= false;
-	p_reeler1_info->flags.sag_enabled			= (IS_DISCRETE) ? true : false;
 	p_reeler1_info->hybrid.one_shot_armed		= false;
 	p_reeler1_info->flags.is_paused				= false;
 	p_reeler1_info->hybrid.cycle_armed			= false;
 	p_reeler1_info->hybrid.first_trigger_skip	= true;
 	p_reeler1_info->hybrid.consecutive_slips	= 0;
 	p_reeler1_info->flags.is_hybrid_trig_enabled = false;
+	if(IS_DISCRETE) {
+		p_reeler1_info->flags.sag_enabled = true;
+	}
 	//reeler_info.position.trig_step_size = 0;
 	homing_v = 0;
 	//if(!reeler_info.flags.sag_enabled || !reeler_info.flags.rotate_vel_mode)
@@ -256,7 +258,9 @@ void reeler_Pause_Motor( void )
 	move_given_s_ramp						= false; 
 	check_move_done							= false;
 	p_reeler1_info->flags.rotate_vel_mode	= false;
-	p_reeler1_info->flags.sag_enabled		= (IS_DISCRETE) ? true : false;
+	if(IS_DISCRETE) {
+		p_reeler1_info->flags.sag_enabled = true;
+	}
 	homing_v = 0;
 	timer_stop(&VEL_TIMER);
 	trig_no = 0;
@@ -767,7 +771,9 @@ void parse_GTron_CAN_Msg_Data( void )
 						break;
 					}
 					case 0: {
-						p_reeler1_info->flags.sag_enabled = (IS_DISCRETE) ? true : false;
+						if(IS_DISCRETE) {
+							p_reeler1_info->flags.sag_enabled = true;
+						}
 						if(!p_reeler1_info->flags.sag_enabled || !p_reeler1_info->flags.rotate_vel_mode) {
 							trig_no = 0;
 							prev_trig_no = 0;
@@ -797,7 +803,9 @@ void parse_GTron_CAN_Msg_Data( void )
 					DBG_Printf(ERR_LVL_DEBUG, "Sag Sensor Enable Operation Rxcvd. Reeler Motor is ready to Rotate.\n");
 				break;
 				case 0:
-					p_reeler1_info->flags.sag_enabled = (IS_DISCRETE) ? true : false;
+					if(IS_DISCRETE) {
+						p_reeler1_info->flags.sag_enabled = true;
+					}
 					//if(!reeler_info.flags.sag_enabled & !reeler_info.flags.rotate_vel_mode)
 					{
 						timer_stop(&VEL_TIMER);

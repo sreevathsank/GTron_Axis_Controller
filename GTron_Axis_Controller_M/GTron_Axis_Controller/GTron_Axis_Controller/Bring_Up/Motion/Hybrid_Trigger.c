@@ -19,17 +19,12 @@ void trigger_Camera_Line(void)
 {
 	if(IS_DISCRETE) {
 		ejection_note_trigger(tmc4671_getActualPosition(MOTOR));
-		gpio_set_pin_level(INDEX, HIGH);
-		delay_us(1);
-		gpio_toggle_pin_level(DBGLED3);
-		gpio_set_pin_level(INDEX, LOW);
-	} else {
-		gpio_set_pin_level(FOC_INTOUT, HIGH);
-		delay_us(1);
-		gpio_toggle_pin_level(DBGLED3);
-		gpio_set_pin_level(FOC_INTOUT, LOW);
 	}
-	
+	gpio_set_pin_level(FOC_INTOUT, HIGH);
+	delay_us(1);
+	gpio_toggle_pin_level(DBGLED3);
+	gpio_set_pin_level(FOC_INTOUT, LOW);
+		
 	p_reeler1_info->time_ms.cam_trig = millis();
 	
 	return;
@@ -226,8 +221,10 @@ static void handle_n_shot_tick()
 						H->curr_n_shots		= 0;
 						p_reeler1_info->flags.is_hybrid_trig_enabled = false;
 						p_reeler1_info->flags.is_paused				= true;
-						p_reeler1_info->flags.sag_enabled			= (IS_DISCRETE) ? true : false;
 						p_reeler1_info->flags.rotate_vel_mode		= false;
+						if(IS_DISCRETE) {
+							p_reeler1_info->flags.sag_enabled = true;
+						}
 					}
 				}
 				break;

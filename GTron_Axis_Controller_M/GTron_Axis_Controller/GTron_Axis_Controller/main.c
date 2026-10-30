@@ -52,7 +52,15 @@ int main(void)
 	
 	// Enable Homing Flag if RF is enabled for X, Y or Z axis or repeat_ramp is greater than 0.
 	limit_variables.homing = ( repeat_ramp > 0 ) ? true : false;
-	p_reeler1_info->flags.sag_enabled = (IS_DISCRETE) ? true : false;
+	if(IS_DISCRETE) {
+		p_reeler1_info->flags.sag_enabled = true;
+	}
+	DBG_Printf(ERR_LVL_INFO, "\n");
+	if (IS_DISCRETE) {
+		DBG_Printf(ERR_LVL_INFO, "#----------IS_DISCRETE IS SET TO TRUE----------#\n");
+	} else {
+		DBG_Printf(ERR_LVL_INFO, "#----------IS_DISCRETE IS SET TO FALSE----------#\n");
+	}
 	update_lc_rd_time_to_millis();
 	for(;;) {
 		/* TMC2209 Motor step calculation during movements. */
@@ -91,7 +99,7 @@ int main(void)
 		}
 		
 		/* Reading the ADC Light Curtain. */
-		if (millis() - get_lc_rd_time() > LC_READ_DELAY_MS) {
+		if ((millis() - get_lc_rd_time() > LC_READ_DELAY_MS) && !IS_DISCRETE) {
 			light_curtain_service();
 			update_lc_rd_time_to_millis();
 		}

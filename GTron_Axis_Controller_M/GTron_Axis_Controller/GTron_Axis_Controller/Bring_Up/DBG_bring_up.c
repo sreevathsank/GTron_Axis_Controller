@@ -674,7 +674,7 @@ void call_All_Init_Functions(void)
 	/*{
 		EXTFLASH_erase(PARAM_FIRST_MEM_LOC, FLASH_ERASE_SECTOR_SIZE);
 		uint32_t current_limit = 2500; uint16_t torque_i = 20000, torque_p = 8000, velocity_i = 5000, velocity_p = 2500, position_i = 0, position_p = 200;
-		uint32_t pos_window = 24, enc_align_delay = 0, home_vel = 120, end_vel = 1000, end_accln = 2000, end_jerk = 2000, rot_enc_res = 1600, lin_enc_res = 0, lim_delay = 0, start_range = 0, end_range = 360;
+		uint32_t pos_window = 24, enc_align_delay = 0, home_vel = 120, end_vel = 1000, end_accln = 2000, end_jerk = 2000, rot_enc_res = 4096, lin_enc_res = 0, lim_delay = 0, start_range = 0, end_range = 360;
 		uint8_t rot_enc_dir = 1, lin_enc_dir = 1, mot_dir = 0, adc_max_val = 92, adc_min_val = 72, limit_edge_det = 1, rotary_axis = 1;
 		repeat_ramp = 0;
 		write_tlv_flash(CURRENT_LIMIT_mA_FLASH, &current_limit, 4);
